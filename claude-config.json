@@ -1,7 +1,7 @@
 {
   "name": "Smart MCP Project",
   "description": "AI-assisted development with role-based context switching",
-  "system_prompt": "claude-system-prompt.md",
+  "system_prompt": "docs/configuration/claude-system-prompt.md",
   "role_switching": {
     "enabled": true,
     "default_role": "ai-augmented-developer",
@@ -29,6 +29,12 @@
         "switch to designer",
         "design mode",
         "ux mode"
+      ],
+      "qa": [
+        "you are now a qa engineer",
+        "switch to qa",
+        "qa mode",
+        "testing mode"
       ]
     }
   },

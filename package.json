@@ -9,7 +9,7 @@
     "dev": "ts-node src/server.ts",
     "test": "vitest",
     "lint": "eslint src/**/*.ts",
-    "setup-roles": "node scripts/setup-roles.js",
+
     "docker:build": "docker build -t smart-mcp .",
     "docker:dev": "docker-compose up -d",
     "docker:test": "docker-compose exec app npm test"

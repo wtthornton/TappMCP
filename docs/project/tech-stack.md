@@ -17,7 +17,7 @@
 ## Package & Env Management
 - **Node:** `npm ci` in CI; lockfile required.
 - **Python:** prefer `uv` or `pip-tools` with frozen sync for reproducibility.
-- **Docker parity:** `Dockerfile.parity` builds server and runs basic tool smoke tests.
+- **Docker parity:** `Dockerfile` builds server and runs basic tool smoke tests.
 
 ## Repository Structure (high level)
 ```

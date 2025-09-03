@@ -51,9 +51,7 @@ cd TappMCP
 ```
 
 ### 2. Setup AI Role Configuration
-```bash
-npm run setup-roles
-```
+The AI role configuration is automatically available when you open the project in Cursor AI or start Claude Code with the system prompt.
 
 ### 3. Start Development
 
@@ -101,8 +99,9 @@ Alternative commands: `switch to [role]`, `[role] mode`, `coding mode`, `strateg
 ```
 TappMCP/
 ├── .cursorrules                    # Cursor AI configuration
-├── claude-system-prompt.md         # Claude Code system prompt
 ├── claude-config.json              # Claude Code configuration
+├── docs/configuration/             # Configuration files
+│   └── claude-system-prompt.md     # Claude Code system prompt
 ├── docs/roles/                     # Role definitions
 │   ├── ai-augmented-developer.md
 │   ├── product-strategist.md
@@ -111,13 +110,12 @@ TappMCP/
 │   └── ai-quality-assurance-engineer.md
 ├── docs/setup/                     # Setup documentation
 ├── docs/project/                   # Project documentation
-└── docs/configuration/             # Configuration files
 ├── src/                           # Source code
 │   ├── server.ts                  # MCP server implementation
 │   └── tools/                     # MCP tools
-├── setup-ai-roles.ps1             # Windows setup script
-├── setup-ai-roles.sh              # Unix setup script
-└── AI-ROLE-SETUP.md               # Detailed setup guide
+├── Dockerfile                     # Linux runtime container
+├── docker-compose.yml             # Development and production containers
+└── project-guidelines.md          # Project standards and guidelines
 ```
 
 ## 🛠️ Development

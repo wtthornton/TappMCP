@@ -5,9 +5,7 @@ This project is configured with role-based AI assistance that works with both **
 ## 🚀 Quick Setup
 
 ### Setup AI Role Configuration
-```bash
-npm run setup-roles
-```
+The AI role configuration is automatically available when you open the project in Cursor AI or start Claude Code with the system prompt.
 
 ### Docker Development (Recommended)
 ```bash
