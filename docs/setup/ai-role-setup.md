@@ -4,15 +4,18 @@ This project is configured with role-based AI assistance that works with both **
 
 ## 🚀 Quick Setup
 
-### Windows (PowerShell)
-```powershell
-.\setup-ai-roles.ps1
+### Setup AI Role Configuration
+```bash
+npm run setup-roles
 ```
 
-### Unix/Linux/Mac (Bash)
+### Docker Development (Recommended)
 ```bash
-chmod +x setup-ai-roles.sh
-./setup-ai-roles.sh
+# Build and start development container
+npm run docker:dev
+
+# Or build production container
+npm run docker:build
 ```
 
 ## 🎯 Role Switching Commands
@@ -24,11 +27,12 @@ Both Cursor AI and Claude Code will respond to these commands:
 - **"you are now a product strategist"** → Product Strategist role
 - **"you are now an operations engineer"** → AI Operations Engineer role
 - **"you are now a designer"** → UX/Product Designer role
+- **"you are now a qa engineer"** → AI Quality Assurance Engineer role
 
 ### Alternative Commands
-- **"switch to developer/product/operations/designer"**
-- **"developer mode", "product mode", "operations mode", "design mode"**
-- **"coding mode", "strategy mode", "devops mode", "ux mode"**
+- **"switch to developer/product/operations/designer/qa"**
+- **"developer mode", "product mode", "operations mode", "design mode", "qa mode"**
+- **"coding mode", "strategy mode", "devops mode", "ux mode", "testing mode"**
 
 ## 📁 Configuration Files
 
@@ -37,9 +41,8 @@ Both Cursor AI and Claude Code will respond to these commands:
 - Automatically loaded when you open the project in Cursor
 
 ### Claude Code
-- **`claude-system-prompt.md`** - System prompt with role definitions
-- **`claude-config.json`** - Configuration metadata
-- Load these when starting a Claude Code session
+- **`docs/configuration/claude-system-prompt.md`** - System prompt with role definitions
+- Load this when starting a Claude Code session
 
 ## 🔄 How It Works
 
@@ -52,7 +55,7 @@ Both Cursor AI and Claude Code will respond to these commands:
 ### Claude Code
 1. Start Claude Code with the system prompt:
    ```bash
-   claude --system-prompt claude-system-prompt.md
+   claude --system-prompt docs/configuration/claude-system-prompt.md
    ```
 2. Use role switching commands in the conversation
 3. AI responds with role-appropriate assistance
@@ -86,6 +89,13 @@ Both Cursor AI and Claude Code will respond to these commands:
 - Usability optimization
 - Accessibility compliance
 - User research
+
+### 5. AI Quality Assurance Engineer
+**Focus**: Quality assurance and testing
+- Test automation and strategy
+- Quality validation and metrics
+- Security and performance testing
+- AI tool effectiveness assessment
 
 ## 💡 Usage Examples
 
@@ -124,11 +134,11 @@ docs/roles/           # Detailed role definitions
 ├── product-strategist.md
 ├── ai-operations-engineer.md
 ├── ux-product-designer.md
+├── ai-quality-assurance-engineer.md
 └── README.md
 
 .cursorrules          # Cursor AI configuration
-claude-system-prompt.md  # Claude Code system prompt
-claude-config.json    # Claude Code configuration
+docs/configuration/claude-system-prompt.md  # Claude Code system prompt
 ```
 
 ## 🔧 Customization
@@ -136,13 +146,13 @@ claude-config.json    # Claude Code configuration
 ### Adding New Roles
 1. Create role definition in `docs/roles/new-role.md`
 2. Add role section to `.cursorrules`
-3. Add role section to `claude-system-prompt.md`
+3. Add role section to `docs/configuration/claude-system-prompt.md`
 4. Update role switching triggers in both files
 
 ### Modifying Role Behavior
 1. Edit the role definition in `docs/roles/`
 2. Update the corresponding section in `.cursorrules`
-3. Update the corresponding section in `claude-system-prompt.md`
+3. Update the corresponding section in `docs/configuration/claude-system-prompt.md`
 
 ## 🎯 Benefits
 
@@ -160,7 +170,7 @@ claude-config.json    # Claude Code configuration
 - Check that the file is properly formatted
 
 ### Claude Code Not Switching Roles
-- Ensure you're using the system prompt: `claude --system-prompt claude-system-prompt.md`
+- Ensure you're using the system prompt: `claude --system-prompt docs/configuration/claude-system-prompt.md`
 - Check that the system prompt file is properly formatted
 - Restart Claude Code session
 

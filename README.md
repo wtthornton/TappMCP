@@ -4,11 +4,11 @@ A Model Context Protocol (MCP) server implementation with AI-assisted developmen
 
 ## 🚀 Features
 
-- **Role-Based AI Development**: Switch between 4 specialized roles using natural language commands
+- **Role-Based AI Development**: Switch between 5 specialized roles using natural language commands
 - **Dual AI Tool Support**: Works seamlessly with both Cursor AI and Claude Code
 - **TypeScript/Node.js Foundation**: Modern MCP server implementation
 - **Comprehensive Documentation**: Detailed role definitions and setup guides
-- **Automated Setup**: One-click configuration scripts for Windows and Unix systems
+- **Automated Setup**: Docker-based development environment with Linux runtime
 
 ## 🎭 Available Roles
 

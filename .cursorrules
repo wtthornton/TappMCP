@@ -1,7 +1,7 @@
 # Smart MCP Project - Role-Based AI Assistant Configuration
 
-## 🎯 PROJECT_GUIDELINES.md Compliance
-This configuration ensures all AI assistance follows PROJECT_GUIDELINES.md standards:
+## 🎯 project-guidelines.md Compliance
+This configuration ensures all AI assistance follows project-guidelines.md standards:
 - **Schema-locked I/O**: All tool calls use JSON Schemas
 - **Security-first**: No secrets in repo, mandatory vulnerability scanning
 - **Quality standards**: ≤400 lines per turn, ≥85% test coverage
@@ -35,7 +35,7 @@ All roles must meet these thresholds:
 ## Role Reference: docs/roles/ai-augmented-developer.md
 
 ### 🎯 Purpose
-AI-assisted development ensuring code quality, security, and efficiency through adherence to PROJECT_GUIDELINES.md standards.
+AI-assisted development ensuring code quality, security, and efficiency through adherence to project-guidelines.md standards.
 
 ### 📋 Responsibilities
 - **Code Generation**: AI-assisted development using Cursor and Claude Code
@@ -44,7 +44,7 @@ AI-assisted development ensuring code quality, security, and efficiency through 
 - **Security Implementation**: Secure coding practices and vulnerability prevention
 - **Performance Optimization**: Code and system performance tuning
 
-### 📐 PROJECT_GUIDELINES.md Standards
+### 📐 project-guidelines.md Standards
 - **Line Budgets**: ≤400 lines per turn, ≤120 lines per file
 - **TypeScript Strict**: `tsc --strict`, `strictNullChecks`, `exactOptionalPropertyTypes`
 - **Complexity**: ESLint complexity ≤10
@@ -93,7 +93,7 @@ AI-assisted development ensuring code quality, security, and efficiency through 
 ## Role Reference: docs/roles/product-strategist.md
 
 ### 🎯 Purpose
-Product strategy and business alignment ensuring user value, market positioning, and strategic direction while maintaining compliance with PROJECT_GUIDELINES.md standards.
+Product strategy and business alignment ensuring user value, market positioning, and strategic direction while maintaining compliance with project-guidelines.md standards.
 
 ### 📋 Responsibilities
 - **Product Vision**: Strategic roadmap and market positioning
@@ -103,7 +103,7 @@ Product strategy and business alignment ensuring user value, market positioning,
 - **Market Research**: Competitive analysis and market opportunities
 - **Quality Alignment**: Ensuring product decisions support technical excellence
 
-### 📐 PROJECT_GUIDELINES.md Alignment
+### 📐 project-guidelines.md Alignment
 - **Quality-First Decisions**: All features must meet code quality standards
 - **Security Alignment**: Product decisions support security requirements
 - **Performance Impact**: Features align with performance benchmarks
@@ -143,7 +143,7 @@ Product strategy and business alignment ensuring user value, market positioning,
 ## Role Reference: docs/roles/ai-operations-engineer.md
 
 ### 🎯 Purpose
-Operations and infrastructure standards ensuring secure, reliable, and performant deployment while maintaining full compliance with PROJECT_GUIDELINES.md standards.
+Operations and infrastructure standards ensuring secure, reliable, and performant deployment while maintaining full compliance with project-guidelines.md standards.
 
 ### 📋 Responsibilities
 - **CI/CD Pipeline**: AI-integrated deployment automation
@@ -153,7 +153,7 @@ Operations and infrastructure standards ensuring secure, reliable, and performan
 - **Incident Response**: Production support and recovery procedures
 - **AI Tool Operations**: Configuration and monitoring of AI development tools
 
-### 📐 PROJECT_GUIDELINES.md Standards
+### 📐 project-guidelines.md Standards
 - **Security-First**: No secrets in repo, secure secret scanning, vulnerability scanning
 - **Deterministic Deployments**: `npm ci` and frozen dependencies in CI
 - **Quality Gates**: ≥85% test coverage, complexity ≤10, performance targets
@@ -200,7 +200,7 @@ Operations and infrastructure standards ensuring secure, reliable, and performan
 ## Role Reference: docs/roles/ux-product-designer.md
 
 ### 🎯 Purpose
-User experience and design standards ensuring exceptional developer experience, accessibility, and usability while maintaining alignment with PROJECT_GUIDELINES.md standards.
+User experience and design standards ensuring exceptional developer experience, accessibility, and usability while maintaining alignment with project-guidelines.md standards.
 
 ### 📋 Responsibilities
 - **User Experience Design**: Developer-focused UX research and design
@@ -210,7 +210,7 @@ User experience and design standards ensuring exceptional developer experience, 
 - **Accessibility Compliance**: WCAG 2.1 AA standards implementation
 - **Performance-Aware Design**: Design decisions that support technical performance
 
-### 📐 PROJECT_GUIDELINES.md Alignment
+### 📐 project-guidelines.md Alignment
 - **Performance Alignment**: Design decisions support <100ms response times
 - **Security Integration**: Design patterns that support security requirements
 - **Accessibility Standards**: WCAG 2.1 AA compliance mandatory
@@ -257,7 +257,7 @@ User experience and design standards ensuring exceptional developer experience, 
 ## Role Reference: docs/roles/ai-quality-assurance-engineer.md
 
 ### 🎯 Purpose
-Quality assurance and testing standards ensuring comprehensive test coverage, security validation, and continuous quality monitoring while maintaining full compliance with PROJECT_GUIDELINES.md standards.
+Quality assurance and testing standards ensuring comprehensive test coverage, security validation, and continuous quality monitoring while maintaining full compliance with project-guidelines.md standards.
 
 ### 📋 Responsibilities
 - **Quality Validation**: AI-generated code quality assessment and testing
@@ -267,7 +267,7 @@ Quality assurance and testing standards ensuring comprehensive test coverage, se
 - **Continuous Quality**: Automated quality monitoring and reporting
 - **AI Tool Validation**: Effectiveness assessment of AI development tools
 
-### 📐 PROJECT_GUIDELINES.md Standards
+### 📐 project-guidelines.md Standards
 - **Coverage Requirements**: ≥85% line and branch coverage on changed files
 - **Security-First Quality**: OSV-Scanner, Semgrep, secrets scanning
 - **Performance Quality**: <100ms response time targets, load testing

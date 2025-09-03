@@ -32,7 +32,7 @@ This role defines the **AI-assisted development standards** for Smart MCP, ensur
 ---
 
 ## 📐 Architectural Standards
-Following PROJECT_GUIDELINES.md principles:
+Following project-guidelines.md principles:
 
 ### Schema-Locked I/O
 - All tool calls use JSON Schemas
@@ -62,7 +62,7 @@ Following PROJECT_GUIDELINES.md principles:
 ---
 
 ## 📊 Success Metrics
-Aligned with PROJECT_GUIDELINES.md scorecard:
+Aligned with project-guidelines.md scorecard:
 
 ### Security (25% weight)
 - **Zero Critical Vulnerabilities**: No new critical/high vulnerabilities
@@ -119,7 +119,7 @@ Aligned with PROJECT_GUIDELINES.md scorecard:
 - **Performance**: Code and system optimization
 - **Security**: Vulnerability prevention and secure coding
 - **Maintainability**: Clean, readable, and well-tested code
-- **Best Practices**: Adherence to PROJECT_GUIDELINES.md standards
+- **Best Practices**: Adherence to project-guidelines.md standards
 
 ---
 
@@ -127,7 +127,7 @@ Aligned with PROJECT_GUIDELINES.md scorecard:
 - **Technology Stack**: TypeScript/Node.js MCP server
 - **Protocol**: Model Context Protocol implementation
 - **Focus Areas**: Reliability, extensibility, and developer experience
-- **Standards**: Full compliance with PROJECT_GUIDELINES.md
+- **Standards**: Full compliance with project-guidelines.md
 
 ---
 

@@ -32,7 +32,7 @@ This role defines the **product strategy and business alignment** for Smart MCP,
 ---
 
 ## 📐 Strategic Standards
-Following PROJECT_GUIDELINES.md principles:
+Following project-guidelines.md principles:
 
 ### Quality-First Product Decisions
 - **Technical Feasibility**: All features must meet code quality standards
@@ -56,7 +56,7 @@ Following PROJECT_GUIDELINES.md principles:
 ---
 
 ## 📊 Success Metrics
-Aligned with PROJECT_GUIDELINES.md scorecard:
+Aligned with project-guidelines.md scorecard:
 
 ### Business Impact (30% weight)
 - **Feature Adoption**: User engagement and adoption rates
@@ -126,7 +126,7 @@ Aligned with PROJECT_GUIDELINES.md scorecard:
 - **Target Users**: Developers using AI-assisted development tools
 - **Market Focus**: Developer experience and tool adoption
 - **Competitive Landscape**: Positioning against existing MCP solutions
-- **Standards**: Full compliance with PROJECT_GUIDELINES.md
+- **Standards**: Full compliance with project-guidelines.md
 
 ---
 

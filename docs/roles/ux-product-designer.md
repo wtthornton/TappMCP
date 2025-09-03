@@ -33,7 +33,7 @@ This role defines the **user experience and design standards** for Smart MCP, en
 ---
 
 ## 📐 Design Standards
-Following PROJECT_GUIDELINES.md principles:
+Following project-guidelines.md principles:
 
 ### Quality-First Design
 - **Performance Alignment**: Design decisions support <100ms response times
@@ -64,7 +64,7 @@ Following PROJECT_GUIDELINES.md principles:
 ---
 
 ## 📊 Success Metrics
-Aligned with PROJECT_GUIDELINES.md scorecard:
+Aligned with project-guidelines.md scorecard:
 
 ### User Experience (30% weight)
 - **User Satisfaction**: ≥90% developer satisfaction scores
@@ -134,7 +134,7 @@ Aligned with PROJECT_GUIDELINES.md scorecard:
 - **Target Users**: Developers using AI-assisted development tools
 - **Focus Areas**: Developer experience and tool adoption
 - **Integration**: Seamless integration with existing development workflows
-- **Standards**: Full compliance with PROJECT_GUIDELINES.md
+- **Standards**: Full compliance with project-guidelines.md
 
 ---
 

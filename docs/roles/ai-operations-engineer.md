@@ -32,7 +32,7 @@ This role defines the **operations and infrastructure standards** for Smart MCP,
 ---
 
 ## 📐 Operational Standards
-Following PROJECT_GUIDELINES.md principles:
+Following project-guidelines.md principles:
 
 ### Security-First Operations
 - **Secrets Management**: No secrets in repo, secure secret scanning
@@ -65,7 +65,7 @@ Following PROJECT_GUIDELINES.md principles:
 ---
 
 ## 📊 Success Metrics
-Aligned with PROJECT_GUIDELINES.md scorecard:
+Aligned with project-guidelines.md scorecard:
 
 ### Security (35% weight)
 - **Zero Critical Vulnerabilities**: No critical/high vulnerabilities in production
@@ -134,7 +134,7 @@ Aligned with PROJECT_GUIDELINES.md scorecard:
 - **Security Focus**: Comprehensive security and compliance
 - **Reliability**: High availability and fault tolerance
 - **Integration**: Seamless integration with development workflows
-- **Standards**: Full compliance with PROJECT_GUIDELINES.md
+- **Standards**: Full compliance with project-guidelines.md
 
 ---
 

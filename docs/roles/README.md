@@ -1,6 +1,6 @@
 # Role-Based Development with AI Tools
 
-This directory contains comprehensive role definitions for AI-assisted development with the Smart MCP project, all aligned with PROJECT_GUIDELINES.md standards.
+This directory contains comprehensive role definitions for AI-assisted development with the Smart MCP project, all aligned with project-guidelines.md standards.
 
 ## 🎯 Role Structure
 
@@ -8,7 +8,7 @@ This directory contains comprehensive role definitions for AI-assisted developme
 1. **AI-Augmented Developer** (`ai-augmented-developer.md`)
    - Primary development role with AI tool integration
    - Code generation, architecture, and quality assurance
-   - Full compliance with PROJECT_GUIDELINES.md standards
+   - Full compliance with project-guidelines.md standards
 
 2. **Product Strategist** (`product-strategist.md`)
    - Product vision, roadmap, and stakeholder management
@@ -59,14 +59,14 @@ Use natural language commands to switch between roles in both Cursor AI and Clau
 
 ### Role-Specific AI Behavior
 Each role configures AI tools to:
-- **Focus on role priorities**: Aligned with PROJECT_GUIDELINES.md standards
+- **Focus on role priorities**: Aligned with project-guidelines.md standards
 - **Use appropriate context**: Role-specific terminology and approaches
 - **Provide relevant assistance**: Tailored to role responsibilities
 - **Maintain quality standards**: Consistent adherence to project guidelines
 
-## 📐 PROJECT_GUIDELINES.md Alignment
+## 📐 project-guidelines.md Alignment
 
-All roles are fully aligned with PROJECT_GUIDELINES.md standards:
+All roles are fully aligned with project-guidelines.md standards:
 
 ### Architectural Principles
 - **Schema-locked I/O**: All tool calls use JSON Schemas
@@ -110,11 +110,11 @@ docs/roles/
 Project root:
 ├── .cursorrules (unified role configuration)
 ├── claude-system-prompt.md (Claude Code integration)
-└── PROJECT_GUIDELINES.md (project standards)
+└── project-guidelines.md (project standards)
 ```
 
 ## ✅ Benefits
-- **Unified Standards**: All roles aligned with PROJECT_GUIDELINES.md
+- **Unified Standards**: All roles aligned with project-guidelines.md
 - **Natural Language Switching**: Easy role transitions without file management
 - **Comprehensive Coverage**: 5-role structure covers all SDLC aspects
 - **Quality Integration**: Every role supports technical excellence
@@ -123,7 +123,7 @@ Project root:
 
 ## 🎯 Best Practices
 1. **Start each session** by setting the appropriate role context
-2. **Follow PROJECT_GUIDELINES.md** standards in all role activities
+2. **Follow project-guidelines.md** standards in all role activities
 3. **Use natural language** for role switching
 4. **Maintain quality standards** across all role responsibilities
 5. **Leverage AI tools** effectively for role-specific tasks

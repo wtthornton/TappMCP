@@ -33,7 +33,7 @@ This role defines the **quality assurance and testing standards** for Smart MCP,
 ---
 
 ## 📐 Quality Standards
-Following PROJECT_GUIDELINES.md principles:
+Following project-guidelines.md principles:
 
 ### Comprehensive Test Coverage
 - **Coverage Requirements**: ≥85% line and branch coverage on changed files
@@ -62,7 +62,7 @@ Following PROJECT_GUIDELINES.md principles:
 ---
 
 ## 🧪 Testing Strategy
-Aligned with PROJECT_GUIDELINES.md requirements:
+Aligned with project-guidelines.md requirements:
 
 ### Pre-commit Testing
 - **Quick Tests**: Vitest on changed files with coverage enforcement
@@ -87,7 +87,7 @@ Aligned with PROJECT_GUIDELINES.md requirements:
 ---
 
 ## 📊 Success Metrics
-Aligned with PROJECT_GUIDELINES.md scorecard:
+Aligned with project-guidelines.md scorecard:
 
 ### Quality (35% weight)
 - **Test Coverage**: ≥85% line and branch coverage on changed files
@@ -156,7 +156,7 @@ Aligned with PROJECT_GUIDELINES.md scorecard:
 - **Product**: MCP server quality assurance and validation
 - **Focus Areas**: Automated testing and continuous quality monitoring
 - **Integration**: Seamless integration with AI development workflows
-- **Standards**: Full compliance with PROJECT_GUIDELINES.md
+- **Standards**: Full compliance with project-guidelines.md
 - **Quality Thresholds**: A-grade quality standards across all dimensions
 
 ---
