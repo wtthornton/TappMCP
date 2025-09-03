@@ -1,0 +1,1 @@
+// smart.begin tool stub

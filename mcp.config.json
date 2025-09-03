@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "smart": {
+      "command": "node",
+      "args": [
+        "dist/server.js"
+      ]
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "name": "Smart MCP Project",
+  "description": "AI-assisted development with role-based context switching",
+  "system_prompt": "claude-system-prompt.md",
+  "role_switching": {
+    "enabled": true,
+    "default_role": "ai-augmented-developer",
+    "triggers": {
+      "developer": [
+        "you are now a developer",
+        "switch to developer",
+        "developer mode",
+        "coding mode"
+      ],
+      "product": [
+        "you are now a product strategist",
+        "switch to product",
+        "product mode",
+        "strategy mode"
+      ],
+      "operations": [
+        "you are now an operations engineer",
+        "switch to operations",
+        "operations mode",
+        "devops mode"
+      ],
+      "designer": [
+        "you are now a designer",
+        "switch to designer",
+        "design mode",
+        "ux mode"
+      ]
+    }
+  },
+  "project_context": {
+    "type": "MCP Server",
+    "language": "TypeScript/Node.js",
+    "focus": "AI assistant integration and developer experience"
+  },
+  "documentation": {
+    "roles": "docs/roles/",
+    "architecture": "docs/",
+    "schemas": "schemas/"
+  }
+}
