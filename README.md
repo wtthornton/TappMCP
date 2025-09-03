@@ -24,19 +24,25 @@ A Model Context Protocol (MCP) server implementation with AI-assisted developmen
 - Market research and competitive analysis
 - Stakeholder communication
 
-### 3. AI Operations Engineer
+### 3. AI System Architect
+- System architecture design and component relationships
+- Architecture decision records (ADRs)
+- Technology stack decisions and trade-offs
+- Cross-cutting architecture and API design
+
+### 4. AI Operations Engineer
 - CI/CD pipeline with AI integration
 - Security and compliance oversight
 - Performance monitoring and optimization
 - Production support and incident response
 
-### 4. UX/Product Designer
+### 5. UX/Product Designer
 - User experience design and research
 - Design system creation and maintenance
 - Accessibility and usability optimization
 - AI-assisted prototyping and testing
 
-### 5. AI Quality Assurance Engineer
+### 6. AI Quality Assurance Engineer
 - AI-generated code quality validation
 - Automated testing strategy and implementation
 - Performance and security testing
@@ -88,11 +94,12 @@ Use these natural language commands to switch between roles:
 
 - **"you are now a developer"** → AI-Augmented Developer
 - **"you are now a product strategist"** → Product Strategist
+- **"you are now an architect"** → AI System Architect
 - **"you are now an operations engineer"** → AI Operations Engineer
 - **"you are now a designer"** → UX/Product Designer
 - **"you are now a qa engineer"** → AI Quality Assurance Engineer
 
-Alternative commands: `switch to [role]`, `[role] mode`, `coding mode`, `strategy mode`, `devops mode`, `ux mode`, `testing mode`
+Alternative commands: `switch to [role]`, `[role] mode`, `coding mode`, `strategy mode`, `architecture mode`, `devops mode`, `ux mode`, `testing mode`
 
 ## 📁 Project Structure
 
@@ -105,6 +112,7 @@ TappMCP/
 ├── docs/roles/                     # Role definitions
 │   ├── ai-augmented-developer.md
 │   ├── product-strategist.md
+│   ├── ai-system-architect.md
 │   ├── ai-operations-engineer.md
 │   ├── ux-product-designer.md
 │   └── ai-quality-assurance-engineer.md

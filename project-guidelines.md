@@ -6,6 +6,47 @@ It provides a single reference for **developers, architects, and testers** to en
 
 ---
 
+## 🎭 Role-Based Development
+Smart MCP implements **6 specialized AI roles** for comprehensive development coverage:
+
+### 1. AI-Augmented Developer (Default)
+- Code generation, refactoring, and debugging
+- Architecture decisions and system design
+- Performance optimization and security
+- Testing strategies and implementation
+
+### 2. Product Strategist
+- Product vision and roadmap definition
+- User story creation and acceptance criteria
+- Market research and competitive analysis
+- Stakeholder communication
+
+### 3. AI System Architect
+- System architecture design and component relationships
+- Architecture decision records (ADRs)
+- Technology stack decisions and trade-offs
+- Cross-cutting architecture and API design
+
+### 4. AI Operations Engineer
+- CI/CD pipeline with AI integration
+- Security and compliance oversight
+- Performance monitoring and optimization
+- Production support and incident response
+
+### 5. UX/Product Designer
+- User experience design and research
+- Design system creation and maintenance
+- Accessibility and usability optimization
+- AI-assisted prototyping and testing
+
+### 6. AI Quality Assurance Engineer
+- AI-generated code quality validation
+- Automated testing strategy and implementation
+- Performance and security testing
+- Test automation and continuous quality monitoring
+
+---
+
 ## 📐 Architectural Principles
 - **Schema-locked I/O**: All tool calls use JSON Schemas.  
 - **Diffs only**: Unified diffs, no full-file rewrites.  

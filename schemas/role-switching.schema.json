@@ -6,7 +6,7 @@
   "properties": {
     "currentRole": {
       "type": "string",
-      "enum": ["developer", "product", "operations", "designer", "qa"],
+      "enum": ["developer", "product", "architect", "operations", "designer", "qa"],
       "default": "developer"
     },
     "triggers": {
@@ -21,6 +21,11 @@
           "type": "array",
           "items": { "type": "string" },
           "default": ["you are now a product strategist", "switch to product", "product mode", "strategy mode"]
+        },
+        "architect": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": ["you are now an architect", "switch to architect", "architecture mode", "architect mode"]
         },
         "operations": {
           "type": "array",
