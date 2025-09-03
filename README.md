@@ -36,6 +36,12 @@ A Model Context Protocol (MCP) server implementation with AI-assisted developmen
 - Accessibility and usability optimization
 - AI-assisted prototyping and testing
 
+### 5. AI Quality Assurance Engineer
+- AI-generated code quality validation
+- Automated testing strategy and implementation
+- Performance and security testing
+- Test automation and continuous quality monitoring
+
 ## 🎯 Quick Start
 
 ### 1. Clone the Repository
@@ -68,8 +74,9 @@ Use these natural language commands to switch between roles:
 - **"you are now a product strategist"** → Product Strategist
 - **"you are now an operations engineer"** → AI Operations Engineer
 - **"you are now a designer"** → UX/Product Designer
+- **"you are now a qa engineer"** → AI Quality Assurance Engineer
 
-Alternative commands: `switch to [role]`, `[role] mode`, `coding mode`, `strategy mode`, `devops mode`, `ux mode`
+Alternative commands: `switch to [role]`, `[role] mode`, `coding mode`, `strategy mode`, `devops mode`, `ux mode`, `testing mode`
 
 ## 📁 Project Structure
 
@@ -82,7 +89,11 @@ TappMCP/
 │   ├── ai-augmented-developer.md
 │   ├── product-strategist.md
 │   ├── ai-operations-engineer.md
-│   └── ux-product-designer.md
+│   ├── ux-product-designer.md
+│   └── ai-quality-assurance-engineer.md
+├── docs/setup/                     # Setup documentation
+├── docs/project/                   # Project documentation
+└── docs/configuration/             # Configuration files
 ├── src/                           # Source code
 │   ├── server.ts                  # MCP server implementation
 │   └── tools/                     # MCP tools

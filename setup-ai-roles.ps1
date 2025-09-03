@@ -40,11 +40,12 @@ Write-Host "• 'you are now a developer' - Switch to AI-Augmented Developer rol
 Write-Host "• 'you are now a product strategist' - Switch to Product Strategist role"
 Write-Host "• 'you are now an operations engineer' - Switch to AI Operations Engineer role"
 Write-Host "• 'you are now a designer' - Switch to UX/Product Designer role"
+Write-Host "• 'you are now a qa engineer' - Switch to AI Quality Assurance Engineer role"
 
 Write-Host "`n🔄 Alternative Commands:" -ForegroundColor Cyan
-Write-Host "• 'switch to developer/product/operations/designer'"
-Write-Host "• 'developer mode', 'product mode', 'operations mode', 'design mode'"
-Write-Host "• 'coding mode', 'strategy mode', 'devops mode', 'ux mode'"
+Write-Host "• 'switch to developer/product/operations/designer/qa'"
+Write-Host "• 'developer mode', 'product mode', 'operations mode', 'design mode', 'qa mode'"
+Write-Host "• 'coding mode', 'strategy mode', 'devops mode', 'ux mode', 'testing mode'"
 
 Write-Host "`n📚 Documentation:" -ForegroundColor Cyan
 Write-Host "• Role definitions: docs/roles/"

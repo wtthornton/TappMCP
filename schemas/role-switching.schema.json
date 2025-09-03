@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Role Switching Configuration Schema",
+  "description": "Schema for AI role switching commands and configuration",
+  "type": "object",
+  "properties": {
+    "currentRole": {
+      "type": "string",
+      "enum": ["developer", "product", "operations", "designer", "qa"],
+      "default": "developer"
+    },
+    "triggers": {
+      "type": "object",
+      "properties": {
+        "developer": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": ["you are now a developer", "switch to developer", "developer mode", "coding mode"]
+        },
+        "product": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": ["you are now a product strategist", "switch to product", "product mode", "strategy mode"]
+        },
+        "operations": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": ["you are now an operations engineer", "switch to operations", "operations mode", "devops mode"]
+        },
+        "designer": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": ["you are now a designer", "switch to designer", "design mode", "ux mode"]
+        },
+        "qa": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": ["you are now a qa engineer", "switch to qa", "qa mode", "testing mode"]
+        }
+      }
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "preserveHistory": { "type": "boolean", "default": true },
+        "maxHistoryLength": { "type": "number", "default": 10 },
+        "autoSuggest": { "type": "boolean", "default": false }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "properties": {
+        "requireConfirmation": { "type": "boolean", "default": false },
+        "logSwitches": { "type": "boolean", "default": true },
+        "trackUsage": { "type": "boolean", "default": true }
+      }
+    }
+  },
+  "required": ["currentRole", "triggers"]
+}

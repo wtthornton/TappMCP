@@ -17,9 +17,12 @@ case $ROLE in
     "designer")
         SOURCE_FILE="designer.cursorrules"
         ;;
+    "qa")
+        SOURCE_FILE="qa.cursorrules"
+        ;;
     *)
         echo "❌ Invalid role: $ROLE"
-        echo "Available roles: developer, product, operations, designer"
+        echo "Available roles: developer, product, operations, designer, qa"
         exit 1
         ;;
 esac

@@ -1,1 +1,78 @@
-{}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Development Plan Schema",
+  "description": "Schema for AI-assisted development planning",
+  "type": "object",
+  "properties": {
+    "project": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "version": { "type": "string" },
+        "techStack": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["name", "description"]
+    },
+    "phases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "duration": { "type": "string" },
+          "tasks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "title": { "type": "string" },
+                "description": { "type": "string" },
+                "role": { 
+                  "type": "string",
+                  "enum": ["developer", "product", "operations", "designer", "qa"]
+                },
+                "priority": {
+                  "type": "string",
+                  "enum": ["low", "medium", "high", "critical"]
+                },
+                "estimatedHours": { "type": "number" },
+                "dependencies": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                }
+              },
+              "required": ["id", "title", "role", "priority"]
+            }
+          }
+        },
+        "required": ["name", "tasks"]
+      }
+    },
+    "roles": {
+      "type": "object",
+      "properties": {
+        "developer": { "type": "boolean" },
+        "product": { "type": "boolean" },
+        "operations": { "type": "boolean" },
+        "designer": { "type": "boolean" },
+        "qa": { "type": "boolean" }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "codeQuality": { "type": "number", "minimum": 0, "maximum": 100 },
+        "testCoverage": { "type": "number", "minimum": 0, "maximum": 100 },
+        "performance": { "type": "number", "minimum": 0, "maximum": 100 },
+        "security": { "type": "number", "minimum": 0, "maximum": 100 }
+      }
+    }
+  },
+  "required": ["project", "phases"]
+}

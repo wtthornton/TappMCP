@@ -3,7 +3,7 @@
 
 param(
     [Parameter(Mandatory=$true)]
-    [ValidateSet("developer", "product", "operations", "designer")]
+    [ValidateSet("developer", "product", "operations", "designer", "qa")]
     [string]$Role
 )
 
@@ -12,6 +12,7 @@ $roleMap = @{
     "product" = "product.cursorrules"
     "operations" = "operations.cursorrules"
     "designer" = "designer.cursorrules"
+    "qa" = "qa.cursorrules"
 }
 
 $sourceFile = $roleMap[$Role]
@@ -23,5 +24,5 @@ if (Test-Path $sourceFile) {
     Write-Host "📋 Role documentation: docs/roles/$Role.md" -ForegroundColor Cyan
 } else {
     Write-Host "❌ Role file not found: $sourceFile" -ForegroundColor Red
-    Write-Host "Available roles: developer, product, operations, designer" -ForegroundColor Yellow
+    Write-Host "Available roles: developer, product, operations, designer, qa" -ForegroundColor Yellow
 }

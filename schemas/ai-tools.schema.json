@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AI Tools Configuration Schema",
+  "description": "Schema for AI development tools configuration",
+  "type": "object",
+  "properties": {
+    "cursor": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean", "default": true },
+        "configFile": { "type": "string", "default": ".cursorrules" },
+        "features": {
+          "type": "object",
+          "properties": {
+            "codeCompletion": { "type": "boolean", "default": true },
+            "refactoring": { "type": "boolean", "default": true },
+            "debugging": { "type": "boolean", "default": true },
+            "documentation": { "type": "boolean", "default": true }
+          }
+        }
+      }
+    },
+    "claude": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean", "default": true },
+        "systemPrompt": { "type": "string", "default": "docs/configuration/claude-system-prompt.md" },
+        "features": {
+          "type": "object",
+          "properties": {
+            "multiFileOperations": { "type": "boolean", "default": true },
+            "architectureDecisions": { "type": "boolean", "default": true },
+            "codeGeneration": { "type": "boolean", "default": true },
+            "analysis": { "type": "boolean", "default": true }
+          }
+        }
+      }
+    },
+    "performance": {
+      "type": "object",
+      "properties": {
+        "maxTokens": { "type": "number", "default": 4000 },
+        "timeout": { "type": "number", "default": 30000 },
+        "retryAttempts": { "type": "number", "default": 3 },
+        "cacheResponses": { "type": "boolean", "default": true }
+      }
+    },
+    "security": {
+      "type": "object",
+      "properties": {
+        "validateOutput": { "type": "boolean", "default": true },
+        "sanitizeInput": { "type": "boolean", "default": true },
+        "logInteractions": { "type": "boolean", "default": false },
+        "encryptSensitive": { "type": "boolean", "default": true }
+      }
+    }
+  },
+  "required": ["cursor", "claude"]
+}

@@ -9,10 +9,14 @@
 
 ## Skills Required
 - Proficiency with AI development tools (Cursor, Claude Code)
-- Strong programming fundamentals
+- Strong programming fundamentals (TypeScript, Node.js)
 - System architecture knowledge
 - Code review and quality standards
 - Testing methodologies
+- **AI Prompt Engineering**: Advanced prompt optimization techniques
+- **MCP Protocol Expertise**: Model Context Protocol implementation
+- **Performance Optimization**: Code and system performance tuning
+- **Security Best Practices**: Secure coding and vulnerability assessment
 
 ## Deliverables
 - Clean, maintainable code
@@ -27,11 +31,14 @@
 - Collaborates with UX Designer on implementation details
 
 ## Success Metrics
-- Code quality scores
-- Test coverage percentage
-- Performance benchmarks
-- Bug resolution time
-- Feature delivery velocity
+- **Code Quality Scores**: Maintain >90% code quality score
+- **Test Coverage**: Achieve >85% test coverage
+- **Performance Benchmarks**: Meet performance targets (response time <100ms)
+- **Bug Resolution Time**: Average <2 hours for critical bugs
+- **Feature Delivery Velocity**: Consistent sprint completion rate
+- **AI Tool Effectiveness**: Measure AI-assisted productivity gains
+- **Security Score**: Zero critical security vulnerabilities
+- **Code Review Efficiency**: <30 minutes average review time
 
 ## AI Tool Usage
 - Cursor: Real-time code completion and refactoring
