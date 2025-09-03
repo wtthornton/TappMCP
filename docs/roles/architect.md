@@ -1,3 +1,0 @@
-# Architect — Role Guide
-
-...

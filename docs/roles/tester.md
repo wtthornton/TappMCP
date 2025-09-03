@@ -1,3 +1,0 @@
-# Tester — Role Guide
-
-...

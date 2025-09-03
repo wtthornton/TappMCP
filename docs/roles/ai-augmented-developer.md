@@ -1,51 +1,140 @@
 # AI-Augmented Developer Role
 
-## Responsibilities
-- Code generation, refactoring, and debugging using AI tools
-- Architecture decisions and system design
-- AI prompt engineering and optimization
-- Code review and quality assurance
-- Testing strategy and implementation
+## 🎯 Purpose
+This role defines the **AI-assisted development standards** for Smart MCP, ensuring code quality, security, and efficiency through AI tool integration and adherence to project guidelines.
 
-## Skills Required
-- Proficiency with AI development tools (Cursor, Claude Code)
-- Strong programming fundamentals (TypeScript, Node.js)
-- System architecture knowledge
-- Code review and quality standards
-- Testing methodologies
+---
+
+## 📋 Responsibilities
+- **Code Generation**: AI-assisted development using Cursor and Claude Code
+- **Architecture Decisions**: System design following schema-locked I/O principles
+- **Quality Assurance**: Code review and testing strategy implementation
+- **Security Implementation**: Secure coding practices and vulnerability prevention
+- **Performance Optimization**: Code and system performance tuning
+- **AI Prompt Engineering**: Advanced prompt optimization techniques
+
+---
+
+## 🛠️ Skills Required
+
+### Core Development
+- **TypeScript/Node.js**: Proficiency with strict typing and modern patterns
+- **AI Development Tools**: Advanced usage of Cursor AI and Claude Code
+- **System Architecture**: MCP Protocol implementation and design patterns
+- **Testing Methodologies**: Vitest, coverage requirements, and test automation
+
+### AI-Specific Skills
 - **AI Prompt Engineering**: Advanced prompt optimization techniques
 - **MCP Protocol Expertise**: Model Context Protocol implementation
 - **Performance Optimization**: Code and system performance tuning
 - **Security Best Practices**: Secure coding and vulnerability assessment
 
-## Deliverables
-- Clean, maintainable code
-- Architecture documentation
-- Code review reports
-- Test coverage reports
-- Performance optimization recommendations
+---
 
-## Collaboration Points
-- Works with Product Strategist on feature requirements
-- Coordinates with AI Operations Engineer on deployment readiness
-- Collaborates with UX Designer on implementation details
+## 📐 Architectural Standards
+Following PROJECT_GUIDELINES.md principles:
 
-## Success Metrics
-- **Code Quality Scores**: Maintain >90% code quality score
-- **Test Coverage**: Achieve >85% test coverage
-- **Performance Benchmarks**: Meet performance targets (response time <100ms)
-- **Bug Resolution Time**: Average <2 hours for critical bugs
-- **Feature Delivery Velocity**: Consistent sprint completion rate
+### Schema-Locked I/O
+- All tool calls use JSON Schemas
+- Unified diffs only, no full-file rewrites
+- Deterministic builds with `npm ci`
+
+### Code Quality Standards
+- **Line Budgets**: ≤400 lines per turn, ≤120 lines per file
+- **TypeScript Strict**: `tsc --strict`, `strictNullChecks`, `exactOptionalPropertyTypes`
+- **Complexity**: ESLint complexity ≤10
+- **Coverage**: ≥85% lines and branches on changed files
+
+### Security Standards
+- **Secrets**: No secrets in repo, pre-commit scanning mandatory
+- **SCA**: OSV-Scanner for vulnerability detection
+- **SAST**: Semgrep OWASP + LLM agent rules
+- **Commit Authenticity**: Signed commits on protected branches
+
+---
+
+## 🧪 Testing Strategy
+- **Pre-commit Tests**: Vitest on changed files with coverage enforcement
+- **Coverage Requirements**: ≥85% on changed files, both line & branch
+- **Static Scans**: ESLint, tsc required before commit
+- **Complexity Checks**: ESLint complexity ≤10, duplication ≤5%
+
+---
+
+## 📊 Success Metrics
+Aligned with PROJECT_GUIDELINES.md scorecard:
+
+### Security (25% weight)
+- **Zero Critical Vulnerabilities**: No new critical/high vulnerabilities
+- **No Secret Leaks**: Pre-commit secrets scanning passes
+- **Security Score**: A-grade security compliance
+
+### Quality (20% weight)
+- **Code Quality**: Focused diffs, tests with changes, readability
+- **Line Budgets**: ≤400 lines per turn, ≤120 lines per file
+- **Complexity**: ESLint complexity ≤10
+
+### Coverage (20% weight)
+- **Test Coverage**: ≥85% on changed files, both line & branch
+- **Coverage Enforcement**: PRs blocked if coverage <85%
+
+### Complexity (15% weight)
+- **Cyclomatic Complexity**: ≤10
+- **Duplication**: ≤5%
+- **Maintainability**: High readability scores
+
+### Reproducibility (10% weight)
+- **Deterministic Builds**: `npm ci` and frozen lockfiles
+- **Parity Runs**: Consistent local and CI results
+
+### Efficiency (10% weight)
+- **Single-turn Success**: Low retry count, fast execution
 - **AI Tool Effectiveness**: Measure AI-assisted productivity gains
-- **Security Score**: Zero critical security vulnerabilities
-- **Code Review Efficiency**: <30 minutes average review time
 
-## AI Tool Usage
-- Cursor: Real-time code completion and refactoring
-- Claude Code: Complex multi-file operations and architecture decisions
-- Focus on: Performance, security, maintainability, and best practices
+**Grade Thresholds**: A ≥90, B ≥80, C ≥70, D ≥60, F <60
 
-## Project Context
-- TypeScript/Node.js MCP server development
-- Model Context Protocol implementation
-- Focus on reliability, extensibility, and developer experience
+---
+
+## 🤝 Collaboration Points
+- **Product Strategist**: Feature requirements and business context
+- **AI Operations Engineer**: Deployment readiness and infrastructure
+- **UX/Product Designer**: Implementation details and user experience
+- **AI Quality Assurance Engineer**: Test strategy and quality validation
+
+---
+
+## 🎯 AI Tool Usage
+
+### Cursor AI
+- **Real-time Code Completion**: TypeScript/Node.js development
+- **Refactoring**: Code improvement and optimization
+- **Debugging**: AI-assisted problem solving
+
+### Claude Code
+- **Multi-file Operations**: Complex architecture decisions
+- **Code Generation**: AI-assisted development patterns
+- **Analysis**: Code quality and security assessment
+
+### Focus Areas
+- **Performance**: Code and system optimization
+- **Security**: Vulnerability prevention and secure coding
+- **Maintainability**: Clean, readable, and well-tested code
+- **Best Practices**: Adherence to PROJECT_GUIDELINES.md standards
+
+---
+
+## 📁 Project Context
+- **Technology Stack**: TypeScript/Node.js MCP server
+- **Protocol**: Model Context Protocol implementation
+- **Focus Areas**: Reliability, extensibility, and developer experience
+- **Standards**: Full compliance with PROJECT_GUIDELINES.md
+
+---
+
+## ✅ Deliverables
+- **Clean, Maintainable Code**: Following strict TypeScript standards
+- **Architecture Documentation**: Schema-locked I/O and design patterns
+- **Code Review Reports**: Quality and security assessments
+- **Test Coverage Reports**: ≥85% coverage on all changes
+- **Performance Optimization**: Benchmarks and recommendations
+- **Security Assessments**: Vulnerability-free code delivery

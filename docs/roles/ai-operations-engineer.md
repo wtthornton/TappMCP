@@ -1,44 +1,147 @@
 # AI Operations Engineer Role
 
-## Responsibilities
-- CI/CD pipeline with AI integration
-- AI tool configuration and monitoring
-- Security and compliance oversight
-- Performance optimization
-- Production support and incident response
+## 🎯 Purpose
+This role defines the **operations and infrastructure standards** for Smart MCP, ensuring secure, reliable, and performant deployment while maintaining full compliance with project guidelines and security standards.
 
-## Skills Required
-- DevOps and infrastructure expertise
-- Security and compliance knowledge
-- AI tool configuration and monitoring
-- Performance optimization
-- Incident response and troubleshooting
+---
 
-## Deliverables
-- CI/CD pipeline configuration
-- Security audit reports
-- Performance monitoring dashboards
-- Deployment documentation
-- Incident response procedures
+## 📋 Responsibilities
+- **CI/CD Pipeline**: AI-integrated deployment automation
+- **Security Operations**: Compliance oversight and vulnerability management
+- **Performance Monitoring**: System optimization and reliability
+- **Infrastructure Management**: Scalable and secure infrastructure
+- **Incident Response**: Production support and recovery procedures
+- **AI Tool Operations**: Configuration and monitoring of AI development tools
 
-## Collaboration Points
-- Works with AI-Augmented Developer on deployment readiness
-- Coordinates with Product Strategist on infrastructure requirements
-- Collaborates with external security and compliance teams
+---
 
-## Success Metrics
-- Deployment success rate
-- System uptime and reliability
-- Security incident frequency
-- Performance benchmarks
-- Mean time to recovery (MTTR)
+## 🛠️ Skills Required
 
-## AI Tool Usage
-- Cursor: Infrastructure as Code and configuration management
-- Claude Code: Security analysis and performance optimization
-- Focus on: Reliability, security, performance, and scalability
+### Core Operations
+- **DevOps Expertise**: CI/CD, infrastructure as code, and automation
+- **Security Operations**: Compliance, vulnerability management, and incident response
+- **Performance Engineering**: Monitoring, optimization, and scalability
+- **Infrastructure Management**: Cloud platforms, containers, and orchestration
 
-## Project Context
-- Node.js MCP server deployment
-- Focus on reliability and security
-- Integration with existing development workflows
+### AI-Specific Skills
+- **AI Tool Configuration**: Cursor AI and Claude Code operational setup
+- **Security Integration**: AI tool security and compliance
+- **Performance Monitoring**: AI-assisted operations and monitoring
+- **Automation**: AI-enhanced operational procedures
+
+---
+
+## 📐 Operational Standards
+Following PROJECT_GUIDELINES.md principles:
+
+### Security-First Operations
+- **Secrets Management**: No secrets in repo, secure secret scanning
+- **Vulnerability Scanning**: OSV-Scanner and pip-audit integration
+- **SAST Integration**: Semgrep OWASP + LLM agent rules
+- **Commit Security**: Signed commits on protected branches
+- **Branch Protection**: PRs required for high-risk operations
+
+### Deterministic Deployments
+- **Frozen Dependencies**: `npm ci` and `uv --frozen` in CI
+- **Schema-Locked I/O**: All operations use JSON Schemas
+- **Reproducible Builds**: Consistent local and production environments
+- **Pre-commit Validation**: All security and quality checks before deployment
+
+### Quality Gates
+- **Coverage Enforcement**: ≥85% test coverage required
+- **Complexity Limits**: ESLint complexity ≤10, duplication ≤5%
+- **Performance Benchmarks**: Meet response time and throughput targets
+- **Security Compliance**: Zero critical vulnerabilities in production
+
+---
+
+## 🧪 Operations Testing Strategy
+- **Infrastructure Testing**: Automated infrastructure validation
+- **Security Testing**: Continuous vulnerability scanning and assessment
+- **Performance Testing**: Load testing and performance validation
+- **Deployment Testing**: Blue-green deployments and rollback procedures
+- **Monitoring Validation**: Comprehensive monitoring and alerting
+
+---
+
+## 📊 Success Metrics
+Aligned with PROJECT_GUIDELINES.md scorecard:
+
+### Security (35% weight)
+- **Zero Critical Vulnerabilities**: No critical/high vulnerabilities in production
+- **Security Compliance**: Full compliance with security standards
+- **Incident Response**: <1 hour mean time to detection (MTTD)
+- **Audit Results**: Clean security audit reports
+
+### Reliability (25% weight)
+- **System Uptime**: ≥99.9% availability
+- **Deployment Success**: ≥99% successful deployments
+- **Mean Time to Recovery**: <30 minutes MTTR
+- **Error Rates**: <0.1% error rate in production
+
+### Performance (20% weight)
+- **Response Times**: <100ms average response time
+- **Throughput**: Meet performance benchmarks
+- **Resource Utilization**: Optimal resource usage
+- **Scalability**: Handle expected load growth
+
+### Quality (10% weight)
+- **Code Quality**: Operations code meets quality standards
+- **Documentation**: Comprehensive operational documentation
+- **Process Compliance**: Adherence to operational procedures
+- **Knowledge Sharing**: Lessons learned and best practices
+
+### Efficiency (10% weight)
+- **Automation**: ≥90% of operations automated
+- **Deployment Speed**: <10 minutes deployment time
+- **Resource Efficiency**: Optimal resource utilization
+- **Cost Management**: Efficient infrastructure costs
+
+**Grade Thresholds**: A ≥90, B ≥80, C ≥70, D ≥60, F <60
+
+---
+
+## 🤝 Collaboration Points
+- **AI-Augmented Developer**: Deployment readiness and code quality
+- **Product Strategist**: Infrastructure requirements and scaling needs
+- **UX/Product Designer**: Performance considerations for user experience
+- **AI Quality Assurance Engineer**: Quality gates and validation procedures
+
+---
+
+## 🎯 AI Tool Usage
+
+### Cursor AI
+- **Infrastructure as Code**: Configuration management and automation
+- **Security Configuration**: Secure setup and monitoring
+- **Documentation**: Operational procedures and runbooks
+
+### Claude Code
+- **Security Analysis**: Vulnerability assessment and remediation
+- **Performance Optimization**: System tuning and optimization
+- **Incident Analysis**: Root cause analysis and prevention
+
+### Focus Areas
+- **Reliability**: High availability and fault tolerance
+- **Security**: Comprehensive security and compliance
+- **Performance**: Optimal system performance and scalability
+- **Automation**: AI-enhanced operational efficiency
+
+---
+
+## 📁 Project Context
+- **Infrastructure**: Node.js MCP server deployment
+- **Security Focus**: Comprehensive security and compliance
+- **Reliability**: High availability and fault tolerance
+- **Integration**: Seamless integration with development workflows
+- **Standards**: Full compliance with PROJECT_GUIDELINES.md
+
+---
+
+## ✅ Deliverables
+- **CI/CD Pipeline**: Automated, secure deployment pipeline
+- **Security Reports**: Comprehensive security audit and compliance reports
+- **Performance Dashboards**: Real-time monitoring and alerting
+- **Deployment Documentation**: Complete operational procedures
+- **Incident Procedures**: Comprehensive incident response and recovery
+- **Infrastructure Code**: Secure, scalable infrastructure as code
