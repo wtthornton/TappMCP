@@ -10,13 +10,9 @@
     "test": "vitest",
     "lint": "eslint src/**/*.ts",
     "setup-roles": "node scripts/setup-roles.js",
-    "windows-setup": "powershell -ExecutionPolicy Bypass -File windows-setup.ps1",
-    "windows-build": "build.bat",
-    "windows-dev": "dev.bat",
-    "windows-test": "test.bat",
-    "windows-lint": "lint.bat",
-    "windows-start": "start.bat",
-    "postinstall": "node scripts/postinstall.js"
+    "docker:build": "docker build -t smart-mcp .",
+    "docker:dev": "docker-compose up -d",
+    "docker:test": "docker-compose exec app npm test"
   },
   "keywords": ["mcp", "ai", "development", "cursor", "claude"],
   "dependencies": {

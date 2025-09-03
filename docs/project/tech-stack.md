@@ -33,17 +33,13 @@
   /knowledge      # project knowledge anchors
   /lessons        # global & project JSONL lessons
   /project        # vision.md, tech-stack.md
-  /setup          # windows-development.md, ai-role-setup.md
+  /setup          # ai-role-setup.md
 /schemas          # JSON Schemas for tool I/O
 .github/workflows # verify.yml, scorecard.yml, scorecard-pr.yml
 policy.json       # budgets, risk globs, enforcement toggles
 mcp.config.json   # wire-up for Cursor/Claude
-windows-setup.ps1 # Windows development environment setup
-build.bat         # Windows batch files for development
-dev.bat           # Windows development commands
-test.bat          # Windows testing commands
-lint.bat          # Windows linting commands
-start.bat         # Windows production commands
+Dockerfile        # Linux runtime container
+docker-compose.yml # Development and production containers
 ```
 
 ## Pre-commit Policy (tools expected locally)
@@ -69,13 +65,13 @@ start.bat         # Windows production commands
 - Node.js LTS, Python 3.12+
 - `pre-commit` installed (`pip install pre-commit`)
 - Language toolchains available on PATH (eslint, prettier, ruff, mypy, tsc, vitest, pytest)
+- **Docker** for Linux runtime environment
+- **Bash** (available on Windows via WSL, Git Bash, or similar)
 
-## Windows Development Support
-- **PowerShell 5.1+** or **PowerShell Core 7+** for Windows development
-- **Windows batch files** (build.bat, dev.bat, test.bat, lint.bat, start.bat) for easy command execution
-- **PowerShell aliases** (tbuild, tdev, ttest, tlint, tstart, trole) for convenient development workflow
-- **Windows-specific setup** (windows-setup.ps1) for automatic environment configuration
-- **VS Code integration** with Windows-optimized settings and launch configurations
+## Development Environment
+- **Development OS**: Windows (with bash available)
+- **Runtime OS**: Linux (Docker container)
+- **Container Strategy**: Development and production containers for consistent Linux runtime
 
 ## Security Footprint
 - Pre-commit scans run on **staged files** for speed.

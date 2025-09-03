@@ -51,40 +51,34 @@ cd TappMCP
 ```
 
 ### 2. Setup AI Role Configuration
-
-#### Windows (Recommended)
-```powershell
-# Automatic Windows setup (installs dependencies and configures environment)
-npm run windows-setup
-
-# Or manual setup
-.\setup-ai-roles.ps1
-```
-
-#### Unix/Linux/Mac
 ```bash
-chmod +x setup-ai-roles.sh
-./setup-ai-roles.sh
+npm run setup-roles
 ```
 
 ### 3. Start Development
 
-#### Windows
-```powershell
-# Start development server
-tdev
-# or
-.\dev.bat
+#### Docker (Recommended - Linux Runtime)
+```bash
+# Build and start development container
+npm run docker:dev
 
-# Switch AI roles
-trole developer
-trole product
-trole operations
-trole designer
-trole qa
+# Or build production container
+npm run docker:build
 ```
 
-#### Cross-Platform
+#### Local Development (Windows with Bash)
+```bash
+# Start development server locally
+npm run dev
+
+# Build the project
+npm run build
+
+# Run tests
+npm run test
+```
+
+#### AI Tool Integration
 Open the project in Cursor AI or start Claude Code with the system prompt:
 ```bash
 claude --system-prompt docs/configuration/claude-system-prompt.md
@@ -129,7 +123,10 @@ TappMCP/
 ## 🛠️ Development
 
 ### Prerequisites
+- **Development Environment**: Windows (with bash available via WSL, Git Bash, or similar)
+- **Runtime Environment**: Linux (Docker container)
 - Node.js (v18 or higher)
+- Docker
 - TypeScript
 - Cursor AI or Claude Code
 
@@ -140,17 +137,27 @@ npm install
 
 ### Building
 ```bash
+# Local build
 npm run build
+
+# Docker build
+npm run docker:build
 ```
 
 ### Running
 ```bash
+# Local development
+npm run dev
+
+# Docker development
+npm run docker:dev
+
+# Production
 npm start
 ```
 
 ## 📚 Documentation
 
-- **[Windows Setup Guide](WINDOWS-SETUP.md)** - Windows-specific setup and commands
 - **[AI Role Setup Guide](docs/setup/ai-role-setup.md)** - Comprehensive setup and usage instructions
 - **[Role Definitions](docs/roles/)** - Detailed role documentation
 - **[Project Vision](docs/project/vision.md)** - Project vision and goals
@@ -177,8 +184,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 📞 Support
 
 For questions or issues:
-1. Check the [AI Role Setup Guide](AI-ROLE-SETUP.md)
-2. Review the [troubleshooting section](AI-ROLE-SETUP.md#-troubleshooting)
+1. Check the [AI Role Setup Guide](docs/setup/ai-role-setup.md)
+2. Review the [troubleshooting section](docs/setup/ai-role-setup.md#-troubleshooting)
 3. Open an issue on GitHub
 
 ---
