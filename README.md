@@ -51,19 +51,43 @@ cd TappMCP
 ```
 
 ### 2. Setup AI Role Configuration
-```bash
-# Windows
-.\setup-ai-roles.ps1
 
-# Unix/Linux/Mac
+#### Windows (Recommended)
+```powershell
+# Automatic Windows setup (installs dependencies and configures environment)
+npm run windows-setup
+
+# Or manual setup
+.\setup-ai-roles.ps1
+```
+
+#### Unix/Linux/Mac
+```bash
 chmod +x setup-ai-roles.sh
 ./setup-ai-roles.sh
 ```
 
 ### 3. Start Development
+
+#### Windows
+```powershell
+# Start development server
+tdev
+# or
+.\dev.bat
+
+# Switch AI roles
+trole developer
+trole product
+trole operations
+trole designer
+trole qa
+```
+
+#### Cross-Platform
 Open the project in Cursor AI or start Claude Code with the system prompt:
 ```bash
-claude --system-prompt claude-system-prompt.md
+claude --system-prompt docs/configuration/claude-system-prompt.md
 ```
 
 ## 🔄 Role Switching Commands
@@ -126,10 +150,11 @@ npm start
 
 ## 📚 Documentation
 
-- **[AI Role Setup Guide](AI-ROLE-SETUP.md)** - Comprehensive setup and usage instructions
+- **[Windows Setup Guide](WINDOWS-SETUP.md)** - Windows-specific setup and commands
+- **[AI Role Setup Guide](docs/setup/ai-role-setup.md)** - Comprehensive setup and usage instructions
 - **[Role Definitions](docs/roles/)** - Detailed role documentation
-- **[Vision](VISION.md)** - Project vision and goals
-- **[Tech Stack](TECHSTACK.md)** - Technology choices and rationale
+- **[Project Vision](docs/project/vision.md)** - Project vision and goals
+- **[Tech Stack](docs/project/tech-stack.md)** - Technology choices and rationale
 
 ## 🤝 Contributing
 

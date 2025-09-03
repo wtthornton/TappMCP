@@ -1,1 +1,3 @@
-# Architect role
+# Architect — Role Guide
+
+...

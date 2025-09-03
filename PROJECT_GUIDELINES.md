@@ -1,0 +1,3 @@
+# Smart MCP — Project Guidelines
+
+...
