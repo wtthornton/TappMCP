@@ -47,7 +47,7 @@ This document provides a comprehensive summary of all Phase 1 planning activitie
 - Timeline and milestone planning
 
 **Key Achievements**:
-- 6-person core team identified with specific roles
+- 5-person core team identified with specific roles
 - Detailed budget breakdown with cost optimization strategies
 - 8-10 week timeline with buffer time included
 - Resource scaling strategy for future phases
