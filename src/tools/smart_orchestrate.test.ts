@@ -6,7 +6,9 @@ describe('smart_orchestrate tool', () => {
   describe('tool definition', () => {
     it('should have correct name and description', () => {
       expect(smartOrchestrateTool.name).toBe('smart_orchestrate');
-      expect(smartOrchestrateTool.description).toContain('Orchestrate complete development workflow');
+      expect(smartOrchestrateTool.description).toContain(
+        'Orchestrate complete development workflow'
+      );
     });
 
     it('should have proper input schema', () => {

@@ -6,7 +6,9 @@ describe('smart_finish tool', () => {
   describe('tool definition', () => {
     it('should have correct name and description', () => {
       expect(smartFinishTool.name).toBe('smart_finish');
-      expect(smartFinishTool.description).toContain('Check quality and validate production readiness');
+      expect(smartFinishTool.description).toContain(
+        'Check quality and validate production readiness'
+      );
     });
 
     it('should have proper input schema', () => {

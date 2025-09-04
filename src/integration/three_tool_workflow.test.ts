@@ -8,145 +8,162 @@ import type {
   SmartFinishResponse,
 } from '../types/tool-responses';
 
+// Helper function to create project input
+function createThreeToolProjectInput(projectName: string) {
+  return {
+    projectName,
+    projectType: 'web-app',
+    businessContext: {
+      industry: 'e-commerce',
+      targetUsers: 'small businesses',
+      keyFeatures: ['payment processing', 'inventory management', 'user dashboard'],
+    },
+    technicalRequirements: {
+      frontend: 'React',
+      backend: 'Node.js',
+      database: 'PostgreSQL',
+    },
+    qualityGates: {
+      testCoverage: 90,
+      securityScore: 95,
+      performanceScore: 85,
+    },
+  };
+}
+
+// Helper function to generate code modules for three-tool workflow
+async function generateThreeToolCodeModules(projectId: string) {
+  const codeResults = [];
+  const codeIds = [];
+
+  // Generate API code
+  const apiCodeInput = {
+    projectId,
+    featureDescription: 'Create a REST API for payment processing',
+    codeType: 'api',
+    targetRole: 'developer',
+    techStack: ['typescript', 'express'],
+    businessContext: {
+      goals: ['payment processing', 'secure transactions'],
+      targetUsers: ['customers', 'merchants'],
+      priority: 'high',
+    },
+    qualityRequirements: {
+      testCoverage: 90,
+      complexity: 3,
+      securityLevel: 'high',
+    },
+  };
+
+  const apiCodeResult = (await handleSmartWrite(apiCodeInput)) as SmartWriteResponse;
+  expect(apiCodeResult.success).toBe(true);
+  expect(apiCodeResult.data?.codeId).toBeDefined();
+  codeResults.push(apiCodeResult);
+  codeIds.push((apiCodeResult.data as { codeId: string }).codeId);
+
+  // Generate component code
+  const componentCodeInput = {
+    projectId,
+    featureDescription: 'Create a React component for user dashboard',
+    codeType: 'component',
+    targetRole: 'developer',
+    techStack: ['typescript', 'react'],
+    businessContext: {
+      goals: ['user dashboard', 'data visualization'],
+      targetUsers: ['end users'],
+      priority: 'high',
+    },
+    qualityRequirements: {
+      testCoverage: 85,
+      complexity: 2,
+      securityLevel: 'medium',
+    },
+  };
+
+  const componentCodeResult = (await handleSmartWrite(componentCodeInput)) as SmartWriteResponse;
+  expect(componentCodeResult.success).toBe(true);
+  expect(componentCodeResult.data?.codeId).toBeDefined();
+  codeResults.push(componentCodeResult);
+  codeIds.push((componentCodeResult.data as { codeId: string }).codeId);
+
+  // Generate test code
+  const testCodeInput = {
+    projectId,
+    featureDescription: 'Create comprehensive unit tests for the payment API',
+    codeType: 'test',
+    targetRole: 'developer',
+    techStack: ['typescript', 'jest'],
+    businessContext: {
+      goals: ['test coverage', 'quality assurance'],
+      targetUsers: ['developers'],
+      priority: 'high',
+    },
+    qualityRequirements: {
+      testCoverage: 95,
+      complexity: 2,
+      securityLevel: 'high',
+    },
+  };
+
+  const testCodeResult = (await handleSmartWrite(testCodeInput)) as SmartWriteResponse;
+  expect(testCodeResult.success).toBe(true);
+  expect(testCodeResult.data?.codeId).toBeDefined();
+  codeResults.push(testCodeResult);
+  codeIds.push((testCodeResult.data as { codeId: string }).codeId);
+
+  return { codeResults, codeIds };
+}
+
+// Helper function to validate three-tool workflow
+async function validateThreeToolWorkflow(projectId: string, codeIds: string[]) {
+  const validationInput = {
+    projectId,
+    codeIds,
+    qualityGates: {
+      testCoverage: 90,
+      securityScore: 95,
+      complexityScore: 85,
+      maintainabilityScore: 88,
+    },
+    businessRequirements: {
+      costPrevention: 25000,
+      timeSaved: 8,
+      userSatisfaction: 95,
+    },
+    productionReadiness: {
+      securityScan: true,
+      performanceTest: true,
+      documentationComplete: true,
+      deploymentReady: true,
+    },
+  };
+
+  const validationResult = (await handleSmartFinish(validationInput)) as SmartFinishResponse;
+  expect(validationResult.success).toBe(true);
+  expect(validationResult.data?.projectId).toBe(projectId);
+  expect(validationResult.data?.codeIds).toEqual(codeIds);
+  expect(validationResult.data?.qualityScorecard).toBeDefined();
+  expect(validationResult.data?.recommendations).toBeDefined();
+  expect(validationResult.data?.nextSteps).toBeDefined();
+
+  return validationResult;
+}
+
 describe('Three Tool Workflow Integration', () => {
   it('should complete full Phase 1A-1B-1C workflow', async () => {
     // Step 1: Initialize project with smart_begin
-    const projectInput = {
-      projectName: 'three-tool-test-project',
-      projectType: 'web-app',
-      businessContext: {
-        industry: 'e-commerce',
-        targetUsers: 'small businesses',
-        keyFeatures: ['payment processing', 'inventory management', 'user dashboard'],
-      },
-      technicalRequirements: {
-        frontend: 'React',
-        backend: 'Node.js',
-        database: 'PostgreSQL',
-      },
-      qualityGates: {
-        testCoverage: 90,
-        securityScore: 95,
-        performanceScore: 85,
-      },
-    };
-
+    const projectInput = createThreeToolProjectInput('three-tool-test-project');
     const projectResult = (await handleSmartBegin(projectInput)) as SmartBeginResponse;
 
     expect(projectResult.success).toBe(true);
     expect(projectResult.data?.projectId).toBeDefined();
-    const { projectId } = projectResult.data!;
+    const { projectId } = projectResult.data as { projectId: string };
 
     // Step 2: Generate multiple code modules with smart_write
-    const codeResults = [];
-    const codeIds = [];
-
-    // Generate API code
-    const apiCodeInput = {
-      projectId,
-      featureDescription: 'Create a REST API for payment processing',
-      codeType: 'api',
-      targetRole: 'developer',
-      techStack: ['typescript', 'express'],
-      businessContext: {
-        goals: ['payment processing', 'secure transactions'],
-        targetUsers: ['customers', 'merchants'],
-        priority: 'high',
-      },
-      qualityRequirements: {
-        testCoverage: 90,
-        complexity: 3,
-        securityLevel: 'high',
-      },
-    };
-
-    const apiCodeResult = (await handleSmartWrite(apiCodeInput)) as SmartWriteResponse;
-    expect(apiCodeResult.success).toBe(true);
-    expect(apiCodeResult.data?.codeId).toBeDefined();
-    codeResults.push(apiCodeResult);
-    codeIds.push(apiCodeResult.data!.codeId);
-
-    // Generate component code
-    const componentCodeInput = {
-      projectId,
-      featureDescription: 'Create a React component for user dashboard',
-      codeType: 'component',
-      targetRole: 'developer',
-      techStack: ['typescript', 'react'],
-      businessContext: {
-        goals: ['user dashboard', 'data visualization'],
-        targetUsers: ['end users'],
-        priority: 'high',
-      },
-      qualityRequirements: {
-        testCoverage: 85,
-        complexity: 2,
-        securityLevel: 'medium',
-      },
-    };
-
-    const componentCodeResult = (await handleSmartWrite(componentCodeInput)) as SmartWriteResponse;
-    expect(componentCodeResult.success).toBe(true);
-    expect(componentCodeResult.data?.codeId).toBeDefined();
-    codeResults.push(componentCodeResult);
-    codeIds.push(componentCodeResult.data!.codeId);
-
-    // Generate test code
-    const testCodeInput = {
-      projectId,
-      featureDescription: 'Create comprehensive unit tests for the payment API',
-      codeType: 'test',
-      targetRole: 'developer',
-      techStack: ['typescript', 'jest'],
-      businessContext: {
-        goals: ['test coverage', 'quality assurance'],
-        targetUsers: ['developers'],
-        priority: 'high',
-      },
-      qualityRequirements: {
-        testCoverage: 95,
-        complexity: 2,
-        securityLevel: 'high',
-      },
-    };
-
-    const testCodeResult = (await handleSmartWrite(testCodeInput)) as SmartWriteResponse;
-    expect(testCodeResult.success).toBe(true);
-    expect(testCodeResult.data?.codeId).toBeDefined();
-    codeResults.push(testCodeResult);
-    codeIds.push(testCodeResult.data!.codeId);
+    const { codeIds } = await generateThreeToolCodeModules(projectId);
 
     // Step 3: Validate project completion with smart_finish
-    const validationInput = {
-      projectId,
-      codeIds,
-      qualityGates: {
-        testCoverage: 90,
-        securityScore: 95,
-        complexityScore: 85,
-        maintainabilityScore: 88,
-      },
-      businessRequirements: {
-        costPrevention: 25000,
-        timeSaved: 8,
-        userSatisfaction: 95,
-      },
-      productionReadiness: {
-        securityScan: true,
-        performanceTest: true,
-        documentationComplete: true,
-        deploymentReady: true,
-      },
-    };
-
-    const validationResult = (await handleSmartFinish(validationInput)) as SmartFinishResponse;
-
-    expect(validationResult.success).toBe(true);
-    expect(validationResult.data?.projectId).toBe(projectId);
-    expect(validationResult.data?.codeIds).toEqual(codeIds);
-    expect(validationResult.data?.qualityScorecard).toBeDefined();
-    expect(validationResult.data?.recommendations).toBeDefined();
-    expect(validationResult.data?.nextSteps).toBeDefined();
+    await validateThreeToolWorkflow(projectId, codeIds);
   });
 
   it('should maintain context across all three tools', async () => {
@@ -161,7 +178,7 @@ describe('Three Tool Workflow Integration', () => {
     };
 
     const projectResult = (await handleSmartBegin(projectInput)) as SmartBeginResponse;
-    const { projectId } = projectResult.data!;
+    const { projectId } = projectResult.data as { projectId: string };
 
     // Generate code
     const codeInput = {
@@ -177,7 +194,7 @@ describe('Three Tool Workflow Integration', () => {
     };
 
     const codeResult = (await handleSmartWrite(codeInput)) as SmartWriteResponse;
-    const { codeId } = codeResult.data!;
+    const { codeId } = codeResult.data as { codeId: string };
 
     // Validate
     const validationInput = {
@@ -210,7 +227,7 @@ describe('Three Tool Workflow Integration', () => {
       };
 
       const projectResult = (await handleSmartBegin(projectInput)) as SmartBeginResponse;
-      const { projectId } = projectResult.data!;
+      const { projectId } = projectResult.data as { projectId: string };
 
       // Generate code
       const codeInput = {
@@ -226,7 +243,7 @@ describe('Three Tool Workflow Integration', () => {
       };
 
       const codeResult = (await handleSmartWrite(codeInput)) as SmartWriteResponse;
-      const { codeId } = codeResult.data!;
+      const { codeId } = codeResult.data as { codeId: string };
 
       // Validate
       const validationInput = {
@@ -259,7 +276,7 @@ describe('Three Tool Workflow Integration', () => {
     };
 
     const projectResult = (await handleSmartBegin(projectInput)) as SmartBeginResponse;
-    const { projectId } = projectResult.data!;
+    const { projectId } = projectResult.data as { projectId: string };
 
     // Generate high-quality code
     const codeInput = {
@@ -281,7 +298,7 @@ describe('Three Tool Workflow Integration', () => {
     };
 
     const codeResult = (await handleSmartWrite(codeInput)) as SmartWriteResponse;
-    const { codeId } = codeResult.data!;
+    const { codeId } = codeResult.data as { codeId: string };
 
     // Validate with high standards
     const validationInput = {
@@ -314,7 +331,7 @@ describe('Three Tool Workflow Integration', () => {
     };
 
     const projectResult = (await handleSmartBegin(projectInput)) as SmartBeginResponse;
-    const { projectId } = projectResult.data!;
+    const { projectId } = projectResult.data as { projectId: string };
 
     // Generate code
     const codeInput = {
@@ -330,7 +347,7 @@ describe('Three Tool Workflow Integration', () => {
     };
 
     const codeResult = (await handleSmartWrite(codeInput)) as SmartWriteResponse;
-    const { codeId } = codeResult.data!;
+    const { codeId } = codeResult.data as { codeId: string };
 
     // Validate
     const validationInput = {

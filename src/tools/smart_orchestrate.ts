@@ -297,9 +297,14 @@ function generateQualityGatesList(
 
   phases.forEach((phase: WorkflowPhase) => {
     // Check for test coverage related quality checks
-    if (phase.qualityChecks.some(check => 
-      check.includes('test-coverage') || check.includes('test-execution') || check.includes('code-quality')
-    )) {
+    if (
+      phase.qualityChecks.some(
+        check =>
+          check.includes('test-coverage') ||
+          check.includes('test-execution') ||
+          check.includes('code-quality')
+      )
+    ) {
       gates.push({
         name: 'Test Coverage',
         description: 'Code test coverage requirement',
@@ -311,9 +316,14 @@ function generateQualityGatesList(
     }
 
     // Check for security related quality checks
-    if (phase.qualityChecks.some(check => 
-      check.includes('security-scan') || check.includes('security-test') || check.includes('security')
-    )) {
+    if (
+      phase.qualityChecks.some(
+        check =>
+          check.includes('security-scan') ||
+          check.includes('security-test') ||
+          check.includes('security')
+      )
+    ) {
       gates.push({
         name: 'Security Score',
         description: 'Security vulnerability assessment',
@@ -325,9 +335,14 @@ function generateQualityGatesList(
     }
 
     // Check for performance related quality checks
-    if (phase.qualityChecks.some(check => 
-      check.includes('performance-test') || check.includes('performance-metrics') || check.includes('performance')
-    )) {
+    if (
+      phase.qualityChecks.some(
+        check =>
+          check.includes('performance-test') ||
+          check.includes('performance-metrics') ||
+          check.includes('performance')
+      )
+    ) {
       gates.push({
         name: 'Performance Score',
         description: 'System performance validation',

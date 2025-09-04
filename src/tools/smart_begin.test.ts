@@ -127,7 +127,9 @@ describe('smart_begin tool', () => {
       expect(
         founderResult.data?.nextSteps.some(
           // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-          step => step.includes('business-focused documentation') || step.includes('technical foundation created')
+          step =>
+            step.includes('business-focused documentation') ||
+            step.includes('technical foundation created')
         )
       ).toBe(true);
     });

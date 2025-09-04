@@ -33,7 +33,6 @@
     "docs/",
   ]
 
-[gitleaks.rules]
   # Custom rules for MCP project
   [[gitleaks.rules]]
     id = "mcp-api-key"

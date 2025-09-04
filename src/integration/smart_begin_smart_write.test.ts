@@ -36,7 +36,7 @@ describe('Smart Begin + Smart Write Integration', () => {
 
     // Step 2: Generate code with smart_write using project context
     const writeInput = {
-      projectId: beginResult.data?.projectId || 'proj_test_123',
+      projectId: beginResult.data?.projectId ?? 'proj_test_123',
       featureDescription: 'Create a payment processing module for the e-commerce platform',
       codeType: 'api',
       targetRole: 'developer',
@@ -92,7 +92,7 @@ describe('Smart Begin + Smart Write Integration', () => {
 
     // Generate code that should align with project context
     const writeInput = {
-      projectId: beginResult.data?.projectId || 'proj_test_456',
+      projectId: beginResult.data?.projectId ?? 'proj_test_456',
       featureDescription: 'Create a secure authentication service for the fintech API',
       codeType: 'api',
       targetRole: 'developer',
@@ -139,10 +139,10 @@ describe('Smart Begin + Smart Write Integration', () => {
 
       // Generate code
       const writeInput = {
-        projectId: beginResult.data?.projectId || `proj_test_${testRole}`,
+        projectId: beginResult.data?.projectId ?? `proj_test_${testRole}`,
         featureDescription: 'Create a user management system',
         codeType: 'api',
-        targetRole: targetRole,
+        targetRole,
         businessContext: {
           goals: ['user management', 'authentication'],
           targetUsers: ['end users'],
@@ -176,7 +176,7 @@ describe('Smart Begin + Smart Write Integration', () => {
 
     // Generate code that should meet the quality standards
     const writeInput = {
-      projectId: beginResult.data?.projectId || 'proj_test_quality',
+      projectId: beginResult.data?.projectId ?? 'proj_test_quality',
       featureDescription: 'Create a high-quality data validation module',
       codeType: 'api',
       targetRole: 'developer',
@@ -216,7 +216,7 @@ describe('Smart Begin + Smart Write Integration', () => {
 
     // Generate code
     const writeInput = {
-      projectId: beginResult.data?.projectId || 'proj_test_next_steps',
+      projectId: beginResult.data?.projectId ?? 'proj_test_next_steps',
       featureDescription: 'Create a basic CRUD API',
       codeType: 'api',
       targetRole: 'developer',

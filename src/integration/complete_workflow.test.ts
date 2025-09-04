@@ -12,226 +12,254 @@ import type {
   SmartOrchestrateResponse,
 } from '../types/tool-responses';
 
+// Helper function to create project input
+function createProjectInput(projectName: string) {
+  return {
+    projectName,
+    projectType: 'web-app',
+    businessContext: {
+      industry: 'e-commerce',
+      targetUsers: 'small businesses',
+      keyFeatures: ['payment processing', 'inventory management', 'user dashboard'],
+    },
+    technicalRequirements: {
+      frontend: 'React',
+      backend: 'Node.js',
+      database: 'PostgreSQL',
+    },
+    qualityGates: {
+      testCoverage: 90,
+      securityScore: 95,
+      performanceScore: 85,
+    },
+  };
+}
+
+// Helper function to create plan input
+function createPlanInput(projectId: string) {
+  return {
+    projectId,
+    planType: 'development',
+    projectScope: {
+      phases: ['planning', 'development', 'testing', 'deployment'],
+      duration: 6,
+      complexity: 'high',
+    },
+    resources: {
+      team: [
+        { role: 'developer', count: 3, skills: ['typescript', 'react'] },
+        { role: 'designer', count: 1, skills: ['ui/ux', 'figma'] },
+      ],
+      budget: 200000,
+      tools: ['vscode', 'git', 'docker'],
+    },
+    qualityGates: {
+      testCoverage: 90,
+      securityScore: 95,
+      performanceScore: 85,
+    },
+    businessRequirements: {
+      roiTarget: 300,
+      timeToMarket: 6,
+      riskTolerance: 'medium',
+    },
+  };
+}
+
+// Helper function to generate code modules
+async function generateCodeModules(projectId: string) {
+  const codeResults = [];
+  const codeIds = [];
+
+  // Generate authentication code
+  const authCodeInput = {
+    projectId,
+    featureDescription: 'Create a secure authentication system with JWT tokens',
+    codeType: 'api',
+    targetRole: 'developer',
+    techStack: ['typescript', 'express'],
+    businessContext: {
+      goals: ['authentication', 'security'],
+      targetUsers: ['customers', 'merchants'],
+      priority: 'high',
+    },
+    qualityRequirements: {
+      testCoverage: 95,
+      complexity: 3,
+      securityLevel: 'high',
+    },
+  };
+
+  const authCodeResult = (await handleSmartWrite(authCodeInput)) as SmartWriteResponse;
+  expect(authCodeResult.success).toBe(true);
+  expect(authCodeResult.data?.codeId).toBeDefined();
+  codeResults.push(authCodeResult);
+  codeIds.push((authCodeResult.data as { codeId: string }).codeId);
+
+  // Generate dashboard code
+  const dashboardCodeInput = {
+    projectId,
+    featureDescription: 'Create a React dashboard component for inventory management',
+    codeType: 'component',
+    targetRole: 'developer',
+    techStack: ['typescript', 'react'],
+    businessContext: {
+      goals: ['inventory management', 'dashboard'],
+      targetUsers: ['merchants', 'admins'],
+      priority: 'high',
+    },
+    qualityRequirements: {
+      testCoverage: 85,
+      complexity: 2,
+      securityLevel: 'medium',
+    },
+  };
+
+  const dashboardCodeResult = (await handleSmartWrite(dashboardCodeInput)) as SmartWriteResponse;
+  expect(dashboardCodeResult.success).toBe(true);
+  expect(dashboardCodeResult.data?.codeId).toBeDefined();
+  codeResults.push(dashboardCodeResult);
+  codeIds.push((dashboardCodeResult.data as { codeId: string }).codeId);
+
+  // Generate test code
+  const testCodeInput = {
+    projectId,
+    featureDescription: 'Create comprehensive unit tests for the authentication system',
+    codeType: 'test',
+    targetRole: 'developer',
+    techStack: ['typescript', 'jest'],
+    businessContext: {
+      goals: ['test coverage', 'quality assurance'],
+      targetUsers: ['developers'],
+      priority: 'high',
+    },
+    qualityRequirements: {
+      testCoverage: 95,
+      complexity: 2,
+      securityLevel: 'high',
+    },
+  };
+
+  const testCodeResult = (await handleSmartWrite(testCodeInput)) as SmartWriteResponse;
+  expect(testCodeResult.success).toBe(true);
+  expect(testCodeResult.data?.codeId).toBeDefined();
+  codeResults.push(testCodeResult);
+  codeIds.push((testCodeResult.data as { codeId: string }).codeId);
+
+  return { codeResults, codeIds };
+}
+
+// Helper function to validate project completion
+async function validateProject(projectId: string, codeIds: string[]) {
+  const validationInput = {
+    projectId,
+    codeIds,
+    qualityGates: {
+      testCoverage: 90,
+      securityScore: 95,
+      complexityScore: 85,
+      maintainabilityScore: 88,
+    },
+    businessRequirements: {
+      costPrevention: 25000,
+      timeSaved: 8,
+      userSatisfaction: 95,
+    },
+    productionReadiness: {
+      securityScan: true,
+      performanceTest: true,
+      documentationComplete: true,
+      deploymentReady: true,
+    },
+  };
+
+  const validationResult = (await handleSmartFinish(validationInput)) as SmartFinishResponse;
+  expect(validationResult.success).toBe(true);
+  expect(validationResult.data?.qualityScorecard).toBeDefined();
+  expect(validationResult.data?.recommendations).toBeDefined();
+  expect(validationResult.data?.nextSteps).toBeDefined();
+
+  return validationResult;
+}
+
+// Helper function to orchestrate workflow
+async function orchestrateWorkflow(projectId: string) {
+  const orchestrationInput = {
+    projectId,
+    workflowType: 'full-development',
+    orchestrationScope: {
+      includePlanning: true,
+      includeDevelopment: true,
+      includeTesting: true,
+      includeDeployment: true,
+      includeMonitoring: true,
+    },
+    externalIntegrations: [
+      { name: 'GitHub', type: 'tool', priority: 'high' },
+      { name: 'Docker', type: 'tool', priority: 'medium' },
+      { name: 'AWS', type: 'service', priority: 'high' },
+    ],
+    qualityGates: {
+      testCoverage: 90,
+      securityScore: 95,
+      performanceScore: 85,
+    },
+    businessRequirements: {
+      roiTarget: 300,
+      costPrevention: 25000,
+      timeSaved: 8,
+      userSatisfaction: 95,
+    },
+  };
+
+  const orchestrationResult = (await handleSmartOrchestrate(
+    orchestrationInput
+  )) as SmartOrchestrateResponse;
+
+  if (!orchestrationResult.success) {
+    console.log('Orchestration error:', orchestrationResult.error);
+  }
+  expect(orchestrationResult.success).toBe(true);
+  expect(orchestrationResult.data?.orchestration).toBeDefined();
+  expect(orchestrationResult.data?.orchestration.workflow).toBeDefined();
+  expect(orchestrationResult.data?.orchestration.automation).toBeDefined();
+  expect(orchestrationResult.data?.orchestration.businessValue).toBeDefined();
+
+  return orchestrationResult;
+}
+
 describe('Complete 5-Tool Workflow Integration', () => {
   it('should complete full end-to-end workflow', async () => {
     // Step 1: Initialize project with smart_begin
-    const projectInput = {
-      projectName: 'complete-workflow-test',
-      projectType: 'web-app',
-      businessContext: {
-        industry: 'e-commerce',
-        targetUsers: 'small businesses',
-        keyFeatures: ['payment processing', 'inventory management', 'user dashboard'],
-      },
-      technicalRequirements: {
-        frontend: 'React',
-        backend: 'Node.js',
-        database: 'PostgreSQL',
-      },
-      qualityGates: {
-        testCoverage: 90,
-        securityScore: 95,
-        performanceScore: 85,
-      },
-    };
-
+    const projectInput = createProjectInput('complete-workflow-test');
     const projectResult = (await handleSmartBegin(projectInput)) as SmartBeginResponse;
 
     expect(projectResult.success).toBe(true);
     expect(projectResult.data?.projectId).toBeDefined();
-    const { projectId } = projectResult.data!;
+    const { projectId } = projectResult.data as { projectId: string };
 
     // Step 2: Create project plan with smart_plan
-    const planInput = {
-      projectId,
-      planType: 'development',
-      projectScope: {
-        phases: ['planning', 'development', 'testing', 'deployment'],
-        duration: 6,
-        complexity: 'high',
-      },
-      resources: {
-        team: [
-          { role: 'developer', count: 3, skills: ['typescript', 'react'] },
-          { role: 'designer', count: 1, skills: ['ui/ux', 'figma'] },
-        ],
-        budget: 200000,
-        tools: ['vscode', 'git', 'docker'],
-      },
-      qualityGates: {
-        testCoverage: 90,
-        securityScore: 95,
-        performanceScore: 85,
-      },
-      businessRequirements: {
-        roiTarget: 300,
-        timeToMarket: 6,
-        riskTolerance: 'medium',
-      },
-    };
-
+    const planInput = createPlanInput(projectId);
     const planResult = (await handleSmartPlan(planInput)) as SmartPlanResponse;
 
     expect(planResult.success).toBe(true);
     expect(planResult.data?.projectPlan).toBeDefined();
 
     // Step 3: Generate multiple code modules with smart_write
-    const codeResults = [];
-    const codeIds = [];
-
-    // Generate authentication code
-    const authCodeInput = {
-      projectId,
-      featureDescription: 'Create a secure authentication system with JWT tokens',
-      codeType: 'api',
-      targetRole: 'developer',
-      techStack: ['typescript', 'express'],
-      businessContext: {
-        goals: ['authentication', 'security'],
-        targetUsers: ['customers', 'merchants'],
-        priority: 'high',
-      },
-      qualityRequirements: {
-        testCoverage: 95,
-        complexity: 3,
-        securityLevel: 'high',
-      },
-    };
-
-    const authCodeResult = (await handleSmartWrite(authCodeInput)) as SmartWriteResponse;
-    expect(authCodeResult.success).toBe(true);
-    expect(authCodeResult.data?.codeId).toBeDefined();
-    codeResults.push(authCodeResult);
-    codeIds.push(authCodeResult.data!.codeId);
-
-    // Generate dashboard code
-    const dashboardCodeInput = {
-      projectId,
-      featureDescription: 'Create a React dashboard component for inventory management',
-      codeType: 'component',
-      targetRole: 'developer',
-      techStack: ['typescript', 'react'],
-      businessContext: {
-        goals: ['inventory management', 'dashboard'],
-        targetUsers: ['merchants', 'admins'],
-        priority: 'high',
-      },
-      qualityRequirements: {
-        testCoverage: 85,
-        complexity: 2,
-        securityLevel: 'medium',
-      },
-    };
-
-    const dashboardCodeResult = (await handleSmartWrite(dashboardCodeInput)) as SmartWriteResponse;
-    expect(dashboardCodeResult.success).toBe(true);
-    expect(dashboardCodeResult.data?.codeId).toBeDefined();
-    codeResults.push(dashboardCodeResult);
-    codeIds.push(dashboardCodeResult.data!.codeId);
-
-    // Generate test code
-    const testCodeInput = {
-      projectId,
-      featureDescription: 'Create comprehensive unit tests for the authentication system',
-      codeType: 'test',
-      targetRole: 'developer',
-      techStack: ['typescript', 'jest'],
-      businessContext: {
-        goals: ['test coverage', 'quality assurance'],
-        targetUsers: ['developers'],
-        priority: 'high',
-      },
-      qualityRequirements: {
-        testCoverage: 95,
-        complexity: 2,
-        securityLevel: 'high',
-      },
-    };
-
-    const testCodeResult = (await handleSmartWrite(testCodeInput)) as SmartWriteResponse;
-    expect(testCodeResult.success).toBe(true);
-    expect(testCodeResult.data?.codeId).toBeDefined();
-    codeResults.push(testCodeResult);
-    codeIds.push(testCodeResult.data!.codeId);
+    const { codeResults, codeIds } = await generateCodeModules(projectId);
 
     // Step 4: Validate project completion with smart_finish
-    const validationInput = {
-      projectId,
-      codeIds,
-      qualityGates: {
-        testCoverage: 90,
-        securityScore: 95,
-        complexityScore: 85,
-        maintainabilityScore: 88,
-      },
-      businessRequirements: {
-        costPrevention: 25000,
-        timeSaved: 8,
-        userSatisfaction: 95,
-      },
-      productionReadiness: {
-        securityScan: true,
-        performanceTest: true,
-        documentationComplete: true,
-        deploymentReady: true,
-      },
-    };
-
-    const validationResult = (await handleSmartFinish(validationInput)) as SmartFinishResponse;
-
-    expect(validationResult.success).toBe(true);
-    expect(validationResult.data?.qualityScorecard).toBeDefined();
-    expect(validationResult.data?.recommendations).toBeDefined();
-    expect(validationResult.data?.nextSteps).toBeDefined();
+    const validationResult = await validateProject(projectId, codeIds);
 
     // Step 5: Orchestrate complete workflow with smart_orchestrate
-    const orchestrationInput = {
-      projectId,
-      workflowType: 'full-development',
-      orchestrationScope: {
-        includePlanning: true,
-        includeDevelopment: true,
-        includeTesting: true,
-        includeDeployment: true,
-        includeMonitoring: true,
-      },
-      externalIntegrations: [
-        { name: 'GitHub', type: 'tool', priority: 'high' },
-        { name: 'Docker', type: 'tool', priority: 'medium' },
-        { name: 'AWS', type: 'service', priority: 'high' },
-      ],
-      qualityGates: {
-        testCoverage: 90,
-        securityScore: 95,
-        performanceScore: 85,
-      },
-      businessRequirements: {
-        roiTarget: 300,
-        costPrevention: 25000,
-        timeSaved: 8,
-        userSatisfaction: 95,
-      },
-    };
-
-    const orchestrationResult = (await handleSmartOrchestrate(
-      orchestrationInput
-    )) as SmartOrchestrateResponse;
-
-    if (!orchestrationResult.success) {
-      console.log('Orchestration error:', orchestrationResult.error);
-    }
-    expect(orchestrationResult.success).toBe(true);
-    expect(orchestrationResult.data?.orchestration).toBeDefined();
-    expect(orchestrationResult.data?.orchestration.workflow).toBeDefined();
-    expect(orchestrationResult.data?.orchestration.automation).toBeDefined();
-    expect(orchestrationResult.data?.orchestration.businessValue).toBeDefined();
+    const orchestrationResult = await orchestrateWorkflow(projectId);
 
     // Verify data consistency across all tools
     expect(projectResult.data?.projectId).toBe(projectId);
     expect(planResult.data?.projectId).toBe(projectId);
-    expect(authCodeResult.data?.generatedCode).toBeDefined();
-    expect(dashboardCodeResult.data?.generatedCode).toBeDefined();
-    expect(testCodeResult.data?.generatedCode).toBeDefined();
+    expect(codeResults[0].data?.generatedCode).toBeDefined();
+    expect(codeResults[1].data?.generatedCode).toBeDefined();
+    expect(codeResults[2].data?.generatedCode).toBeDefined();
     expect(validationResult.data?.projectId).toBe(projectId);
     expect(validationResult.data?.codeIds).toEqual(codeIds);
     expect(orchestrationResult.data?.projectId).toBe(projectId);
@@ -249,7 +277,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
     };
 
     const projectResult = (await handleSmartBegin(projectInput)) as SmartBeginResponse;
-    const { projectId } = projectResult.data!;
+    const { projectId } = projectResult.data as { projectId: string };
 
     // Create plan
     const planInput = {
@@ -273,7 +301,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
     };
 
     const codeResult = (await handleSmartWrite(codeInput)) as SmartWriteResponse;
-    const { codeId } = codeResult.data!;
+    const { codeId } = codeResult.data as { codeId: string };
 
     // Validate
     const validationInput = {
@@ -325,7 +353,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
       { testType: 'optimization', validType: 'feature-development' },
     ];
 
-    for (const { testType, validType } of workflowTypeMappings) {
+    for (const { validType } of workflowTypeMappings) {
       const workflowType = validType;
       // Initialize project
       const projectInput = {
@@ -334,7 +362,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
       };
 
       const projectResult = (await handleSmartBegin(projectInput)) as SmartBeginResponse;
-      const { projectId } = projectResult.data!;
+      const { projectId } = projectResult.data as { projectId: string };
 
       // Create plan
       const planInput = {
@@ -358,7 +386,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
       };
 
       const codeResult = (await handleSmartWrite(codeInput)) as SmartWriteResponse;
-      const { codeId } = codeResult.data!;
+      const { codeId } = codeResult.data as { codeId: string };
 
       // Validate
       const validationInput = {
@@ -394,7 +422,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
     };
 
     const projectResult = (await handleSmartBegin(projectInput)) as SmartBeginResponse;
-    const { projectId } = projectResult.data!;
+    const { projectId } = projectResult.data as { projectId: string };
 
     // Generate multiple code modules
     const codeResults = [];
@@ -415,7 +443,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
 
       const codeResult = (await handleSmartWrite(codeInput)) as SmartWriteResponse;
       codeResults.push(codeResult);
-      codeIds.push(codeResult.data!.codeId);
+      codeIds.push((codeResult.data as { codeId: string }).codeId);
     }
 
     // Validate with comprehensive quality gates

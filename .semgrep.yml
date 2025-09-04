@@ -7,14 +7,13 @@ rules:
   - p/express
   - p/security
 
-# Custom rules for MCP project
-rules:
+  # Custom rules for MCP project
   - id: mcp-secrets
     pattern: |
       $KEY = $VALUE
     where:
       - pattern-regex: (?i)(api[_-]?key|token|secret|password|credential)
-      - pattern-regex: ['\"][a-zA-Z0-9]{20,}['\"]
+      - pattern-regex: "['\"][a-zA-Z0-9]{20,}['\"]"
     message: Potential secret detected in MCP project
     languages: [typescript, javascript]
     severity: ERROR
