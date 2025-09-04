@@ -39,7 +39,7 @@ Use natural language commands to switch between roles in both Cursor AI and Clau
 # Developer role triggers
 "you are now a developer" or "switch to developer"
 
-# Product role triggers  
+# Product role triggers
 "you are now a product strategist" or "switch to product"
 
 # Operations role triggers

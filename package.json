@@ -8,24 +8,68 @@
     "start": "node dist/server.js",
     "dev": "ts-node src/server.ts",
     "test": "vitest",
-    "lint": "eslint src/**/*.ts",
-
+    "test:coverage": "vitest run --coverage",
+    "test:changed": "vitest run --coverage --reporter=verbose",
+    "lint": "eslint src/**/*.ts --fix",
+    "lint:check": "eslint src/**/*.ts",
+    "format": "prettier --write \"src/**/*.{ts,js,json,md}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,js,json,md}\"",
+    "type-check": "tsc --noEmit",
+    "pre-commit": "lint-staged",
+    "pre-commit:install": "pre-commit install",
+    "pre-commit:update": "pre-commit autoupdate",
+    "pre-commit:run": "pre-commit run --all-files",
+    "qa:check": "node scripts/qa-check.js",
+    "qa:eslint": "npm run lint:check",
+    "qa:typescript": "npm run type-check",
+    "qa:format": "npm run format:check",
+    "qa:tests": "npm run test:coverage",
+    "qa:all": "npm run qa:eslint && npm run qa:typescript && npm run qa:format && npm run qa:tests",
+    "early-check": "node scripts/early-quality-check.js",
+    "security:scan": "gitleaks detect --source . --verbose",
+    "security:osv": "osv-scanner -r .",
+    "security:semgrep": "semgrep --config=auto --config=p/owasp-top-ten .",
     "docker:build": "docker build -t smart-mcp .",
     "docker:dev": "docker-compose up -d",
     "docker:test": "docker-compose exec app npm test"
   },
-  "keywords": ["mcp", "ai", "development", "cursor", "claude"],
+  "keywords": [
+    "mcp",
+    "ai",
+    "development",
+    "cursor",
+    "claude"
+  ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^0.4.0",
     "zod": "^3.22.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "typescript": "^5.0.0",
-    "vitest": "^1.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.42.0",
+    "@typescript-eslint/parser": "^8.42.0",
+    "@vitest/coverage-v8": "^1.0.0",
     "eslint": "^8.0.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "lint-staged": "^16.1.6",
+    "pre-commit": "^1.2.2",
+    "prettier": "^3.6.2",
     "ts-node": "^10.9.0",
-    "@vitest/coverage-v8": "^1.0.0"
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  },
+  "lint-staged": {
+    "*.{ts,js}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yaml,yml}": [
+      "prettier --write"
+    ],
+    "*.ts": [
+      "tsc --noEmit"
+    ]
   },
   "private": true
 }

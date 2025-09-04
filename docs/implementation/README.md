@@ -92,7 +92,7 @@ Each phase's `tasks/` folder should contain:
 ## 🔗 Integration Points
 
 - **Phase 1A → 1B**: Week 3 integration
-- **Phase 1B → 1C**: Week 6 integration  
+- **Phase 1B → 1C**: Week 6 integration
 - **Phase 1C → 2A**: Week 9 integration
 - **Phase 2A → 2B**: Week 12 integration
 

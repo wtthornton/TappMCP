@@ -1,0 +1,46 @@
+# Semgrep configuration for SAST scanning
+rules:
+  - p/owasp-top-ten
+  - p/security-audit
+  - p/typescript
+  - p/nodejs
+  - p/express
+  - p/security
+
+# Custom rules for MCP project
+rules:
+  - id: mcp-secrets
+    pattern: |
+      $KEY = $VALUE
+    where:
+      - pattern-regex: (?i)(api[_-]?key|token|secret|password|credential)
+      - pattern-regex: ['\"][a-zA-Z0-9]{20,}['\"]
+    message: Potential secret detected in MCP project
+    languages: [typescript, javascript]
+    severity: ERROR
+
+  - id: mcp-unsafe-eval
+    pattern: eval($EXPR)
+    message: Unsafe eval() usage detected
+    languages: [typescript, javascript]
+    severity: WARNING
+
+  - id: mcp-unsafe-import
+    pattern: import($EXPR)
+    message: Dynamic import without validation
+    languages: [typescript, javascript]
+    severity: WARNING
+
+  - id: mcp-sql-injection
+    pattern: |
+      $QUERY = $... + $USER_INPUT
+    message: Potential SQL injection vulnerability
+    languages: [typescript, javascript]
+    severity: ERROR
+
+  - id: mcp-xss
+    pattern: |
+      $ELEMENT.innerHTML = $USER_INPUT
+    message: Potential XSS vulnerability
+    languages: [typescript, javascript]
+    severity: ERROR

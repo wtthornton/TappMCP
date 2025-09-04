@@ -46,7 +46,7 @@ Smart MCP is specifically designed for **strategy people, vibe coders, and non-t
 6. **Living docs.** `.md` rule packs and lessons autoupdate; global vs project scoping.
 
 ## Scope & non‑goals
-**In scope:** single‑repo automation (TS+Python), pre‑commit enforcement, GitHub Actions CI, basic Docker parity, **strategy people, vibe coders, and non-technical founder workflows**.  
+**In scope:** single‑repo automation (TS+Python), pre‑commit enforcement, GitHub Actions CI, basic Docker parity, **strategy people, vibe coders, and non-technical founder workflows**.
 **Out of scope:** multi‑repo orchestration, enterprise features, team collaboration tools, CodeQL platform scans, PII redaction systems, mutation testing, **enterprise compliance and governance**, experienced software engineer workflows.
 
 ## Success metrics
@@ -65,9 +65,9 @@ Smart MCP is specifically designed for **strategy people, vibe coders, and non-t
 - **Lessons learned:** small/safe lessons auto‑approved; larger ones require human review.
 
 ## Delivery roadmap
-**Phase 1:** Core MCP tools, pre‑commit policy, minimal CI, scorecard bot, role-based guidance for non-technical users.  
-**Phase 2:** Smart orchestration, knowledge pack mixers, lesson auto‑triage, diff‑based coverage gates.  
-**Phase 3:** Context broker (Context7) with version‑aware snippets; parity container jobs; ML-powered intelligence.  
+**Phase 1:** Core MCP tools, pre‑commit policy, minimal CI, scorecard bot, role-based guidance for non-technical users.
+**Phase 2:** Smart orchestration, knowledge pack mixers, lesson auto‑triage, diff‑based coverage gates.
+**Phase 3:** Context broker (Context7) with version‑aware snippets; parity container jobs; ML-powered intelligence.
 **Future enhancements:** Additional integrations and features based on strategy people, vibe coders, and non-technical founder needs and community feedback.
 
 ## Risks & mitigations

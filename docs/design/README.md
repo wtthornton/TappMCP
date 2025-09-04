@@ -1,8 +1,8 @@
 # Design Documentation - TappMCP Project
 
-**Directory**: `docs/design/`  
-**Purpose**: UX/UI design specifications and guidelines  
-**Target Audience**: Development Team, Designers, Product Managers  
+**Directory**: `docs/design/`
+**Purpose**: UX/UI design specifications and guidelines
+**Target Audience**: Development Team, Designers, Product Managers
 
 ## 📁 **Directory Structure**
 
@@ -144,7 +144,7 @@ docs/design/
 
 ---
 
-**Document Owner**: UX/Product Designer  
-**Last Updated**: December 2024  
-**Next Review**: January 2025  
+**Document Owner**: UX/Product Designer
+**Last Updated**: December 2024
+**Next Review**: January 2025
 **Status**: Active Design Documentation

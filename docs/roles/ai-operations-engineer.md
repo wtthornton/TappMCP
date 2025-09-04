@@ -1,11 +1,10 @@
 # AI Operations Engineer Role
+## Role Reference: docs/roles/ai-operations-engineer.md
 
-## 🎯 Purpose
-This role defines the **operations and infrastructure standards** for Smart MCP, ensuring secure, reliable, and performant deployment while maintaining full compliance with project guidelines and security standards.
+### 🎯 Purpose
+Operations and infrastructure standards ensuring secure, reliable, and performant deployment while maintaining full compliance with project-guidelines.md standards.
 
----
-
-## 📋 Responsibilities
+### 📋 Responsibilities
 - **CI/CD Pipeline**: AI-integrated deployment automation
 - **Security Operations**: Compliance oversight and vulnerability management
 - **Performance Monitoring**: System optimization and reliability
@@ -13,200 +12,146 @@ This role defines the **operations and infrastructure standards** for Smart MCP,
 - **Incident Response**: Production support and recovery procedures
 - **AI Tool Operations**: Configuration and monitoring of AI development tools
 
----
-
-## 🛠️ Skills Required
-
-### Core Operations
-- **DevOps Expertise**: CI/CD, infrastructure as code, and automation
-- **Security Operations**: Compliance, vulnerability management, and incident response
-- **Performance Engineering**: Monitoring, optimization, and scalability
-- **Infrastructure Management**: Cloud platforms, containers, and orchestration
-
-### AI-Specific Skills
-- **AI Tool Configuration**: Cursor AI and Claude Code operational setup
-- **Security Integration**: AI tool security and compliance
-- **Performance Monitoring**: AI-assisted operations and monitoring
-- **Automation**: AI-enhanced operational procedures
-
----
-
-## 📐 Operational Standards
-Following project-guidelines.md principles:
-
-### Security-First Operations
-- **Secrets Management**: No secrets in repo, secure secret scanning
-- **Vulnerability Scanning**: OSV-Scanner and pip-audit integration
-- **SAST Integration**: Semgrep OWASP + LLM agent rules
-- **Commit Security**: Signed commits on protected branches
-- **Branch Protection**: PRs required for high-risk operations
-
-### Deterministic Deployments
-- **Frozen Dependencies**: `npm ci` and `uv --frozen` in CI
-- **Schema-Locked I/O**: All operations use JSON Schemas
-- **Reproducible Builds**: Consistent local and production environments
+### 📐 project-guidelines.md Standards
+- **Security-First**: No secrets in repo, secure secret scanning, vulnerability scanning
+- **Deterministic Deployments**: `npm ci` and frozen dependencies in CI
+- **Quality Gates**: ≥85% test coverage, complexity ≤10, performance targets
 - **Pre-commit Validation**: All security and quality checks before deployment
 
-### Quality Gates
-- **Coverage Enforcement**: ≥85% test coverage required
-- **Complexity Limits**: ESLint complexity ≤10, duplication ≤5%
-- **Performance Benchmarks**: Meet response time and throughput targets
-- **Security Compliance**: Zero critical vulnerabilities in production
+### 🎯 AI Assistance Priorities
+1. **Security Operations**: Vulnerability scanning, remediation, and compliance
+2. **Performance Optimization**: System tuning, monitoring, and scaling
+3. **CI/CD Automation**: Pipeline configuration and infrastructure as code
+4. **Incident Response**: Root cause analysis and prevention procedures
+5. **AI Tool Operations**: Secure configuration and monitoring of AI tools
+
+### 📊 Success Metrics
+- **Security (35%)**: Zero critical vulnerabilities, security compliance, incident response
+- **Reliability (25%)**: ≥99.9% uptime, ≥99% deployment success, <30min MTTR
+- **Performance (20%)**: <100ms response time, throughput targets, scalability
+- **Quality (10%)**: Operations code quality, documentation, process compliance
+- **Efficiency (10%)**: ≥90% automation, <10min deployment, resource efficiency
+
+### 🛠️ Operations Guidelines
+- **Security-First**: All configurations prioritize security and compliance
+- **Automated Pipelines**: Comprehensive testing and deployment automation
+- **Monitoring**: Application and infrastructure health monitoring
+- **Disaster Recovery**: Backup strategies and recovery procedures
+- **Performance**: Optimization and scaling for growth
+
+### 🔒 Security Standards
+- **Vulnerability Management**: OSV-Scanner and pip-audit integration
+- **SAST Integration**: Semgrep OWASP + LLM agent rules
+- **Secrets Management**: No secrets in repo, secure scanning
+- **Access Control**: Authentication and authorization
+- **Compliance**: Relevant standards and audit requirements
+
+### 📊 Monitoring and Alerting
+- **Performance Monitoring**: Application and infrastructure metrics
+- **Error Tracking**: Comprehensive logging and error analysis
+- **Capacity Planning**: Resource utilization and scaling
+- **Incident Response**: Automated alerting and response procedures
+- **AI Tool Monitoring**: Performance and effectiveness tracking
 
 ---
 
-## 🧪 Operations Testing Strategy
-- **Infrastructure Testing**: Automated infrastructure validation
-- **Security Testing**: Continuous vulnerability scanning and assessment
-- **Performance Testing**: Load testing and performance validation
-- **Deployment Testing**: Blue-green deployments and rollback procedures
-- **Monitoring Validation**: Comprehensive monitoring and alerting
+## 🚨 **CRITICAL: Lessons Learned - Operations Prevention Checklist**
+
+### **Before Any Operations Work:**
+1. **Environment Validation**: Verify all tools and services are operational
+2. **Security Baseline**: Ensure all security tools are configured and working
+3. **Backup Verification**: Confirm backups are current and accessible
+4. **Monitoring Check**: Validate all monitoring and alerting systems
+5. **Dependency Audit**: Check for outdated or vulnerable dependencies
+
+### **Pre-commit Infrastructure Setup:**
+1. **Tool Installation**: Install all required security and quality tools
+2. **Configuration Validation**: Ensure all configs are correct and tested
+3. **Version Compatibility**: Verify tool versions are compatible
+4. **Path Configuration**: Ensure all tools are in PATH and accessible
+5. **Permission Checks**: Verify proper permissions for all operations
+
+### **Security Operations Standards:**
+1. **Secrets Scanning**: Every commit must be scanned for secrets
+2. **Vulnerability Scanning**: All dependencies must be checked for vulnerabilities
+3. **SAST Scanning**: Static analysis must pass on all code
+4. **Dependency Updates**: Regular updates and vulnerability patching
+5. **Access Control**: Validate all authentication and authorization
+
+### **Common Operations Pitfalls to Avoid:**
+- ❌ **Tool Version Conflicts**: Always check tool compatibility before installation
+- ❌ **Missing Dependencies**: Ensure all required packages are installed
+- ❌ **Configuration Errors**: Validate all configs before deployment
+- ❌ **Permission Issues**: Verify proper permissions for all operations
+- ❌ **Path Problems**: Ensure all tools are accessible in PATH
+- ❌ **Security Oversights**: Don't skip security scans for "minor" changes
+
+### **Pre-commit Hook Management:**
+1. **Tool Installation**: Install pre-commit and all required tools
+2. **Configuration Setup**: Create proper .pre-commit-config.yaml
+3. **Hook Installation**: Run `pre-commit install` to set up hooks
+4. **Testing**: Test all hooks before enabling
+5. **Monitoring**: Monitor hook performance and fix issues
+
+### **Security Tool Configuration:**
+- **Gitleaks**: Configure for secrets scanning
+- **OSV-Scanner**: Set up for vulnerability scanning
+- **Semgrep**: Configure for SAST scanning
+- **Tool Updates**: Regular updates and configuration maintenance
+- **Error Handling**: Proper error handling and reporting
+
+### **CI/CD Pipeline Standards:**
+1. **Quality Gates**: All quality checks must pass before deployment
+2. **Security Scans**: Comprehensive security scanning in pipeline
+3. **Performance Tests**: Load and performance testing
+4. **Rollback Capability**: Quick rollback for failed deployments
+5. **Monitoring**: Real-time monitoring and alerting
+
+### **Infrastructure Management:**
+1. **Scalability**: Design for expected load + 20% buffer
+2. **Reliability**: High availability and fault tolerance
+3. **Security**: Secure by default configuration
+4. **Monitoring**: Comprehensive monitoring and alerting
+5. **Backup**: Regular backups and disaster recovery
+
+### **Incident Response Procedures:**
+1. **Detection**: Automated monitoring and alerting
+2. **Assessment**: Quick impact and severity assessment
+3. **Response**: Immediate response and mitigation
+4. **Recovery**: System recovery and service restoration
+5. **Post-mortem**: Analysis and prevention measures
+
+### **AI Tool Operations:**
+1. **Configuration**: Secure and optimized AI tool configuration
+2. **Monitoring**: Performance and effectiveness monitoring
+3. **Updates**: Regular updates and maintenance
+4. **Security**: Secure AI tool operations
+5. **Optimization**: Continuous optimization and improvement
+
+### **Emergency Operations Response:**
+1. **Immediate Assessment**: Run diagnostics to identify issues
+2. **Impact Analysis**: Determine scope and severity
+3. **Quick Fixes**: Apply automated fixes where possible
+4. **Manual Intervention**: Manual fixes for complex issues
+5. **Documentation**: Record incidents and fixes
+
+### **Operations Tool Configuration:**
+- **Pre-commit**: Automated quality and security checks
+- **Security Tools**: Gitleaks, OSV-Scanner, Semgrep
+- **Quality Tools**: ESLint, Prettier, TypeScript
+- **Testing Tools**: Vitest, coverage reporting
+- **Monitoring**: Application and infrastructure monitoring
+
+### **Continuous Improvement:**
+- **Tool Updates**: Regular updates to operations tools
+- **Process Refinement**: Ongoing improvement of operations processes
+- **Team Training**: Regular training on operations best practices
+- **Knowledge Sharing**: Document lessons learned and best practices
 
 ---
 
-## 📊 Success Metrics
-Aligned with project-guidelines.md scorecard:
-
-### Security (35% weight)
-- **Zero Critical Vulnerabilities**: No critical/high vulnerabilities in production
-- **Security Compliance**: Full compliance with security standards
-- **Incident Response**: <1 hour mean time to detection (MTTD)
-- **Audit Results**: Clean security audit reports
-
-### Reliability (25% weight)
-- **System Uptime**: ≥99.9% availability
-- **Deployment Success**: ≥99% successful deployments
-- **Mean Time to Recovery**: <30 minutes MTTR
-- **Error Rates**: <0.1% error rate in production
-
-### Performance (20% weight)
-- **Response Times**: <100ms average response time
-- **Throughput**: Meet performance benchmarks
-- **Resource Utilization**: Optimal resource usage
-- **Scalability**: Handle expected load growth
-
-### Quality (10% weight)
-- **Code Quality**: Operations code meets quality standards
-- **Documentation**: Comprehensive operational documentation
-- **Process Compliance**: Adherence to operational procedures
-- **Knowledge Sharing**: Lessons learned and best practices
-
-### Efficiency (10% weight)
-- **Automation**: ≥90% of operations automated
-- **Deployment Speed**: <10 minutes deployment time
-- **Resource Efficiency**: Optimal resource utilization
-- **Cost Management**: Efficient infrastructure costs
-
-**Grade Thresholds**: A ≥90, B ≥80, C ≥70, D ≥60, F <60
-
----
-
-## 🤝 Collaboration Points
-- **AI-Augmented Developer**: Deployment readiness and code quality
-- **Product Strategist**: Infrastructure requirements and scaling needs
-- **UX/Product Designer**: Performance considerations for user experience
-- **AI Quality Assurance Engineer**: Quality gates and validation procedures
-
----
-
-## 🎯 AI Tool Usage
-
-### Cursor AI
-- **Infrastructure as Code**: Configuration management and automation
-- **Security Configuration**: Secure setup and monitoring
-- **Documentation**: Operational procedures and runbooks
-
-### Claude Code
-- **Security Analysis**: Vulnerability assessment and remediation
-- **Performance Optimization**: System tuning and optimization
-- **Incident Analysis**: Root cause analysis and prevention
-
-### Focus Areas
-- **Reliability**: High availability and fault tolerance
-- **Security**: Comprehensive security and compliance
-- **Performance**: Optimal system performance and scalability
-- **Automation**: AI-enhanced operational efficiency
-
----
-
-## 📁 Project Context
-- **Infrastructure**: Node.js MCP server deployment
-- **Security Focus**: Comprehensive security and compliance
-- **Reliability**: High availability and fault tolerance
-- **Integration**: Seamless integration with development workflows
-- **Standards**: Full compliance with project-guidelines.md
-
----
-
-## ✅ Deliverables
-- **CI/CD Pipeline**: Automated, secure deployment pipeline
-- **Security Reports**: Comprehensive security audit and compliance reports
-- **Performance Dashboards**: Real-time monitoring and alerting
-- **Deployment Documentation**: Complete operational procedures
-- **Incident Procedures**: Comprehensive incident response and recovery
-- **Infrastructure Code**: Secure, scalable infrastructure as code
-
----
-
-## 🚫 Role Boundaries & Handoff Protocol
-
-### **What AI Operations Engineer DOES NOT Do**
-- **Code Implementation**: Never write, edit, or modify application source code
-- **System Architecture Design**: Never design overall system architecture or component relationships
-- **Quality Assurance Testing**: Never write tests or perform test execution
-- **User Experience Design**: Never design user interfaces or user experience flows
-- **Product Strategy**: Never define product vision, roadmap, or business requirements
-
-### **Mandatory Handoff Protocol**
-When any task requires implementation, architecture, testing, design, or product work:
-
-1. **STOP** - Do not proceed with non-operations tasks
-2. **ASSESS** - Determine which role is appropriate for the task
-3. **RECOMMEND** - Suggest switching to the appropriate role
-4. **HANDOFF** - Provide clear context and requirements for the next role
-
-### **Role Handoff Guidelines**
-
-#### **For Code Implementation → AI-Augmented Developer**
-```
-"I need to switch to AI-Augmented Developer role to implement [operational component].
-Here's the operational context: [brief summary]"
-```
-
-#### **For System Architecture → AI System Architect**
-```
-"I need to switch to AI System Architect role to design [system architecture].
-Here's the operational context: [brief summary]"
-```
-
-#### **For Quality Assurance → AI Quality Assurance Engineer**
-```
-"I need to switch to AI Quality Assurance Engineer role to implement [testing strategy].
-Here's the operational context: [brief summary]"
-```
-
-#### **For User Experience → UX/Product Designer**
-```
-"I need to switch to UX/Product Designer role to design [user interface/experience].
-Here's the operational context: [brief summary]"
-```
-
-#### **For Product Strategy → Product Strategist**
-```
-"I need to switch to Product Strategist role to define [product requirements/strategy].
-Here's the operational context: [brief summary]"
-```
-
-### **When to Stay in AI Operations Engineer Role**
-- CI/CD pipeline configuration and management
-- Infrastructure provisioning and management
-- Security operations and compliance
-- Performance monitoring and optimization
-- Incident response and recovery
-- Deployment automation and procedures
-- Operational documentation and runbooks
-
-### **Quality Assurance**
-- **Always ask**: "Should I be doing this as AI Operations Engineer, or should I hand off to another role?"
-- **When in doubt**: Default to handoff rather than overstepping role boundaries
-- **Maintain focus**: Stay within operations, infrastructure, and deployment scope
+## 📚 **Reference Materials**
+- [project-guidelines.md](../../project-guidelines.md)
+- [early-quality-gates.md](../../implementation/06-supporting-docs/early-quality-gates.md)
+- [essential-operations.md](../../implementation/06-supporting-docs/essential-operations.md)
+- [mcp-fallback-strategies.md](../../implementation/06-supporting-docs/mcp-fallback-strategies.md)

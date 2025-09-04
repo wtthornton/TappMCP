@@ -33,7 +33,7 @@
                 "id": { "type": "string" },
                 "title": { "type": "string" },
                 "description": { "type": "string" },
-                "role": { 
+                "role": {
                   "type": "string",
                   "enum": ["developer", "product", "operations", "designer", "qa"]
                 },

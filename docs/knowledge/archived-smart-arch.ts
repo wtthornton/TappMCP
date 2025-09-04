@@ -65,19 +65,19 @@ export async function handleSmartArch(input: any): Promise<any> {
     switch (action) {
       case "create_adr":
         return await createArchitectureDecisionRecord(context, constraints, requirements);
-      
+
       case "design_system":
         return await designSystemArchitecture(system_name, context, constraints, requirements);
-      
+
       case "design_api":
         return await designAPI(system_name, context, constraints, requirements);
-      
+
       case "review_architecture":
         return await reviewArchitecture(system_name, context, constraints);
-      
+
       case "analyze_technology":
         return await analyzeTechnologyStack(context, constraints, requirements);
-      
+
       default:
         throw new Error(`Unknown architecture action: ${action}`);
     }
@@ -91,8 +91,8 @@ export async function handleSmartArch(input: any): Promise<any> {
 }
 
 async function createArchitectureDecisionRecord(
-  context: string, 
-  constraints: string[], 
+  context: string,
+  constraints: string[],
   requirements: string[]
 ): Promise<any> {
   const adr = {

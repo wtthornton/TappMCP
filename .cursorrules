@@ -10,7 +10,7 @@ This configuration ensures all AI assistance follows project-guidelines.md stand
 ## 🚀 Role Switching Commands
 Use these natural language commands to switch between roles:
 - "you are now a developer" or "switch to developer" → AI-Augmented Developer role
-- "you are now a product strategist" or "switch to product" → Product Strategist role  
+- "you are now a product strategist" or "switch to product" → Product Strategist role
 - "you are now an operations engineer" or "switch to operations" → AI Operations Engineer role
 - "you are now a designer" or "switch to designer" → UX/Product Designer role
 - "you are now a qa engineer" or "switch to qa" → AI Quality Assurance Engineer role

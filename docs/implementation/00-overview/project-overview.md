@@ -12,7 +12,7 @@
 
 **5 Tools**:
 1. **smart_begin** - Start new project with quality gates
-2. **smart_write** - Generate code with role-based expertise  
+2. **smart_write** - Generate code with role-based expertise
 3. **smart_finish** - Check quality and validate production readiness
 4. **smart_plan** - Plan features with business analysis
 5. **smart_orchestrate** - Run complete workflows

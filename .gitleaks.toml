@@ -1,0 +1,50 @@
+[gitleaks]
+  # Gitleaks configuration for secrets scanning
+  version = "8.18.0"
+  verbose = true
+  redact = false
+  exit-code = 1
+  no-git = false
+  log-level = "info"
+
+[gitleaks.allowlist]
+  # Allowlist patterns for false positives
+  description = "Global allowlist for common false positives"
+  regexes = [
+    # Common test patterns
+    "test.*password.*=.*['\"]test['\"]",
+    "example.*key.*=.*['\"]example['\"]",
+    "dummy.*token.*=.*['\"]dummy['\"]",
+    # Common development patterns
+    "localhost",
+    "127\\.0\\.0\\.1",
+    "0\\.0\\.0\\.0",
+    # Common file patterns
+    "package\\.json",
+    "yarn\\.lock",
+    "package-lock\\.json",
+  ]
+  paths = [
+    "node_modules/",
+    "dist/",
+    "coverage/",
+    "*.test.ts",
+    "*.spec.ts",
+    "docs/",
+  ]
+
+[gitleaks.rules]
+  # Custom rules for MCP project
+  [[gitleaks.rules]]
+    id = "mcp-api-key"
+    description = "MCP API Key"
+    regex = '''(?i)(mcp[_-]?api[_-]?key|mcp[_-]?token|mcp[_-]?secret)['\"]?\s*[:=]\s*['\"]?[a-zA-Z0-9]{20,}'''
+    tags = ["mcp", "api", "key"]
+    severity = "high"
+
+  [[gitleaks.rules]]
+    id = "cursor-api-key"
+    description = "Cursor API Key"
+    regex = '''(?i)(cursor[_-]?api[_-]?key|cursor[_-]?token|cursor[_-]?secret)['\"]?\s*[:=]\s*['\"]?[a-zA-Z0-9]{20,}'''
+    tags = ["cursor", "api", "key"]
+    severity = "high"

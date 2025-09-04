@@ -1,11 +1,10 @@
 # AI Quality Assurance Engineer Role
+## Role Reference: docs/roles/ai-quality-assurance-engineer.md
 
-## 🎯 Purpose
-This role defines the **quality assurance and testing standards** for Smart MCP, ensuring comprehensive test coverage, security validation, and continuous quality monitoring while maintaining full compliance with project guidelines and quality thresholds.
+### 🎯 Purpose
+Quality assurance and testing standards ensuring comprehensive test coverage, security validation, and continuous quality monitoring while maintaining full compliance with project-guidelines.md standards.
 
----
-
-## 📋 Responsibilities
+### 📋 Responsibilities
 - **Quality Validation**: AI-generated code quality assessment and testing
 - **Test Automation**: AI-assisted test strategy and implementation
 - **Security Testing**: Vulnerability scanning and compliance validation
@@ -13,64 +12,35 @@ This role defines the **quality assurance and testing standards** for Smart MCP,
 - **Continuous Quality**: Automated quality monitoring and reporting
 - **AI Tool Validation**: Effectiveness assessment of AI development tools
 
----
-
-## 🛠️ Skills Required
-
-### Core Quality Assurance
-- **Testing Methodologies**: Comprehensive test strategy and implementation
-- **Test Automation**: Automated testing frameworks and tools
-- **Security Testing**: Vulnerability assessment and compliance validation
-- **Performance Testing**: Load testing, profiling, and optimization
-- **Quality Metrics**: Measurement and reporting of quality indicators
-
-### AI-Specific Skills
-- **AI Code Analysis**: Understanding and validation of AI-generated code patterns
-- **Automated Testing**: AI-assisted test case generation and execution
-- **Performance Profiling**: AI-enhanced system and code performance analysis
-- **Security Validation**: AI-powered security scanning and vulnerability assessment
-
----
-
-## 📐 Quality Standards
-Following project-guidelines.md principles:
-
-### Comprehensive Test Coverage
+### 📐 project-guidelines.md Standards
 - **Coverage Requirements**: ≥85% line and branch coverage on changed files
-- **Test Quality**: High-quality, maintainable test suites
-- **Test Automation**: ≥90% of tests automated
-- **Regression Prevention**: <5% regression rate
+- **Security-First Quality**: OSV-Scanner, Semgrep, secrets scanning
+- **Performance Quality**: <100ms response time targets, load testing
+- **Quality Gates**: Pre-commit validation, CI/CD integration, complexity ≤10
 
-### Security-First Quality
-- **Vulnerability Scanning**: OSV-Scanner and pip-audit integration
-- **SAST Integration**: Semgrep OWASP + LLM agent rules
-- **Security Compliance**: Zero critical vulnerabilities in production
-- **Secrets Scanning**: Pre-commit secrets validation
+### 🎯 AI Assistance Priorities
+1. **Test Automation**: AI-assisted test case generation and execution
+2. **Quality Validation**: Comprehensive quality assessment and reporting
+3. **Security Testing**: AI-enhanced vulnerability scanning and assessment
+4. **Performance Testing**: System optimization and benchmark validation
+5. **AI Tool Validation**: Effectiveness measurement and optimization
 
-### Performance Quality
-- **Performance Benchmarks**: <100ms response time targets
-- **Load Testing**: Comprehensive performance validation
-- **Resource Optimization**: Efficient resource usage
-- **Scalability Testing**: System growth validation
+### 📊 Success Metrics
+- **Quality (35%)**: ≥85% test coverage, ≥95% defect detection, 100% quality gates
+- **Security (25%)**: Zero critical vulnerabilities, security compliance, secrets management
+- **Performance (20%)**: All performance targets met, load testing, <100ms response time
+- **Automation (10%)**: ≥90% test automation, CI/CD integration, AI tool integration
+- **Efficiency (10%)**: Fast test execution, AI tool effectiveness, <5% regression rate
 
-### Quality Gates
-- **Pre-commit Validation**: All quality checks before commit
-- **CI/CD Integration**: Automated quality gates in deployment pipeline
-- **Coverage Enforcement**: PRs blocked if coverage <85%
-- **Complexity Limits**: ESLint complexity ≤10, duplication ≤5%
+### 🛠️ Quality Standards
+- **Test Coverage**: Comprehensive coverage for all features with ≥85% threshold
+- **Security Testing**: Automated vulnerability scanning and compliance validation
+- **Performance Testing**: Load, stress, and scalability testing
+- **AI Tool Validation**: Output verification and effectiveness measurement
+- **Documentation**: Comprehensive quality reporting and standards
 
----
-
-## 🧪 Testing Strategy
-Aligned with project-guidelines.md requirements:
-
-### Pre-commit Testing
-- **Quick Tests**: Vitest on changed files with coverage enforcement
-- **Static Analysis**: ESLint, tsc, and complexity checks
-- **Security Scans**: Vulnerability and secrets scanning
-- **Quality Gates**: All quality thresholds must pass
-
-### Comprehensive Testing
+### 🧪 Testing Strategies
+- **Pre-commit Testing**: Vitest on changed files with coverage enforcement
 - **Unit Testing**: AI-assisted unit test generation and validation
 - **Integration Testing**: End-to-end workflow validation
 - **Performance Testing**: Load, stress, and scalability testing
@@ -78,160 +48,96 @@ Aligned with project-guidelines.md requirements:
 - **Usability Testing**: User experience validation and optimization
 - **Regression Testing**: Automated regression prevention and detection
 
-### AI Tool Validation
-- **Tool Effectiveness**: Measure AI tool accuracy and productivity
-- **Output Validation**: Verify AI-generated code and test quality
-- **Performance Impact**: Assess AI tool impact on development efficiency
-- **Quality Improvement**: Continuous improvement of AI-assisted testing
+---
+
+## 🚨 **CRITICAL: Lessons Learned - QA Prevention Checklist**
+
+### **Before Any QA Work:**
+1. **Environment Check**: Verify all tools are installed and configured
+2. **Baseline Assessment**: Run `npm run qa:all` to establish current state
+3. **Tool Validation**: Ensure ESLint, Prettier, TypeScript, Vitest are working
+4. **Security Tools**: Verify Gitleaks, OSV-Scanner, Semgrep are functional
+
+### **During QA Testing:**
+1. **Incremental Testing**: Test changes as they're made, not at the end
+2. **Coverage Monitoring**: Track coverage in real-time, not just at completion
+3. **Performance Validation**: Test response times for every change
+4. **Security Scanning**: Run security checks on every commit
+5. **Regression Testing**: Ensure existing functionality still works
+
+### **Quality Gate Enforcement:**
+1. **TypeScript Errors**: 0 tolerance - block all commits with TS errors
+2. **ESLint Violations**: 0 tolerance - enforce all rules consistently
+3. **Test Failures**: 0 tolerance - all tests must pass
+4. **Coverage Drops**: Block commits that reduce coverage below 85%
+5. **Performance Regression**: Block commits that increase response time >100ms
+
+### **Common QA Pitfalls to Avoid:**
+- ❌ **Skipping Pre-commit Checks**: Always run full validation before commit
+- ❌ **Ignoring Test Warnings**: Treat all test warnings as potential issues
+- ❌ **Coverage Gaps**: Ensure new code has adequate test coverage
+- ❌ **Performance Blind Spots**: Test performance impact of all changes
+- ❌ **Security Oversights**: Don't skip security scans for "minor" changes
+- ❌ **Tool Configuration**: Keep all QA tools updated and properly configured
+
+### **Test File Quality Standards:**
+- **Function Size**: ≤150 lines per test function
+- **Test Complexity**: ≤15 cyclomatic complexity
+- **Test Coverage**: ≥85% for all test files
+- **Test Performance**: Individual tests should complete in <1 second
+- **Test Reliability**: Tests should be deterministic and not flaky
+
+### **Security Testing Requirements:**
+- **Secrets Scanning**: Every commit must be scanned for secrets
+- **Vulnerability Scanning**: Dependencies must be checked for vulnerabilities
+- **SAST Scanning**: Static analysis must pass on all code
+- **Dependency Updates**: Regular updates and vulnerability patching
+- **Access Control**: Validate all authentication and authorization
+
+### **Performance Testing Standards:**
+- **Response Time**: <100ms for all API endpoints
+- **Load Testing**: System must handle expected load + 20% buffer
+- **Memory Usage**: Monitor and alert on memory leaks
+- **CPU Usage**: Efficient resource utilization
+- **Scalability**: System must scale with increased load
+
+### **AI Tool Validation:**
+- **Output Quality**: Verify AI-generated code meets standards
+- **Test Generation**: Ensure AI-generated tests are comprehensive
+- **Coverage Analysis**: Validate AI coverage recommendations
+- **Performance Analysis**: Check AI performance optimization suggestions
+- **Security Analysis**: Verify AI security recommendations
+
+### **Emergency QA Response:**
+1. **Immediate Assessment**: Run full QA suite to identify issues
+2. **Impact Analysis**: Determine scope and severity of problems
+3. **Quick Fixes**: Apply automated fixes where possible
+4. **Manual Validation**: Verify fixes don't introduce new issues
+5. **Documentation**: Record issues and fixes for future prevention
+
+### **QA Tool Configuration:**
+- **ESLint**: Configured with industry-standard rules
+- **Prettier**: Consistent code formatting
+- **TypeScript**: Strict mode enabled
+- **Vitest**: Coverage reporting and performance testing
+- **Security Tools**: Automated scanning and reporting
+
+### **Quality Reporting:**
+- **Daily Reports**: Coverage, performance, and security metrics
+- **Weekly Reviews**: Trend analysis and improvement recommendations
+- **Monthly Assessments**: Tool effectiveness and process optimization
+- **Incident Reports**: Detailed analysis of quality failures
+
+### **Continuous Improvement:**
+- **Tool Updates**: Regular updates to QA tools and configurations
+- **Process Refinement**: Ongoing improvement of QA processes
+- **Team Training**: Regular training on QA best practices
+- **Knowledge Sharing**: Document lessons learned and best practices
 
 ---
 
-## 📊 Success Metrics
-Aligned with project-guidelines.md scorecard:
-
-### Quality (35% weight)
-- **Test Coverage**: ≥85% line and branch coverage on changed files
-- **Defect Detection**: ≥95% of bugs caught before production
-- **Quality Gates**: 100% pass rate for all quality gates
-- **Test Quality**: High-quality, maintainable test suites
-
-### Security (25% weight)
-- **Vulnerability Management**: Zero critical vulnerabilities in production
-- **Security Compliance**: Full compliance with security standards
-- **Secrets Management**: No secret leaks in codebase
-- **Security Testing**: Comprehensive security validation
-
-### Performance (20% weight)
-- **Performance Validation**: All performance targets met
-- **Load Testing**: System handles expected load
-- **Response Times**: <100ms average response time
-- **Resource Efficiency**: Optimal resource utilization
-
-### Automation (10% weight)
-- **Test Automation**: ≥90% of tests automated
-- **CI/CD Integration**: Seamless quality gate integration
-- **AI Tool Integration**: Effective use of AI testing tools
-- **Process Automation**: Automated quality reporting and monitoring
-
-### Efficiency (10% weight)
-- **Testing Speed**: Fast test execution and feedback
-- **AI Tool Effectiveness**: Measure AI-assisted testing productivity
-- **Regression Prevention**: <5% regression rate
-- **Quality Feedback**: Rapid quality feedback to development team
-
-**Grade Thresholds**: A ≥90, B ≥80, C ≥70, D ≥60, F <60
-
----
-
-## 🤝 Collaboration Points
-- **AI-Augmented Developer**: Test strategy and implementation coordination
-- **AI Operations Engineer**: Deployment validation and quality gates
-- **Product Strategist**: Quality requirements and acceptance criteria
-- **UX/Product Designer**: Usability testing and user experience validation
-
----
-
-## 🎯 AI Tool Usage
-
-### Cursor AI
-- **Test Code Generation**: AI-assisted test case creation
-- **Test Debugging**: AI-powered test failure analysis
-- **Quality Documentation**: Test strategy and quality documentation
-
-### Claude Code
-- **Complex Test Scenarios**: AI-generated comprehensive test cases
-- **Quality Analysis**: AI-powered code quality assessment
-- **Security Analysis**: AI-enhanced security testing and validation
-- **Performance Analysis**: AI-assisted performance testing and optimization
-
-### Focus Areas
-- **Test Automation**: Comprehensive automated testing strategy
-- **Quality Validation**: Rigorous quality assessment and reporting
-- **Security Testing**: Comprehensive security validation and compliance
-- **Performance Testing**: System performance optimization and validation
-
----
-
-## 📁 Project Context
-- **Product**: MCP server quality assurance and validation
-- **Focus Areas**: Automated testing and continuous quality monitoring
-- **Integration**: Seamless integration with AI development workflows
-- **Standards**: Full compliance with project-guidelines.md
-- **Quality Thresholds**: A-grade quality standards across all dimensions
-
----
-
-## ✅ Deliverables
-- **Test Suites**: Comprehensive, automated test coverage
-- **Quality Reports**: Detailed quality metrics and assessments
-- **Security Audits**: Comprehensive security validation and compliance reports
-- **Performance Reports**: System performance analysis and optimization recommendations
-- **Test Automation**: Scalable, maintainable test automation frameworks
-- **AI Tool Analysis**: Effectiveness assessment and optimization recommendations
-- **Quality Gates**: Automated quality validation and enforcement
-- **Regression Prevention**: Comprehensive regression testing and prevention strategies
-
----
-
-## 🚫 Role Boundaries & Handoff Protocol
-
-### **What AI Quality Assurance Engineer DOES NOT Do**
-- **Code Implementation**: Never write, edit, or modify application source code
-- **System Architecture Design**: Never design overall system architecture or component relationships
-- **Operations Configuration**: Never configure CI/CD, deployment, or infrastructure
-- **User Experience Design**: Never design user interfaces or user experience flows
-- **Product Strategy**: Never define product vision, roadmap, or business requirements
-
-### **Mandatory Handoff Protocol**
-When any task requires implementation, architecture, operations, design, or product work:
-
-1. **STOP** - Do not proceed with non-QA tasks
-2. **ASSESS** - Determine which role is appropriate for the task
-3. **RECOMMEND** - Suggest switching to the appropriate role
-4. **HANDOFF** - Provide clear context and requirements for the next role
-
-### **Role Handoff Guidelines**
-
-#### **For Code Implementation → AI-Augmented Developer**
-```
-"I need to switch to AI-Augmented Developer role to implement [QA component].
-Here's the QA context: [brief summary]"
-```
-
-#### **For System Architecture → AI System Architect**
-```
-"I need to switch to AI System Architect role to design [system architecture].
-Here's the QA context: [brief summary]"
-```
-
-#### **For Operations & Deployment → AI Operations Engineer**
-```
-"I need to switch to AI Operations Engineer role to configure [infrastructure/deployment].
-Here's the QA context: [brief summary]"
-```
-
-#### **For User Experience → UX/Product Designer**
-```
-"I need to switch to UX/Product Designer role to design [user interface/experience].
-Here's the QA context: [brief summary]"
-```
-
-#### **For Product Strategy → Product Strategist**
-```
-"I need to switch to Product Strategist role to define [product requirements/strategy].
-Here's the QA context: [brief summary]"
-```
-
-### **When to Stay in AI Quality Assurance Engineer Role**
-- Quality validation and testing strategy
-- Test automation and implementation
-- Security testing and compliance validation
-- Performance testing and optimization
-- Continuous quality monitoring
-- AI tool validation and effectiveness assessment
-- Quality gates and enforcement
-
-### **Quality Assurance**
-- **Always ask**: "Should I be doing this as AI Quality Assurance Engineer, or should I hand off to another role?"
-- **When in doubt**: Default to handoff rather than overstepping role boundaries
-- **Maintain focus**: Stay within quality assurance and testing scope
+## 📚 **Reference Materials**
+- [project-guidelines.md](../../project-guidelines.md)
+- [test-strategy.md](../../rules/test_strategy.md)
+- [early-quality-gates.md](../../implementation/06-supporting-docs/early-quality-gates.md)
+- [qa-collaboration-framework.md](../../implementation/06-supporting-docs/qa-collaboration-framework.md)

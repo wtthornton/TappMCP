@@ -56,19 +56,19 @@ describe('MCP Tool Handler', () => {
     it('should process valid request successfully', () => {
       // Arrange
       const request = createValidRequest();
-      
+
       // Act
       const result = processRequest(request);
-      
+
       // Assert
       expect(result).toBeDefined();
       expect(result.status).toBe('success');
     });
-    
+
     it('should reject invalid request', () => {
       // Arrange
       const request = createInvalidRequest();
-      
+
       // Act & Assert
       expect(() => processRequest(request)).toThrow();
     });

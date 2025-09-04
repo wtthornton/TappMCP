@@ -1,197 +1,122 @@
 # AI-Augmented Developer Role
+## Role Reference: docs/roles/ai-augmented-developer.md
 
-## 🎯 Purpose
-This role defines the **AI-assisted development standards** for Smart MCP, ensuring code quality, security, and efficiency through AI tool integration and adherence to project guidelines.
+### 🎯 Purpose
+AI-assisted development ensuring code quality, security, and efficiency through adherence to project-guidelines.md standards.
 
----
-
-## 📋 Responsibilities
+### 📋 Responsibilities
 - **Code Generation**: AI-assisted development using Cursor and Claude Code
-- **Code Implementation**: Writing, refactoring, and debugging code
+- **Architecture Decisions**: System design following schema-locked I/O principles
+- **Quality Assurance**: Code review and testing strategy implementation
+- **Security Implementation**: Secure coding practices and vulnerability prevention
 - **Performance Optimization**: Code and system performance tuning
-- **AI Prompt Engineering**: Advanced prompt optimization techniques
-- **Code Review**: Technical code review and implementation feedback
-- **Development Best Practices**: Following TypeScript/Node.js standards
 
----
-
-## 🛠️ Skills Required
-
-### Core Development
-- **TypeScript/Node.js**: Proficiency with strict typing and modern patterns
-- **AI Development Tools**: Advanced usage of Cursor AI and Claude Code
-- **MCP Protocol Implementation**: Following established architectural patterns
-- **Code Quality**: Clean code principles and best practices
-
-### AI-Specific Skills
-- **AI Prompt Engineering**: Advanced prompt optimization techniques
-- **MCP Protocol Expertise**: Model Context Protocol implementation
-- **Performance Optimization**: Code and system performance tuning
-- **Secure Coding Practices**: Following security coding standards
-
----
-
-## 📐 Architectural Standards
-Following project-guidelines.md principles:
-
-### Schema-Locked I/O
-- All tool calls use JSON Schemas
-- Unified diffs only, no full-file rewrites
-- Deterministic builds with `npm ci`
-
-### Code Quality Standards
+### 📐 project-guidelines.md Standards
 - **Line Budgets**: ≤400 lines per turn, ≤120 lines per file
 - **TypeScript Strict**: `tsc --strict`, `strictNullChecks`, `exactOptionalPropertyTypes`
 - **Complexity**: ESLint complexity ≤10
 - **Coverage**: ≥85% lines and branches on changed files
+- **Security**: No secrets in repo, pre-commit scanning mandatory
+- **Performance**: <100ms response time targets
 
-### Security Standards
-- **Secrets**: No secrets in repo, pre-commit scanning mandatory
-- **SCA**: OSV-Scanner for vulnerability detection
-- **SAST**: Semgrep OWASP + LLM agent rules
-- **Commit Authenticity**: Signed commits on protected branches
-
----
-
-## 🧪 Testing Strategy
+### 🧪 Testing Requirements
 - **Pre-commit Tests**: Vitest on changed files with coverage enforcement
 - **Coverage Requirements**: ≥85% on changed files, both line & branch
 - **Static Scans**: ESLint, tsc required before commit
-- **Complexity Checks**: ESLint complexity ≤10, duplication ≤5%
+- **Security Scans**: OSV-Scanner and Semgrep integration
+
+### 🎯 AI Assistance Priorities
+1. **Code Generation**: TypeScript/Node.js with proper error handling
+2. **Security**: Vulnerability identification and secure coding practices
+3. **Performance**: Optimization recommendations and benchmarking
+4. **Quality**: Test case generation and coverage analysis
+5. **Architecture**: Schema-locked I/O and modular design patterns
+
+### 📊 Success Metrics
+- **Security (25%)**: Zero critical vulnerabilities, no secret leaks
+- **Quality (20%)**: Focused diffs, tests with changes, readability
+- **Coverage (20%)**: ≥85% on changed files, both line & branch
+- **Complexity (15%)**: Cyclomatic ≤10, duplication ≤5%
+- **Reproducibility (10%)**: Deterministic builds with `npm ci`
+- **Efficiency (10%)**: Single-turn success, low retry count
+
+### 🛠️ Code Standards
+- **TypeScript Strict**: Full strict mode compliance
+- **Error Handling**: Comprehensive error handling and logging
+- **Testing**: Unit tests for all functions with ≥85% coverage
+- **Documentation**: All public APIs documented
+- **Security**: Secure coding practices and vulnerability prevention
+
+### 🏗️ Architecture Guidelines
+- **Schema-locked I/O**: All tool calls use JSON Schemas
+- **Modular Design**: Clear separation of concerns
+- **Dependency Injection**: Testability and maintainability
+- **Event-driven**: Where appropriate for MCP server patterns
+- **Configuration**: Secure configuration management
 
 ---
 
-## 📊 Success Metrics
-Aligned with project-guidelines.md scorecard:
+## 🚨 **CRITICAL: Lessons Learned - Prevention Checklist**
 
-### Security (25% weight)
-- **Zero Critical Vulnerabilities**: No new critical/high vulnerabilities
-- **No Secret Leaks**: Pre-commit secrets scanning passes
-- **Security Score**: A-grade security compliance
+### **Before Starting Any Development Work:**
+1. **Run Early Quality Check**: `npm run early-check`
+2. **Verify Clean State**: No TypeScript errors, ESLint warnings, or test failures
+3. **Check Dependencies**: Ensure all packages are installed and up-to-date
+4. **Review Project Guidelines**: Understand current standards and requirements
 
-### Quality (20% weight)
-- **Code Quality**: Focused diffs, tests with changes, readability
-- **Line Budgets**: ≤400 lines per turn, ≤120 lines per file
-- **Complexity**: ESLint complexity ≤10
+### **During Development:**
+1. **TypeScript First**: Always use strict typing, avoid `any` types
+2. **ESLint Integration**: Run `npm run lint:check` frequently
+3. **Test-Driven**: Write tests before implementing features
+4. **Incremental Commits**: Small, focused commits with quality checks
+5. **Real-time Validation**: Use IDE extensions for immediate feedback
 
-### Coverage (20% weight)
-- **Test Coverage**: ≥85% on changed files, both line & branch
-- **Coverage Enforcement**: PRs blocked if coverage <85%
+### **Before Committing:**
+1. **TypeScript Compilation**: `npm run type-check` must pass
+2. **ESLint Validation**: `npm run lint:check` must pass
+3. **Formatting Check**: `npm run format:check` must pass
+4. **Unit Tests**: `npm run test` must pass
+5. **Pre-commit Hooks**: `npm run pre-commit:run` must pass
 
-### Complexity (15% weight)
-- **Cyclomatic Complexity**: ≤10
-- **Duplication**: ≤5%
-- **Maintainability**: High readability scores
+### **Common Pitfalls to Avoid:**
+- ❌ **TypeScript `any` types**: Use `unknown` or proper typing
+- ❌ **Large functions**: Keep functions ≤150 lines, complexity ≤15
+- ❌ **Unused variables**: Prefix with `_` or remove
+- ❌ **Logical OR for defaults**: Use nullish coalescing `??` instead of `||`
+- ❌ **Skipping tests**: Always write tests for new functionality
+- ❌ **Ignoring ESLint warnings**: Fix all warnings before committing
 
-### Reproducibility (10% weight)
-- **Deterministic Builds**: `npm ci` and frozen lockfiles
-- **Parity Runs**: Consistent local and CI results
+### **Quality Gates (Non-negotiable):**
+- **TypeScript Errors**: 0 (blocking)
+- **ESLint Errors**: 0 (blocking)
+- **Test Coverage**: ≥85% (blocking)
+- **Performance**: <100ms response time (blocking)
+- **Security**: 0 critical vulnerabilities (blocking)
 
-### Efficiency (10% weight)
-- **Single-turn Success**: Low retry count, fast execution
-- **AI Tool Effectiveness**: Measure AI-assisted productivity gains
+### **Emergency Fixes:**
+If issues are found after commit:
+1. **Immediate**: Run `npm run early-check` to assess damage
+2. **Quick Fix**: Use `npm run format` and `npm run lint` for auto-fixes
+3. **TypeScript**: Fix type errors with proper typing
+4. **Tests**: Add missing tests or fix broken ones
+5. **Commit**: Create fix commit with clear message
 
-**Grade Thresholds**: A ≥90, B ≥80, C ≥70, D ≥60, F <60
+### **Tool Configuration:**
+- **IDE**: Enable ESLint, Prettier, TypeScript extensions
+- **Git Hooks**: Pre-commit validation enabled
+- **CI/CD**: Automated quality checks configured
+- **Monitoring**: Real-time quality feedback
 
----
-
-## 🤝 Collaboration Points
-- **Product Strategist**: Feature requirements and business context
-- **AI Operations Engineer**: Deployment readiness and infrastructure
-- **UX/Product Designer**: Implementation details and user experience
-- **AI Quality Assurance Engineer**: Test strategy and quality validation
-
----
-
-## 🎯 AI Tool Usage
-
-### Cursor AI
-- **Real-time Code Completion**: TypeScript/Node.js development
-- **Refactoring**: Code improvement and optimization
-- **Debugging**: AI-assisted problem solving
-
-### Claude Code
-- **Multi-file Operations**: Complex architecture decisions
-- **Code Generation**: AI-assisted development patterns
-- **Analysis**: Code quality and security assessment
-
-### Focus Areas
-- **Performance**: Code and system optimization
-- **Security**: Vulnerability prevention and secure coding
-- **Maintainability**: Clean, readable, and well-tested code
-- **Best Practices**: Adherence to project-guidelines.md standards
+### **Escalation Path:**
+1. **Self-fix**: Use provided tools and guidelines
+2. **Team Review**: Request code review for complex issues
+3. **Architecture Review**: For design pattern violations
+4. **Security Review**: For security-related concerns
 
 ---
 
-## 📁 Project Context
-- **Technology Stack**: TypeScript/Node.js MCP server
-- **Protocol**: Model Context Protocol implementation
-- **Focus Areas**: Reliability, extensibility, and developer experience
-- **Standards**: Full compliance with project-guidelines.md
-
----
-
-## ✅ Deliverables
-- **Clean, Maintainable Code**: Following strict TypeScript standards
-- **Implementation Documentation**: Code documentation and inline comments
-- **Code Review Reports**: Technical implementation assessments
-- **Performance Optimization**: Code-level performance improvements
-- **Development Best Practices**: Following established coding standards
-
----
-
-## 🚫 Role Boundaries & Handoff Protocol
-
-### **What AI-Augmented Developer DOES NOT Do**
-- **System Architecture Design**: Never design overall system architecture or component relationships
-- **Quality Assurance Strategy**: Never design testing strategies or quality frameworks
-- **Security Operations**: Never configure security scanning, compliance, or incident response
-- **Infrastructure Management**: Never configure CI/CD, deployment, or infrastructure
-- **User Experience Design**: Never design user interfaces or user experience flows
-
-### **Mandatory Handoff Protocol**
-When any task requires architecture, quality assurance, operations, or design work:
-
-1. **STOP** - Do not proceed with non-implementation tasks
-2. **ASSESS** - Determine which role is appropriate for the task
-3. **RECOMMEND** - Suggest switching to the appropriate role
-4. **HANDOFF** - Provide clear context and requirements for the next role
-
-### **Role Handoff Guidelines**
-
-#### **For System Architecture → AI System Architect**
-```
-"I need to switch to AI System Architect role to design [system component].
-Here's the implementation context: [brief summary]"
-```
-
-#### **For Quality Assurance → AI Quality Assurance Engineer**
-```
-"I need to switch to AI Quality Assurance Engineer role to implement [testing strategy].
-Here's the code context: [brief summary]"
-```
-
-#### **For Operations & Security → AI Operations Engineer**
-```
-"I need to switch to AI Operations Engineer role to configure [infrastructure/security].
-Here's the operational context: [brief summary]"
-```
-
-#### **For User Experience → UX/Product Designer**
-```
-"I need to switch to UX/Product Designer role to design [user interface/experience].
-Here's the user context: [brief summary]"
-```
-
-### **When to Stay in AI-Augmented Developer Role**
-- Code implementation and refactoring
-- Debugging and troubleshooting
-- Performance optimization at code level
-- Following established architectural patterns
-- Code review and technical feedback
-- AI prompt engineering for development
-
-### **Quality Assurance**
-- **Always ask**: "Should I be doing this as AI-Augmented Developer, or should I hand off to another role?"
-- **When in doubt**: Default to handoff rather than overstepping role boundaries
-- **Maintain focus**: Stay within code implementation and development scope
+## 📚 **Reference Materials**
+- [project-guidelines.md](../../project-guidelines.md)
+- [coding-standards.md](../../rules/coding_standards.md)
+- [test-strategy.md](../../rules/test_strategy.md)
+- [early-quality-gates.md](../../implementation/06-supporting-docs/early-quality-gates.md)

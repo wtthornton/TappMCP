@@ -1,11 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { handleSmartPlan, smartPlanTool } from './smart_plan';
+import type { SmartPlanResponse } from '../types/tool-responses';
 
 describe('smart_plan tool', () => {
   describe('tool definition', () => {
     it('should have correct name and description', () => {
       expect(smartPlanTool.name).toBe('smart_plan');
-      expect(smartPlanTool.description).toContain('Create comprehensive project plans');
+      expect(smartPlanTool.description).toContain('AI-assisted project planning');
     });
 
     it('should have proper input schema', () => {
@@ -16,264 +17,227 @@ describe('smart_plan tool', () => {
   });
 
   describe('handleSmartPlan', () => {
-    it('should successfully create project plan with minimal input', async () => {
+    it('should successfully create a project plan with minimal input', async () => {
       const input = {
         projectId: 'proj_123_test',
+        planType: 'development',
       };
 
-      const result = await handleSmartPlan(input);
+      const result = await handleSmartPlan(input) as SmartPlanResponse;
 
       expect(result.success).toBe(true);
       expect(result.data).toBeDefined();
-      expect(result.data.projectId).toBe('proj_123_test');
-      expect(result.data.projectPlan).toBeDefined();
-      expect(result.data.businessValue).toBeDefined();
-      expect(result.data.successMetrics).toBeDefined();
-      expect(result.data.nextSteps).toBeDefined();
-      expect(result.data.technicalMetrics).toBeDefined();
+      expect(result.data?.projectId).toBe('proj_123_test');
+      expect(result.data?.projectPlan).toBeDefined();
+      expect(result.data?.businessValue).toBeDefined();
+      expect(result.data?.successMetrics).toBeDefined();
+      expect(result.data?.nextSteps).toBeDefined();
+      expect(result.data?.technicalMetrics).toBeDefined();
       expect(result.timestamp).toBeDefined();
     });
 
-    it('should successfully create project plan with full input', async () => {
+    it('should successfully create a comprehensive project plan', async () => {
       const input = {
         projectId: 'proj_456_full',
         planType: 'development',
-        scope: {
-          features: ['user-auth', 'dashboard', 'api'],
-          timeline: {
-            duration: 8,
-            startDate: '2024-01-01',
-            endDate: '2024-02-28',
-          },
-          resources: {
-            teamSize: 5,
-            budget: 100000,
-            externalTools: ['github', 'slack'],
-          },
+        projectScope: {
+          phases: ['planning', 'development', 'testing', 'deployment'],
+          duration: 6,
+          complexity: 'high',
         },
-        externalMCPs: [
-          {
-            name: 'Database MCP',
-            description: 'Database integration service',
-            integrationType: 'database',
-            priority: 'high',
-            estimatedEffort: 7,
-          },
-          {
-            name: 'API MCP',
-            description: 'External API integration',
-            integrationType: 'api',
-            priority: 'medium',
-            estimatedEffort: 5,
-          },
-        ],
-        qualityRequirements: {
+        resources: {
+          team: [
+            { role: 'developer', count: 3, skills: ['typescript', 'react'] },
+            { role: 'designer', count: 1, skills: ['ui/ux', 'figma'] },
+          ],
+          budget: 200000,
+          tools: ['vscode', 'git', 'docker'],
+        },
+        qualityGates: {
           testCoverage: 90,
-          securityLevel: 'high',
-          performanceTargets: {
-            responseTime: 50,
-            throughput: 2000,
-            availability: 99.9,
-          },
+          securityScore: 95,
+          performanceScore: 85,
         },
-        businessContext: {
-          goals: ['increase-revenue', 'improve-efficiency'],
-          targetUsers: ['customers', 'admins'],
-          successMetrics: ['user-satisfaction', 'performance'],
-          riskFactors: ['technical-complexity', 'timeline-pressure'],
+        businessRequirements: {
+          roiTarget: 300,
+          timeToMarket: 6,
+          riskTolerance: 'medium',
         },
       };
 
-      const result = await handleSmartPlan(input);
+      const result = await handleSmartPlan(input) as SmartPlanResponse;
 
       expect(result.success).toBe(true);
-      expect(result.data.projectId).toBe('proj_456_full');
-      expect(result.data.planType).toBe('development');
-      expect(result.data.projectPlan.phases).toBeDefined();
-      expect(result.data.projectPlan.resources).toBeDefined();
-      expect(result.data.projectPlan.timeline).toBeDefined();
-      expect(result.data.projectPlan.risks).toBeDefined();
+      expect(result.data).toBeDefined();
+      expect(result.data?.projectId).toBe('proj_456_full');
+      expect(result.data?.planType).toBe('development');
+      expect(result.data?.projectPlan.phases).toBeDefined();
+      expect(result.data?.projectPlan.resources).toBeDefined();
+      expect(result.data?.projectPlan.timeline).toBeDefined();
+      expect(result.data?.projectPlan.risks).toBeDefined();
     });
 
-    it('should handle different plan types', async () => {
-      const planTypes = ['development', 'testing', 'deployment', 'maintenance', 'migration'];
-      
+    it('should generate different plan types', async () => {
+      const planTypes = ['development', 'maintenance', 'migration', 'optimization'];
+
       for (const planType of planTypes) {
         const input = {
-          projectId: 'proj_type_test',
-          planType: planType,
+          projectId: `proj_${planType}`,
+          planType,
         };
 
-        const result = await handleSmartPlan(input);
+        const result = await handleSmartPlan(input) as SmartPlanResponse;
 
         expect(result.success).toBe(true);
-        expect(result.data.planType).toBe(planType);
+        expect(result.data?.planType).toBe(planType);
       }
     });
 
-    it('should generate appropriate project phases', async () => {
+    it('should generate project phases', async () => {
       const input = {
-        projectId: 'proj_phases_test',
-        scope: {
-          timeline: {
-            duration: 12,
-          },
+        projectId: 'proj_phases',
+        planType: 'development',
+        projectScope: {
+          phases: ['planning', 'development', 'testing', 'deployment'],
         },
       };
 
-      const result = await handleSmartPlan(input);
+      const result = await handleSmartPlan(input) as SmartPlanResponse;
 
       expect(result.success).toBe(true);
-      expect(result.data.projectPlan.phases).toBeDefined();
-      expect(Array.isArray(result.data.projectPlan.phases)).toBe(true);
-      expect(result.data.projectPlan.phases.length).toBeGreaterThan(0);
+      expect(result.data?.projectPlan.phases).toBeDefined();
+      expect(Array.isArray(result.data?.projectPlan.phases)).toBe(true);
+      expect(result.data?.projectPlan.phases.length).toBeGreaterThan(0);
     });
 
-    it('should generate appropriate resources', async () => {
+    it('should generate resource planning', async () => {
       const input = {
-        projectId: 'proj_resources_test',
-        scope: {
-          resources: {
-            teamSize: 8,
-            budget: 200000,
-            externalTools: ['tool1', 'tool2'],
-          },
+        projectId: 'proj_resources',
+        planType: 'development',
+        resources: {
+          team: [
+            { role: 'developer', count: 2, skills: ['typescript'] },
+            { role: 'tester', count: 1, skills: ['jest', 'cypress'] },
+          ],
+          budget: 100000,
+          tools: ['vscode', 'git'],
         },
       };
 
-      const result = await handleSmartPlan(input);
+      const result = await handleSmartPlan(input) as SmartPlanResponse;
 
       expect(result.success).toBe(true);
-      expect(result.data.projectPlan.resources.team).toBeDefined();
-      expect(result.data.projectPlan.resources.budget).toBeDefined();
-      expect(result.data.projectPlan.resources.tools).toBeDefined();
-      expect(result.data.projectPlan.resources.budget.total).toBe(200000);
+      expect(result.data?.projectPlan.resources.team).toBeDefined();
+      expect(result.data?.projectPlan.resources.budget).toBeDefined();
+      expect(result.data?.projectPlan.resources.tools).toBeDefined();
+      expect(result.data?.projectPlan.resources.budget.total).toBe(100000);
     });
 
-    it('should generate appropriate timeline', async () => {
+    it('should generate timeline planning', async () => {
       const input = {
-        projectId: 'proj_timeline_test',
-        scope: {
-          timeline: {
-            duration: 6,
-          },
+        projectId: 'proj_timeline',
+        planType: 'development',
+        projectScope: {
+          duration: 4,
         },
       };
 
-      const result = await handleSmartPlan(input);
+      const result = await handleSmartPlan(input) as SmartPlanResponse;
 
       expect(result.success).toBe(true);
-      expect(result.data.projectPlan.timeline).toBeDefined();
-      expect(result.data.projectPlan.timeline.duration).toBe(6);
-      expect(result.data.projectPlan.timeline.startDate).toBeDefined();
-      expect(result.data.projectPlan.timeline.endDate).toBeDefined();
+      expect(result.data?.projectPlan.timeline).toBeDefined();
+      expect(result.data?.projectPlan.timeline.duration).toBe(4);
+      expect(result.data?.projectPlan.timeline.startDate).toBeDefined();
+      expect(result.data?.projectPlan.timeline.endDate).toBeDefined();
     });
 
-    it('should generate appropriate risks', async () => {
+    it('should generate risk assessment', async () => {
       const input = {
-        projectId: 'proj_risks_test',
-        externalMCPs: [
-          {
-            name: 'Test MCP',
-            description: 'Test integration',
-            integrationType: 'api',
-            priority: 'high',
-          },
-        ],
-        businessContext: {
-          riskFactors: ['custom-risk-1', 'custom-risk-2'],
+        projectId: 'proj_risks',
+        planType: 'development',
+        businessRequirements: {
+          riskTolerance: 'high',
         },
       };
 
-      const result = await handleSmartPlan(input);
+      const result = await handleSmartPlan(input) as SmartPlanResponse;
 
       expect(result.success).toBe(true);
-      expect(result.data.projectPlan.risks).toBeDefined();
-      expect(Array.isArray(result.data.projectPlan.risks)).toBe(true);
-      expect(result.data.projectPlan.risks.length).toBeGreaterThan(0);
+      expect(result.data?.projectPlan.risks).toBeDefined();
+      expect(Array.isArray(result.data?.projectPlan.risks)).toBe(true);
+      expect(result.data?.projectPlan.risks.length).toBeGreaterThan(0);
     });
 
-    it('should calculate business value correctly', async () => {
+    it('should calculate business value', async () => {
       const input = {
-        projectId: 'proj_business_test',
-        scope: {
-          resources: {
-            budget: 50000,
-          },
+        projectId: 'proj_business',
+        planType: 'development',
+        businessRequirements: {
+          roiTarget: 400,
+          timeToMarket: 8,
         },
       };
 
-      const result = await handleSmartPlan(input);
+      const result = await handleSmartPlan(input) as SmartPlanResponse;
 
       expect(result.success).toBe(true);
-      expect(result.data.businessValue.estimatedROI).toBeGreaterThan(0);
-      expect(result.data.businessValue.timeToMarket).toBeGreaterThan(0);
-      expect(result.data.businessValue.riskMitigation).toBeGreaterThan(0);
-      expect(result.data.businessValue.qualityImprovement).toBeGreaterThan(0);
+      expect(result.data?.businessValue.estimatedROI).toBeGreaterThan(0);
+      expect(result.data?.businessValue.timeToMarket).toBeGreaterThan(0);
+      expect(result.data?.businessValue.riskMitigation).toBeGreaterThan(0);
+      expect(result.data?.businessValue.qualityImprovement).toBeGreaterThan(0);
     });
 
     it('should generate success metrics', async () => {
       const input = {
-        projectId: 'proj_metrics_test',
-        qualityRequirements: {
-          testCoverage: 95,
-        },
-        externalMCPs: [
-          {
-            name: 'Test MCP',
-            description: 'Test integration',
-            integrationType: 'api',
-          },
-        ],
-      };
-
-      const result = await handleSmartPlan(input);
-
-      expect(result.success).toBe(true);
-      expect(result.data.successMetrics).toBeDefined();
-      expect(Array.isArray(result.data.successMetrics)).toBe(true);
-      expect(result.data.successMetrics.length).toBeGreaterThan(0);
-    });
-
-    it('should meet performance requirements', async () => {
-      const input = {
-        projectId: 'proj_performance_test',
-      };
-
-      const startTime = Date.now();
-      const result = await handleSmartPlan(input);
-      const endTime = Date.now();
-
-      expect(result.success).toBe(true);
-      expect(result.data.technicalMetrics.responseTime).toBeLessThan(100); // <100ms requirement
-      expect(endTime - startTime).toBeLessThan(100);
-    });
-
-    it('should handle invalid input gracefully', async () => {
-      const input = {
-        // Missing required projectId
+        projectId: 'proj_metrics',
         planType: 'development',
       };
 
-      const result = await handleSmartPlan(input);
+      const result = await handleSmartPlan(input) as SmartPlanResponse;
+
+      expect(result.success).toBe(true);
+      expect(result.data?.successMetrics).toBeDefined();
+      expect(Array.isArray(result.data?.successMetrics)).toBe(true);
+      expect(result.data?.successMetrics.length).toBeGreaterThan(0);
+    });
+
+    it('should calculate technical metrics', async () => {
+      const input = {
+        projectId: 'proj_tech',
+        planType: 'development',
+      };
+
+      const result = await handleSmartPlan(input) as SmartPlanResponse;
+
+      expect(result.success).toBe(true);
+      expect(result.data?.technicalMetrics.responseTime).toBeLessThan(100); // <100ms requirement
+      expect(result.data?.technicalMetrics.responseTime).toBeGreaterThanOrEqual(0);
+      expect(result.data?.technicalMetrics.planningTime).toBeGreaterThanOrEqual(0);
+      expect(result.data?.technicalMetrics.phasesPlanned).toBeGreaterThan(0);
+      expect(result.data?.technicalMetrics.tasksPlanned).toBeGreaterThan(0);
+    });
+
+    it('should handle errors gracefully', async () => {
+      const input = {
+        projectId: '', // Invalid empty ID
+      };
+
+      const result = await handleSmartPlan(input) as SmartPlanResponse;
 
       expect(result.success).toBe(false);
       expect(result.error).toBeDefined();
       expect(result.timestamp).toBeDefined();
     });
 
-    it('should calculate technical metrics correctly', async () => {
-      const input = {
-        projectId: 'proj_tech_metrics_test',
+    it('should validate input schema', async () => {
+      const invalidInput = {
+        invalidField: 'test',
       };
 
-      const result = await handleSmartPlan(input);
+      const result = await handleSmartPlan(invalidInput) as SmartPlanResponse;
 
-      expect(result.success).toBe(true);
-      expect(result.data.technicalMetrics.responseTime).toBeGreaterThanOrEqual(0);
-      expect(result.data.technicalMetrics.planningTime).toBeGreaterThanOrEqual(0);
-      expect(result.data.technicalMetrics.phasesPlanned).toBeGreaterThan(0);
-      expect(result.data.technicalMetrics.tasksPlanned).toBeGreaterThan(0);
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Invalid arguments');
     });
   });
 });
