@@ -3,7 +3,7 @@
 **Date**: December 2024  
 **Status**: Ready for Development  
 **Phase**: 1C - Smart Finish Tool MVP (3-Tool Integration)  
-**Duration**: 3 weeks  
+**Duration**: 2 weeks  
 **Target Users**: Strategy People, Vibe Coders, Non-Technical Founders  
 
 ---
@@ -270,15 +270,87 @@
 
 ---
 
+## 📚 **User Story 8: OSV-Scanner Integration and Vulnerability Scanning**
+
+**As a** any user  
+**I want to** have OSV-Scanner integration for comprehensive vulnerability scanning  
+**So that** I can identify and remediate security vulnerabilities in dependencies and code  
+
+### **Acceptance Criteria** *(QA Role)*
+- **Given** I'm running quality validation with smart_finish *(QA Role)*
+- **When** vulnerability scanning runs *(QA Role)*
+- **Then** the system provides:
+  - OSV-Scanner integration for dependency vulnerability scanning *(QA Role)*
+  - Comprehensive vulnerability detection and reporting *(QA Role)*
+  - Vulnerability severity assessment and prioritization *(QA Role)*
+  - Remediation guidance and next steps for each vulnerability *(QA Role)*
+- **And** I can see vulnerability scan results and severity levels *(QA Role)*
+- **And** I get specific remediation steps for each vulnerability *(QA Role)*
+- **And** I understand the business impact of security vulnerabilities *(QA Role)*
+
+### **Business Value** *(Product Strategist Role)*
+- **Security Assurance**: OSV-Scanner integration prevents security vulnerabilities in production *(Product Strategist Role)*
+- **Risk Mitigation**: Vulnerability scanning prevents costly security breaches and incidents *(Product Strategist Role)*
+- **Compliance**: Security scanning ensures regulatory compliance and security standards *(Product Strategist Role)*
+- **Cost Prevention**: Vulnerability prevention saves $50K+ in potential security damages *(Product Strategist Role)*
+
+### **Technical Requirements** *(Developer Role)*
+- **Performance**: Vulnerability scanning in <500ms, reporting in <200ms *(Developer Role)*
+- **Security**: OSV-Scanner integration, secure vulnerability reporting *(Operations Engineer Role)*
+- **Quality**: Comprehensive vulnerability detection, accurate severity assessment *(QA Role)*
+- **UX**: Clear vulnerability indicators, severity levels, remediation guidance *(UX/Product Designer Role)*
+
+### **Priority**: High  
+**Story Points**: 6  
+**Dependencies**: Phase 1B completion  
+
+---
+
+## 📚 **User Story 9: Semgrep Integration and Static Analysis**
+
+**As a** any user  
+**I want to** have Semgrep integration for comprehensive static analysis  
+**So that** I can identify code quality issues, security vulnerabilities, and best practice violations  
+
+### **Acceptance Criteria** *(QA Role)*
+- **Given** I'm running quality validation with smart_finish *(QA Role)*
+- **When** static analysis runs *(QA Role)*
+- **Then** the system provides:
+  - Semgrep integration with OWASP and custom rule sets *(QA Role)*
+  - Comprehensive static analysis and code quality assessment *(QA Role)*
+  - Security vulnerability detection and code smell identification *(QA Role)*
+  - Best practice enforcement and improvement recommendations *(QA Role)*
+- **And** I can see static analysis results and issue categories *(QA Role)*
+- **And** I get specific recommendations for code improvements *(QA Role)*
+- **And** I understand how static analysis improves code quality and security *(QA Role)*
+
+### **Business Value** *(Product Strategist Role)*
+- **Code Quality**: Semgrep integration ensures high-quality, secure code *(Product Strategist Role)*
+- **Security Prevention**: Static analysis prevents security vulnerabilities and code issues *(Product Strategist Role)*
+- **Best Practices**: Automated best practice enforcement improves code maintainability *(Product Strategist Role)*
+- **Risk Mitigation**: Static analysis prevents production issues and security vulnerabilities *(Product Strategist Role)*
+
+### **Technical Requirements** *(Developer Role)*
+- **Performance**: Static analysis in <300ms, reporting in <200ms *(Developer Role)*
+- **Security**: Semgrep OWASP rules, security vulnerability detection *(Operations Engineer Role)*
+- **Quality**: Comprehensive static analysis, accurate issue detection *(QA Role)*
+- **UX**: Clear analysis indicators, issue categories, improvement recommendations *(UX/Product Designer Role)*
+
+### **Priority**: High  
+**Story Points**: 5  
+**Dependencies**: Phase 1B completion  
+
+---
+
 ## 📊 **Phase 1C User Story Summary**
 
-### **Total Stories**: 7  
-**Total Story Points**: 40  
-**Estimated Duration**: 3 weeks  
+### **Total Stories**: 9  
+**Total Story Points**: 51  
+**Estimated Duration**: 2 weeks  
 **Target Users**: All 3 personas (Strategy People, Vibe Coders, Non-Technical Founders)  
 
 ### **Priority Distribution**
-- **High Priority**: 6 stories (36 story points)
+- **High Priority**: 8 stories (47 story points)
 - **Medium Priority**: 1 story (4 story points)
 
 ### **Business Value Summary**

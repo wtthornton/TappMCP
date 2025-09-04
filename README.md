@@ -168,6 +168,8 @@ npm start
 - **[Role Definitions](docs/roles/)** - Detailed role documentation
 - **[Project Vision](docs/project/vision.md)** - Project vision and goals
 - **[Tech Stack](docs/project/tech-stack.md)** - Technology choices and rationale
+- **[Key Decisions](docs/knowledge/decisions-summary.md)** - Strategic decisions and rationale
+- **[MCP Integration](docs/knowledge/mcp-integration-decisions.md)** - External MCP integration strategy
 
 ## 🤝 Contributing
 
