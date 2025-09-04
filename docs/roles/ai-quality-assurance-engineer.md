@@ -82,6 +82,11 @@ Quality assurance and testing standards ensuring comprehensive test coverage, se
 - **Security Testing**: Automated vulnerability scanning and assessment
 - **Usability Testing**: User experience validation and optimization
 - **Regression Testing**: Automated regression prevention and detection
+
+### 🎓 Training Resources
+- **Comprehensive Training**: [AI Quality Assurance Engineer Training Guide](ai-quality-assurance-engineer-training.md)
+- **Testing Patterns**: Common testing patterns and anti-patterns
+- **Quality Gate Validation**: Comprehensive validation procedures
 - **Completeness Testing**: Requirements vs implementation validation
 - **Traceability Testing**: Requirements Traceability Matrix validation
 

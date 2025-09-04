@@ -53,6 +53,11 @@ Operations and infrastructure standards ensuring secure, reliable, and performan
 - **Incident Response**: Automated alerting and response procedures
 - **AI Tool Monitoring**: Performance and effectiveness tracking
 
+### 🎓 Training Resources
+- **Comprehensive Training**: [AI Operations Engineer Training Guide](ai-operations-engineer-training.md)
+- **Infrastructure Patterns**: Reliable, secure infrastructure patterns
+- **Monitoring Strategies**: Comprehensive monitoring and alerting
+
 ---
 
 ## 🚨 **CRITICAL: Lessons Learned - Operations Prevention Checklist**

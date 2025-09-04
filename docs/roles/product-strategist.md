@@ -201,3 +201,8 @@ Here's the user requirements: [brief summary]"
 - **Always ask**: "Should I be doing this as Product Strategist, or should I hand off to another role?"
 - **When in doubt**: Default to handoff rather than overstepping role boundaries
 - **Maintain focus**: Stay within strategic and business analysis scope
+
+### 🎓 Training Resources
+- **Comprehensive Training**: [Product Strategist Training Guide](product-strategist-training.md)
+- **Requirements Templates**: Clear, measurable requirement patterns
+- **Stakeholder Communication**: Business-focused communication strategies

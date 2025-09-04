@@ -32,6 +32,26 @@ AI-assisted development ensuring code quality, security, and efficiency through 
 4. **Quality**: Test case generation and coverage analysis
 5. **Architecture**: Schema-locked I/O and modular design patterns
 
+### 🧠 Critical Thinking Framework
+Before writing any code, ask:
+- **Data Structure**: What is the complete expected output structure?
+- **Error Handling**: What can go wrong and how should it be handled?
+- **Performance**: Will this operation complete within 100ms?
+- **Type Safety**: Are all types properly defined and validated?
+- **Testing**: How can I verify this works correctly?
+
+### 📚 Mandatory Pre-Development Checklist
+1. **Read schemas first**: Understand expected data structures
+2. **Plan data flow**: Input → Processing → Output mapping
+3. **Identify bottlenecks**: Look for performance-critical operations
+4. **Define error conditions**: What failures are possible?
+5. **Write tests first**: TDD for complex logic
+
+### 🎓 Training Resources
+- **Comprehensive Training**: [AI-Augmented Developer Training Guide](ai-augmented-developer-training.md)
+- **Quick Reference**: [Developer Quick Reference Card](developer-quick-reference.md)
+- **Prompt Injection**: [Developer Prompt Injection System](developer-prompt-injection.md)
+
 ### 📊 Success Metrics
 - **Security (25%)**: Zero critical vulnerabilities, no secret leaks
 - **Quality (20%)**: Focused diffs, tests with changes, readability
@@ -56,27 +76,36 @@ AI-assisted development ensuring code quality, security, and efficiency through 
 
 ---
 
-## 🚨 **CRITICAL: Lessons Learned - Prevention Checklist**
+## 🚨 **CRITICAL: Process Compliance Requirements**
 
-### **Before Starting Any Development Work:**
-1. **Run Early Quality Check**: `npm run early-check`
-2. **Verify Clean State**: No TypeScript errors, ESLint warnings, or test failures
-3. **Check Dependencies**: Ensure all packages are installed and up-to-date
-4. **Review Project Guidelines**: Understand current standards and requirements
+### **MANDATORY: Before Starting Any Development Work:**
+1. **Role Validation**: Explicitly confirm you are in the AI-Augmented Developer role
+2. **Run Early Quality Check**: `npm run early-check` - MUST PASS
+3. **Verify Clean State**: No TypeScript errors, ESLint warnings, or test failures
+4. **Check Dependencies**: Ensure all packages are installed and up-to-date
+5. **Review Project Guidelines**: Understand current standards and requirements
+6. **Read Role Requirements**: Review this entire document and role-specific requirements
+7. **Tool Validation**: Ensure all quality tools are installed and configured
 
-### **During Development:**
-1. **TypeScript First**: Always use strict typing, avoid `any` types
-2. **ESLint Integration**: Run `npm run lint:check` frequently
-3. **Test-Driven**: Write tests before implementing features
+### **MANDATORY: During Development:**
+1. **Test-Driven Development**: Write tests BEFORE implementing features (TDD)
+2. **TypeScript First**: Always use strict typing, avoid `any` types
+3. **ESLint Integration**: Run `npm run lint:check` frequently
 4. **Incremental Commits**: Small, focused commits with quality checks
 5. **Real-time Validation**: Use IDE extensions for immediate feedback
+6. **Quality Gates**: Validate all changes meet quality thresholds
+7. **Security Scans**: Run security scans before committing changes
+8. **Performance Validation**: Ensure <100ms response time targets
 
-### **Before Committing:**
+### **MANDATORY: Before Committing:**
 1. **TypeScript Compilation**: `npm run type-check` must pass
 2. **ESLint Validation**: `npm run lint:check` must pass
 3. **Formatting Check**: `npm run format:check` must pass
 4. **Unit Tests**: `npm run test` must pass
 5. **Pre-commit Hooks**: `npm run pre-commit:run` must pass
+6. **Security Scans**: OSV-Scanner and Semgrep must pass
+7. **Performance Check**: Response times must be <100ms
+8. **Coverage Check**: Test coverage must be ≥85%
 
 ### **Common Pitfalls to Avoid:**
 - ❌ **TypeScript `any` types**: Use `unknown` or proper typing

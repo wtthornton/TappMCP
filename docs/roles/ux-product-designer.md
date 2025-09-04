@@ -210,3 +210,8 @@ Here's the design context: [brief summary]"
 - **Always ask**: "Should I be doing this as UX/Product Designer, or should I hand off to another role?"
 - **When in doubt**: Default to handoff rather than overstepping role boundaries
 - **Maintain focus**: Stay within user experience and design scope
+
+### 🎓 Training Resources
+- **Comprehensive Training**: [UX/Product Designer Training Guide](ux-product-designer-training.md)
+- **Design Patterns**: User-centered design patterns and anti-patterns
+- **Accessibility Guidelines**: WCAG 2.1 AA compliance strategies

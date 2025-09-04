@@ -2,13 +2,16 @@ version: '3.8'
 
 services:
   smart-mcp:
-    build: .
+    build: 
+      context: .
+      target: production
     ports:
-      - "3000:3000"
+      - "8080:3000"
     environment:
       - NODE_ENV=production
+      - PORT=3000
     volumes:
-      - ./data:/app/data
+      - smart-mcp-data:/app/data
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"]
@@ -16,17 +19,37 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=100m
 
   # Development service
   smart-mcp-dev:
-    build: .
+    build: 
+      context: .
+      target: builder
     ports:
       - "3001:3000"
     environment:
       - NODE_ENV=development
+      - PORT=3000
     volumes:
       - .:/app
       - /app/node_modules
     command: npm run dev
     profiles:
       - dev
+
+volumes:
+  smart-mcp-data:
+    driver: local

@@ -9,6 +9,9 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 
+// Import health server for Docker health checks
+import './health-server.js';
+
 // Import tool handlers
 import { smartBeginTool, handleSmartBegin } from './tools/smart_begin.js';
 import { smartPlanTool, handleSmartPlan } from './tools/smart_plan.js';

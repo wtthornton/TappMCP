@@ -262,7 +262,7 @@ This phase focuses on implementing secure, reliable, and performant infrastructu
 
 ## 🔗 **Dependencies**
 
-- **External**: Cloud infrastructure, security tools
+- **External**: Local infrastructure, security tools
 - **Internal**: Technical specifications, security requirements
 - **Integration**: Phase 1B operations preparation
 

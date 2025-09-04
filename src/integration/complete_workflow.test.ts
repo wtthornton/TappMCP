@@ -197,7 +197,7 @@ async function orchestrateWorkflow(projectId: string) {
     externalIntegrations: [
       { name: 'GitHub', type: 'tool', priority: 'high' },
       { name: 'Docker', type: 'tool', priority: 'medium' },
-      { name: 'AWS', type: 'service', priority: 'high' },
+      { name: 'Docker', type: 'service', priority: 'high' },
     ],
     qualityGates: {
       testCoverage: 90,

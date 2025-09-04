@@ -74,21 +74,15 @@ const smart_begin_1 = require("./smart_begin");
         (0, vitest_1.it)('should generate appropriate next steps based on user role', async () => {
             const strategyInput = {
                 projectName: 'strategy-project',
-                businessContext: {
-                    targetUsers: ['strategy-people'],
-                },
+                targetUsers: ['strategy-people'],
             };
             const coderInput = {
                 projectName: 'coder-project',
-                businessContext: {
-                    targetUsers: ['vibe-coders'],
-                },
+                targetUsers: ['vibe-coders'],
             };
             const founderInput = {
                 projectName: 'founder-project',
-                businessContext: {
-                    targetUsers: ['non-technical-founder'],
-                },
+                targetUsers: ['non-technical-founder'],
             };
             const strategyResult = (await (0, smart_begin_1.handleSmartBegin)(strategyInput));
             const coderResult = (await (0, smart_begin_1.handleSmartBegin)(coderInput));
@@ -107,7 +101,8 @@ const smart_begin_1 = require("./smart_begin");
             // Non-technical founders should get business-focused next steps
             (0, vitest_1.expect)(founderResult.data?.nextSteps.some(
             // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-            step => step.includes('business-focused documentation') || step.includes('technical foundation created'))).toBe(true);
+            step => step.includes('business-focused documentation') ||
+                step.includes('technical foundation created'))).toBe(true);
         });
         (0, vitest_1.it)('should calculate business value correctly', async () => {
             const input = {

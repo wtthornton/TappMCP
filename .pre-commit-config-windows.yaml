@@ -20,17 +20,23 @@ repos:
         name: eslint
         entry: npx eslint
         language: system
-        files: \.ts$
+        files: ^src/.*\.ts$
         args: [--fix]
+        pass_filenames: false
+        always_run: true
 
       - id: type-check
         name: type-check
         entry: npx tsc --noEmit
         language: system
-        files: \.ts$
+        files: ^src/.*\.ts$
+        pass_filenames: false
+        always_run: true
 
       - id: unit-tests
         name: unit-tests
         entry: npm test
         language: system
-        files: \.ts$
+        files: ^src/.*\.ts$
+        pass_filenames: false
+        always_run: true

@@ -78,7 +78,7 @@ This document provides detailed resource planning for Phase 1 implementation, in
 - 3+ years DevOps experience
 - Docker and containerization
 - CI/CD pipeline tools
-- Cloud infrastructure
+- Local infrastructure
 - Monitoring and logging tools
 
 **Timeline**: Weeks 1-2, 7-8 (4 weeks)
@@ -130,15 +130,15 @@ This document provides detailed resource planning for Phase 1 implementation, in
 - **Development Machines**: 3x high-performance laptops/desktops
   - 16GB+ RAM, 8+ core CPU, 512GB+ SSD
   - Cost: $2,000-3,000 per machine
-- **Testing Infrastructure**: Cloud-based testing environment
-  - AWS/GCP/Azure instances for testing
-  - Cost: $500-1,000/month
+- **Testing Infrastructure**: Local testing environment
+  - Docker containers for testing
+  - Cost: $0 (using existing infrastructure)
 
 #### **Software Licenses**
 - **Development Tools**: VS Code, JetBrains, etc.
   - Cost: $200-500 per developer
-- **Cloud Services**: AWS/GCP/Azure credits
-  - Cost: $1,000-2,000/month
+- **Development Services**: Local development tools
+  - Cost: $0 (using existing infrastructure)
 - **Security Tools**: Semgrep, OSV-Scanner, etc.
   - Cost: $500-1,000/month
 
@@ -250,7 +250,7 @@ This document provides detailed resource planning for Phase 1 implementation, in
 #### **Supporting Costs**
 - **Hardware**: $6,000-9,000 (3 development machines)
 - **Software Licenses**: $1,200-3,000 (6 developers × $200-500)
-- **Cloud Services**: $2,000-4,000 (2-3 months)
+- **Development Services**: $0 (using existing infrastructure)
 - **Security Tools**: $1,000-2,000 (2-3 months)
 - **Contingency (10%)**: $20,000-32,000
 

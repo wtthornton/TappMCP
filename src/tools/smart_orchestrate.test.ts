@@ -51,7 +51,7 @@ describe('smart_orchestrate tool', () => {
         externalIntegrations: [
           { name: 'GitHub', type: 'api', priority: 'high' },
           { name: 'Docker', type: 'tool', priority: 'medium' },
-          { name: 'AWS', type: 'service', priority: 'low' },
+          { name: 'Docker', type: 'service', priority: 'low' },
         ],
         qualityGates: {
           testCoverage: 90,
@@ -119,7 +119,7 @@ describe('smart_orchestrate tool', () => {
         externalIntegrations: [
           { name: 'GitHub', type: 'api', priority: 'high' },
           { name: 'Docker', type: 'tool', priority: 'medium' },
-          { name: 'AWS', type: 'service', priority: 'low' },
+          { name: 'Docker', type: 'service', priority: 'low' },
         ],
       };
 

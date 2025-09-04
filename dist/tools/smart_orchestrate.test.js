@@ -44,7 +44,7 @@ const smart_orchestrate_1 = require("./smart_orchestrate");
                 externalIntegrations: [
                     { name: 'GitHub', type: 'api', priority: 'high' },
                     { name: 'Docker', type: 'tool', priority: 'medium' },
-                    { name: 'AWS', type: 'service', priority: 'low' },
+                    { name: 'Docker', type: 'service', priority: 'low' },
                 ],
                 qualityGates: {
                     testCoverage: 90,
@@ -102,7 +102,7 @@ const smart_orchestrate_1 = require("./smart_orchestrate");
                 externalIntegrations: [
                     { name: 'GitHub', type: 'api', priority: 'high' },
                     { name: 'Docker', type: 'tool', priority: 'medium' },
-                    { name: 'AWS', type: 'service', priority: 'low' },
+                    { name: 'Docker', type: 'service', priority: 'low' },
                 ],
             };
             const result = (await (0, smart_orchestrate_1.handleSmartOrchestrate)(input));

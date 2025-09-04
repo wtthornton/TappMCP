@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import './health-server.js';
 declare class SmartMCPServer {
     private server;
     constructor();

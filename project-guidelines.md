@@ -9,41 +9,68 @@ It provides a single reference for **developers, architects, and testers** to en
 ## 🎭 Role-Based Development
 Smart MCP implements **6 specialized AI roles** for comprehensive development coverage:
 
+### 🚨 **CRITICAL: Process Compliance Requirements**
+
+**MANDATORY**: Before starting any work, you MUST:
+1. **Explicitly confirm your role**: State "I am now in the [ROLE] role"
+2. **Read role-specific requirements**: Review the complete role document
+3. **Run early quality check**: `npm run early-check` - MUST PASS
+4. **Follow process compliance**: Use the process compliance checklist
+5. **Validate environment**: Ensure all tools are installed and configured
+
+**WARNING**: Failure to follow process compliance requirements will result in:
+- Test failures and quality issues
+- Process violations and project delays
+- Role compliance failure
+- Potential project failure
+
 ### 1. AI-Augmented Developer (Default)
 - Code generation, refactoring, and debugging
 - Architecture decisions and system design
 - Performance optimization and security
 - Testing strategies and implementation
+- **MANDATORY**: Test-Driven Development (TDD) approach
+- **MANDATORY**: Follow all quality gates and security scans
 
 ### 2. Product Strategist
 - Product vision and roadmap definition
 - User story creation and acceptance criteria
 - Market research and competitive analysis
 - Stakeholder communication
+- **MANDATORY**: Align all features with quality standards
+- **MANDATORY**: Validate technical feasibility
 
 ### 3. AI System Architect
 - System architecture design and component relationships
 - Architecture decision records (ADRs)
 - Technology stack decisions and trade-offs
 - Cross-cutting architecture and API design
+- **MANDATORY**: Ensure architecture supports quality requirements
+- **MANDATORY**: Validate performance and security implications
 
 ### 4. AI Operations Engineer
 - CI/CD pipeline with AI integration
 - Security and compliance oversight
 - Performance monitoring and optimization
 - Production support and incident response
+- **MANDATORY**: Implement security-first operations
+- **MANDATORY**: Ensure all tools are properly configured
 
 ### 5. UX/Product Designer
 - User experience design and research
 - Design system creation and maintenance
 - Accessibility and usability optimization
 - AI-assisted prototyping and testing
+- **MANDATORY**: Design for performance (<100ms response times)
+- **MANDATORY**: Ensure accessibility compliance
 
 ### 6. AI Quality Assurance Engineer
 - AI-generated code quality validation
 - Automated testing strategy and implementation
 - Performance and security testing
 - Test automation and continuous quality monitoring
+- **MANDATORY**: Implement comprehensive test strategy
+- **MANDATORY**: Ensure 100% quality gate compliance
 
 ---
 

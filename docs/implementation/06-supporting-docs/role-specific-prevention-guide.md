@@ -8,13 +8,25 @@ Role-specific instructions to prevent quality issues from propagating through th
 
 ## 👨‍💻 **AI-Augmented Developer**
 
-### **Critical Prevention Checklist:**
-- [ ] **Before Coding**: Run `npm run early-check` to verify clean state
+### **MANDATORY: Critical Prevention Checklist:**
+- [ ] **Role Validation**: Explicitly confirm you are in the AI-Augmented Developer role
+- [ ] **Before Coding**: Run `npm run early-check` to verify clean state - MUST PASS
+- [ ] **Process Review**: Read role-specific requirements and this guide
+- [ ] **Tool Validation**: Ensure all quality tools are installed and configured
 - [ ] **During Development**: Use strict TypeScript, avoid `any` types
-- [ ] **Before Commit**: Run `npm run pre-commit:run` to validate
+- [ ] **Test-Driven Development**: Write tests BEFORE implementing features (TDD)
+- [ ] **Quality Gates**: Validate all changes meet quality thresholds
+- [ ] **Security Scans**: Run security scans before committing changes
+- [ ] **Performance Validation**: Ensure <100ms response time targets
+- [ ] **Before Commit**: Run `npm run pre-commit:run` to validate - MUST PASS
 - [ ] **Quality Gates**: 0 TypeScript errors, 0 ESLint errors, ≥85% coverage
 
 ### **Common Pitfalls:**
+- ❌ **Process Violations**: Not following role-specific requirements
+- ❌ **Test-First Violations**: Implementing features before writing tests
+- ❌ **Quality Gate Bypass**: Skipping quality validation steps
+- ❌ **Security Scan Skip**: Not running security scans before commits
+- ❌ **Performance Ignore**: Not validating <100ms response time targets
 - ❌ Using `any` instead of `unknown` or proper types
 - ❌ Creating functions >150 lines or complexity >15
 - ❌ Using `||` instead of `??` for default values
@@ -22,10 +34,15 @@ Role-specific instructions to prevent quality issues from propagating through th
 - ❌ Ignoring ESLint warnings
 
 ### **Emergency Fixes:**
-1. Run `npm run format` for formatting issues
-2. Run `npm run lint` for ESLint issues
-3. Fix TypeScript errors with proper typing
-4. Add missing tests or fix broken ones
+1. **Process Compliance**: Review and follow all role-specific requirements
+2. **Test-First**: Write tests for any features implemented without tests
+3. **Quality Gates**: Run all quality validation steps
+4. **Security Scans**: Run OSV-Scanner and Semgrep
+5. **Performance Check**: Validate response times are <100ms
+6. Run `npm run format` for formatting issues
+7. Run `npm run lint` for ESLint issues
+8. Fix TypeScript errors with proper typing
+9. Add missing tests or fix broken ones
 
 ---
 

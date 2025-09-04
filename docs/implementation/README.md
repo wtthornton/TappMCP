@@ -59,10 +59,24 @@ This folder contains all implementation-related documentation organized by phase
 - `simplified-metrics-framework.md` - Simplified metrics framework
 - `user-story-template.md` - User story template
 - `ux-enhancement-plan.md` - UX enhancement plan
+- **🚨 NEW**: `process-compliance-checklist.md` - **CRITICAL**: Process compliance checklist
+- **🚨 NEW**: `role-switching-guide.md` - **CRITICAL**: Role switching guide
 
 ### 📊 07-planning/
 **Planning and coordination**
 - `planning-summary.md` - Planning summary and coordination
+
+### 🚨 **CRITICAL: Process Compliance**
+**NEW**: Based on Phase 1C lessons learned, the following documents are MANDATORY:
+- `process-compliance-checklist.md` - **MUST READ**: Process compliance checklist
+- `role-switching-guide.md` - **MUST READ**: Role switching guide
+- `role-specific-prevention-guide.md` - **MUST READ**: Role-specific prevention guide
+
+**⚠️ WARNING**: Failure to follow these process compliance requirements will result in:
+- Test failures and quality issues
+- Process violations and project delays
+- Role compliance failure
+- Potential project failure
 
 ## 🎯 Next Steps
 

@@ -6,6 +6,8 @@ const index_js_1 = require("@modelcontextprotocol/sdk/server/index.js");
 const stdio_js_1 = require("@modelcontextprotocol/sdk/server/stdio.js");
 const types_js_1 = require("@modelcontextprotocol/sdk/types.js");
 const zod_1 = require("zod");
+// Import health server for Docker health checks
+require("./health-server.js");
 // Import tool handlers
 const smart_begin_js_1 = require("./tools/smart_begin.js");
 const smart_plan_js_1 = require("./tools/smart_plan.js");

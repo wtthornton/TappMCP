@@ -33,7 +33,7 @@ const smart_write_1 = require("../tools/smart_write");
         (0, vitest_1.expect)(beginResult.data?.nextSteps).toBeDefined();
         // Step 2: Generate code with smart_write using project context
         const writeInput = {
-            projectId: beginResult.data?.projectId || 'proj_test_123',
+            projectId: beginResult.data?.projectId ?? 'proj_test_123',
             featureDescription: 'Create a payment processing module for the e-commerce platform',
             codeType: 'api',
             targetRole: 'developer',
@@ -82,7 +82,7 @@ const smart_write_1 = require("../tools/smart_write");
         (0, vitest_1.expect)(beginResult.data?.projectStructure).toBeDefined();
         // Generate code that should align with project context
         const writeInput = {
-            projectId: beginResult.data?.projectId || 'proj_test_456',
+            projectId: beginResult.data?.projectId ?? 'proj_test_456',
             featureDescription: 'Create a secure authentication service for the fintech API',
             codeType: 'api',
             targetRole: 'developer',
@@ -105,23 +105,27 @@ const smart_write_1 = require("../tools/smart_write");
         (0, vitest_1.expect)(writeResult.data?.qualityMetrics.securityScore).toBeGreaterThan(90);
     });
     (0, vitest_1.it)('should handle different user roles in the workflow', async () => {
-        const roles = ['vibe-coder', 'strategy-person', 'non-technical-founder'];
-        for (const role of roles) {
+        const roleMappings = [
+            { testRole: 'vibe-coder', targetRole: 'developer' },
+            { testRole: 'strategy-person', targetRole: 'product-strategist' },
+            { testRole: 'non-technical-founder', targetRole: 'developer' },
+        ];
+        for (const { testRole, targetRole } of roleMappings) {
             // Initialize project
             const beginInput = {
-                projectName: `role-test-${role}`,
+                projectName: `role-test-${testRole}`,
                 projectType: 'web-app',
-                userRole: role,
+                userRole: testRole,
             };
             const beginResult = (await (0, smart_begin_1.handleSmartBegin)(beginInput));
             (0, vitest_1.expect)(beginResult.success).toBe(true);
             (0, vitest_1.expect)(beginResult.data?.nextSteps).toBeDefined();
             // Generate code
             const writeInput = {
-                projectId: beginResult.data?.projectId || `proj_test_${role}`,
+                projectId: beginResult.data?.projectId ?? `proj_test_${testRole}`,
                 featureDescription: 'Create a user management system',
                 codeType: 'api',
-                targetRole: 'developer',
+                targetRole,
                 businessContext: {
                     goals: ['user management', 'authentication'],
                     targetUsers: ['end users'],
@@ -130,7 +134,7 @@ const smart_write_1 = require("../tools/smart_write");
             };
             const writeResult = (await (0, smart_write_1.handleSmartWrite)(writeInput));
             (0, vitest_1.expect)(writeResult.success).toBe(true);
-            (0, vitest_1.expect)(writeResult.data?.generatedCode.files[0].content).toContain(role);
+            (0, vitest_1.expect)(writeResult.data?.generatedCode.files[0].content).toContain(targetRole);
         }
     });
     (0, vitest_1.it)('should maintain quality standards throughout the workflow', async () => {
@@ -149,7 +153,7 @@ const smart_write_1 = require("../tools/smart_write");
         (0, vitest_1.expect)(beginResult.data?.qualityGates).toBeDefined();
         // Generate code that should meet the quality standards
         const writeInput = {
-            projectId: beginResult.data?.projectId || 'proj_test_quality',
+            projectId: beginResult.data?.projectId ?? 'proj_test_quality',
             featureDescription: 'Create a high-quality data validation module',
             codeType: 'api',
             targetRole: 'developer',
@@ -183,7 +187,7 @@ const smart_write_1 = require("../tools/smart_write");
         (0, vitest_1.expect)(beginResult.data?.nextSteps.length).toBeGreaterThan(0);
         // Generate code
         const writeInput = {
-            projectId: beginResult.data?.projectId || 'proj_test_next_steps',
+            projectId: beginResult.data?.projectId ?? 'proj_test_next_steps',
             featureDescription: 'Create a basic CRUD API',
             codeType: 'api',
             targetRole: 'developer',

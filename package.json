@@ -32,7 +32,12 @@
     "security:semgrep": "semgrep --config=auto --config=p/owasp-top-ten .",
     "docker:build": "docker build -t smart-mcp .",
     "docker:dev": "docker-compose up -d",
-    "docker:test": "docker-compose exec app npm test"
+    "docker:test": "docker-compose exec app npm test",
+    "deploy:prod": "node scripts/deploy.js",
+    "deploy:docker": "docker-compose -f docker-compose.yml up -d",
+    "deploy:stop": "docker-compose down",
+    "deploy:logs": "docker-compose logs -f",
+    "deploy:health": "curl -f http://localhost:3000/health || exit 1"
   },
   "keywords": [
     "mcp",
@@ -56,6 +61,7 @@
     "lint-staged": "^16.1.6",
     "pre-commit": "^1.2.2",
     "prettier": "^3.6.2",
+    "retire": "^5.3.0",
     "ts-node": "^10.9.0",
     "typescript": "^5.0.0",
     "vitest": "^1.0.0"

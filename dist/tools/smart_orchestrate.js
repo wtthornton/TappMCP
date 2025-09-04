@@ -134,7 +134,16 @@ exports.smartOrchestrateTool = {
 function generateWorkflowPhases(_workflowType, orchestrationScope) {
     const phases = [];
     let order = 1;
-    if (orchestrationScope?.includePlanning) {
+    // Set default values if not provided
+    const scope = {
+        includePlanning: true,
+        includeDevelopment: true,
+        includeTesting: true,
+        includeDeployment: true,
+        includeMonitoring: true,
+        ...orchestrationScope,
+    };
+    if (scope.includePlanning) {
         phases.push({
             name: 'Planning Phase',
             description: 'Project planning and requirements gathering',
@@ -145,7 +154,7 @@ function generateWorkflowPhases(_workflowType, orchestrationScope) {
             deliverables: ['project-plan', 'requirements-doc', 'architecture-doc'],
         });
     }
-    if (orchestrationScope?.includeDevelopment) {
+    if (scope.includeDevelopment) {
         phases.push({
             name: 'Development Phase',
             description: 'Feature development and implementation',
@@ -156,7 +165,7 @@ function generateWorkflowPhases(_workflowType, orchestrationScope) {
             deliverables: ['source-code', 'unit-tests', 'integration-tests'],
         });
     }
-    if (orchestrationScope?.includeTesting) {
+    if (scope.includeTesting) {
         phases.push({
             name: 'Testing Phase',
             description: 'Comprehensive testing and quality assurance',
@@ -167,7 +176,7 @@ function generateWorkflowPhases(_workflowType, orchestrationScope) {
             deliverables: ['test-results', 'quality-report', 'bug-reports'],
         });
     }
-    if (orchestrationScope?.includeDeployment) {
+    if (scope.includeDeployment) {
         phases.push({
             name: 'Deployment Phase',
             description: 'Production deployment and configuration',
@@ -178,7 +187,7 @@ function generateWorkflowPhases(_workflowType, orchestrationScope) {
             deliverables: ['production-deployment', 'deployment-scripts', 'config-files'],
         });
     }
-    if (orchestrationScope?.includeMonitoring) {
+    if (scope.includeMonitoring) {
         phases.push({
             name: 'Monitoring Phase',
             description: 'Production monitoring and maintenance',
@@ -208,7 +217,10 @@ function generateIntegrations(externalIntegrations) {
 function generateQualityGatesList(qualityGates, phases) {
     const gates = [];
     phases.forEach((phase) => {
-        if (phase.qualityChecks.includes('test-coverage')) {
+        // Check for test coverage related quality checks
+        if (phase.qualityChecks.some(check => check.includes('test-coverage') ||
+            check.includes('test-execution') ||
+            check.includes('code-quality'))) {
             gates.push({
                 name: 'Test Coverage',
                 description: 'Code test coverage requirement',
@@ -218,7 +230,10 @@ function generateQualityGatesList(qualityGates, phases) {
                 status: 'pass',
             });
         }
-        if (phase.qualityChecks.includes('security-scan')) {
+        // Check for security related quality checks
+        if (phase.qualityChecks.some(check => check.includes('security-scan') ||
+            check.includes('security-test') ||
+            check.includes('security'))) {
             gates.push({
                 name: 'Security Score',
                 description: 'Security vulnerability assessment',
@@ -228,7 +243,10 @@ function generateQualityGatesList(qualityGates, phases) {
                 status: 'pass',
             });
         }
-        if (phase.qualityChecks.includes('performance-test')) {
+        // Check for performance related quality checks
+        if (phase.qualityChecks.some(check => check.includes('performance-test') ||
+            check.includes('performance-metrics') ||
+            check.includes('performance'))) {
             gates.push({
                 name: 'Performance Score',
                 description: 'System performance validation',

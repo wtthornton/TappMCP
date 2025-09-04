@@ -1,13 +1,44 @@
 # Phase 1C - Developer Tasks
 
-**Phase**: 1C - Smart Finish Tool MVP (3-Tool Integration)
-**Duration**: 2 weeks
-**Role**: AI-Augmented Developer
-**Status**: Ready for Implementation
+**Phase**: 1C - Smart Finish Tool MVP (3-Tool Integration)  
+**Duration**: 2 weeks  
+**Role**: AI-Augmented Developer  
+**Status**: Ready for Implementation  
+
+## 🚨 **CRITICAL: Process Compliance Requirements**
+
+### **MANDATORY: Before Starting Any Work**
+1. **Role Validation**: Confirm you are in the correct role (AI-Augmented Developer)
+2. **Early Quality Check**: Run `npm run early-check` to verify clean state
+3. **Process Review**: Read this entire document and role-specific requirements
+4. **Tool Validation**: Ensure all quality tools are installed and configured
+
+### **MANDATORY: During Development**
+1. **Test-Driven Development**: Write tests BEFORE implementing features
+2. **Pre-commit Checks**: Run `npm run pre-commit:run` before every commit
+3. **Quality Gates**: Validate all changes meet quality thresholds
+4. **Security Scans**: Run security scans before committing changes
+5. **Performance Validation**: Ensure <100ms response time targets
+
+### **MANDATORY: Before Committing**
+1. **TypeScript Compilation**: `npm run type-check` must pass
+2. **ESLint Validation**: `npm run lint:check` must pass
+3. **Formatting Check**: `npm run format:check` must pass
+4. **Unit Tests**: `npm run test` must pass
+5. **Pre-commit Hooks**: `npm run pre-commit:run` must pass
+6. **Security Scans**: OSV-Scanner and Semgrep must pass
+7. **Performance Check**: Response times must be <100ms
 
 ## 🎯 **Phase Overview**
 
 This phase focuses on implementing the Smart Finish Tool MVP with quality validation, project completion, and integration with the 3-tool system.
+
+**⚠️ WARNING**: Failure to follow process compliance requirements will result in:
+- Test failures
+- Quality issues
+- Process violations
+- Project delays
+- Role compliance failure
 
 ## 📋 **Core Development Tasks**
 
@@ -141,5 +172,5 @@ This phase focuses on implementing the Smart Finish Tool MVP with quality valida
 
 ---
 
-**Status**: Ready for Implementation
+**Status**: Ready for Implementation  
 **Next Phase**: Phase 2A - Smart Plan Tool MVP
