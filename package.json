@@ -16,14 +16,16 @@
   },
   "keywords": ["mcp", "ai", "development", "cursor", "claude"],
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^0.4.0"
+    "@modelcontextprotocol/sdk": "^0.4.0",
+    "zod": "^3.22.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "typescript": "^5.0.0",
     "vitest": "^1.0.0",
     "eslint": "^8.0.0",
-    "ts-node": "^10.9.0"
+    "ts-node": "^10.9.0",
+    "@vitest/coverage-v8": "^1.0.0"
   },
   "private": true
 }

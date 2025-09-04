@@ -49,8 +49,6 @@ class SmartMCPServer {
       {
         name: SERVER_NAME,
         version: SERVER_VERSION,
-      },
-      {
         capabilities: {
           tools: {},
         },
@@ -156,7 +154,7 @@ class SmartMCPServer {
 }
 
 // Start server if this file is run directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (require.main === module) {
   const server = new SmartMCPServer();
   server.start().catch((error) => {
     console.error("Server startup failed:", error);
