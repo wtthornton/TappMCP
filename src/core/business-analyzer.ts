@@ -1,0 +1,579 @@
+#!/usr/bin/env node
+
+import { z } from 'zod';
+
+// Business analysis schemas
+export const BusinessRequirementsSchema = z.object({
+  primaryGoals: z.array(z.string()),
+  targetUsers: z.array(z.string()),
+  successCriteria: z.array(z.string()),
+  constraints: z.array(z.string()),
+  riskFactors: z.array(z.string()),
+});
+
+export const StakeholderSchema = z.object({
+  name: z.string(),
+  role: z.string(),
+  influence: z.enum(['high', 'medium', 'low']),
+  interest: z.enum(['high', 'medium', 'low']),
+  requirements: z.array(z.string()),
+});
+
+export const ComplexityAssessmentSchema = z.object({
+  technical: z.enum(['low', 'medium', 'high', 'very-high']),
+  business: z.enum(['low', 'medium', 'high', 'very-high']),
+  integration: z.enum(['low', 'medium', 'high', 'very-high']),
+  overall: z.enum(['low', 'medium', 'high', 'very-high']),
+  factors: z.array(z.string()),
+});
+
+export const RiskSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string(),
+  category: z.enum(['technical', 'business', 'resource', 'timeline', 'quality']),
+  probability: z.enum(['low', 'medium', 'high']),
+  impact: z.enum(['low', 'medium', 'high']),
+  severity: z.enum(['low', 'medium', 'high', 'critical']),
+  mitigation: z.array(z.string()),
+});
+
+export const UserStorySchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  asA: z.string(),
+  iWant: z.string(),
+  soThat: z.string(),
+  acceptanceCriteria: z.array(z.string()),
+  priority: z.enum(['low', 'medium', 'high', 'critical']),
+  estimatedEffort: z.number().min(1).max(20),
+});
+
+export type BusinessRequirements = z.infer<typeof BusinessRequirementsSchema>;
+export type Stakeholder = z.infer<typeof StakeholderSchema>;
+export type ComplexityAssessment = z.infer<typeof ComplexityAssessmentSchema>;
+export type Risk = z.infer<typeof RiskSchema>;
+export type UserStory = z.infer<typeof UserStorySchema>;
+
+export class BusinessAnalyzer {
+  /**
+   * Analyze business requirements from a business request
+   */
+  analyzeRequirements(request: string): BusinessRequirements {
+    const startTime = Date.now();
+
+    // Extract primary goals using keyword analysis
+    const primaryGoals = this.extractGoals(request);
+
+    // Identify target users from the request
+    const targetUsers = this.extractTargetUsers(request);
+
+    // Define success criteria based on goals
+    const successCriteria = this.generateSuccessCriteria(primaryGoals);
+
+    // Identify constraints from the request
+    const constraints = this.extractConstraints(request);
+
+    // Identify potential risk factors
+    const riskFactors = this.identifyRiskFactors(request);
+
+    const processingTime = Date.now() - startTime;
+    if (processingTime > 100) {
+      // eslint-disable-next-line no-console
+      console.warn(`Business analysis took ${processingTime}ms - target is <100ms`);
+    }
+
+    return BusinessRequirementsSchema.parse({
+      primaryGoals,
+      targetUsers,
+      successCriteria,
+      constraints,
+      riskFactors,
+    });
+  }
+
+  /**
+   * Identify stakeholders from business requirements
+   */
+  identifyStakeholders(request: string): Stakeholder[] {
+    const stakeholders: Stakeholder[] = [];
+
+    // Analyze request for stakeholder mentions
+    const stakeholderPatterns = [
+      {
+        pattern: /users?|customers?/gi,
+        role: 'End User',
+        influence: 'high' as const,
+        interest: 'high' as const,
+      },
+      {
+        pattern: /managers?|leadership/gi,
+        role: 'Manager',
+        influence: 'high' as const,
+        interest: 'medium' as const,
+      },
+      {
+        pattern: /developers?|engineers?/gi,
+        role: 'Developer',
+        influence: 'medium' as const,
+        interest: 'high' as const,
+      },
+      {
+        pattern: /stakeholders?/gi,
+        role: 'Business Stakeholder',
+        influence: 'high' as const,
+        interest: 'high' as const,
+      },
+      {
+        pattern: /admins?|administrators?/gi,
+        role: 'Administrator',
+        influence: 'medium' as const,
+        interest: 'medium' as const,
+      },
+    ];
+
+    stakeholderPatterns.forEach(pattern => {
+      if (pattern.pattern.test(request)) {
+        stakeholders.push({
+          name: `${pattern.role} Group`,
+          role: pattern.role,
+          influence: pattern.influence,
+          interest: pattern.interest,
+          requirements: this.extractStakeholderRequirements(request, pattern.role),
+        });
+      }
+    });
+
+    // Always include default stakeholders if none found
+    if (stakeholders.length === 0) {
+      stakeholders.push({
+        name: 'Primary Users',
+        role: 'End User',
+        influence: 'high',
+        interest: 'high',
+        requirements: ['Functional system', 'Good user experience', 'Reliable performance'],
+      });
+    }
+
+    return stakeholders;
+  }
+
+  /**
+   * Assess project complexity
+   */
+  assessComplexity(request: string): ComplexityAssessment {
+    const factors: string[] = [];
+    let technicalScore = 0;
+    let businessScore = 0;
+    let integrationScore = 0;
+
+    // Technical complexity indicators
+    const technicalPatterns = [
+      { pattern: /api|integration|external/gi, score: 2, factor: 'External API integration' },
+      { pattern: /real-time|websocket|streaming/gi, score: 3, factor: 'Real-time processing' },
+      { pattern: /database|storage|persistence/gi, score: 2, factor: 'Data persistence' },
+      {
+        pattern: /authentication|security|encryption/gi,
+        score: 2,
+        factor: 'Security requirements',
+      },
+      { pattern: /scalability|performance|load/gi, score: 3, factor: 'Performance requirements' },
+    ];
+
+    // Business complexity indicators
+    const businessPatterns = [
+      { pattern: /workflow|process|approval/gi, score: 2, factor: 'Complex business workflow' },
+      { pattern: /multiple users|roles|permissions/gi, score: 2, factor: 'Multi-user system' },
+      { pattern: /reporting|analytics|dashboard/gi, score: 2, factor: 'Reporting requirements' },
+      { pattern: /compliance|regulation|audit/gi, score: 3, factor: 'Compliance requirements' },
+    ];
+
+    // Integration complexity indicators
+    const integrationPatterns = [
+      { pattern: /third.party|external service/gi, score: 2, factor: 'Third-party integration' },
+      { pattern: /legacy|existing system/gi, score: 3, factor: 'Legacy system integration' },
+      { pattern: /multiple systems|integration/gi, score: 2, factor: 'Multi-system integration' },
+    ];
+
+    // Calculate scores
+    [technicalPatterns, businessPatterns, integrationPatterns].forEach((patterns, index) => {
+      patterns.forEach(({ pattern, score, factor }) => {
+        if (pattern.test(request)) {
+          if (index === 0) technicalScore += score;
+          if (index === 1) businessScore += score;
+          if (index === 2) integrationScore += score;
+          factors.push(factor);
+        }
+      });
+    });
+
+    // Convert scores to complexity levels
+    const technical = this.scoreToComplexity(technicalScore);
+    const business = this.scoreToComplexity(businessScore);
+    const integration = this.scoreToComplexity(integrationScore);
+
+    // Calculate overall complexity
+    const overallScore = Math.max(technicalScore, businessScore, integrationScore);
+    const overall = this.scoreToComplexity(overallScore);
+
+    return ComplexityAssessmentSchema.parse({
+      technical,
+      business,
+      integration,
+      overall,
+      factors,
+    });
+  }
+
+  /**
+   * Identify risks from business request
+   */
+  identifyRisks(request: string): Risk[] {
+    const risks: Risk[] = [];
+
+    // Define risk patterns
+    const riskPatterns = [
+      {
+        keywords: ['tight deadline', 'urgent', 'asap', 'immediately'],
+        risk: {
+          id: 'timeline-pressure',
+          name: 'Timeline Pressure',
+          description: 'Tight deadlines may compromise quality',
+          category: 'timeline' as const,
+          probability: 'high' as const,
+          impact: 'medium' as const,
+          severity: 'medium' as const,
+          mitigation: ['Prioritize features', 'Implement MVP approach', 'Regular progress reviews'],
+        },
+      },
+      {
+        keywords: ['complex', 'complicated', 'many features', 'extensive'],
+        risk: {
+          id: 'scope-creep',
+          name: 'Scope Creep',
+          description: 'Project scope may expand beyond initial requirements',
+          category: 'business' as const,
+          probability: 'medium' as const,
+          impact: 'high' as const,
+          severity: 'high' as const,
+          mitigation: [
+            'Clear requirements documentation',
+            'Regular stakeholder reviews',
+            'Change control process',
+          ],
+        },
+      },
+      {
+        keywords: ['new technology', 'unfamiliar', 'cutting edge', 'experimental'],
+        risk: {
+          id: 'technical-risk',
+          name: 'Technical Risk',
+          description: 'New or unfamiliar technology may cause delays',
+          category: 'technical' as const,
+          probability: 'medium' as const,
+          impact: 'high' as const,
+          severity: 'high' as const,
+          mitigation: ['Proof of concept', 'Technical spikes', 'Expert consultation'],
+        },
+      },
+      {
+        keywords: ['limited budget', 'cost', 'expensive', 'cheap'],
+        risk: {
+          id: 'budget-constraint',
+          name: 'Budget Constraints',
+          description: 'Limited budget may restrict project scope or quality',
+          category: 'resource' as const,
+          probability: 'medium' as const,
+          impact: 'medium' as const,
+          severity: 'medium' as const,
+          mitigation: ['Phased delivery', 'Cost monitoring', 'Regular budget reviews'],
+        },
+      },
+      {
+        keywords: ['integration', 'api', 'external system', 'third-party'],
+        risk: {
+          id: 'integration-risk',
+          name: 'Integration Complexity',
+          description: 'External integrations may cause delays and compatibility issues',
+          category: 'technical' as const,
+          probability: 'high' as const,
+          impact: 'high' as const,
+          severity: 'high' as const,
+          mitigation: ['API testing', 'Mock services', 'Fallback strategies'],
+        },
+      },
+      {
+        keywords: ['security', 'compliance', 'authentication', 'authorization'],
+        risk: {
+          id: 'security-compliance',
+          name: 'Security and Compliance',
+          description: 'Security requirements may add complexity and development time',
+          category: 'quality' as const,
+          probability: 'medium' as const,
+          impact: 'high' as const,
+          severity: 'high' as const,
+          mitigation: ['Security audits', 'Compliance reviews', 'Security testing'],
+        },
+      },
+      {
+        keywords: ['weeks', 'months', 'deadline', 'deliver'],
+        risk: {
+          id: 'tight-schedule',
+          name: 'Aggressive Timeline',
+          description: 'Tight delivery schedule may impact quality and scope',
+          category: 'timeline' as const,
+          probability: 'high' as const,
+          impact: 'high' as const,
+          severity: 'high' as const,
+          mitigation: ['MVP approach', 'Parallel development', 'Resource scaling'],
+        },
+      },
+    ];
+
+    // Check for risk indicators
+    const lowerRequest = request.toLowerCase();
+    riskPatterns.forEach(({ keywords, risk }) => {
+      if (keywords.some(keyword => lowerRequest.includes(keyword))) {
+        risks.push(risk);
+      }
+    });
+
+    // Always include default risks
+    if (risks.length === 0) {
+      risks.push({
+        id: 'general-complexity',
+        name: 'General Project Complexity',
+        description: 'Standard project risks related to complexity and execution',
+        category: 'business',
+        probability: 'medium',
+        impact: 'medium',
+        severity: 'medium',
+        mitigation: ['Regular reviews', 'Incremental delivery', 'Quality gates'],
+      });
+    }
+
+    return risks;
+  }
+
+  /**
+   * Generate user stories from business requirements
+   */
+  generateUserStories(requirements: BusinessRequirements): UserStory[] {
+    const stories: UserStory[] = [];
+
+    // Generate stories from primary goals
+    requirements.primaryGoals.forEach((goal, index) => {
+      const story: UserStory = {
+        id: `story-${index + 1}`,
+        title: `Implement ${goal}`,
+        description: `User story for implementing ${goal}`,
+        asA: requirements.targetUsers[0] || 'user',
+        iWant: `to ${goal.toLowerCase()}`,
+        soThat: 'I can achieve my business objectives',
+        acceptanceCriteria: [
+          `System implements ${goal}`,
+          'Solution meets performance requirements',
+          'User experience is intuitive',
+        ],
+        priority: index === 0 ? 'high' : 'medium',
+        estimatedEffort: this.estimateStoryEffort(goal),
+      };
+      stories.push(story);
+    });
+
+    // Add quality-focused stories
+    stories.push({
+      id: 'story-quality',
+      title: 'Ensure System Quality',
+      description: 'Implement quality assurance and testing',
+      asA: 'stakeholder',
+      iWant: 'to ensure the system is reliable and secure',
+      soThat: 'users have confidence in the solution',
+      acceptanceCriteria: [
+        'System passes all quality gates',
+        'Test coverage ≥85%',
+        'Performance targets are met',
+        'Security requirements are satisfied',
+      ],
+      priority: 'high',
+      estimatedEffort: 8,
+    });
+
+    return stories;
+  }
+
+  // Private helper methods
+  private extractGoals(request: string): string[] {
+    const goals: string[] = [];
+
+    // Primary goal extraction patterns
+    const goalPatterns = [
+      /(?:want to|need to|should|must|goal is to|objective is to)\s+([^.!?]+)/gi,
+      /(?:implement|create|build|develop|design)\s+([^.!?]+)/gi,
+    ];
+
+    goalPatterns.forEach(pattern => {
+      const matches = request.matchAll(pattern);
+      for (const match of matches) {
+        if (match[1]) {
+          goals.push(match[1].trim());
+        }
+      }
+    });
+
+    // Extract additional goals from feature mentions
+    const featureKeywords = ['with', 'including', 'featuring', 'and'];
+    featureKeywords.forEach(keyword => {
+      const parts = request.split(keyword);
+      if (parts.length > 1) {
+        parts.slice(1).forEach(part => {
+          const cleanPart = part.trim().split(/[.!?]/)[0];
+          if (cleanPart.length > 5 && cleanPart.length < 100) {
+            goals.push(`Implement ${cleanPart.trim()}`);
+          }
+        });
+      }
+    });
+
+    // Default goals if none extracted
+    if (goals.length === 0) {
+      goals.push('Deliver functional solution');
+      goals.push('Meet user requirements');
+    }
+
+    // Remove duplicates and ensure at least 2 unique goals
+    const uniqueGoals = [...new Set(goals)];
+    if (uniqueGoals.length === 1 && goals.length === 1) {
+      uniqueGoals.push('Ensure high-quality implementation');
+      uniqueGoals.push('Meet user requirements and expectations');
+    }
+
+    return uniqueGoals.slice(0, 5); // Limit to 5 goals
+  }
+
+  private extractTargetUsers(request: string): string[] {
+    const users: string[] = [];
+    const userPatterns = [
+      /(?:users?|customers?|clients?|stakeholders?)\s+(?:are|include|such as)?\s*([^.!?]+)/gi,
+      /(?:for|targeting|serving)\s+([^.!?]*(?:users?|customers?|clients?)[^.!?]*)/gi,
+    ];
+
+    userPatterns.forEach(pattern => {
+      const matches = request.matchAll(pattern);
+      for (const match of matches) {
+        if (match[1]) {
+          users.push(match[1].trim());
+        }
+      }
+    });
+
+    // Default users if none found
+    if (users.length === 0) {
+      users.push('End users');
+      users.push('System administrators');
+    }
+
+    return users.slice(0, 3);
+  }
+
+  private generateSuccessCriteria(goals: string[]): string[] {
+    return goals.map(goal => `Successfully ${goal.toLowerCase()}`);
+  }
+
+  private extractConstraints(request: string): string[] {
+    const constraints: string[] = [];
+    const constraintPatterns = [
+      /(?:budget|cost)\s+(?:is|limited to|maximum)\s+([^.!?]+)/gi,
+      /(?:deadline|timeline)\s+(?:is|by)\s+([^.!?]+)/gi,
+      /(?:must use|required to use|constraint)\s+([^.!?]+)/gi,
+    ];
+
+    constraintPatterns.forEach(pattern => {
+      const matches = request.matchAll(pattern);
+      for (const match of matches) {
+        if (match[1]) {
+          constraints.push(match[1].trim());
+        }
+      }
+    });
+
+    // Default constraints
+    if (constraints.length === 0) {
+      constraints.push('Quality standards must be met');
+      constraints.push('Performance requirements must be satisfied');
+    }
+
+    return constraints;
+  }
+
+  private identifyRiskFactors(request: string): string[] {
+    const riskFactors: string[] = [];
+    const riskPatterns = [
+      'Tight timeline',
+      'Complex requirements',
+      'Multiple stakeholders',
+      'Technical complexity',
+      'Integration challenges',
+    ];
+
+    // Add basic risk factors based on patterns
+    riskPatterns.forEach(pattern => {
+      if (request.toLowerCase().includes(pattern.toLowerCase())) {
+        riskFactors.push(pattern);
+      }
+    });
+
+    // Simple risk factor identification
+    if (request.includes('urgent') || request.includes('asap')) {
+      riskFactors.push('Tight timeline');
+    }
+    if (request.includes('complex') || request.includes('many')) {
+      riskFactors.push('Complex requirements');
+    }
+    if (request.includes('integrate') || request.includes('external')) {
+      riskFactors.push('Integration challenges');
+    }
+
+    // Default risk factors if none identified
+    if (riskFactors.length === 0) {
+      riskFactors.push('Standard project risks');
+    }
+
+    return riskFactors;
+  }
+
+  private extractStakeholderRequirements(request: string, role: string): string[] {
+    const requirements = ['Functional system', 'Good user experience'];
+
+    // Add role-specific requirements based on request content
+    if (request.toLowerCase().includes('security')) {
+      requirements.push('Security compliance');
+    }
+    if (request.toLowerCase().includes('performance')) {
+      requirements.push('High performance');
+    }
+
+    if (role === 'Manager') {
+      requirements.push('Cost-effective solution', 'Timely delivery');
+    } else if (role === 'Developer') {
+      requirements.push('Maintainable code', 'Good documentation');
+    } else if (role === 'Administrator') {
+      requirements.push('System monitoring', 'Easy maintenance');
+    }
+
+    return requirements;
+  }
+
+  private scoreToComplexity(score: number): 'low' | 'medium' | 'high' | 'very-high' {
+    if (score >= 8) return 'very-high';
+    if (score >= 5) return 'high';
+    if (score >= 2) return 'medium';
+    return 'low';
+  }
+
+  private estimateStoryEffort(goal: string): number {
+    const complexity = goal.length + goal.split(' ').length * 2;
+    return Math.min(Math.max(Math.round(complexity / 10), 3), 13);
+  }
+}

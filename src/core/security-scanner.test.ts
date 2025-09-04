@@ -232,7 +232,7 @@ describe('SecurityScanner', () => {
     it('should find source files', () => {
       const scanner = new SecurityScanner('/test');
       const findSourceFiles = (scanner as any).findSourceFiles.bind(scanner);
-      
+
       const files = findSourceFiles();
       expect(Array.isArray(files)).toBe(true);
     });

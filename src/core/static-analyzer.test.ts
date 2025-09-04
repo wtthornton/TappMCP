@@ -92,7 +92,9 @@ describe('StaticAnalyzer', () => {
       (execSync as any).mockImplementation((command: string) => {
         if (command.includes('tsc')) {
           const error = new Error('TypeScript errors found');
-          (error as any).stdout = Buffer.from('src/test.ts(5,10): error TS2304: Cannot find name "nonexistent".');
+          (error as any).stdout = Buffer.from(
+            'src/test.ts(5,10): error TS2304: Cannot find name "nonexistent".'
+          );
           throw error;
         }
         return '';
@@ -109,7 +111,7 @@ describe('StaticAnalyzer', () => {
     it('should handle no source files found', async () => {
       const emptyAnalyzer = new StaticAnalyzer('/nonexistent');
       const result = await emptyAnalyzer.runStaticAnalysis();
-      
+
       expect(result.metrics.complexity).toBeGreaterThanOrEqual(0);
       expect(result.metrics.maintainability).toBeGreaterThanOrEqual(0);
       expect(result.metrics.duplication).toBeGreaterThanOrEqual(0);
@@ -217,26 +219,26 @@ describe('StaticAnalyzer', () => {
     it('should find source files recursively', () => {
       const analyzer = new StaticAnalyzer('/test');
       const findSourceFiles = (analyzer as any).findSourceFiles.bind(analyzer);
-      
+
       const files = findSourceFiles();
       expect(Array.isArray(files)).toBe(true);
     });
 
     it('should handle directory read errors', () => {
       const analyzer = new StaticAnalyzer('/test');
-      
+
       // Mock fs to simulate permission errors
       const mockFs = vi.fn().mockImplementation(() => {
         throw new Error('Permission denied');
       });
-      
+
       vi.doMock('fs', () => ({
         readdirSync: mockFs,
-        statSync: vi.fn()
+        statSync: vi.fn(),
       }));
 
       const findSourceFiles = (analyzer as any).findSourceFiles.bind(analyzer);
-      
+
       // Should not throw error but return empty array or handle gracefully
       expect(() => findSourceFiles()).not.toThrow();
     });

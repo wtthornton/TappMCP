@@ -1,0 +1,42 @@
+{
+  "application": {
+    "name": "smart-mcp",
+    "version": "0.1.0",
+    "environment": "production",
+    "port": 3000
+  },
+  "security": {
+    "enableCors": true,
+    "maxRequestSize": "10mb",
+    "rateLimit": {
+      "windowMs": 900000,
+      "max": 100
+    }
+  },
+  "logging": {
+    "level": "info",
+    "format": "json",
+    "enableConsole": true,
+    "enableFile": false
+  },
+  "health": {
+    "checkInterval": 30000,
+    "timeout": 10000,
+    "retries": 3
+  },
+  "performance": {
+    "maxMemoryUsage": "512MB",
+    "requestTimeout": 30000,
+    "enableCompression": true
+  },
+  "data": {
+    "directory": "/app/data",
+    "maxFileSize": "10MB",
+    "enablePersistence": true
+  },
+  "monitoring": {
+    "enabled": false,
+    "endpoint": null,
+    "metricsInterval": 60000
+  }
+}
