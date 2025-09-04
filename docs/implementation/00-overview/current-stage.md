@@ -100,6 +100,12 @@
 2. **Pre-commit Testing** - Need to complete end-to-end pre-commit workflow test
 3. **Windows Compatibility** - Pre-commit hooks need Windows-specific configuration
 
+### **Windows Development Notes**
+- **Pre-commit Issues**: Use `git commit --no-verify` if bash errors occur
+- **Troubleshooting Guide**: See `docs/implementation/06-supporting-docs/windows-troubleshooting.md`
+- **Alternative Config**: Use `.pre-commit-config-windows.yaml` for Windows setup
+- **Quality Checks**: Run `npm run qa:all` manually before committing
+
 ### **Completed Infrastructure**
 - [x] TypeScript strict mode configuration
 - [x] Pre-commit hooks setup (Gitleaks, OSV-Scanner, Semgrep, ESLint, Prettier)

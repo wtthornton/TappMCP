@@ -68,6 +68,12 @@ docker-compose.yml # Development and production containers
 - **Docker** for Linux runtime environment
 - **Bash** (available on Windows via WSL, Git Bash, or similar)
 
+## Windows Development Setup
+- **Pre-commit Hooks**: Use `git commit --no-verify` if bash issues occur
+- **Alternative**: Use `.pre-commit-config-windows.yaml` for Windows-specific configuration
+- **Bash Requirements**: Ensure Git Bash or WSL is properly configured
+- **Python PATH**: Add Python Scripts directory to system PATH for pre-commit
+
 ## Development Environment
 - **Development OS**: Windows (with bash available)
 - **Runtime OS**: Linux (Docker container)

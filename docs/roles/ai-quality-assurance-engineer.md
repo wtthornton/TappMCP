@@ -58,6 +58,10 @@ Quality assurance and testing standards ensuring comprehensive test coverage, se
 - Use proper type assertions with explicit interfaces
 - Match parameter names exactly between tests and implementation
 - Test expectations must match actual implementation, not assumptions
+- Windows development requires additional setup and troubleshooting steps
+- Pre-commit hooks may fail on Windows due to bash requirements
+- Use `git commit --no-verify` as fallback when pre-commit fails
+- Document Windows-specific issues and solutions for team reference
 
 ### 🛠️ Quality Standards
 - **Test Coverage**: Comprehensive coverage for all features with ≥85% threshold

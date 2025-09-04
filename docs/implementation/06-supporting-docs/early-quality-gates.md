@@ -29,7 +29,14 @@ Prevent quality issues from propagating through the SDLC by catching them early 
 1. **Before Coding**: Run `npm run qa:all` to check current state
 2. **During Coding**: Use IDE extensions for real-time feedback
 3. **Before Commit**: Run `npm run pre-commit:run` to validate
-4. **After Commit**: Monitor CI/CD pipeline results
+4. **If Pre-commit Fails on Windows**: Use `git commit --no-verify` and fix issues manually
+5. **After Commit**: Monitor CI/CD pipeline results
+
+### **Windows-Specific Workflow:**
+1. **Pre-commit Issues**: If bash errors occur, use `git commit --no-verify`
+2. **Manual Validation**: Run `npm run qa:all` before committing
+3. **Alternative Config**: Use `.pre-commit-config-windows.yaml` for Windows setup
+4. **Bash Setup**: Ensure Git Bash or WSL is properly configured
 
 ### **Quality Thresholds:**
 - **ESLint Errors**: 0 (blocking)
