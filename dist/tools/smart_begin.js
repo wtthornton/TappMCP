@@ -6,7 +6,7 @@ exports.handleSmartBegin = handleSmartBegin;
 const zod_1 = require("zod");
 // Input schema for smart_begin tool
 const SmartBeginInputSchema = zod_1.z.object({
-    projectName: zod_1.z.string().min(1, "Project name is required"),
+    projectName: zod_1.z.string().min(1, 'Project name is required'),
     description: zod_1.z.string().optional(),
     techStack: zod_1.z.array(zod_1.z.string()).default([]),
     targetUsers: zod_1.z.array(zod_1.z.string()).default([]),
@@ -23,7 +23,7 @@ const SmartBeginOutputSchema = zod_1.z.object({
     qualityGates: zod_1.z.array(zod_1.z.object({
         name: zod_1.z.string(),
         description: zod_1.z.string(),
-        status: zod_1.z.enum(["enabled", "disabled"]),
+        status: zod_1.z.enum(['enabled', 'disabled']),
     })),
     nextSteps: zod_1.z.array(zod_1.z.string()),
     businessValue: zod_1.z.object({
@@ -39,39 +39,39 @@ const SmartBeginOutputSchema = zod_1.z.object({
 });
 // Tool definition
 exports.smartBeginTool = {
-    name: "smart_begin",
-    description: "Initialize a new project with proper structure, quality gates, and business context for non-technical users",
+    name: 'smart_begin',
+    description: 'Initialize a new project with proper structure, quality gates, and business context for non-technical users',
     inputSchema: {
-        type: "object",
+        type: 'object',
         properties: {
             projectName: {
-                type: "string",
-                description: "Name of the project to initialize",
+                type: 'string',
+                description: 'Name of the project to initialize',
                 minLength: 1,
             },
             description: {
-                type: "string",
-                description: "Optional description of the project",
+                type: 'string',
+                description: 'Optional description of the project',
             },
             techStack: {
-                type: "array",
-                items: { type: "string" },
+                type: 'array',
+                items: { type: 'string' },
                 description: "Array of technologies to use (e.g., ['typescript', 'nodejs', 'react'])",
                 default: [],
             },
             targetUsers: {
-                type: "array",
-                items: { type: "string" },
+                type: 'array',
+                items: { type: 'string' },
                 description: "Array of target user personas (e.g., ['strategy-people', 'vibe-coders', 'non-technical-founders'])",
                 default: [],
             },
             businessGoals: {
-                type: "array",
-                items: { type: "string" },
-                description: "Optional array of business goals for the project",
+                type: 'array',
+                items: { type: 'string' },
+                description: 'Optional array of business goals for the project',
             },
         },
-        required: ["projectName"],
+        required: ['projectName'],
     },
 };
 // Business context types (for future use)
@@ -87,35 +87,23 @@ exports.smartBeginTool = {
 // }
 // Project structure generator
 function generateProjectStructure(_projectName, techStack) {
-    const baseFolders = [
-        "src",
-        "docs",
-        "tests",
-        "scripts",
-        "config",
-    ];
-    const baseFiles = [
-        "README.md",
-        "package.json",
-        "tsconfig.json",
-        ".gitignore",
-        ".env.example",
-    ];
+    const baseFolders = ['src', 'docs', 'tests', 'scripts', 'config'];
+    const baseFiles = ['README.md', 'package.json', 'tsconfig.json', '.gitignore', '.env.example'];
     const configFiles = [
-        "tsconfig.json",
-        "package.json",
-        ".eslintrc.json",
-        ".prettierrc",
-        "vitest.config.ts",
+        'tsconfig.json',
+        'package.json',
+        '.eslintrc.json',
+        '.prettierrc',
+        'vitest.config.ts',
     ];
     // Add tech-stack specific folders and files
-    if (techStack.includes("react")) {
-        baseFolders.push("public", "src/components", "src/pages");
-        baseFiles.push("index.html", "src/App.tsx", "src/index.tsx");
+    if (techStack.includes('react')) {
+        baseFolders.push('public', 'src/components', 'src/pages');
+        baseFiles.push('index.html', 'src/App.tsx', 'src/index.tsx');
     }
-    if (techStack.includes("nodejs") || techStack.includes("express")) {
-        baseFolders.push("src/routes", "src/middleware", "src/controllers");
-        baseFiles.push("src/server.ts", "src/app.ts");
+    if (techStack.includes('nodejs') || techStack.includes('express')) {
+        baseFolders.push('src/routes', 'src/middleware', 'src/controllers');
+        baseFiles.push('src/server.ts', 'src/app.ts');
     }
     return {
         folders: baseFolders,
@@ -127,37 +115,37 @@ function generateProjectStructure(_projectName, techStack) {
 function generateQualityGates(techStack) {
     const baseGates = [
         {
-            name: "TypeScript Strict Mode",
-            description: "Enforces strict TypeScript compilation",
-            status: "enabled",
+            name: 'TypeScript Strict Mode',
+            description: 'Enforces strict TypeScript compilation',
+            status: 'enabled',
         },
         {
-            name: "ESLint Code Quality",
-            description: "Enforces code quality standards",
-            status: "enabled",
+            name: 'ESLint Code Quality',
+            description: 'Enforces code quality standards',
+            status: 'enabled',
         },
         {
-            name: "Prettier Formatting",
-            description: "Enforces consistent code formatting",
-            status: "enabled",
+            name: 'Prettier Formatting',
+            description: 'Enforces consistent code formatting',
+            status: 'enabled',
         },
         {
-            name: "Security Scanning",
-            description: "Scans for security vulnerabilities",
-            status: "enabled",
+            name: 'Security Scanning',
+            description: 'Scans for security vulnerabilities',
+            status: 'enabled',
         },
         {
-            name: "Test Coverage",
-            description: "Enforces minimum test coverage",
-            status: "enabled",
+            name: 'Test Coverage',
+            description: 'Enforces minimum test coverage',
+            status: 'enabled',
         },
     ];
     // Add tech-stack specific gates
-    if (techStack.includes("react")) {
+    if (techStack.includes('react')) {
         baseGates.push({
-            name: "React Best Practices",
-            description: "Enforces React development best practices",
-            status: "enabled",
+            name: 'React Best Practices',
+            description: 'Enforces React development best practices',
+            status: 'enabled',
         });
     }
     return baseGates;
@@ -166,23 +154,23 @@ function generateQualityGates(techStack) {
 function generateNextSteps(projectName, targetUsers) {
     const baseSteps = [
         `Project '${projectName}' initialized successfully`,
-        "Review generated project structure and configuration",
+        'Review generated project structure and configuration',
         "Install dependencies with 'npm install'",
         "Run tests with 'npm test'",
         "Start development with 'npm run dev'",
     ];
     // Add user-specific next steps
-    if (targetUsers.includes("strategy-people")) {
-        baseSteps.push("Review business value metrics and cost prevention summary");
-        baseSteps.push("Share project structure with stakeholders");
+    if (targetUsers.includes('strategy-people')) {
+        baseSteps.push('Review business value metrics and cost prevention summary');
+        baseSteps.push('Share project structure with stakeholders');
     }
-    if (targetUsers.includes("vibe-coders")) {
-        baseSteps.push("Configure your preferred development environment");
-        baseSteps.push("Review code quality standards and best practices");
+    if (targetUsers.includes('vibe-coders')) {
+        baseSteps.push('Configure your preferred development environment');
+        baseSteps.push('Review code quality standards and best practices');
     }
-    if (targetUsers.includes("non-technical-founders")) {
-        baseSteps.push("Review business-focused documentation");
-        baseSteps.push("Understand the technical foundation created");
+    if (targetUsers.includes('non-technical-founders')) {
+        baseSteps.push('Review business-focused documentation');
+        baseSteps.push('Understand the technical foundation created');
     }
     return baseSteps;
 }
@@ -191,20 +179,20 @@ function calculateBusinessValue(_projectName, techStack) {
     // Base cost prevention from proper project setup
     let costPrevention = 10000; // Base $10K prevention
     // Add tech-stack specific prevention
-    if (techStack.includes("typescript")) {
+    if (techStack.includes('typescript')) {
         costPrevention += 5000; // TypeScript prevents type-related bugs
     }
-    if (techStack.includes("react")) {
+    if (techStack.includes('react')) {
         costPrevention += 3000; // React best practices prevent UI issues
     }
     // Time saved in hours
     const timeSaved = 2.5; // 2.5 hours saved vs manual setup
     const qualityImprovements = [
-        "Production-ready project structure",
-        "Security scanning and vulnerability prevention",
-        "Code quality enforcement",
-        "Automated testing framework",
-        "Consistent development standards",
+        'Production-ready project structure',
+        'Security scanning and vulnerability prevention',
+        'Code quality enforcement',
+        'Automated testing framework',
+        'Consistent development standards',
     ];
     return {
         costPrevention,
@@ -253,7 +241,7 @@ async function handleSmartBegin(input) {
         };
     }
     catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
         return {
             success: false,
             error: errorMessage,

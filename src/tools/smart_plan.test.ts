@@ -23,7 +23,7 @@ describe('smart_plan tool', () => {
         planType: 'development',
       };
 
-      const result = await handleSmartPlan(input) as SmartPlanResponse;
+      const result = (await handleSmartPlan(input)) as SmartPlanResponse;
 
       expect(result.success).toBe(true);
       expect(result.data).toBeDefined();
@@ -65,7 +65,7 @@ describe('smart_plan tool', () => {
         },
       };
 
-      const result = await handleSmartPlan(input) as SmartPlanResponse;
+      const result = (await handleSmartPlan(input)) as SmartPlanResponse;
 
       expect(result.success).toBe(true);
       expect(result.data).toBeDefined();
@@ -86,7 +86,7 @@ describe('smart_plan tool', () => {
           planType,
         };
 
-        const result = await handleSmartPlan(input) as SmartPlanResponse;
+        const result = (await handleSmartPlan(input)) as SmartPlanResponse;
 
         expect(result.success).toBe(true);
         expect(result.data?.planType).toBe(planType);
@@ -102,7 +102,7 @@ describe('smart_plan tool', () => {
         },
       };
 
-      const result = await handleSmartPlan(input) as SmartPlanResponse;
+      const result = (await handleSmartPlan(input)) as SmartPlanResponse;
 
       expect(result.success).toBe(true);
       expect(result.data?.projectPlan.phases).toBeDefined();
@@ -124,7 +124,7 @@ describe('smart_plan tool', () => {
         },
       };
 
-      const result = await handleSmartPlan(input) as SmartPlanResponse;
+      const result = (await handleSmartPlan(input)) as SmartPlanResponse;
 
       expect(result.success).toBe(true);
       expect(result.data?.projectPlan.resources.team).toBeDefined();
@@ -142,7 +142,7 @@ describe('smart_plan tool', () => {
         },
       };
 
-      const result = await handleSmartPlan(input) as SmartPlanResponse;
+      const result = (await handleSmartPlan(input)) as SmartPlanResponse;
 
       expect(result.success).toBe(true);
       expect(result.data?.projectPlan.timeline).toBeDefined();
@@ -160,7 +160,7 @@ describe('smart_plan tool', () => {
         },
       };
 
-      const result = await handleSmartPlan(input) as SmartPlanResponse;
+      const result = (await handleSmartPlan(input)) as SmartPlanResponse;
 
       expect(result.success).toBe(true);
       expect(result.data?.projectPlan.risks).toBeDefined();
@@ -178,7 +178,7 @@ describe('smart_plan tool', () => {
         },
       };
 
-      const result = await handleSmartPlan(input) as SmartPlanResponse;
+      const result = (await handleSmartPlan(input)) as SmartPlanResponse;
 
       expect(result.success).toBe(true);
       expect(result.data?.businessValue.estimatedROI).toBeGreaterThan(0);
@@ -193,7 +193,7 @@ describe('smart_plan tool', () => {
         planType: 'development',
       };
 
-      const result = await handleSmartPlan(input) as SmartPlanResponse;
+      const result = (await handleSmartPlan(input)) as SmartPlanResponse;
 
       expect(result.success).toBe(true);
       expect(result.data?.successMetrics).toBeDefined();
@@ -207,7 +207,7 @@ describe('smart_plan tool', () => {
         planType: 'development',
       };
 
-      const result = await handleSmartPlan(input) as SmartPlanResponse;
+      const result = (await handleSmartPlan(input)) as SmartPlanResponse;
 
       expect(result.success).toBe(true);
       expect(result.data?.technicalMetrics.responseTime).toBeLessThan(100); // <100ms requirement
@@ -222,7 +222,7 @@ describe('smart_plan tool', () => {
         projectId: '', // Invalid empty ID
       };
 
-      const result = await handleSmartPlan(input) as SmartPlanResponse;
+      const result = (await handleSmartPlan(input)) as SmartPlanResponse;
 
       expect(result.success).toBe(false);
       expect(result.error).toBeDefined();
@@ -234,7 +234,7 @@ describe('smart_plan tool', () => {
         invalidField: 'test',
       };
 
-      const result = await handleSmartPlan(invalidInput) as SmartPlanResponse;
+      const result = (await handleSmartPlan(invalidInput)) as SmartPlanResponse;
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('Invalid arguments');

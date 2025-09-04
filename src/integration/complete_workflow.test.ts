@@ -4,12 +4,12 @@ import { handleSmartPlan } from '../tools/smart_plan';
 import { handleSmartWrite } from '../tools/smart_write';
 import { handleSmartFinish } from '../tools/smart_finish';
 import { handleSmartOrchestrate } from '../tools/smart_orchestrate';
-import type { 
-  SmartBeginResponse, 
-  SmartPlanResponse, 
-  SmartWriteResponse, 
-  SmartFinishResponse, 
-  SmartOrchestrateResponse 
+import type {
+  SmartBeginResponse,
+  SmartPlanResponse,
+  SmartWriteResponse,
+  SmartFinishResponse,
+  SmartOrchestrateResponse,
 } from '../types/tool-responses';
 
 describe('Complete 5-Tool Workflow Integration', () => {
@@ -35,7 +35,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
       },
     };
 
-    const projectResult = await handleSmartBegin(projectInput) as SmartBeginResponse;
+    const projectResult = (await handleSmartBegin(projectInput)) as SmartBeginResponse;
 
     expect(projectResult.success).toBe(true);
     expect(projectResult.data?.projectId).toBeDefined();
@@ -70,7 +70,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
       },
     };
 
-    const planResult = await handleSmartPlan(planInput) as SmartPlanResponse;
+    const planResult = (await handleSmartPlan(planInput)) as SmartPlanResponse;
 
     expect(planResult.success).toBe(true);
     expect(planResult.data?.projectPlan).toBeDefined();
@@ -97,7 +97,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
       },
     };
 
-    const authCodeResult = await handleSmartWrite(authCodeInput) as SmartWriteResponse;
+    const authCodeResult = (await handleSmartWrite(authCodeInput)) as SmartWriteResponse;
     expect(authCodeResult.success).toBe(true);
     expect(authCodeResult.data?.codeId).toBeDefined();
     codeResults.push(authCodeResult);
@@ -121,7 +121,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
       },
     };
 
-    const dashboardCodeResult = await handleSmartWrite(dashboardCodeInput) as SmartWriteResponse;
+    const dashboardCodeResult = (await handleSmartWrite(dashboardCodeInput)) as SmartWriteResponse;
     expect(dashboardCodeResult.success).toBe(true);
     expect(dashboardCodeResult.data?.codeId).toBeDefined();
     codeResults.push(dashboardCodeResult);
@@ -145,7 +145,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
       },
     };
 
-    const testCodeResult = await handleSmartWrite(testCodeInput) as SmartWriteResponse;
+    const testCodeResult = (await handleSmartWrite(testCodeInput)) as SmartWriteResponse;
     expect(testCodeResult.success).toBe(true);
     expect(testCodeResult.data?.codeId).toBeDefined();
     codeResults.push(testCodeResult);
@@ -174,7 +174,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
       },
     };
 
-    const validationResult = await handleSmartFinish(validationInput) as SmartFinishResponse;
+    const validationResult = (await handleSmartFinish(validationInput)) as SmartFinishResponse;
 
     expect(validationResult.success).toBe(true);
     expect(validationResult.data?.qualityScorecard).toBeDefined();
@@ -210,7 +210,9 @@ describe('Complete 5-Tool Workflow Integration', () => {
       },
     };
 
-    const orchestrationResult = await handleSmartOrchestrate(orchestrationInput) as SmartOrchestrateResponse;
+    const orchestrationResult = (await handleSmartOrchestrate(
+      orchestrationInput
+    )) as SmartOrchestrateResponse;
 
     expect(orchestrationResult.success).toBe(true);
     expect(orchestrationResult.data?.orchestration).toBeDefined();
@@ -240,7 +242,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
       },
     };
 
-    const projectResult = await handleSmartBegin(projectInput) as SmartBeginResponse;
+    const projectResult = (await handleSmartBegin(projectInput)) as SmartBeginResponse;
     const { projectId } = projectResult.data!;
 
     // Create plan
@@ -249,7 +251,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
       planType: 'development',
     };
 
-    const planResult = await handleSmartPlan(planInput) as SmartPlanResponse;
+    const planResult = (await handleSmartPlan(planInput)) as SmartPlanResponse;
 
     // Generate code
     const codeInput = {
@@ -262,7 +264,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
       },
     };
 
-    const codeResult = await handleSmartWrite(codeInput) as SmartWriteResponse;
+    const codeResult = (await handleSmartWrite(codeInput)) as SmartWriteResponse;
     const { codeId } = codeResult.data!;
 
     // Validate
@@ -276,7 +278,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
       },
     };
 
-    const validationResult = await handleSmartFinish(validationInput) as SmartFinishResponse;
+    const validationResult = (await handleSmartFinish(validationInput)) as SmartFinishResponse;
 
     // Orchestrate
     const orchestrationInput = {
@@ -289,7 +291,9 @@ describe('Complete 5-Tool Workflow Integration', () => {
       },
     };
 
-    const orchestrationResult = await handleSmartOrchestrate(orchestrationInput) as SmartOrchestrateResponse;
+    const orchestrationResult = (await handleSmartOrchestrate(
+      orchestrationInput
+    )) as SmartOrchestrateResponse;
 
     // Verify business value consistency
     expect(projectResult.data?.businessValue).toBeDefined();
@@ -309,7 +313,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
         projectType: 'web-app',
       };
 
-      const projectResult = await handleSmartBegin(projectInput) as SmartBeginResponse;
+      const projectResult = (await handleSmartBegin(projectInput)) as SmartBeginResponse;
       const { projectId } = projectResult.data!;
 
       // Create plan
@@ -318,7 +322,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
         planType: workflowType,
       };
 
-      const _planResult = await handleSmartPlan(planInput) as SmartPlanResponse;
+      await handleSmartPlan(planInput);
 
       // Generate code
       const codeInput = {
@@ -329,7 +333,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
         },
       };
 
-      const codeResult = await handleSmartWrite(codeInput) as SmartWriteResponse;
+      const codeResult = (await handleSmartWrite(codeInput)) as SmartWriteResponse;
       const { codeId } = codeResult.data!;
 
       // Validate
@@ -337,7 +341,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
         codeIds: [codeId],
       };
 
-      const _validationResult = await handleSmartFinish(validationInput) as SmartFinishResponse;
+      await handleSmartFinish(validationInput);
 
       // Orchestrate
       const orchestrationInput = {
@@ -349,7 +353,9 @@ describe('Complete 5-Tool Workflow Integration', () => {
         },
       };
 
-      const orchestrationResult = await handleSmartOrchestrate(orchestrationInput) as SmartOrchestrateResponse;
+      const orchestrationResult = (await handleSmartOrchestrate(
+        orchestrationInput
+      )) as SmartOrchestrateResponse;
 
       expect(orchestrationResult.data?.workflowType).toBe(workflowType);
     }
@@ -362,7 +368,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
       projectType: 'web-app',
     };
 
-    const projectResult = await handleSmartBegin(projectInput) as SmartBeginResponse;
+    const projectResult = (await handleSmartBegin(projectInput)) as SmartBeginResponse;
     const { projectId } = projectResult.data!;
 
     // Generate multiple code modules
@@ -378,7 +384,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
         },
       };
 
-      const codeResult = await handleSmartWrite(codeInput) as SmartWriteResponse;
+      const codeResult = (await handleSmartWrite(codeInput)) as SmartWriteResponse;
       codeResults.push(codeResult);
       codeIds.push(codeResult.data!.codeId);
     }
@@ -394,7 +400,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
       },
     };
 
-    const validationResult = await handleSmartFinish(validationInput) as SmartFinishResponse;
+    const validationResult = (await handleSmartFinish(validationInput)) as SmartFinishResponse;
 
     expect(validationResult.success).toBe(true);
     expect(validationResult.data?.qualityScorecard.overall.score).toBeGreaterThan(0);
@@ -416,7 +422,9 @@ describe('Complete 5-Tool Workflow Integration', () => {
       },
     };
 
-    const orchestrationResult = await handleSmartOrchestrate(orchestrationInput) as SmartOrchestrateResponse;
+    const orchestrationResult = (await handleSmartOrchestrate(
+      orchestrationInput
+    )) as SmartOrchestrateResponse;
 
     expect(orchestrationResult.data?.orchestration.workflow.phases.length).toBeGreaterThan(0);
     expect(orchestrationResult.data?.orchestration.workflow.integrations.length).toBeGreaterThan(0);

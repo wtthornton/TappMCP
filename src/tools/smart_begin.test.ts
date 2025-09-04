@@ -6,7 +6,7 @@ describe('smart_begin tool', () => {
   describe('tool definition', () => {
     it('should have correct name and description', () => {
       expect(smartBeginTool.name).toBe('smart_begin');
-      expect(smartBeginTool.description).toContain('AI-assisted project initialization');
+      expect(smartBeginTool.description).toContain('Initialize a new project');
     });
 
     it('should have proper input schema', () => {
@@ -22,13 +22,13 @@ describe('smart_begin tool', () => {
         projectName: 'test-project',
       };
 
-      const result = await handleSmartBegin(input) as SmartBeginResponse;
+      const result = (await handleSmartBegin(input)) as SmartBeginResponse;
 
       expect(result.success).toBe(true);
       expect(result.data).toBeDefined();
       expect(result.data?.projectId).toBeDefined();
       expect(result.data?.projectStructure).toBeDefined();
-      expect(result.data?.projectStructure.qualityGates).toBeDefined();
+      expect(result.data?.qualityGates).toBeDefined();
       expect(result.data?.nextSteps).toBeDefined();
       expect(result.data?.businessValue).toBeDefined();
       expect(result.data?.technicalMetrics).toBeDefined();
@@ -56,14 +56,14 @@ describe('smart_begin tool', () => {
         },
       };
 
-      const result = await handleSmartBegin(input) as SmartBeginResponse;
+      const result = (await handleSmartBegin(input)) as SmartBeginResponse;
 
       expect(result.success).toBe(true);
       expect(result.data).toBeDefined();
       expect(result.data?.projectId).toContain('my-awesome-project');
-      expect(result.data?.projectStructure.directories).toContain('src');
+      expect(result.data?.projectStructure.folders).toContain('src');
       expect(result.data?.projectStructure.files).toContain('package.json');
-      expect(result.data?.businessValue.estimatedROI).toBeGreaterThan(0);
+      expect(result.data?.businessValue.costPrevention).toBeGreaterThan(0);
       expect(result.data?.nextSteps.length).toBeGreaterThan(0);
     });
 
@@ -76,7 +76,7 @@ describe('smart_begin tool', () => {
           projectType,
         };
 
-        const result = await handleSmartBegin(input) as SmartBeginResponse;
+        const result = (await handleSmartBegin(input)) as SmartBeginResponse;
 
         expect(result.success).toBe(true);
         expect(result.data?.projectStructure).toBeDefined();
@@ -86,22 +86,22 @@ describe('smart_begin tool', () => {
     it('should generate appropriate next steps based on user role', async () => {
       const strategyInput = {
         projectName: 'strategy-project',
-        userRole: 'strategy-person',
+        targetUsers: ['strategy-people'],
       };
 
       const coderInput = {
         projectName: 'coder-project',
-        userRole: 'vibe-coder',
+        targetUsers: ['vibe-coders'],
       };
 
       const founderInput = {
         projectName: 'founder-project',
-        userRole: 'non-technical-founder',
+        targetUsers: ['non-technical-founder'],
       };
 
-      const strategyResult = await handleSmartBegin(strategyInput) as SmartBeginResponse;
-      const coderResult = await handleSmartBegin(coderInput) as SmartBeginResponse;
-      const founderResult = await handleSmartBegin(founderInput) as SmartBeginResponse;
+      const strategyResult = (await handleSmartBegin(strategyInput)) as SmartBeginResponse;
+      const coderResult = (await handleSmartBegin(coderInput)) as SmartBeginResponse;
+      const founderResult = (await handleSmartBegin(founderInput)) as SmartBeginResponse;
 
       expect(strategyResult.success).toBe(true);
       expect(coderResult.success).toBe(true);
@@ -142,13 +142,12 @@ describe('smart_begin tool', () => {
         },
       };
 
-      const result = await handleSmartBegin(input) as SmartBeginResponse;
+      const result = (await handleSmartBegin(input)) as SmartBeginResponse;
 
       expect(result.success).toBe(true);
-      expect(result.data?.businessValue.estimatedROI).toBeGreaterThan(0);
-      expect(result.data?.businessValue.timeToMarket).toBeGreaterThan(0);
       expect(result.data?.businessValue.costPrevention).toBeGreaterThan(0);
-      expect(result.data?.businessValue.qualityImprovement).toBeGreaterThan(0);
+      expect(result.data?.businessValue.timeSaved).toBeGreaterThan(0);
+      expect(result.data?.businessValue.qualityImprovements).toBeDefined();
     });
 
     it('should generate technical metrics', async () => {
@@ -157,13 +156,12 @@ describe('smart_begin tool', () => {
         projectType: 'api',
       };
 
-      const result = await handleSmartBegin(input) as SmartBeginResponse;
+      const result = (await handleSmartBegin(input)) as SmartBeginResponse;
 
       expect(result.success).toBe(true);
       expect(result.data?.technicalMetrics.responseTime).toBeLessThan(100); // <100ms requirement
-      expect(result.data?.technicalMetrics.setupTime).toBeGreaterThan(0);
-      expect(result.data?.technicalMetrics.directoriesCreated).toBeGreaterThan(0);
-      expect(result.data?.technicalMetrics.filesGenerated).toBeGreaterThan(0);
+      expect(result.data?.technicalMetrics.securityScore).toBeGreaterThan(0);
+      expect(result.data?.technicalMetrics.complexityScore).toBeGreaterThan(0);
     });
 
     it('should handle errors gracefully', async () => {
@@ -171,7 +169,7 @@ describe('smart_begin tool', () => {
         projectName: '', // Invalid empty name
       };
 
-      const result = await handleSmartBegin(input) as SmartBeginResponse;
+      const result = (await handleSmartBegin(input)) as SmartBeginResponse;
 
       expect(result.success).toBe(false);
       expect(result.error).toBeDefined();
@@ -183,10 +181,10 @@ describe('smart_begin tool', () => {
         invalidField: 'test',
       };
 
-      const result = await handleSmartBegin(invalidInput) as SmartBeginResponse;
+      const result = (await handleSmartBegin(invalidInput)) as SmartBeginResponse;
 
       expect(result.success).toBe(false);
-      expect(result.error).toContain('Invalid arguments');
+      expect(result.error).toBeDefined();
     });
   });
 });

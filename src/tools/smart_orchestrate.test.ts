@@ -23,7 +23,7 @@ describe('smart_orchestrate tool', () => {
         workflowType: 'development',
       };
 
-      const result = await handleSmartOrchestrate(input) as SmartOrchestrateResponse;
+      const result = (await handleSmartOrchestrate(input)) as SmartOrchestrateResponse;
 
       expect(result.success).toBe(true);
       expect(result.data).toBeDefined();
@@ -64,7 +64,7 @@ describe('smart_orchestrate tool', () => {
         },
       };
 
-      const result = await handleSmartOrchestrate(input) as SmartOrchestrateResponse;
+      const result = (await handleSmartOrchestrate(input)) as SmartOrchestrateResponse;
 
       expect(result.success).toBe(true);
       expect(result.data).toBeDefined();
@@ -84,7 +84,7 @@ describe('smart_orchestrate tool', () => {
           workflowType,
         };
 
-        const result = await handleSmartOrchestrate(input) as SmartOrchestrateResponse;
+        const result = (await handleSmartOrchestrate(input)) as SmartOrchestrateResponse;
 
         expect(result.success).toBe(true);
         expect(result.data?.workflowType).toBe(workflowType);
@@ -102,7 +102,7 @@ describe('smart_orchestrate tool', () => {
         },
       };
 
-      const result = await handleSmartOrchestrate(input) as SmartOrchestrateResponse;
+      const result = (await handleSmartOrchestrate(input)) as SmartOrchestrateResponse;
 
       expect(result.success).toBe(true);
       expect(result.data?.orchestration.workflow.phases).toBeDefined();
@@ -121,7 +121,7 @@ describe('smart_orchestrate tool', () => {
         ],
       };
 
-      const result = await handleSmartOrchestrate(input) as SmartOrchestrateResponse;
+      const result = (await handleSmartOrchestrate(input)) as SmartOrchestrateResponse;
 
       expect(result.success).toBe(true);
       expect(result.data?.orchestration.workflow.integrations).toBeDefined();
@@ -139,7 +139,7 @@ describe('smart_orchestrate tool', () => {
         },
       };
 
-      const result = await handleSmartOrchestrate(input) as SmartOrchestrateResponse;
+      const result = (await handleSmartOrchestrate(input)) as SmartOrchestrateResponse;
 
       expect(result.success).toBe(true);
       expect(result.data?.orchestration.workflow.qualityGates).toBeDefined();
@@ -153,7 +153,7 @@ describe('smart_orchestrate tool', () => {
         workflowType: 'development',
       };
 
-      const result = await handleSmartOrchestrate(input) as SmartOrchestrateResponse;
+      const result = (await handleSmartOrchestrate(input)) as SmartOrchestrateResponse;
 
       expect(result.success).toBe(true);
       expect(result.data?.orchestration.automation).toBeDefined();
@@ -174,7 +174,7 @@ describe('smart_orchestrate tool', () => {
         },
       };
 
-      const result = await handleSmartOrchestrate(input) as SmartOrchestrateResponse;
+      const result = (await handleSmartOrchestrate(input)) as SmartOrchestrateResponse;
 
       expect(result.success).toBe(true);
       expect(result.data?.orchestration.businessValue).toBeDefined();
@@ -191,7 +191,7 @@ describe('smart_orchestrate tool', () => {
         workflowType: 'development',
       };
 
-      const result = await handleSmartOrchestrate(input) as SmartOrchestrateResponse;
+      const result = (await handleSmartOrchestrate(input)) as SmartOrchestrateResponse;
 
       expect(result.success).toBe(true);
       expect(result.data?.successMetrics).toBeDefined();
@@ -205,7 +205,7 @@ describe('smart_orchestrate tool', () => {
         workflowType: 'development',
       };
 
-      const result = await handleSmartOrchestrate(input) as SmartOrchestrateResponse;
+      const result = (await handleSmartOrchestrate(input)) as SmartOrchestrateResponse;
 
       expect(result.success).toBe(true);
       expect(result.data?.technicalMetrics.responseTime).toBeLessThan(100); // <100ms requirement
@@ -221,7 +221,7 @@ describe('smart_orchestrate tool', () => {
         projectId: '', // Invalid empty ID
       };
 
-      const result = await handleSmartOrchestrate(input) as SmartOrchestrateResponse;
+      const result = (await handleSmartOrchestrate(input)) as SmartOrchestrateResponse;
 
       expect(result.success).toBe(false);
       expect(result.error).toBeDefined();
@@ -233,7 +233,7 @@ describe('smart_orchestrate tool', () => {
         invalidField: 'test',
       };
 
-      const result = await handleSmartOrchestrate(invalidInput) as SmartOrchestrateResponse;
+      const result = (await handleSmartOrchestrate(invalidInput)) as SmartOrchestrateResponse;
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('Invalid arguments');

@@ -23,7 +23,7 @@ describe('smart_write tool', () => {
         codeType: 'function',
       };
 
-      const result = await handleSmartWrite(input) as SmartWriteResponse;
+      const result = (await handleSmartWrite(input)) as SmartWriteResponse;
 
       expect(result.success).toBe(true);
       expect(result.data).toBeDefined();
@@ -38,7 +38,8 @@ describe('smart_write tool', () => {
 
     it('should successfully generate code with full input', async () => {
       const input = {
-        codeDescription: 'Create a comprehensive payment processing system with validation and error handling',
+        codeDescription:
+          'Create a comprehensive payment processing system with validation and error handling',
         codeType: 'module',
         targetLanguage: 'typescript',
         framework: 'express',
@@ -57,7 +58,7 @@ describe('smart_write tool', () => {
         },
       };
 
-      const result = await handleSmartWrite(input) as SmartWriteResponse;
+      const result = (await handleSmartWrite(input)) as SmartWriteResponse;
 
       expect(result.success).toBe(true);
       expect(result.data).toBeDefined();
@@ -77,7 +78,7 @@ describe('smart_write tool', () => {
           codeType,
         };
 
-        const result = await handleSmartWrite(input) as SmartWriteResponse;
+        const result = (await handleSmartWrite(input)) as SmartWriteResponse;
 
         expect(result.success).toBe(true);
         expect(result.data?.generatedCode.files[0].type).toBe(codeType);
@@ -96,7 +97,7 @@ describe('smart_write tool', () => {
           },
         };
 
-        const result = await handleSmartWrite(input) as SmartWriteResponse;
+        const result = (await handleSmartWrite(input)) as SmartWriteResponse;
 
         expect(result.success).toBe(true);
         expect(result.data?.generatedCode.files[0].content).toContain(role);
@@ -112,7 +113,7 @@ describe('smart_write tool', () => {
           codeType,
         };
 
-        const result = await handleSmartWrite(input) as SmartWriteResponse;
+        const result = (await handleSmartWrite(input)) as SmartWriteResponse;
 
         expect(result.success).toBe(true);
         expect(result.data?.generatedCode.files[0].type).toBe(codeType);
@@ -125,7 +126,7 @@ describe('smart_write tool', () => {
         codeType: 'module',
       };
 
-      const result = await handleSmartWrite(input) as SmartWriteResponse;
+      const result = (await handleSmartWrite(input)) as SmartWriteResponse;
 
       expect(result.success).toBe(true);
       expect(result.data?.technicalMetrics.responseTime).toBeLessThan(100); // <100ms requirement
@@ -143,7 +144,7 @@ describe('smart_write tool', () => {
         },
       };
 
-      const result = await handleSmartWrite(input) as SmartWriteResponse;
+      const result = (await handleSmartWrite(input)) as SmartWriteResponse;
 
       expect(result.success).toBe(true);
       expect(result.data?.businessValue.timeSaved).toBeGreaterThan(0);
@@ -160,7 +161,7 @@ describe('smart_write tool', () => {
         },
       };
 
-      const result = await handleSmartWrite(input) as SmartWriteResponse;
+      const result = (await handleSmartWrite(input)) as SmartWriteResponse;
 
       expect(result.success).toBe(true);
       expect(result.data?.qualityMetrics.testCoverage).toBe(95);
@@ -174,7 +175,7 @@ describe('smart_write tool', () => {
         codeDescription: '', // Invalid empty description
       };
 
-      const result = await handleSmartWrite(input) as SmartWriteResponse;
+      const result = (await handleSmartWrite(input)) as SmartWriteResponse;
 
       expect(result.success).toBe(false);
       expect(result.error).toBeDefined();
@@ -186,7 +187,7 @@ describe('smart_write tool', () => {
         invalidField: 'test',
       };
 
-      const result = await handleSmartWrite(invalidInput) as SmartWriteResponse;
+      const result = (await handleSmartWrite(invalidInput)) as SmartWriteResponse;
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('Invalid arguments');

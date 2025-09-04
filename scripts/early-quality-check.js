@@ -45,7 +45,7 @@ for (const check of checks) {
   } catch (error) {
     console.log(`❌ ${check.name} - FAILED`);
     results.push({ name: check.name, status: 'FAIL', critical: check.critical });
-    
+
     if (check.critical) {
       allPassed = false;
     }

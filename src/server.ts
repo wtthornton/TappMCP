@@ -106,7 +106,12 @@ class SmartMCPServer {
         }
 
         // Execute tool handler
-        const result = await handler(args) as { success?: boolean; data?: unknown; error?: string; timestamp?: string };
+        const result = (await handler(args)) as {
+          success?: boolean;
+          data?: unknown;
+          error?: string;
+          timestamp?: string;
+        };
 
         // Validate response
         const validatedResponse = ToolResponseSchema.parse({

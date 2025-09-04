@@ -12,8 +12,8 @@ const smart_plan_js_1 = require("./tools/smart_plan.js");
 const smart_write_js_1 = require("./tools/smart_write.js");
 const smart_finish_js_1 = require("./tools/smart_finish.js");
 // Server configuration
-const SERVER_NAME = "smart-mcp";
-const SERVER_VERSION = "0.1.0";
+const SERVER_NAME = 'smart-mcp';
+const SERVER_VERSION = '0.1.0';
 // Tool registry
 const TOOLS = {
     smart_begin: { tool: smart_begin_js_1.smartBeginTool, handler: smart_begin_js_1.handleSmartBegin },
@@ -23,7 +23,7 @@ const TOOLS = {
 };
 // Input validation schema
 const ToolInputSchema = zod_1.z.object({
-    name: zod_1.z.string().min(1, "Tool name is required"),
+    name: zod_1.z.string().min(1, 'Tool name is required'),
     arguments: zod_1.z.record(zod_1.z.any()).optional().default({}),
 });
 // Response schema
@@ -55,7 +55,7 @@ class SmartMCPServer {
                 };
             }
             catch (error) {
-                throw new Error(`Failed to list tools: ${error instanceof Error ? error.message : "Unknown error"}`);
+                throw new Error(`Failed to list tools: ${error instanceof Error ? error.message : 'Unknown error'}`);
             }
         });
         // Call tool handler
@@ -69,7 +69,7 @@ class SmartMCPServer {
                 const { name, arguments: args } = validatedInput;
                 // Check if tool exists
                 if (!TOOLS[name]) {
-                    throw new Error(`Tool '${name}' not found. Available tools: ${Object.keys(TOOLS).join(", ")}`);
+                    throw new Error(`Tool '${name}' not found. Available tools: ${Object.keys(TOOLS).join(', ')}`);
                 }
                 // Get tool and handler
                 const { tool, handler } = TOOLS[name];
@@ -80,11 +80,11 @@ class SmartMCPServer {
                         schema.parse(args);
                     }
                     catch (validationError) {
-                        throw new Error(`Invalid arguments for tool '${name}': ${validationError instanceof Error ? validationError.message : "Validation failed"}`);
+                        throw new Error(`Invalid arguments for tool '${name}': ${validationError instanceof Error ? validationError.message : 'Validation failed'}`);
                     }
                 }
                 // Execute tool handler
-                const result = await handler(args);
+                const result = (await handler(args));
                 // Validate response
                 const validatedResponse = ToolResponseSchema.parse({
                     success: result.success ?? true,
@@ -95,18 +95,18 @@ class SmartMCPServer {
                 return {
                     content: [
                         {
-                            type: "text",
+                            type: 'text',
                             text: JSON.stringify(validatedResponse, null, 2),
                         },
                     ],
                 };
             }
             catch (error) {
-                const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+                const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
                 return {
                     content: [
                         {
-                            type: "text",
+                            type: 'text',
                             text: JSON.stringify({
                                 success: false,
                                 error: errorMessage,
@@ -123,9 +123,11 @@ class SmartMCPServer {
         try {
             const transport = new stdio_js_1.StdioServerTransport();
             await this.server.connect(transport);
+            // eslint-disable-next-line no-console
             console.error(`${SERVER_NAME} v${SERVER_VERSION} started successfully`);
         }
         catch (error) {
+            // eslint-disable-next-line no-console
             console.error(`Failed to start ${SERVER_NAME}:`, error);
             process.exit(1);
         }
@@ -135,8 +137,9 @@ exports.SmartMCPServer = SmartMCPServer;
 // Start server if this file is run directly
 if (require.main === module) {
     const server = new SmartMCPServer();
-    server.start().catch((error) => {
-        console.error("Server startup failed:", error);
+    server.start().catch(error => {
+        // eslint-disable-next-line no-console
+        console.error('Server startup failed:', error);
         process.exit(1);
     });
 }

@@ -26,7 +26,7 @@ describe('Smart Begin + Smart Write Integration', () => {
       },
     };
 
-    const beginResult = await handleSmartBegin(beginInput) as SmartBeginResponse;
+    const beginResult = (await handleSmartBegin(beginInput)) as SmartBeginResponse;
 
     expect(beginResult.success).toBe(true);
     expect(beginResult.data).toBeDefined();
@@ -56,7 +56,7 @@ describe('Smart Begin + Smart Write Integration', () => {
       },
     };
 
-    const writeResult = await handleSmartWrite(writeInput) as SmartWriteResponse;
+    const writeResult = (await handleSmartWrite(writeInput)) as SmartWriteResponse;
 
     expect(writeResult.success).toBe(true);
     expect(writeResult.data).toBeDefined();
@@ -88,7 +88,7 @@ describe('Smart Begin + Smart Write Integration', () => {
       },
     };
 
-    const beginResult = await handleSmartBegin(beginInput) as SmartBeginResponse;
+    const beginResult = (await handleSmartBegin(beginInput)) as SmartBeginResponse;
 
     expect(beginResult.success).toBe(true);
     expect(beginResult.data?.projectStructure).toBeDefined();
@@ -111,7 +111,7 @@ describe('Smart Begin + Smart Write Integration', () => {
       },
     };
 
-    const writeResult = await handleSmartWrite(writeInput) as SmartWriteResponse;
+    const writeResult = (await handleSmartWrite(writeInput)) as SmartWriteResponse;
 
     expect(writeResult.success).toBe(true);
     expect(writeResult.data?.generatedCode.files[0].content).toContain('fintech');
@@ -130,7 +130,7 @@ describe('Smart Begin + Smart Write Integration', () => {
         userRole: role,
       };
 
-      const beginResult = await handleSmartBegin(beginInput) as SmartBeginResponse;
+      const beginResult = (await handleSmartBegin(beginInput)) as SmartBeginResponse;
 
       expect(beginResult.success).toBe(true);
       expect(beginResult.data?.nextSteps).toBeDefined();
@@ -145,7 +145,7 @@ describe('Smart Begin + Smart Write Integration', () => {
         },
       };
 
-      const writeResult = await handleSmartWrite(writeInput) as SmartWriteResponse;
+      const writeResult = (await handleSmartWrite(writeInput)) as SmartWriteResponse;
 
       expect(writeResult.success).toBe(true);
       expect(writeResult.data?.generatedCode.files[0].content).toContain(role);
@@ -164,7 +164,7 @@ describe('Smart Begin + Smart Write Integration', () => {
       },
     };
 
-    const beginResult = await handleSmartBegin(beginInput) as SmartBeginResponse;
+    const beginResult = (await handleSmartBegin(beginInput)) as SmartBeginResponse;
 
     expect(beginResult.success).toBe(true);
     expect(beginResult.data?.projectStructure.qualityGates.testCoverage).toBe(95);
@@ -187,7 +187,7 @@ describe('Smart Begin + Smart Write Integration', () => {
       },
     };
 
-    const writeResult = await handleSmartWrite(writeInput) as SmartWriteResponse;
+    const writeResult = (await handleSmartWrite(writeInput)) as SmartWriteResponse;
 
     expect(writeResult.success).toBe(true);
     expect(writeResult.data?.qualityMetrics.testCoverage).toBe(95);
@@ -202,7 +202,7 @@ describe('Smart Begin + Smart Write Integration', () => {
       projectType: 'web-app',
     };
 
-    const beginResult = await handleSmartBegin(beginInput) as SmartBeginResponse;
+    const beginResult = (await handleSmartBegin(beginInput)) as SmartBeginResponse;
 
     expect(beginResult.success).toBe(true);
     expect(beginResult.data?.nextSteps).toBeDefined();
@@ -217,7 +217,7 @@ describe('Smart Begin + Smart Write Integration', () => {
       },
     };
 
-    const writeResult = await handleSmartWrite(writeInput) as SmartWriteResponse;
+    const writeResult = (await handleSmartWrite(writeInput)) as SmartWriteResponse;
 
     expect(writeResult.success).toBe(true);
     expect(writeResult.data?.nextSteps).toBeDefined();
@@ -225,8 +225,8 @@ describe('Smart Begin + Smart Write Integration', () => {
 
     // Verify that next steps are relevant to the workflow
     const allNextSteps = [
-      ...(beginResult.data?.nextSteps || []),
-      ...(writeResult.data?.nextSteps || []),
+      ...(beginResult.data?.nextSteps ?? []),
+      ...(writeResult.data?.nextSteps ?? []),
     ];
 
     expect(allNextSteps.some(step => step.includes('development'))).toBe(true);

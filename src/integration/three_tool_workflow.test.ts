@@ -2,7 +2,11 @@ import { describe, it, expect } from 'vitest';
 import { handleSmartBegin } from '../tools/smart_begin';
 import { handleSmartWrite } from '../tools/smart_write';
 import { handleSmartFinish } from '../tools/smart_finish';
-import type { SmartBeginResponse, SmartWriteResponse, SmartFinishResponse } from '../types/tool-responses';
+import type {
+  SmartBeginResponse,
+  SmartWriteResponse,
+  SmartFinishResponse,
+} from '../types/tool-responses';
 
 describe('Three Tool Workflow Integration', () => {
   it('should complete full Phase 1A-1B-1C workflow', async () => {
@@ -27,7 +31,7 @@ describe('Three Tool Workflow Integration', () => {
       },
     };
 
-    const projectResult = await handleSmartBegin(projectInput) as SmartBeginResponse;
+    const projectResult = (await handleSmartBegin(projectInput)) as SmartBeginResponse;
 
     expect(projectResult.success).toBe(true);
     expect(projectResult.data?.projectId).toBeDefined();
@@ -55,7 +59,7 @@ describe('Three Tool Workflow Integration', () => {
       },
     };
 
-    const apiCodeResult = await handleSmartWrite(apiCodeInput) as SmartWriteResponse;
+    const apiCodeResult = (await handleSmartWrite(apiCodeInput)) as SmartWriteResponse;
     expect(apiCodeResult.success).toBe(true);
     expect(apiCodeResult.data?.codeId).toBeDefined();
     codeResults.push(apiCodeResult);
@@ -79,7 +83,7 @@ describe('Three Tool Workflow Integration', () => {
       },
     };
 
-    const componentCodeResult = await handleSmartWrite(componentCodeInput) as SmartWriteResponse;
+    const componentCodeResult = (await handleSmartWrite(componentCodeInput)) as SmartWriteResponse;
     expect(componentCodeResult.success).toBe(true);
     expect(componentCodeResult.data?.codeId).toBeDefined();
     codeResults.push(componentCodeResult);
@@ -103,7 +107,7 @@ describe('Three Tool Workflow Integration', () => {
       },
     };
 
-    const testCodeResult = await handleSmartWrite(testCodeInput) as SmartWriteResponse;
+    const testCodeResult = (await handleSmartWrite(testCodeInput)) as SmartWriteResponse;
     expect(testCodeResult.success).toBe(true);
     expect(testCodeResult.data?.codeId).toBeDefined();
     codeResults.push(testCodeResult);
@@ -132,7 +136,7 @@ describe('Three Tool Workflow Integration', () => {
       },
     };
 
-    const validationResult = await handleSmartFinish(validationInput) as SmartFinishResponse;
+    const validationResult = (await handleSmartFinish(validationInput)) as SmartFinishResponse;
 
     expect(validationResult.success).toBe(true);
     expect(validationResult.data?.projectId).toBe(projectId);
@@ -153,7 +157,7 @@ describe('Three Tool Workflow Integration', () => {
       },
     };
 
-    const projectResult = await handleSmartBegin(projectInput) as SmartBeginResponse;
+    const projectResult = (await handleSmartBegin(projectInput)) as SmartBeginResponse;
     const { projectId } = projectResult.data!;
 
     // Generate code
@@ -167,7 +171,7 @@ describe('Three Tool Workflow Integration', () => {
       },
     };
 
-    const codeResult = await handleSmartWrite(codeInput) as SmartWriteResponse;
+    const codeResult = (await handleSmartWrite(codeInput)) as SmartWriteResponse;
     const { codeId } = codeResult.data!;
 
     // Validate
@@ -181,7 +185,7 @@ describe('Three Tool Workflow Integration', () => {
       },
     };
 
-    const validationResult = await handleSmartFinish(validationInput) as SmartFinishResponse;
+    const validationResult = (await handleSmartFinish(validationInput)) as SmartFinishResponse;
 
     expect(validationResult.success).toBe(true);
     expect(validationResult.data?.businessValue.totalCostPrevention).toBeGreaterThan(0);
@@ -200,7 +204,7 @@ describe('Three Tool Workflow Integration', () => {
         userRole: role,
       };
 
-      const projectResult = await handleSmartBegin(projectInput) as SmartBeginResponse;
+      const projectResult = (await handleSmartBegin(projectInput)) as SmartBeginResponse;
       const { projectId } = projectResult.data!;
 
       // Generate code
@@ -213,7 +217,7 @@ describe('Three Tool Workflow Integration', () => {
         },
       };
 
-      const codeResult = await handleSmartWrite(codeInput) as SmartWriteResponse;
+      const codeResult = (await handleSmartWrite(codeInput)) as SmartWriteResponse;
       const { codeId } = codeResult.data!;
 
       // Validate
@@ -227,7 +231,7 @@ describe('Three Tool Workflow Integration', () => {
         },
       };
 
-      const validationResult = await handleSmartFinish(validationInput) as SmartFinishResponse;
+      const validationResult = (await handleSmartFinish(validationInput)) as SmartFinishResponse;
 
       expect(validationResult.success).toBe(true);
       expect(validationResult.data?.qualityScorecard.overall).toBeDefined();
@@ -246,7 +250,7 @@ describe('Three Tool Workflow Integration', () => {
       },
     };
 
-    const projectResult = await handleSmartBegin(projectInput) as SmartBeginResponse;
+    const projectResult = (await handleSmartBegin(projectInput)) as SmartBeginResponse;
     const { projectId } = projectResult.data!;
 
     // Generate high-quality code
@@ -267,7 +271,7 @@ describe('Three Tool Workflow Integration', () => {
       },
     };
 
-    const codeResult = await handleSmartWrite(codeInput) as SmartWriteResponse;
+    const codeResult = (await handleSmartWrite(codeInput)) as SmartWriteResponse;
     const { codeId } = codeResult.data!;
 
     // Validate with high standards
@@ -281,7 +285,7 @@ describe('Three Tool Workflow Integration', () => {
       },
     };
 
-    const validationResult = await handleSmartFinish(validationInput) as SmartFinishResponse;
+    const validationResult = (await handleSmartFinish(validationInput)) as SmartFinishResponse;
 
     expect(validationResult.success).toBe(true);
     expect(validationResult.data?.qualityScorecard.overall.score).toBeGreaterThan(0);
@@ -299,7 +303,7 @@ describe('Three Tool Workflow Integration', () => {
       projectType: 'web-app',
     };
 
-    const projectResult = await handleSmartBegin(projectInput) as SmartBeginResponse;
+    const projectResult = (await handleSmartBegin(projectInput)) as SmartBeginResponse;
     const { projectId } = projectResult.data!;
 
     // Generate code
@@ -311,7 +315,7 @@ describe('Three Tool Workflow Integration', () => {
       },
     };
 
-    const codeResult = await handleSmartWrite(codeInput) as SmartWriteResponse;
+    const codeResult = (await handleSmartWrite(codeInput)) as SmartWriteResponse;
     const { codeId } = codeResult.data!;
 
     // Validate
@@ -319,7 +323,7 @@ describe('Three Tool Workflow Integration', () => {
       codeIds: [codeId],
     };
 
-    const validationResult = await handleSmartFinish(validationInput) as SmartFinishResponse;
+    const validationResult = (await handleSmartFinish(validationInput)) as SmartFinishResponse;
 
     expect(validationResult.success).toBe(true);
     expect(validationResult.data?.recommendations.length).toBeGreaterThanOrEqual(0);
@@ -327,9 +331,9 @@ describe('Three Tool Workflow Integration', () => {
 
     // Verify that next steps are relevant to the complete workflow
     const allNextSteps = [
-      ...(projectResult.data?.nextSteps || []),
-      ...(codeResult.data?.nextSteps || []),
-      ...(validationResult.data?.nextSteps || []),
+      ...(projectResult.data?.nextSteps ?? []),
+      ...(codeResult.data?.nextSteps ?? []),
+      ...(validationResult.data?.nextSteps ?? []),
     ];
 
     expect(allNextSteps.some(step => step.includes('development'))).toBe(true);

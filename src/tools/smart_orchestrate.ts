@@ -3,6 +3,41 @@
 import { z } from 'zod';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 
+// Type definitions
+interface Integration {
+  name: string;
+  type: string;
+  priority: number;
+  phase: string;
+  configuration: Record<string, unknown>;
+}
+
+interface QualityGate {
+  name: string;
+  description: string;
+  phase: string;
+  threshold: number;
+  current: number;
+  status: 'pass' | 'fail' | 'warning';
+}
+
+interface WorkflowPhase {
+  name: string;
+  description: string;
+  order: number;
+  tools: string[];
+  dependencies: string[];
+  qualityChecks: string[];
+  deliverables: string[];
+}
+
+interface AutomationTrigger {
+  event: string;
+  condition: string;
+  action: string;
+  phase: string;
+}
+
 // Input schema for smart_orchestrate tool
 const SmartOrchestrateInputSchema = z.object({
   projectId: z.string().min(1, 'Project ID is required'),
@@ -219,16 +254,17 @@ function generateWorkflowPhases(
   return phases;
 }
 
-function generateIntegrations(externalIntegrations: unknown[]): Array<{
-  name: string;
-  type: string;
-  priority: string;
-  phase: string;
-  configuration: unknown;
-}> {
+function generateIntegrations(externalIntegrations: unknown[]): Integration[] {
   const integrations: Integration[] = [];
 
-  externalIntegrations.forEach((integration: { name: string; type: string; priority: number; configuration?: Record<string, unknown> }, index) => {
+  (
+    externalIntegrations as Array<{
+      name: string;
+      type: string;
+      priority: number;
+      configuration?: Record<string, unknown>;
+    }>
+  ).forEach((integration, index) => {
     const phase = `Phase ${(index % 5) + 1}`;
 
     integrations.push({
@@ -244,16 +280,9 @@ function generateIntegrations(externalIntegrations: unknown[]): Array<{
 }
 
 function generateQualityGatesList(
-  qualityGates: unknown,
-  phases: unknown[]
-): Array<{
-  name: string;
-  description: string;
-  phase: string;
-  threshold: number;
-  current: number;
-  status: 'pass' | 'fail' | 'warning';
-}> {
+  qualityGates: { testCoverage?: number; securityScore?: number; performanceScore?: number },
+  phases: WorkflowPhase[]
+): QualityGate[] {
   const gates: QualityGate[] = [];
 
   phases.forEach((phase: WorkflowPhase) => {
@@ -294,13 +323,8 @@ function generateQualityGatesList(
   return gates;
 }
 
-function generateAutomation(phases: unknown[]): {
-  triggers: Array<{
-    event: string;
-    condition: string;
-    action: string;
-    phase: string;
-  }>;
+function generateAutomation(phases: WorkflowPhase[]): {
+  triggers: AutomationTrigger[];
   workflows: Array<{
     name: string;
     description: string;
@@ -314,7 +338,12 @@ function generateAutomation(phases: unknown[]): {
   };
 } {
   const triggers: AutomationTrigger[] = [];
-  const workflows: string[] = [];
+  const workflows: Array<{
+    name: string;
+    description: string;
+    steps: string[];
+    conditions: string[];
+  }> = [];
 
   phases.forEach((phase: WorkflowPhase) => {
     triggers.push({
@@ -426,10 +455,10 @@ export async function handleSmartOrchestrate(input: unknown): Promise<{
       validatedInput.orchestrationScope ?? {}
     );
     const integrations = generateIntegrations(validatedInput.externalIntegrations);
-    const qualityGates = generateQualityGatesList(validatedInput.qualityGates, phases);
+    const qualityGates = generateQualityGatesList(validatedInput.qualityGates ?? {}, phases);
     const automation = generateAutomation(phases);
     const businessValue = calculateBusinessValue(
-      validatedInput.businessRequirements,
+      validatedInput.businessRequirements ?? {},
       phases.length,
       validatedInput.externalIntegrations.length
     );

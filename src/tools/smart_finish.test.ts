@@ -22,7 +22,7 @@ describe('smart_finish tool', () => {
         codeIds: ['code_123', 'code_456'],
       };
 
-      const result = await handleSmartFinish(input) as SmartFinishResponse;
+      const result = (await handleSmartFinish(input)) as SmartFinishResponse;
 
       expect(result.success).toBe(true);
       expect(result.data).toBeDefined();
@@ -57,7 +57,7 @@ describe('smart_finish tool', () => {
         },
       };
 
-      const result = await handleSmartFinish(input) as SmartFinishResponse;
+      const result = (await handleSmartFinish(input)) as SmartFinishResponse;
 
       expect(result.success).toBe(true);
       expect(result.data).toBeDefined();
@@ -81,7 +81,7 @@ describe('smart_finish tool', () => {
         },
       };
 
-      const result = await handleSmartFinish(input) as SmartFinishResponse;
+      const result = (await handleSmartFinish(input)) as SmartFinishResponse;
 
       expect(result.success).toBe(true);
       expect(result.data?.recommendations).toBeDefined();
@@ -93,7 +93,7 @@ describe('smart_finish tool', () => {
         codeIds: ['code_123', 'code_456'],
       };
 
-      const result = await handleSmartFinish(input) as SmartFinishResponse;
+      const result = (await handleSmartFinish(input)) as SmartFinishResponse;
 
       expect(result.success).toBe(true);
       expect(result.data?.nextSteps).toBeDefined();
@@ -106,7 +106,7 @@ describe('smart_finish tool', () => {
         codeIds: ['code_123', 'code_456'],
       };
 
-      const result = await handleSmartFinish(input) as SmartFinishResponse;
+      const result = (await handleSmartFinish(input)) as SmartFinishResponse;
 
       expect(result.success).toBe(true);
       expect(result.data?.technicalMetrics.responseTime).toBeLessThan(100); // <100ms requirement
@@ -127,7 +127,7 @@ describe('smart_finish tool', () => {
           qualityGates: gates,
         };
 
-        const result = await handleSmartFinish(input) as SmartFinishResponse;
+        const result = (await handleSmartFinish(input)) as SmartFinishResponse;
 
         expect(result.success).toBe(true);
         expect(result.data?.qualityScorecard.quality).toBeDefined();
@@ -145,7 +145,7 @@ describe('smart_finish tool', () => {
         },
       };
 
-      const result = await handleSmartFinish(input) as SmartFinishResponse;
+      const result = (await handleSmartFinish(input)) as SmartFinishResponse;
 
       expect(result.success).toBe(true);
       expect(result.data?.qualityScorecard.business).toBeDefined();
@@ -162,7 +162,7 @@ describe('smart_finish tool', () => {
         },
       };
 
-      const result = await handleSmartFinish(input) as SmartFinishResponse;
+      const result = (await handleSmartFinish(input)) as SmartFinishResponse;
 
       expect(result.success).toBe(true);
       expect(result.data?.qualityScorecard.production).toBeDefined();
@@ -173,7 +173,7 @@ describe('smart_finish tool', () => {
         codeIds: [], // Invalid empty array
       };
 
-      const result = await handleSmartFinish(input) as SmartFinishResponse;
+      const result = (await handleSmartFinish(input)) as SmartFinishResponse;
 
       expect(result.success).toBe(false);
       expect(result.error).toBeDefined();
@@ -185,7 +185,7 @@ describe('smart_finish tool', () => {
         invalidField: 'test',
       };
 
-      const result = await handleSmartFinish(invalidInput) as SmartFinishResponse;
+      const result = (await handleSmartFinish(invalidInput)) as SmartFinishResponse;
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('Invalid arguments');
