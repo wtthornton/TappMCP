@@ -35,19 +35,20 @@ const smart_finish_1 = require("../tools/smart_finish");
         const codeIds = [];
         // Generate API code
         const apiCodeInput = {
-            codeDescription: 'Create a REST API for payment processing',
-            codeType: 'module',
-            targetLanguage: 'typescript',
-            framework: 'express',
-            requirements: {
-                security: 'high',
-                performance: 'high',
-                maintainability: 'high',
-            },
+            projectId,
+            featureDescription: 'Create a REST API for payment processing',
+            codeType: 'api',
+            targetRole: 'developer',
+            techStack: ['typescript', 'express'],
             businessContext: {
-                industry: 'e-commerce',
-                userRole: 'vibe-coder',
-                projectId,
+                goals: ['payment processing', 'secure transactions'],
+                targetUsers: ['customers', 'merchants'],
+                priority: 'high',
+            },
+            qualityRequirements: {
+                testCoverage: 90,
+                complexity: 3,
+                securityLevel: 'high',
             },
         };
         const apiCodeResult = (await (0, smart_write_1.handleSmartWrite)(apiCodeInput));
@@ -57,19 +58,20 @@ const smart_finish_1 = require("../tools/smart_finish");
         codeIds.push(apiCodeResult.data.codeId);
         // Generate component code
         const componentCodeInput = {
-            codeDescription: 'Create a React component for user dashboard',
+            projectId,
+            featureDescription: 'Create a React component for user dashboard',
             codeType: 'component',
-            targetLanguage: 'typescript',
-            framework: 'react',
-            requirements: {
-                security: 'medium',
-                performance: 'high',
-                maintainability: 'high',
-            },
+            targetRole: 'developer',
+            techStack: ['typescript', 'react'],
             businessContext: {
-                industry: 'e-commerce',
-                userRole: 'vibe-coder',
-                projectId,
+                goals: ['user dashboard', 'data visualization'],
+                targetUsers: ['end users'],
+                priority: 'high',
+            },
+            qualityRequirements: {
+                testCoverage: 85,
+                complexity: 2,
+                securityLevel: 'medium',
             },
         };
         const componentCodeResult = (await (0, smart_write_1.handleSmartWrite)(componentCodeInput));
@@ -79,19 +81,20 @@ const smart_finish_1 = require("../tools/smart_finish");
         codeIds.push(componentCodeResult.data.codeId);
         // Generate test code
         const testCodeInput = {
-            codeDescription: 'Create comprehensive unit tests for the payment API',
-            codeType: 'module',
-            targetLanguage: 'typescript',
-            framework: 'jest',
-            requirements: {
-                security: 'high',
-                performance: 'medium',
-                maintainability: 'high',
-            },
+            projectId,
+            featureDescription: 'Create comprehensive unit tests for the payment API',
+            codeType: 'test',
+            targetRole: 'developer',
+            techStack: ['typescript', 'jest'],
             businessContext: {
-                industry: 'e-commerce',
-                userRole: 'vibe-coder',
-                projectId,
+                goals: ['test coverage', 'quality assurance'],
+                targetUsers: ['developers'],
+                priority: 'high',
+            },
+            qualityRequirements: {
+                testCoverage: 95,
+                complexity: 2,
+                securityLevel: 'high',
             },
         };
         const testCodeResult = (await (0, smart_write_1.handleSmartWrite)(testCodeInput));
@@ -101,15 +104,15 @@ const smart_finish_1 = require("../tools/smart_finish");
         codeIds.push(testCodeResult.data.codeId);
         // Step 3: Validate project completion with smart_finish
         const validationInput = {
+            projectId,
             codeIds,
             qualityGates: {
                 testCoverage: 90,
                 securityScore: 95,
-                performanceScore: 85,
+                complexityScore: 85,
                 maintainabilityScore: 88,
             },
             businessRequirements: {
-                roiTarget: 300,
                 costPrevention: 25000,
                 timeSaved: 8,
                 userSatisfaction: 95,
@@ -143,21 +146,23 @@ const smart_finish_1 = require("../tools/smart_finish");
         const { projectId } = projectResult.data;
         // Generate code
         const codeInput = {
-            codeDescription: 'Create a secure authentication service',
-            codeType: 'service',
+            projectId,
+            featureDescription: 'Create a secure authentication service',
+            codeType: 'api',
+            targetRole: 'developer',
             businessContext: {
-                industry: 'fintech',
-                userRole: 'vibe-coder',
-                projectId,
+                goals: ['authentication', 'security'],
+                targetUsers: ['enterprise users'],
+                priority: 'high',
             },
         };
         const codeResult = (await (0, smart_write_1.handleSmartWrite)(codeInput));
         const { codeId } = codeResult.data;
         // Validate
         const validationInput = {
+            projectId,
             codeIds: [codeId],
             businessRequirements: {
-                roiTarget: 400,
                 costPrevention: 30000,
                 timeSaved: 12,
                 userSatisfaction: 98,
@@ -182,20 +187,23 @@ const smart_finish_1 = require("../tools/smart_finish");
             const { projectId } = projectResult.data;
             // Generate code
             const codeInput = {
-                codeDescription: 'Create a user management system',
-                codeType: 'module',
+                projectId,
+                featureDescription: 'Create a user management system',
+                codeType: 'api',
+                targetRole: 'developer',
                 businessContext: {
-                    userRole: role,
-                    projectId,
+                    goals: ['user management', 'authentication'],
+                    targetUsers: ['end users'],
+                    priority: 'medium',
                 },
             };
             const codeResult = (await (0, smart_write_1.handleSmartWrite)(codeInput));
             const { codeId } = codeResult.data;
             // Validate
             const validationInput = {
+                projectId,
                 codeIds: [codeId],
                 businessRequirements: {
-                    roiTarget: 300,
                     costPrevention: 25000,
                     timeSaved: 8,
                     userSatisfaction: 95,
@@ -221,30 +229,32 @@ const smart_finish_1 = require("../tools/smart_finish");
         const { projectId } = projectResult.data;
         // Generate high-quality code
         const codeInput = {
-            codeDescription: 'Create a high-quality data validation module',
-            codeType: 'module',
-            requirements: {
-                security: 'high',
-                performance: 'high',
-                maintainability: 'high',
+            projectId,
+            featureDescription: 'Create a high-quality data validation module',
+            codeType: 'api',
+            targetRole: 'developer',
+            techStack: ['typescript'],
+            businessContext: {
+                goals: ['data validation', 'quality assurance'],
+                targetUsers: ['developers'],
+                priority: 'high',
             },
-            qualityGates: {
+            qualityRequirements: {
                 testCoverage: 95,
                 complexity: 1,
-            },
-            businessContext: {
-                projectId,
+                securityLevel: 'high',
             },
         };
         const codeResult = (await (0, smart_write_1.handleSmartWrite)(codeInput));
         const { codeId } = codeResult.data;
         // Validate with high standards
         const validationInput = {
+            projectId,
             codeIds: [codeId],
             qualityGates: {
                 testCoverage: 95,
                 securityScore: 98,
-                performanceScore: 90,
+                complexityScore: 90,
                 maintainabilityScore: 95,
             },
         };
@@ -267,16 +277,21 @@ const smart_finish_1 = require("../tools/smart_finish");
         const { projectId } = projectResult.data;
         // Generate code
         const codeInput = {
-            codeDescription: 'Create a basic CRUD API',
-            codeType: 'module',
+            projectId,
+            featureDescription: 'Create a basic CRUD API',
+            codeType: 'api',
+            targetRole: 'developer',
             businessContext: {
-                projectId,
+                goals: ['CRUD operations', 'API development'],
+                targetUsers: ['API consumers'],
+                priority: 'medium',
             },
         };
         const codeResult = (await (0, smart_write_1.handleSmartWrite)(codeInput));
         const { codeId } = codeResult.data;
         // Validate
         const validationInput = {
+            projectId,
             codeIds: [codeId],
         };
         const validationResult = (await (0, smart_finish_1.handleSmartFinish)(validationInput));

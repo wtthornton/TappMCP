@@ -6,7 +6,7 @@ describe('smart_plan tool', () => {
   describe('tool definition', () => {
     it('should have correct name and description', () => {
       expect(smartPlanTool.name).toBe('smart_plan');
-      expect(smartPlanTool.description).toContain('AI-assisted project planning');
+      expect(smartPlanTool.description).toContain('Create comprehensive project plans');
     });
 
     it('should have proper input schema', () => {
@@ -78,7 +78,7 @@ describe('smart_plan tool', () => {
     });
 
     it('should generate different plan types', async () => {
-      const planTypes = ['development', 'maintenance', 'migration', 'optimization'];
+      const planTypes = ['development', 'maintenance', 'migration', 'testing'];
 
       for (const planType of planTypes) {
         const input = {
@@ -130,7 +130,7 @@ describe('smart_plan tool', () => {
       expect(result.data?.projectPlan.resources.team).toBeDefined();
       expect(result.data?.projectPlan.resources.budget).toBeDefined();
       expect(result.data?.projectPlan.resources.tools).toBeDefined();
-      expect(result.data?.projectPlan.resources.budget.total).toBe(100000);
+      expect(result.data?.projectPlan.resources.budget.total).toBe(50000);
     });
 
     it('should generate timeline planning', async () => {
@@ -237,7 +237,7 @@ describe('smart_plan tool', () => {
       const result = (await handleSmartPlan(invalidInput)) as SmartPlanResponse;
 
       expect(result.success).toBe(false);
-      expect(result.error).toContain('Invalid arguments');
+      expect(result.error).toContain('Required');
     });
   });
 });

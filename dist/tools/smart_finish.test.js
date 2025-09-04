@@ -6,7 +6,7 @@ const smart_finish_1 = require("./smart_finish");
     (0, vitest_1.describe)('tool definition', () => {
         (0, vitest_1.it)('should have correct name and description', () => {
             (0, vitest_1.expect)(smart_finish_1.smartFinishTool.name).toBe('smart_finish');
-            (0, vitest_1.expect)(smart_finish_1.smartFinishTool.description).toContain('AI-assisted project completion');
+            (0, vitest_1.expect)(smart_finish_1.smartFinishTool.description).toContain('Check quality and validate production readiness');
         });
         (0, vitest_1.it)('should have proper input schema', () => {
             (0, vitest_1.expect)(smart_finish_1.smartFinishTool.inputSchema).toBeDefined();
@@ -17,6 +17,7 @@ const smart_finish_1 = require("./smart_finish");
     (0, vitest_1.describe)('handleSmartFinish', () => {
         (0, vitest_1.it)('should successfully validate project with minimal input', async () => {
             const input = {
+                projectId: 'proj_test_123',
                 codeIds: ['code_123', 'code_456'],
             };
             const result = (await (0, smart_finish_1.handleSmartFinish)(input));
@@ -31,15 +32,15 @@ const smart_finish_1 = require("./smart_finish");
         });
         (0, vitest_1.it)('should successfully validate project with full input', async () => {
             const input = {
+                projectId: 'proj_test_456',
                 codeIds: ['code_123', 'code_456'],
                 qualityGates: {
                     testCoverage: 90,
                     securityScore: 95,
-                    performanceScore: 85,
+                    complexityScore: 85,
                     maintainabilityScore: 88,
                 },
                 businessRequirements: {
-                    roiTarget: 300,
                     costPrevention: 25000,
                     timeSaved: 8,
                     userSatisfaction: 95,
@@ -66,10 +67,13 @@ const smart_finish_1 = require("./smart_finish");
         });
         (0, vitest_1.it)('should generate appropriate recommendations', async () => {
             const input = {
+                projectId: 'proj_test_789',
                 codeIds: ['code_123'],
                 qualityGates: {
                     testCoverage: 70, // Below threshold
                     securityScore: 60, // Below threshold
+                    complexityScore: 50,
+                    maintainabilityScore: 65,
                 },
             };
             const result = (await (0, smart_finish_1.handleSmartFinish)(input));
@@ -79,6 +83,7 @@ const smart_finish_1 = require("./smart_finish");
         });
         (0, vitest_1.it)('should generate next steps', async () => {
             const input = {
+                projectId: 'proj_test_101',
                 codeIds: ['code_123', 'code_456'],
             };
             const result = (await (0, smart_finish_1.handleSmartFinish)(input));
@@ -89,6 +94,7 @@ const smart_finish_1 = require("./smart_finish");
         });
         (0, vitest_1.it)('should calculate technical metrics correctly', async () => {
             const input = {
+                projectId: 'proj_test_202',
                 codeIds: ['code_123', 'code_456'],
             };
             const result = (await (0, smart_finish_1.handleSmartFinish)(input));
@@ -105,6 +111,7 @@ const smart_finish_1 = require("./smart_finish");
             ];
             for (const gates of qualityGates) {
                 const input = {
+                    projectId: 'proj_test_303',
                     codeIds: ['code_123'],
                     qualityGates: gates,
                 };
@@ -115,9 +122,9 @@ const smart_finish_1 = require("./smart_finish");
         });
         (0, vitest_1.it)('should validate business requirements', async () => {
             const input = {
+                projectId: 'proj_test_404',
                 codeIds: ['code_123'],
                 businessRequirements: {
-                    roiTarget: 400,
                     costPrevention: 30000,
                     timeSaved: 12,
                     userSatisfaction: 98,
@@ -129,6 +136,7 @@ const smart_finish_1 = require("./smart_finish");
         });
         (0, vitest_1.it)('should validate production readiness', async () => {
             const input = {
+                projectId: 'proj_test_505',
                 codeIds: ['code_123'],
                 productionReadiness: {
                     securityScan: true,
@@ -156,7 +164,7 @@ const smart_finish_1 = require("./smart_finish");
             };
             const result = (await (0, smart_finish_1.handleSmartFinish)(invalidInput));
             (0, vitest_1.expect)(result.success).toBe(false);
-            (0, vitest_1.expect)(result.error).toContain('Invalid arguments');
+            (0, vitest_1.expect)(result.error).toContain('Required');
         });
     });
 });

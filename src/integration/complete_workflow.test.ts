@@ -81,19 +81,20 @@ describe('Complete 5-Tool Workflow Integration', () => {
 
     // Generate authentication code
     const authCodeInput = {
-      codeDescription: 'Create a secure authentication system with JWT tokens',
-      codeType: 'module',
-      targetLanguage: 'typescript',
-      framework: 'express',
-      requirements: {
-        security: 'high',
-        performance: 'high',
-        maintainability: 'high',
-      },
+      projectId,
+      featureDescription: 'Create a secure authentication system with JWT tokens',
+      codeType: 'api',
+      targetRole: 'developer',
+      techStack: ['typescript', 'express'],
       businessContext: {
-        industry: 'e-commerce',
-        userRole: 'vibe-coder',
-        projectId,
+        goals: ['authentication', 'security'],
+        targetUsers: ['customers', 'merchants'],
+        priority: 'high',
+      },
+      qualityRequirements: {
+        testCoverage: 95,
+        complexity: 3,
+        securityLevel: 'high',
       },
     };
 
@@ -105,19 +106,20 @@ describe('Complete 5-Tool Workflow Integration', () => {
 
     // Generate dashboard code
     const dashboardCodeInput = {
-      codeDescription: 'Create a React dashboard component for inventory management',
+      projectId,
+      featureDescription: 'Create a React dashboard component for inventory management',
       codeType: 'component',
-      targetLanguage: 'typescript',
-      framework: 'react',
-      requirements: {
-        security: 'medium',
-        performance: 'high',
-        maintainability: 'high',
-      },
+      targetRole: 'developer',
+      techStack: ['typescript', 'react'],
       businessContext: {
-        industry: 'e-commerce',
-        userRole: 'vibe-coder',
-        projectId,
+        goals: ['inventory management', 'dashboard'],
+        targetUsers: ['merchants', 'admins'],
+        priority: 'high',
+      },
+      qualityRequirements: {
+        testCoverage: 85,
+        complexity: 2,
+        securityLevel: 'medium',
       },
     };
 
@@ -129,19 +131,20 @@ describe('Complete 5-Tool Workflow Integration', () => {
 
     // Generate test code
     const testCodeInput = {
-      codeDescription: 'Create comprehensive unit tests for the authentication system',
-      codeType: 'module',
-      targetLanguage: 'typescript',
-      framework: 'jest',
-      requirements: {
-        security: 'high',
-        performance: 'medium',
-        maintainability: 'high',
-      },
+      projectId,
+      featureDescription: 'Create comprehensive unit tests for the authentication system',
+      codeType: 'test',
+      targetRole: 'developer',
+      techStack: ['typescript', 'jest'],
       businessContext: {
-        industry: 'e-commerce',
-        userRole: 'vibe-coder',
-        projectId,
+        goals: ['test coverage', 'quality assurance'],
+        targetUsers: ['developers'],
+        priority: 'high',
+      },
+      qualityRequirements: {
+        testCoverage: 95,
+        complexity: 2,
+        securityLevel: 'high',
       },
     };
 
@@ -153,15 +156,15 @@ describe('Complete 5-Tool Workflow Integration', () => {
 
     // Step 4: Validate project completion with smart_finish
     const validationInput = {
+      projectId,
       codeIds,
       qualityGates: {
         testCoverage: 90,
         securityScore: 95,
-        performanceScore: 85,
+        complexityScore: 85,
         maintainabilityScore: 88,
       },
       businessRequirements: {
-        roiTarget: 300,
         costPrevention: 25000,
         timeSaved: 8,
         userSatisfaction: 95,
@@ -193,9 +196,9 @@ describe('Complete 5-Tool Workflow Integration', () => {
         includeMonitoring: true,
       },
       externalIntegrations: [
-        { name: 'GitHub', type: 'version-control', priority: 1 },
-        { name: 'Docker', type: 'containerization', priority: 2 },
-        { name: 'AWS', type: 'cloud', priority: 3 },
+        { name: 'GitHub', type: 'tool', priority: 'high' },
+        { name: 'Docker', type: 'tool', priority: 'medium' },
+        { name: 'AWS', type: 'service', priority: 'high' },
       ],
       qualityGates: {
         testCoverage: 90,
@@ -214,6 +217,9 @@ describe('Complete 5-Tool Workflow Integration', () => {
       orchestrationInput
     )) as SmartOrchestrateResponse;
 
+    if (!orchestrationResult.success) {
+      console.log('Orchestration error:', orchestrationResult.error);
+    }
     expect(orchestrationResult.success).toBe(true);
     expect(orchestrationResult.data?.orchestration).toBeDefined();
     expect(orchestrationResult.data?.orchestration.workflow).toBeDefined();
@@ -255,12 +261,14 @@ describe('Complete 5-Tool Workflow Integration', () => {
 
     // Generate code
     const codeInput = {
-      codeDescription: 'Create a secure payment processing API',
-      codeType: 'module',
+      projectId,
+      featureDescription: 'Create a secure payment processing API',
+      codeType: 'api',
+      targetRole: 'developer',
       businessContext: {
-        industry: 'fintech',
-        userRole: 'vibe-coder',
-        projectId,
+        goals: ['payment processing', 'security'],
+        targetUsers: ['enterprise users'],
+        priority: 'high',
       },
     };
 
@@ -269,9 +277,9 @@ describe('Complete 5-Tool Workflow Integration', () => {
 
     // Validate
     const validationInput = {
+      projectId,
       codeIds: [codeId],
       businessRequirements: {
-        roiTarget: 400,
         costPrevention: 30000,
         timeSaved: 12,
         userSatisfaction: 98,
@@ -283,11 +291,17 @@ describe('Complete 5-Tool Workflow Integration', () => {
     // Orchestrate
     const orchestrationInput = {
       projectId,
-      workflowType: 'development',
+      workflowType: 'full-development',
       orchestrationScope: {
         includePlanning: true,
         includeDevelopment: true,
         includeTesting: true,
+      },
+      businessRequirements: {
+        roiTarget: 300,
+        costPrevention: 30000,
+        timeSaved: 12,
+        userSatisfaction: 98,
       },
     };
 
@@ -304,9 +318,15 @@ describe('Complete 5-Tool Workflow Integration', () => {
   });
 
   it('should handle different workflow types', async () => {
-    const workflowTypes = ['development', 'deployment', 'maintenance', 'optimization'];
+    const workflowTypeMappings = [
+      { testType: 'development', validType: 'full-development' },
+      { testType: 'deployment', validType: 'migration' },
+      { testType: 'maintenance', validType: 'maintenance' },
+      { testType: 'optimization', validType: 'feature-development' },
+    ];
 
-    for (const workflowType of workflowTypes) {
+    for (const { testType, validType } of workflowTypeMappings) {
+      const workflowType = validType;
       // Initialize project
       const projectInput = {
         projectName: `workflow-${workflowType}`,
@@ -326,10 +346,14 @@ describe('Complete 5-Tool Workflow Integration', () => {
 
       // Generate code
       const codeInput = {
-        codeDescription: `Create ${workflowType} related functionality`,
-        codeType: 'module',
+        projectId,
+        featureDescription: `Create ${workflowType} related functionality`,
+        codeType: 'api',
+        targetRole: 'developer',
         businessContext: {
-          projectId,
+          goals: [`${workflowType} functionality`],
+          targetUsers: ['end users'],
+          priority: 'medium',
         },
       };
 
@@ -338,6 +362,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
 
       // Validate
       const validationInput = {
+        projectId,
         codeIds: [codeId],
       };
 
@@ -357,7 +382,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
         orchestrationInput
       )) as SmartOrchestrateResponse;
 
-      expect(orchestrationResult.data?.workflowType).toBe(workflowType);
+      expect(orchestrationResult.data?.workflowType).toBe(validType);
     }
   });
 
@@ -377,10 +402,14 @@ describe('Complete 5-Tool Workflow Integration', () => {
 
     for (let i = 0; i < 3; i++) {
       const codeInput = {
-        codeDescription: `Create module ${i + 1} for the application`,
-        codeType: 'module',
+        projectId,
+        featureDescription: `Create module ${i + 1} for the application`,
+        codeType: 'api',
+        targetRole: 'developer',
         businessContext: {
-          projectId,
+          goals: [`module ${i + 1} functionality`],
+          targetUsers: ['end users'],
+          priority: 'medium',
         },
       };
 
@@ -391,11 +420,12 @@ describe('Complete 5-Tool Workflow Integration', () => {
 
     // Validate with comprehensive quality gates
     const validationInput = {
+      projectId,
       codeIds,
       qualityGates: {
         testCoverage: 95,
         securityScore: 98,
-        performanceScore: 90,
+        complexityScore: 90,
         maintainabilityScore: 95,
       },
     };
@@ -413,12 +443,22 @@ describe('Complete 5-Tool Workflow Integration', () => {
     // Orchestrate with quality focus
     const orchestrationInput = {
       projectId,
-      workflowType: 'development',
+      workflowType: 'full-development',
       orchestrationScope: {
         includePlanning: true,
         includeDevelopment: true,
         includeTesting: true,
         includeDeployment: true,
+      },
+      externalIntegrations: [
+        { name: 'GitHub', type: 'tool', priority: 'high' },
+        { name: 'Docker', type: 'tool', priority: 'medium' },
+      ],
+      businessRequirements: {
+        roiTarget: 300,
+        costPrevention: 25000,
+        timeSaved: 8,
+        userSatisfaction: 95,
       },
     };
 

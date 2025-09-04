@@ -68,19 +68,20 @@ const smart_orchestrate_1 = require("../tools/smart_orchestrate");
         const codeIds = [];
         // Generate authentication code
         const authCodeInput = {
-            codeDescription: 'Create a secure authentication system with JWT tokens',
-            codeType: 'module',
-            targetLanguage: 'typescript',
-            framework: 'express',
-            requirements: {
-                security: 'high',
-                performance: 'high',
-                maintainability: 'high',
-            },
+            projectId,
+            featureDescription: 'Create a secure authentication system with JWT tokens',
+            codeType: 'api',
+            targetRole: 'developer',
+            techStack: ['typescript', 'express'],
             businessContext: {
-                industry: 'e-commerce',
-                userRole: 'vibe-coder',
-                projectId,
+                goals: ['authentication', 'security'],
+                targetUsers: ['customers', 'merchants'],
+                priority: 'high',
+            },
+            qualityRequirements: {
+                testCoverage: 95,
+                complexity: 3,
+                securityLevel: 'high',
             },
         };
         const authCodeResult = (await (0, smart_write_1.handleSmartWrite)(authCodeInput));
@@ -90,19 +91,20 @@ const smart_orchestrate_1 = require("../tools/smart_orchestrate");
         codeIds.push(authCodeResult.data.codeId);
         // Generate dashboard code
         const dashboardCodeInput = {
-            codeDescription: 'Create a React dashboard component for inventory management',
+            projectId,
+            featureDescription: 'Create a React dashboard component for inventory management',
             codeType: 'component',
-            targetLanguage: 'typescript',
-            framework: 'react',
-            requirements: {
-                security: 'medium',
-                performance: 'high',
-                maintainability: 'high',
-            },
+            targetRole: 'developer',
+            techStack: ['typescript', 'react'],
             businessContext: {
-                industry: 'e-commerce',
-                userRole: 'vibe-coder',
-                projectId,
+                goals: ['inventory management', 'dashboard'],
+                targetUsers: ['merchants', 'admins'],
+                priority: 'high',
+            },
+            qualityRequirements: {
+                testCoverage: 85,
+                complexity: 2,
+                securityLevel: 'medium',
             },
         };
         const dashboardCodeResult = (await (0, smart_write_1.handleSmartWrite)(dashboardCodeInput));
@@ -112,19 +114,20 @@ const smart_orchestrate_1 = require("../tools/smart_orchestrate");
         codeIds.push(dashboardCodeResult.data.codeId);
         // Generate test code
         const testCodeInput = {
-            codeDescription: 'Create comprehensive unit tests for the authentication system',
-            codeType: 'module',
-            targetLanguage: 'typescript',
-            framework: 'jest',
-            requirements: {
-                security: 'high',
-                performance: 'medium',
-                maintainability: 'high',
-            },
+            projectId,
+            featureDescription: 'Create comprehensive unit tests for the authentication system',
+            codeType: 'test',
+            targetRole: 'developer',
+            techStack: ['typescript', 'jest'],
             businessContext: {
-                industry: 'e-commerce',
-                userRole: 'vibe-coder',
-                projectId,
+                goals: ['test coverage', 'quality assurance'],
+                targetUsers: ['developers'],
+                priority: 'high',
+            },
+            qualityRequirements: {
+                testCoverage: 95,
+                complexity: 2,
+                securityLevel: 'high',
             },
         };
         const testCodeResult = (await (0, smart_write_1.handleSmartWrite)(testCodeInput));
@@ -134,15 +137,15 @@ const smart_orchestrate_1 = require("../tools/smart_orchestrate");
         codeIds.push(testCodeResult.data.codeId);
         // Step 4: Validate project completion with smart_finish
         const validationInput = {
+            projectId,
             codeIds,
             qualityGates: {
                 testCoverage: 90,
                 securityScore: 95,
-                performanceScore: 85,
+                complexityScore: 85,
                 maintainabilityScore: 88,
             },
             businessRequirements: {
-                roiTarget: 300,
                 costPrevention: 25000,
                 timeSaved: 8,
                 userSatisfaction: 95,
@@ -223,21 +226,23 @@ const smart_orchestrate_1 = require("../tools/smart_orchestrate");
         const planResult = (await (0, smart_plan_1.handleSmartPlan)(planInput));
         // Generate code
         const codeInput = {
-            codeDescription: 'Create a secure payment processing API',
-            codeType: 'module',
+            projectId,
+            featureDescription: 'Create a secure payment processing API',
+            codeType: 'api',
+            targetRole: 'developer',
             businessContext: {
-                industry: 'fintech',
-                userRole: 'vibe-coder',
-                projectId,
+                goals: ['payment processing', 'security'],
+                targetUsers: ['enterprise users'],
+                priority: 'high',
             },
         };
         const codeResult = (await (0, smart_write_1.handleSmartWrite)(codeInput));
         const { codeId } = codeResult.data;
         // Validate
         const validationInput = {
+            projectId,
             codeIds: [codeId],
             businessRequirements: {
-                roiTarget: 400,
                 costPrevention: 30000,
                 timeSaved: 12,
                 userSatisfaction: 98,
@@ -280,16 +285,21 @@ const smart_orchestrate_1 = require("../tools/smart_orchestrate");
             await (0, smart_plan_1.handleSmartPlan)(planInput);
             // Generate code
             const codeInput = {
-                codeDescription: `Create ${workflowType} related functionality`,
-                codeType: 'module',
+                projectId,
+                featureDescription: `Create ${workflowType} related functionality`,
+                codeType: 'api',
+                targetRole: 'developer',
                 businessContext: {
-                    projectId,
+                    goals: [`${workflowType} functionality`],
+                    targetUsers: ['end users'],
+                    priority: 'medium',
                 },
             };
             const codeResult = (await (0, smart_write_1.handleSmartWrite)(codeInput));
             const { codeId } = codeResult.data;
             // Validate
             const validationInput = {
+                projectId,
                 codeIds: [codeId],
             };
             await (0, smart_finish_1.handleSmartFinish)(validationInput);
@@ -319,10 +329,14 @@ const smart_orchestrate_1 = require("../tools/smart_orchestrate");
         const codeIds = [];
         for (let i = 0; i < 3; i++) {
             const codeInput = {
-                codeDescription: `Create module ${i + 1} for the application`,
-                codeType: 'module',
+                projectId,
+                featureDescription: `Create module ${i + 1} for the application`,
+                codeType: 'api',
+                targetRole: 'developer',
                 businessContext: {
-                    projectId,
+                    goals: [`module ${i + 1} functionality`],
+                    targetUsers: ['end users'],
+                    priority: 'medium',
                 },
             };
             const codeResult = (await (0, smart_write_1.handleSmartWrite)(codeInput));
@@ -331,11 +345,12 @@ const smart_orchestrate_1 = require("../tools/smart_orchestrate");
         }
         // Validate with comprehensive quality gates
         const validationInput = {
+            projectId,
             codeIds,
             qualityGates: {
                 testCoverage: 95,
                 securityScore: 98,
-                performanceScore: 90,
+                complexityScore: 90,
                 maintainabilityScore: 95,
             },
         };

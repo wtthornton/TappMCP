@@ -6,7 +6,7 @@ const smart_orchestrate_1 = require("./smart_orchestrate");
     (0, vitest_1.describe)('tool definition', () => {
         (0, vitest_1.it)('should have correct name and description', () => {
             (0, vitest_1.expect)(smart_orchestrate_1.smartOrchestrateTool.name).toBe('smart_orchestrate');
-            (0, vitest_1.expect)(smart_orchestrate_1.smartOrchestrateTool.description).toContain('AI-assisted workflow orchestration');
+            (0, vitest_1.expect)(smart_orchestrate_1.smartOrchestrateTool.description).toContain('Orchestrate complete development workflow');
         });
         (0, vitest_1.it)('should have proper input schema', () => {
             (0, vitest_1.expect)(smart_orchestrate_1.smartOrchestrateTool.inputSchema).toBeDefined();
@@ -18,7 +18,7 @@ const smart_orchestrate_1 = require("./smart_orchestrate");
         (0, vitest_1.it)('should successfully orchestrate workflow with minimal input', async () => {
             const input = {
                 projectId: 'proj_123_test',
-                workflowType: 'development',
+                workflowType: 'full-development',
             };
             const result = (await (0, smart_orchestrate_1.handleSmartOrchestrate)(input));
             (0, vitest_1.expect)(result.success).toBe(true);
@@ -42,9 +42,9 @@ const smart_orchestrate_1 = require("./smart_orchestrate");
                     includeMonitoring: true,
                 },
                 externalIntegrations: [
-                    { name: 'GitHub', type: 'version-control', priority: 1 },
-                    { name: 'Docker', type: 'containerization', priority: 2 },
-                    { name: 'AWS', type: 'cloud', priority: 3 },
+                    { name: 'GitHub', type: 'api', priority: 'high' },
+                    { name: 'Docker', type: 'tool', priority: 'medium' },
+                    { name: 'AWS', type: 'service', priority: 'low' },
                 ],
                 qualityGates: {
                     testCoverage: 90,
@@ -68,7 +68,7 @@ const smart_orchestrate_1 = require("./smart_orchestrate");
             (0, vitest_1.expect)(result.data?.orchestration.businessValue).toBeDefined();
         });
         (0, vitest_1.it)('should generate different workflow types', async () => {
-            const workflowTypes = ['development', 'deployment', 'maintenance', 'optimization'];
+            const workflowTypes = ['full-development', 'feature-development', 'maintenance', 'migration'];
             for (const workflowType of workflowTypes) {
                 const input = {
                     projectId: `proj_${workflowType}`,
@@ -82,7 +82,7 @@ const smart_orchestrate_1 = require("./smart_orchestrate");
         (0, vitest_1.it)('should generate workflow phases', async () => {
             const input = {
                 projectId: 'proj_phases',
-                workflowType: 'development',
+                workflowType: 'full-development',
                 orchestrationScope: {
                     includePlanning: true,
                     includeDevelopment: true,
@@ -98,11 +98,11 @@ const smart_orchestrate_1 = require("./smart_orchestrate");
         (0, vitest_1.it)('should configure external integrations', async () => {
             const input = {
                 projectId: 'proj_integrations',
-                workflowType: 'development',
+                workflowType: 'full-development',
                 externalIntegrations: [
-                    { name: 'GitHub', type: 'version-control', priority: 1 },
-                    { name: 'Docker', type: 'containerization', priority: 2 },
-                    { name: 'AWS', type: 'cloud', priority: 3 },
+                    { name: 'GitHub', type: 'api', priority: 'high' },
+                    { name: 'Docker', type: 'tool', priority: 'medium' },
+                    { name: 'AWS', type: 'service', priority: 'low' },
                 ],
             };
             const result = (await (0, smart_orchestrate_1.handleSmartOrchestrate)(input));
@@ -113,7 +113,7 @@ const smart_orchestrate_1 = require("./smart_orchestrate");
         (0, vitest_1.it)('should configure quality gates', async () => {
             const input = {
                 projectId: 'proj_gates',
-                workflowType: 'development',
+                workflowType: 'full-development',
                 qualityGates: {
                     testCoverage: 95,
                     securityScore: 98,
@@ -129,7 +129,7 @@ const smart_orchestrate_1 = require("./smart_orchestrate");
         (0, vitest_1.it)('should generate automation configuration', async () => {
             const input = {
                 projectId: 'proj_automation',
-                workflowType: 'development',
+                workflowType: 'full-development',
             };
             const result = (await (0, smart_orchestrate_1.handleSmartOrchestrate)(input));
             (0, vitest_1.expect)(result.success).toBe(true);
@@ -141,7 +141,7 @@ const smart_orchestrate_1 = require("./smart_orchestrate");
         (0, vitest_1.it)('should calculate business value', async () => {
             const input = {
                 projectId: 'proj_business',
-                workflowType: 'development',
+                workflowType: 'full-development',
                 businessRequirements: {
                     roiTarget: 400,
                     costPrevention: 30000,
@@ -161,7 +161,7 @@ const smart_orchestrate_1 = require("./smart_orchestrate");
         (0, vitest_1.it)('should generate success metrics', async () => {
             const input = {
                 projectId: 'proj_metrics',
-                workflowType: 'development',
+                workflowType: 'full-development',
             };
             const result = (await (0, smart_orchestrate_1.handleSmartOrchestrate)(input));
             (0, vitest_1.expect)(result.success).toBe(true);
@@ -172,7 +172,7 @@ const smart_orchestrate_1 = require("./smart_orchestrate");
         (0, vitest_1.it)('should calculate technical metrics', async () => {
             const input = {
                 projectId: 'proj_tech',
-                workflowType: 'development',
+                workflowType: 'full-development',
             };
             const result = (await (0, smart_orchestrate_1.handleSmartOrchestrate)(input));
             (0, vitest_1.expect)(result.success).toBe(true);
@@ -198,7 +198,7 @@ const smart_orchestrate_1 = require("./smart_orchestrate");
             };
             const result = (await (0, smart_orchestrate_1.handleSmartOrchestrate)(invalidInput));
             (0, vitest_1.expect)(result.success).toBe(false);
-            (0, vitest_1.expect)(result.error).toContain('Invalid arguments');
+            (0, vitest_1.expect)(result.error).toContain('Required');
         });
     });
 });

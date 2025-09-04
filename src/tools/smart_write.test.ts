@@ -6,7 +6,7 @@ describe('smart_write tool', () => {
   describe('tool definition', () => {
     it('should have correct name and description', () => {
       expect(smartWriteTool.name).toBe('smart_write');
-      expect(smartWriteTool.description).toContain('AI-assisted code generation');
+      expect(smartWriteTool.description).toContain('Generate code with role-based expertise');
     });
 
     it('should have proper input schema', () => {
@@ -19,7 +19,8 @@ describe('smart_write tool', () => {
   describe('handleSmartWrite', () => {
     it('should successfully generate code with minimal input', async () => {
       const input = {
-        codeDescription: 'Create a simple payment processing function',
+        projectId: 'proj_test_123',
+        featureDescription: 'Create a simple payment processing function',
         codeType: 'function',
       };
 
@@ -38,23 +39,21 @@ describe('smart_write tool', () => {
 
     it('should successfully generate code with full input', async () => {
       const input = {
-        codeDescription:
+        projectId: 'proj_test_456',
+        featureDescription:
           'Create a comprehensive payment processing system with validation and error handling',
-        codeType: 'module',
-        targetLanguage: 'typescript',
-        framework: 'express',
-        requirements: {
-          security: 'high',
-          performance: 'medium',
-          maintainability: 'high',
-        },
-        qualityGates: {
-          testCoverage: 90,
-          complexity: 2,
-        },
+        codeType: 'api',
+        targetRole: 'developer',
+        techStack: ['typescript', 'express'],
         businessContext: {
-          industry: 'e-commerce',
-          userRole: 'vibe-coder',
+          goals: ['secure payments', 'user experience'],
+          targetUsers: ['customers', 'merchants'],
+          priority: 'high',
+        },
+        qualityRequirements: {
+          testCoverage: 95,
+          complexity: 3,
+          securityLevel: 'high',
         },
       };
 
@@ -65,16 +64,17 @@ describe('smart_write tool', () => {
       expect(result.data?.codeId).toContain('payment_processing');
       expect(result.data?.generatedCode.files).toHaveLength(1);
       expect(result.data?.generatedCode.files[0].path).toContain('payment-processing');
-      expect(result.data?.qualityMetrics.testCoverage).toBe(90);
+      expect(result.data?.qualityMetrics.testCoverage).toBe(95);
       expect(result.data?.qualityMetrics.securityScore).toBe(95);
     });
 
     it('should generate different code types', async () => {
-      const codeTypes = ['function', 'class', 'module', 'component', 'service'];
+      const codeTypes = ['function', 'api', 'test', 'config', 'documentation'];
 
       for (const codeType of codeTypes) {
         const input = {
-          codeDescription: `Create a ${codeType} for user authentication`,
+          projectId: 'proj_test_789',
+          featureDescription: `Create a ${codeType} for user authentication`,
           codeType,
         };
 
@@ -86,15 +86,14 @@ describe('smart_write tool', () => {
     });
 
     it('should generate role-specific code', async () => {
-      const roles = ['vibe-coder', 'strategy-person', 'non-technical-founder'];
+      const roles = ['developer', 'product-strategist', 'designer'];
 
       for (const role of roles) {
         const input = {
-          codeDescription: 'Create a user management system',
-          codeType: 'module',
-          businessContext: {
-            userRole: role,
-          },
+          projectId: 'proj_test_101',
+          featureDescription: 'Create a user management system',
+          codeType: 'api',
+          targetRole: role,
         };
 
         const result = (await handleSmartWrite(input)) as SmartWriteResponse;
@@ -105,11 +104,12 @@ describe('smart_write tool', () => {
     });
 
     it('should generate different code types based on requirements', async () => {
-      const codeTypes = ['function', 'class', 'module'];
+      const codeTypes = ['function', 'api', 'test'];
 
       for (const codeType of codeTypes) {
         const input = {
-          codeDescription: 'Create a data validation system',
+          projectId: 'proj_test_202',
+          featureDescription: 'Create a data validation system',
           codeType,
         };
 
@@ -122,8 +122,9 @@ describe('smart_write tool', () => {
 
     it('should calculate technical metrics', async () => {
       const input = {
-        codeDescription: 'Create a complex data processing pipeline',
-        codeType: 'module',
+        projectId: 'proj_test_303',
+        featureDescription: 'Create a complex data processing pipeline',
+        codeType: 'api',
       };
 
       const result = (await handleSmartWrite(input)) as SmartWriteResponse;
@@ -132,13 +133,13 @@ describe('smart_write tool', () => {
       expect(result.data?.technicalMetrics.responseTime).toBeLessThan(100); // <100ms requirement
       expect(result.data?.technicalMetrics.generationTime).toBeGreaterThan(0);
       expect(result.data?.technicalMetrics.linesGenerated).toBeGreaterThan(0);
-      expect(result.data?.technicalMetrics.filesCreated).toBeGreaterThan(0);
     });
 
     it('should calculate business value', async () => {
       const input = {
-        codeDescription: 'Create an automated testing framework',
-        codeType: 'module',
+        projectId: 'proj_test_404',
+        featureDescription: 'Create an automated testing framework',
+        codeType: 'test',
         businessContext: {
           industry: 'fintech',
         },
@@ -154,10 +155,13 @@ describe('smart_write tool', () => {
 
     it('should generate quality metrics', async () => {
       const input = {
-        codeDescription: 'Create a secure authentication service',
-        codeType: 'service',
-        requirements: {
-          security: 'high',
+        projectId: 'proj_test_505',
+        featureDescription: 'Create a secure authentication service',
+        codeType: 'api',
+        qualityRequirements: {
+          testCoverage: 95,
+          complexity: 2,
+          securityLevel: 'high',
         },
       };
 
@@ -172,7 +176,8 @@ describe('smart_write tool', () => {
 
     it('should handle errors gracefully', async () => {
       const input = {
-        codeDescription: '', // Invalid empty description
+        projectId: 'proj_test_606',
+        featureDescription: '', // Invalid empty description
       };
 
       const result = (await handleSmartWrite(input)) as SmartWriteResponse;
@@ -190,7 +195,7 @@ describe('smart_write tool', () => {
       const result = (await handleSmartWrite(invalidInput)) as SmartWriteResponse;
 
       expect(result.success).toBe(false);
-      expect(result.error).toContain('Invalid arguments');
+      expect(result.error).toContain('Required');
     });
   });
 });

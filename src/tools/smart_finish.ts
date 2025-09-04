@@ -507,6 +507,13 @@ export async function handleSmartFinish(input: unknown): Promise<{
     // Calculate technical metrics
     const responseTime = Date.now() - startTime;
 
+    // Calculate business value
+    const businessValue = {
+      totalCostPrevention: validatedInput.businessRequirements?.costPrevention ?? 10000,
+      totalTimeSaved: validatedInput.businessRequirements?.timeSaved ?? 2,
+      userSatisfactionScore: validatedInput.businessRequirements?.userSatisfaction ?? 90,
+    };
+
     // Create response
     const response = {
       projectId: validatedInput.projectId,
@@ -515,6 +522,7 @@ export async function handleSmartFinish(input: unknown): Promise<{
       recommendations,
       successMetrics,
       nextSteps,
+      businessValue,
       technicalMetrics: {
         responseTime,
         validationTime: Math.max(1, responseTime - 5),

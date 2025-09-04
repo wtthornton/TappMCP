@@ -198,7 +198,7 @@ function generateNextSteps(projectName: string, targetUsers: string[]): string[]
     baseSteps.push('Review code quality standards and best practices');
   }
 
-  if (targetUsers.includes('non-technical-founders')) {
+  if (targetUsers.includes('non-technical-founder')) {
     baseSteps.push('Review business-focused documentation');
     baseSteps.push('Understand the technical foundation created');
   }

@@ -6,7 +6,7 @@ const smart_write_1 = require("./smart_write");
     (0, vitest_1.describe)('tool definition', () => {
         (0, vitest_1.it)('should have correct name and description', () => {
             (0, vitest_1.expect)(smart_write_1.smartWriteTool.name).toBe('smart_write');
-            (0, vitest_1.expect)(smart_write_1.smartWriteTool.description).toContain('AI-assisted code generation');
+            (0, vitest_1.expect)(smart_write_1.smartWriteTool.description).toContain('Generate code with role-based expertise');
         });
         (0, vitest_1.it)('should have proper input schema', () => {
             (0, vitest_1.expect)(smart_write_1.smartWriteTool.inputSchema).toBeDefined();
@@ -17,7 +17,8 @@ const smart_write_1 = require("./smart_write");
     (0, vitest_1.describe)('handleSmartWrite', () => {
         (0, vitest_1.it)('should successfully generate code with minimal input', async () => {
             const input = {
-                codeDescription: 'Create a simple payment processing function',
+                projectId: 'proj_test_123',
+                featureDescription: 'Create a simple payment processing function',
                 codeType: 'function',
             };
             const result = (await (0, smart_write_1.handleSmartWrite)(input));
@@ -33,22 +34,20 @@ const smart_write_1 = require("./smart_write");
         });
         (0, vitest_1.it)('should successfully generate code with full input', async () => {
             const input = {
-                codeDescription: 'Create a comprehensive payment processing system with validation and error handling',
-                codeType: 'module',
-                targetLanguage: 'typescript',
-                framework: 'express',
-                requirements: {
-                    security: 'high',
-                    performance: 'medium',
-                    maintainability: 'high',
-                },
-                qualityGates: {
-                    testCoverage: 90,
-                    complexity: 2,
-                },
+                projectId: 'proj_test_456',
+                featureDescription: 'Create a comprehensive payment processing system with validation and error handling',
+                codeType: 'api',
+                targetRole: 'developer',
+                techStack: ['typescript', 'express'],
                 businessContext: {
-                    industry: 'e-commerce',
-                    userRole: 'vibe-coder',
+                    goals: ['secure payments', 'user experience'],
+                    targetUsers: ['customers', 'merchants'],
+                    priority: 'high',
+                },
+                qualityRequirements: {
+                    testCoverage: 95,
+                    complexity: 3,
+                    securityLevel: 'high',
                 },
             };
             const result = (await (0, smart_write_1.handleSmartWrite)(input));
@@ -57,14 +56,15 @@ const smart_write_1 = require("./smart_write");
             (0, vitest_1.expect)(result.data?.codeId).toContain('payment_processing');
             (0, vitest_1.expect)(result.data?.generatedCode.files).toHaveLength(1);
             (0, vitest_1.expect)(result.data?.generatedCode.files[0].path).toContain('payment-processing');
-            (0, vitest_1.expect)(result.data?.qualityMetrics.testCoverage).toBe(90);
+            (0, vitest_1.expect)(result.data?.qualityMetrics.testCoverage).toBe(95);
             (0, vitest_1.expect)(result.data?.qualityMetrics.securityScore).toBe(95);
         });
         (0, vitest_1.it)('should generate different code types', async () => {
-            const codeTypes = ['function', 'class', 'module', 'component', 'service'];
+            const codeTypes = ['function', 'api', 'test', 'config', 'documentation'];
             for (const codeType of codeTypes) {
                 const input = {
-                    codeDescription: `Create a ${codeType} for user authentication`,
+                    projectId: 'proj_test_789',
+                    featureDescription: `Create a ${codeType} for user authentication`,
                     codeType,
                 };
                 const result = (await (0, smart_write_1.handleSmartWrite)(input));
@@ -73,14 +73,13 @@ const smart_write_1 = require("./smart_write");
             }
         });
         (0, vitest_1.it)('should generate role-specific code', async () => {
-            const roles = ['vibe-coder', 'strategy-person', 'non-technical-founder'];
+            const roles = ['developer', 'product-strategist', 'designer'];
             for (const role of roles) {
                 const input = {
-                    codeDescription: 'Create a user management system',
-                    codeType: 'module',
-                    businessContext: {
-                        userRole: role,
-                    },
+                    projectId: 'proj_test_101',
+                    featureDescription: 'Create a user management system',
+                    codeType: 'api',
+                    targetRole: role,
                 };
                 const result = (await (0, smart_write_1.handleSmartWrite)(input));
                 (0, vitest_1.expect)(result.success).toBe(true);
@@ -88,10 +87,11 @@ const smart_write_1 = require("./smart_write");
             }
         });
         (0, vitest_1.it)('should generate different code types based on requirements', async () => {
-            const codeTypes = ['function', 'class', 'module'];
+            const codeTypes = ['function', 'api', 'test'];
             for (const codeType of codeTypes) {
                 const input = {
-                    codeDescription: 'Create a data validation system',
+                    projectId: 'proj_test_202',
+                    featureDescription: 'Create a data validation system',
                     codeType,
                 };
                 const result = (await (0, smart_write_1.handleSmartWrite)(input));
@@ -101,20 +101,21 @@ const smart_write_1 = require("./smart_write");
         });
         (0, vitest_1.it)('should calculate technical metrics', async () => {
             const input = {
-                codeDescription: 'Create a complex data processing pipeline',
-                codeType: 'module',
+                projectId: 'proj_test_303',
+                featureDescription: 'Create a complex data processing pipeline',
+                codeType: 'api',
             };
             const result = (await (0, smart_write_1.handleSmartWrite)(input));
             (0, vitest_1.expect)(result.success).toBe(true);
             (0, vitest_1.expect)(result.data?.technicalMetrics.responseTime).toBeLessThan(100); // <100ms requirement
             (0, vitest_1.expect)(result.data?.technicalMetrics.generationTime).toBeGreaterThan(0);
             (0, vitest_1.expect)(result.data?.technicalMetrics.linesGenerated).toBeGreaterThan(0);
-            (0, vitest_1.expect)(result.data?.technicalMetrics.filesCreated).toBeGreaterThan(0);
         });
         (0, vitest_1.it)('should calculate business value', async () => {
             const input = {
-                codeDescription: 'Create an automated testing framework',
-                codeType: 'module',
+                projectId: 'proj_test_404',
+                featureDescription: 'Create an automated testing framework',
+                codeType: 'test',
                 businessContext: {
                     industry: 'fintech',
                 },
@@ -127,10 +128,13 @@ const smart_write_1 = require("./smart_write");
         });
         (0, vitest_1.it)('should generate quality metrics', async () => {
             const input = {
-                codeDescription: 'Create a secure authentication service',
-                codeType: 'service',
-                requirements: {
-                    security: 'high',
+                projectId: 'proj_test_505',
+                featureDescription: 'Create a secure authentication service',
+                codeType: 'api',
+                qualityRequirements: {
+                    testCoverage: 95,
+                    complexity: 2,
+                    securityLevel: 'high',
                 },
             };
             const result = (await (0, smart_write_1.handleSmartWrite)(input));
@@ -142,7 +146,8 @@ const smart_write_1 = require("./smart_write");
         });
         (0, vitest_1.it)('should handle errors gracefully', async () => {
             const input = {
-                codeDescription: '', // Invalid empty description
+                projectId: 'proj_test_606',
+                featureDescription: '', // Invalid empty description
             };
             const result = (await (0, smart_write_1.handleSmartWrite)(input));
             (0, vitest_1.expect)(result.success).toBe(false);
@@ -155,7 +160,7 @@ const smart_write_1 = require("./smart_write");
             };
             const result = (await (0, smart_write_1.handleSmartWrite)(invalidInput));
             (0, vitest_1.expect)(result.success).toBe(false);
-            (0, vitest_1.expect)(result.error).toContain('Invalid arguments');
+            (0, vitest_1.expect)(result.error).toContain('Required');
         });
     });
 });

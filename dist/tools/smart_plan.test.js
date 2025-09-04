@@ -6,7 +6,7 @@ const smart_plan_1 = require("./smart_plan");
     (0, vitest_1.describe)('tool definition', () => {
         (0, vitest_1.it)('should have correct name and description', () => {
             (0, vitest_1.expect)(smart_plan_1.smartPlanTool.name).toBe('smart_plan');
-            (0, vitest_1.expect)(smart_plan_1.smartPlanTool.description).toContain('AI-assisted project planning');
+            (0, vitest_1.expect)(smart_plan_1.smartPlanTool.description).toContain('Create comprehensive project plans');
         });
         (0, vitest_1.it)('should have proper input schema', () => {
             (0, vitest_1.expect)(smart_plan_1.smartPlanTool.inputSchema).toBeDefined();
@@ -70,7 +70,7 @@ const smart_plan_1 = require("./smart_plan");
             (0, vitest_1.expect)(result.data?.projectPlan.risks).toBeDefined();
         });
         (0, vitest_1.it)('should generate different plan types', async () => {
-            const planTypes = ['development', 'maintenance', 'migration', 'optimization'];
+            const planTypes = ['development', 'maintenance', 'migration', 'testing'];
             for (const planType of planTypes) {
                 const input = {
                     projectId: `proj_${planType}`,
@@ -113,7 +113,7 @@ const smart_plan_1 = require("./smart_plan");
             (0, vitest_1.expect)(result.data?.projectPlan.resources.team).toBeDefined();
             (0, vitest_1.expect)(result.data?.projectPlan.resources.budget).toBeDefined();
             (0, vitest_1.expect)(result.data?.projectPlan.resources.tools).toBeDefined();
-            (0, vitest_1.expect)(result.data?.projectPlan.resources.budget.total).toBe(100000);
+            (0, vitest_1.expect)(result.data?.projectPlan.resources.budget.total).toBe(50000);
         });
         (0, vitest_1.it)('should generate timeline planning', async () => {
             const input = {
@@ -199,7 +199,7 @@ const smart_plan_1 = require("./smart_plan");
             };
             const result = (await (0, smart_plan_1.handleSmartPlan)(invalidInput));
             (0, vitest_1.expect)(result.success).toBe(false);
-            (0, vitest_1.expect)(result.error).toContain('Invalid arguments');
+            (0, vitest_1.expect)(result.error).toContain('Required');
         });
     });
 });

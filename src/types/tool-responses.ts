@@ -6,27 +6,25 @@ export interface SmartBeginResponse {
   data?: {
     projectId: string;
     projectStructure: {
-      directories: string[];
+      folders: string[];
       files: string[];
-      qualityGates: {
-        testCoverage: number;
-        securityScore: number;
-        performanceScore: number;
-        maintainabilityScore: number;
-      };
+      configFiles: string[];
     };
+    qualityGates: Array<{
+      name: string;
+      description: string;
+      status: 'enabled' | 'disabled';
+    }>;
     businessValue: {
-      estimatedROI: number;
-      timeToMarket: number;
       costPrevention: number;
-      qualityImprovement: number;
+      timeSaved: number;
+      qualityImprovements: string[];
     };
     nextSteps: string[];
     technicalMetrics: {
       responseTime: number;
-      setupTime: number;
-      directoriesCreated: number;
-      filesGenerated: number;
+      securityScore: number;
+      complexityScore: number;
     };
   };
   error?: string;

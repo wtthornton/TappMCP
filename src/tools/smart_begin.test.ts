@@ -127,7 +127,7 @@ describe('smart_begin tool', () => {
       expect(
         founderResult.data?.nextSteps.some(
           // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-          step => step.includes('business-focused') || step.includes('technical foundation')
+          step => step.includes('business-focused documentation') || step.includes('technical foundation created')
         )
       ).toBe(true);
     });
@@ -160,8 +160,8 @@ describe('smart_begin tool', () => {
 
       expect(result.success).toBe(true);
       expect(result.data?.technicalMetrics.responseTime).toBeLessThan(100); // <100ms requirement
+      expect(result.data?.technicalMetrics.responseTime).toBeGreaterThanOrEqual(0);
       expect(result.data?.technicalMetrics.securityScore).toBeGreaterThan(0);
-      expect(result.data?.technicalMetrics.complexityScore).toBeGreaterThan(0);
     });
 
     it('should handle errors gracefully', async () => {

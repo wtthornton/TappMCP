@@ -158,8 +158,9 @@ async function handleSmartWrite(input) {
             ],
             technicalMetrics: {
                 responseTime: Date.now() - startTime,
-                codeGenerationTime: Date.now() - startTime - 10,
-                validationTime: 10,
+                generationTime: Math.max(1, Date.now() - startTime - 5),
+                linesGenerated: 50, // Simulate generated lines
+                filesCreated: 1,
             },
         };
         return {

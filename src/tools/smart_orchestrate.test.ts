@@ -6,7 +6,7 @@ describe('smart_orchestrate tool', () => {
   describe('tool definition', () => {
     it('should have correct name and description', () => {
       expect(smartOrchestrateTool.name).toBe('smart_orchestrate');
-      expect(smartOrchestrateTool.description).toContain('AI-assisted workflow orchestration');
+      expect(smartOrchestrateTool.description).toContain('Orchestrate complete development workflow');
     });
 
     it('should have proper input schema', () => {
@@ -20,7 +20,7 @@ describe('smart_orchestrate tool', () => {
     it('should successfully orchestrate workflow with minimal input', async () => {
       const input = {
         projectId: 'proj_123_test',
-        workflowType: 'development',
+        workflowType: 'full-development',
       };
 
       const result = (await handleSmartOrchestrate(input)) as SmartOrchestrateResponse;
@@ -47,9 +47,9 @@ describe('smart_orchestrate tool', () => {
           includeMonitoring: true,
         },
         externalIntegrations: [
-          { name: 'GitHub', type: 'version-control', priority: 1 },
-          { name: 'Docker', type: 'containerization', priority: 2 },
-          { name: 'AWS', type: 'cloud', priority: 3 },
+          { name: 'GitHub', type: 'api', priority: 'high' },
+          { name: 'Docker', type: 'tool', priority: 'medium' },
+          { name: 'AWS', type: 'service', priority: 'low' },
         ],
         qualityGates: {
           testCoverage: 90,
@@ -76,7 +76,7 @@ describe('smart_orchestrate tool', () => {
     });
 
     it('should generate different workflow types', async () => {
-      const workflowTypes = ['development', 'deployment', 'maintenance', 'optimization'];
+      const workflowTypes = ['full-development', 'feature-development', 'maintenance', 'migration'];
 
       for (const workflowType of workflowTypes) {
         const input = {
@@ -94,7 +94,7 @@ describe('smart_orchestrate tool', () => {
     it('should generate workflow phases', async () => {
       const input = {
         projectId: 'proj_phases',
-        workflowType: 'development',
+        workflowType: 'full-development',
         orchestrationScope: {
           includePlanning: true,
           includeDevelopment: true,
@@ -113,11 +113,11 @@ describe('smart_orchestrate tool', () => {
     it('should configure external integrations', async () => {
       const input = {
         projectId: 'proj_integrations',
-        workflowType: 'development',
+        workflowType: 'full-development',
         externalIntegrations: [
-          { name: 'GitHub', type: 'version-control', priority: 1 },
-          { name: 'Docker', type: 'containerization', priority: 2 },
-          { name: 'AWS', type: 'cloud', priority: 3 },
+          { name: 'GitHub', type: 'api', priority: 'high' },
+          { name: 'Docker', type: 'tool', priority: 'medium' },
+          { name: 'AWS', type: 'service', priority: 'low' },
         ],
       };
 
@@ -131,7 +131,7 @@ describe('smart_orchestrate tool', () => {
     it('should configure quality gates', async () => {
       const input = {
         projectId: 'proj_gates',
-        workflowType: 'development',
+        workflowType: 'full-development',
         qualityGates: {
           testCoverage: 95,
           securityScore: 98,
@@ -150,7 +150,7 @@ describe('smart_orchestrate tool', () => {
     it('should generate automation configuration', async () => {
       const input = {
         projectId: 'proj_automation',
-        workflowType: 'development',
+        workflowType: 'full-development',
       };
 
       const result = (await handleSmartOrchestrate(input)) as SmartOrchestrateResponse;
@@ -165,7 +165,7 @@ describe('smart_orchestrate tool', () => {
     it('should calculate business value', async () => {
       const input = {
         projectId: 'proj_business',
-        workflowType: 'development',
+        workflowType: 'full-development',
         businessRequirements: {
           roiTarget: 400,
           costPrevention: 30000,
@@ -188,7 +188,7 @@ describe('smart_orchestrate tool', () => {
     it('should generate success metrics', async () => {
       const input = {
         projectId: 'proj_metrics',
-        workflowType: 'development',
+        workflowType: 'full-development',
       };
 
       const result = (await handleSmartOrchestrate(input)) as SmartOrchestrateResponse;
@@ -202,7 +202,7 @@ describe('smart_orchestrate tool', () => {
     it('should calculate technical metrics', async () => {
       const input = {
         projectId: 'proj_tech',
-        workflowType: 'development',
+        workflowType: 'full-development',
       };
 
       const result = (await handleSmartOrchestrate(input)) as SmartOrchestrateResponse;
@@ -236,7 +236,7 @@ describe('smart_orchestrate tool', () => {
       const result = (await handleSmartOrchestrate(invalidInput)) as SmartOrchestrateResponse;
 
       expect(result.success).toBe(false);
-      expect(result.error).toContain('Invalid arguments');
+      expect(result.error).toContain('Required');
     });
   });
 });

@@ -6,7 +6,7 @@ describe('smart_finish tool', () => {
   describe('tool definition', () => {
     it('should have correct name and description', () => {
       expect(smartFinishTool.name).toBe('smart_finish');
-      expect(smartFinishTool.description).toContain('AI-assisted project completion');
+      expect(smartFinishTool.description).toContain('Check quality and validate production readiness');
     });
 
     it('should have proper input schema', () => {
@@ -19,6 +19,7 @@ describe('smart_finish tool', () => {
   describe('handleSmartFinish', () => {
     it('should successfully validate project with minimal input', async () => {
       const input = {
+        projectId: 'proj_test_123',
         codeIds: ['code_123', 'code_456'],
       };
 
@@ -36,15 +37,15 @@ describe('smart_finish tool', () => {
 
     it('should successfully validate project with full input', async () => {
       const input = {
+        projectId: 'proj_test_456',
         codeIds: ['code_123', 'code_456'],
         qualityGates: {
           testCoverage: 90,
           securityScore: 95,
-          performanceScore: 85,
+          complexityScore: 85,
           maintainabilityScore: 88,
         },
         businessRequirements: {
-          roiTarget: 300,
           costPrevention: 25000,
           timeSaved: 8,
           userSatisfaction: 95,
@@ -74,10 +75,13 @@ describe('smart_finish tool', () => {
 
     it('should generate appropriate recommendations', async () => {
       const input = {
+        projectId: 'proj_test_789',
         codeIds: ['code_123'],
         qualityGates: {
           testCoverage: 70, // Below threshold
           securityScore: 60, // Below threshold
+          complexityScore: 50,
+          maintainabilityScore: 65,
         },
       };
 
@@ -90,6 +94,7 @@ describe('smart_finish tool', () => {
 
     it('should generate next steps', async () => {
       const input = {
+        projectId: 'proj_test_101',
         codeIds: ['code_123', 'code_456'],
       };
 
@@ -103,6 +108,7 @@ describe('smart_finish tool', () => {
 
     it('should calculate technical metrics correctly', async () => {
       const input = {
+        projectId: 'proj_test_202',
         codeIds: ['code_123', 'code_456'],
       };
 
@@ -123,6 +129,7 @@ describe('smart_finish tool', () => {
 
       for (const gates of qualityGates) {
         const input = {
+          projectId: 'proj_test_303',
           codeIds: ['code_123'],
           qualityGates: gates,
         };
@@ -136,9 +143,9 @@ describe('smart_finish tool', () => {
 
     it('should validate business requirements', async () => {
       const input = {
+        projectId: 'proj_test_404',
         codeIds: ['code_123'],
         businessRequirements: {
-          roiTarget: 400,
           costPrevention: 30000,
           timeSaved: 12,
           userSatisfaction: 98,
@@ -153,6 +160,7 @@ describe('smart_finish tool', () => {
 
     it('should validate production readiness', async () => {
       const input = {
+        projectId: 'proj_test_505',
         codeIds: ['code_123'],
         productionReadiness: {
           securityScan: true,
@@ -188,7 +196,7 @@ describe('smart_finish tool', () => {
       const result = (await handleSmartFinish(invalidInput)) as SmartFinishResponse;
 
       expect(result.success).toBe(false);
-      expect(result.error).toContain('Invalid arguments');
+      expect(result.error).toContain('Required');
     });
   });
 });
