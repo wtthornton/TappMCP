@@ -1,6 +1,6 @@
 /**
  * MCP Prompts Module
- * 
+ *
  * Exports all prompt implementations for the MCP Framework
  */
 

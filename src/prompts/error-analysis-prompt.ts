@@ -87,11 +87,6 @@ Be specific and actionable in your recommendations.`,
     severity: z.enum(['low', 'medium', 'high', 'critical']).optional()
   },
   contextSchema: ErrorAnalysisPromptSchema,
-  optimizationConfig: {
-    enableA_BTesting: true,
-    maxVariations: 2,
-    optimizationMetrics: ['accuracy', 'actionability', 'completeness']
-  },
   cacheConfig: {
     enabled: true,
     ttl: 1800000, // 30 minutes
@@ -192,7 +187,7 @@ export class ErrorAnalysisPrompt extends MCPPrompt {
     context?: MCPPromptContext
   ): Promise<MCPPromptResult<string[]>> {
     const analysis = await this.analyzeError(input, context);
-    
+
     if (!analysis.success) {
       return analysis as MCPPromptResult<string[]>;
     }
@@ -224,7 +219,7 @@ export class ErrorAnalysisPrompt extends MCPPrompt {
     context?: MCPPromptContext
   ): Promise<MCPPromptResult<string[]>> {
     const analysis = await this.analyzeError(input, context);
-    
+
     if (!analysis.success) {
       return analysis as MCPPromptResult<string[]>;
     }

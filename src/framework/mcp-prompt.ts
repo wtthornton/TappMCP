@@ -4,7 +4,7 @@
  * Provides the foundation for all MCP prompts with standardized patterns for:
  * - Template management and rendering
  * - Context management and memory
- * - Prompt optimization and A/B testing
+ * - Prompt optimization
  * - Performance monitoring
  * - Error handling and recovery
  */
@@ -19,11 +19,6 @@ export interface MCPPromptConfig {
   template: string;
   variables: Record<string, z.ZodSchema>;
   contextSchema?: z.ZodSchema;
-  optimizationConfig?: {
-    enableA_BTesting?: boolean;
-    maxVariations?: number;
-    optimizationMetrics?: string[];
-  };
   cacheConfig?: {
     enabled: boolean;
     ttl?: number;
@@ -64,7 +59,6 @@ export abstract class MCPPrompt<TVariables = any, TOutput = any> {
   protected config: MCPPromptConfig;
   protected logger: any;
   protected templateCache: Map<string, string> = new Map();
-  protected optimizationData: Map<string, any> = new Map();
 
   constructor(config: MCPPromptConfig, logger?: any) {
     this.config = config;

@@ -77,11 +77,6 @@ Generate clean, efficient, and well-structured {{language}} code that follows be
     includeDocumentation: z.boolean().optional()
   },
   contextSchema: CodeGenerationPromptSchema,
-  optimizationConfig: {
-    enableA_BTesting: true,
-    maxVariations: 3,
-    optimizationMetrics: ['code_quality', 'completeness', 'performance']
-  },
   cacheConfig: {
     enabled: true,
     ttl: 3600000, // 1 hour
@@ -108,7 +103,7 @@ export class CodeGenerationPrompt extends MCPPrompt {
    * Generate code with specific patterns
    */
   async generateWithPattern(
-    input: CodeGenerationPromptInput, 
+    input: CodeGenerationPromptInput,
     pattern: 'singleton' | 'factory' | 'observer' | 'strategy' | 'builder',
     context?: MCPPromptContext
   ): Promise<MCPPromptResult<string>> {

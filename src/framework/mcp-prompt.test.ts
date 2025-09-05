@@ -44,11 +44,6 @@ describe('MCPPrompt', () => {
         userId: z.string().optional(),
         role: z.string().optional()
       }),
-      optimizationConfig: {
-        enableA_BTesting: true,
-        maxVariations: 3,
-        optimizationMetrics: ['accuracy', 'speed']
-      },
       cacheConfig: {
         enabled: true,
         ttl: 3600000, // 1 hour

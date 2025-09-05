@@ -111,11 +111,6 @@ Format the documentation according to {{style}} standards and make it suitable f
     requirements: z.array(z.string()).optional()
   },
   contextSchema: DocumentationPromptSchema,
-  optimizationConfig: {
-    enableA_BTesting: true,
-    maxVariations: 2,
-    optimizationMetrics: ['clarity', 'completeness', 'usability']
-  },
   cacheConfig: {
     enabled: true,
     ttl: 10800000, // 3 hours

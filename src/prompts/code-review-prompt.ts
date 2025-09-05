@@ -119,11 +119,6 @@ Be thorough, constructive, and specific in your feedback.`,
     severity: z.enum(['low', 'medium', 'high']).optional()
   },
   contextSchema: CodeReviewPromptSchema,
-  optimizationConfig: {
-    enableA_BTesting: true,
-    maxVariations: 2,
-    optimizationMetrics: ['accuracy', 'completeness', 'actionability']
-  },
   cacheConfig: {
     enabled: true,
     ttl: 7200000, // 2 hours
