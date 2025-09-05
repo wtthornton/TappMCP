@@ -7,6 +7,22 @@ global.fetch = vi.fn();
 describe('ApiResource', () => {
   let apiResource: ApiResource;
 
+  // Helper function to create mock responses
+  const createMockResponse = (overrides: any = {}) => ({
+    ok: true,
+    status: 200,
+    statusText: 'OK',
+    headers: new Map([
+      ['content-type', 'application/json'],
+      ['x-ratelimit-remaining', '99'],
+      ['x-ratelimit-reset', String(Date.now() + 3600000)],
+      ['x-ratelimit-limit', '100']
+    ]),
+    json: () => Promise.resolve({ message: 'Success', data: [] }),
+    text: () => Promise.resolve('{"message": "Success", "data": []}'),
+    ...overrides
+  });
+
   beforeEach(async () => {
     apiResource = new ApiResource();
 
@@ -28,15 +44,7 @@ describe('ApiResource', () => {
 
   describe('GET Requests', () => {
     it('should execute GET request successfully', async () => {
-      const mockResponse = {
-        ok: true,
-        status: 200,
-        statusText: 'OK',
-        headers: new Map([['content-type', 'application/json']]),
-        json: () => Promise.resolve({ message: 'Success', data: [] })
-      };
-
-      vi.mocked(fetch).mockResolvedValue(mockResponse as any);
+      vi.mocked(fetch).mockResolvedValue(createMockResponse() as any);
 
       const config: ApiResourceConfig = {
         method: 'GET',

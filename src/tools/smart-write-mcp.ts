@@ -88,7 +88,7 @@ export type SmartWriteOutput = z.infer<typeof SmartWriteOutputSchema>;
 
 /**
  * Smart Write MCP Tool
- * 
+ *
  * Migrated to use MCPTool base class with enhanced error handling,
  * performance monitoring, and standardized patterns.
  */
@@ -150,23 +150,23 @@ export class SmartWriteMCPTool extends MCPTool<SmartWriteInput, SmartWriteOutput
    */
   private generateCode(input: SmartWriteInput): SmartWriteOutput['generatedCode'] {
     const { featureDescription, targetRole, codeType, techStack, qualityRequirements } = input;
-    
+
     // Determine language and framework
     const language = this.determineLanguage(techStack);
     const framework = this.determineFramework(techStack);
-    
+
     // Generate thought process
     const thoughtProcess = this.generateThoughtProcess(featureDescription, targetRole, codeType);
-    
+
     // Generate code content
     const content = this.generateCodeContent(featureDescription, language, framework, codeType, qualityRequirements);
-    
+
     // Generate dependencies
     const dependencies = this.generateDependencies(techStack, framework);
-    
+
     // Generate test cases
     const testCases = this.generateTestCases(featureDescription, language, framework, qualityRequirements?.testCoverage || 85);
-    
+
     // Generate documentation
     const documentation = this.generateDocumentation(featureDescription, language, codeType);
 
@@ -292,7 +292,7 @@ export class SmartWriteMCPTool extends MCPTool<SmartWriteInput, SmartWriteOutput
     if (language === 'TypeScript') {
       return `/**
  * ${featureDescription}
- * 
+ *
  * @param input - The input parameter
  * @returns The processed result
  */
@@ -305,7 +305,7 @@ export function processFeature(input: string): { result: string; success: boolea
 
     // ${securityLevel === 'high' ? 'Enhanced security validation' : 'Basic validation'}
     const sanitizedInput = input.trim();
-    
+
     if (sanitizedInput.length === 0) {
       throw new Error('Input cannot be empty');
     }
@@ -346,10 +346,10 @@ import re
 def process_feature(input_str: str) -> Dict[str, Any]:
     """
     Process the input string according to the feature requirements.
-    
+
     Args:
         input_str: The input string to process
-        
+
     Returns:
         Dictionary containing result, success status, and optional data
     """
@@ -357,16 +357,16 @@ def process_feature(input_str: str) -> Dict[str, Any]:
         # Input validation
         if not input_str or not isinstance(input_str, str):
             raise ValueError("Invalid input: string expected")
-        
+
         # ${securityLevel === 'high' ? 'Enhanced security validation' : 'Basic validation'}
         sanitized_input = input_str.strip()
-        
+
         if not sanitized_input:
             raise ValueError("Input cannot be empty")
-        
+
         # Process the input
         result = sanitized_input.lower()[::-1]
-        
+
         return {
             "result": result,
             "success": True,
@@ -469,10 +469,10 @@ router.post('/${this.toKebabCase(featureDescription)}', async (req: Request, res
   try {
     // Validate input
     const validatedInput = ${this.toCamelCase(featureDescription)}Schema.parse(req.body);
-    
+
     // ${securityLevel === 'high' ? 'Enhanced security processing' : 'Process input'}
     const result = processFeature(validatedInput.input, validatedInput.options);
-    
+
     res.json({
       success: true,
       data: result,
@@ -514,21 +514,21 @@ describe('${this.toPascalCase(featureDescription)}', () => {
     it('should process valid input successfully', () => {
       const input = 'test input';
       const result = processFeature(input);
-      
+
       expect(result.success).toBe(true);
       expect(result.result).toBeDefined();
     });
 
     it('should handle empty input', () => {
       const result = processFeature('');
-      
+
       expect(result.success).toBe(false);
       expect(result.data?.error).toContain('empty');
     });
 
     it('should handle invalid input type', () => {
       const result = processFeature(null as any);
-      
+
       expect(result.success).toBe(false);
       expect(result.data?.error).toContain('Invalid input');
     });
@@ -795,7 +795,7 @@ See the examples directory for more detailed usage examples.`;
    * Convert string to PascalCase
    */
   private toPascalCase(str: string): string {
-    return str.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => 
+    return str.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) =>
       index === 0 ? word.toUpperCase() : word.toLowerCase()
     ).replace(/\s+/g, '');
   }
@@ -828,7 +828,7 @@ export async function handleSmartWrite(input: unknown): Promise<{
 }> {
   const tool = new SmartWriteMCPTool();
   const result = await tool.execute(input as SmartWriteInput);
-  
+
   return {
     success: result.success,
     data: result.data,

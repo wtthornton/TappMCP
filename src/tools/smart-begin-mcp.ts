@@ -56,7 +56,7 @@ export type SmartBeginOutput = z.infer<typeof SmartBeginOutputSchema>;
 
 /**
  * Smart Begin MCP Tool
- * 
+ *
  * Migrated to use MCPTool base class with enhanced error handling,
  * performance monitoring, and standardized patterns.
  */
@@ -344,7 +344,7 @@ export async function handleSmartBegin(input: unknown): Promise<{
 }> {
   const tool = new SmartBeginMCPTool();
   const result = await tool.execute(input as SmartBeginInput);
-  
+
   return {
     success: result.success,
     data: result.data,
