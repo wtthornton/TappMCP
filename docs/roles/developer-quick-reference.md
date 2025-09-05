@@ -66,7 +66,7 @@ const [result1, result2] = await Promise.all([
 // ✅ GOOD: Complete validation
 it('should return complete structure', async () => {
   const result = await functionUnderTest();
-  
+
   expect(result.overall).toBeDefined();
   expect(result.quality).toBeDefined();
   expect(result.production).toBeDefined();

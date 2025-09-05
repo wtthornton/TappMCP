@@ -234,11 +234,11 @@ describe('Function Name', () => {
   it('should handle valid input', () => {
     // AI-generated test case
   });
-  
+
   it('should handle invalid input', () => {
     // AI-generated error case
   });
-  
+
   it('should handle edge cases', () => {
     // AI-generated edge case
   });

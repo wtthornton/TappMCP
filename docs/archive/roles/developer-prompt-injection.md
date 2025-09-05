@@ -82,10 +82,10 @@ try {
   return { ...result, status: 'pass', hasErrors: false };
 } catch (error) {
   console.error('Operation failed:', error);
-  return { 
-    status: 'fail', 
+  return {
+    status: 'fail',
     hasErrors: true,
-    error: error.message 
+    error: error.message
   };
 }
 ```
@@ -104,7 +104,7 @@ TEST DEVELOPMENT MANDATE:
 Test pattern:
 it('should return complete data structure', async () => {
   const result = await functionUnderTest();
-  
+
   expect(result.overall).toBeDefined();
   expect(result.quality).toBeDefined();
   expect(result.production).toBeDefined();

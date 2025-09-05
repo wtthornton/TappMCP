@@ -320,7 +320,7 @@ Provide the complete HTML code with embedded CSS.`;
     <title>Generated HTML Page</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
+        body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6; color: #333;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -440,11 +440,11 @@ export function calculateCircleArea(radius: number): number {
   if (typeof radius !== 'number' || isNaN(radius)) {
     throw new Error('Radius must be a valid number');
   }
-  
+
   if (radius <= 0) {
     throw new Error('Radius must be positive');
   }
-  
+
   // Calculate area using the formula: A = π × r²
   return Math.PI * radius * radius;
 }`;

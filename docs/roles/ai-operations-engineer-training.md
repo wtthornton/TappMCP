@@ -16,18 +16,18 @@ monitoring:
     - memory_usage: <256MB
     - error_rate: <1%
     - availability: >99.9%
-  
+
   alerts:
     - name: "High Response Time"
       condition: "response_time > 100ms"
       severity: "warning"
       action: "notify_team"
-    
+
     - name: "Memory Usage High"
       condition: "memory_usage > 200MB"
       severity: "critical"
       action: "scale_up"
-  
+
   dashboards:
     - system_health
     - performance_metrics
@@ -45,17 +45,17 @@ security:
     - multi_factor: true
     - session_timeout: 30m
     - password_policy: "strong"
-  
+
   authorization:
     - principle: "least_privilege"
     - role_based: true
     - audit_logging: true
-  
+
   encryption:
     - data_at_rest: "AES-256"
     - data_in_transit: "TLS 1.3"
     - key_rotation: "90_days"
-  
+
   vulnerability_management:
     - scanning: "daily"
     - patching: "within_24h"
@@ -73,13 +73,13 @@ disaster_recovery:
     - retention: "30_days"
     - encryption: true
     - testing: "weekly"
-  
+
   recovery_procedures:
     - rto: "4_hours"  # Recovery Time Objective
     - rpo: "1_hour"   # Recovery Point Objective
     - failover: "automatic"
     - testing: "monthly"
-  
+
   infrastructure:
     - multi_region: true
     - redundancy: "active_passive"
@@ -97,13 +97,13 @@ resource_management:
     - memory_threshold: 80%
     - scale_up_cooldown: 300s
     - scale_down_cooldown: 600s
-  
+
   cost_optimization:
     - right_sizing: true
     - spot_instances: "non_critical"
     - reserved_instances: "production"
     - monitoring: "daily"
-  
+
   capacity_planning:
     - forecasting: "30_days"
     - growth_rate: "monthly"
@@ -195,7 +195,7 @@ monitoring:
       - targets: ['quality-validation:3000']
       scrape_interval: 15s
       metrics_path: /metrics
-  
+
   grafana:
     dashboards:
     - name: "Quality Validation Service"
@@ -209,7 +209,7 @@ monitoring:
       - title: "Error Rate"
         query: "rate(http_requests_total{status=~'5..'}[5m])"
         threshold: 0.01  # 1%
-  
+
   alerting:
     rules:
     - alert: "HighResponseTime"
@@ -231,19 +231,19 @@ security:
     - tls: "1.3_only"
     - ports: "minimal"
     - vpn: "required"
-  
+
   containers:
     - run_as_non_root: true
     - read_only_filesystem: true
     - no_new_privileges: true
     - capabilities: "drop_all"
-  
+
   secrets:
     - vault_integration: true
     - rotation: "automatic"
     - encryption: "AES-256"
     - access_logging: true
-  
+
   compliance:
     - soc2: true
     - gdpr: true
@@ -317,17 +317,17 @@ chaos_engineering:
       type: "network_delay"
       duration: "5m"
       frequency: "weekly"
-    
+
     - name: "CPU Stress"
       type: "cpu_stress"
       duration: "3m"
       frequency: "monthly"
-    
+
     - name: "Memory Pressure"
       type: "memory_stress"
       duration: "2m"
       frequency: "monthly"
-  
+
   safety_checks:
     - system_health: "monitored"
     - rollback_ready: "automatic"
@@ -344,13 +344,13 @@ capacity_planning:
     - business_forecasts
     - seasonal_patterns
     - growth_projections
-  
+
   analysis:
     - trend_analysis: "monthly"
     - peak_identification: "weekly"
     - growth_rate: "quarterly"
     - resource_utilization: "continuous"
-  
+
   recommendations:
     - scaling_triggers
     - resource_optimization
@@ -366,19 +366,19 @@ incident_management:
     - critical: "system_down"
       response_time: "15m"
       escalation: "immediate"
-    
+
     - high: "major_impact"
       response_time: "1h"
       escalation: "2h"
-    
+
     - medium: "minor_impact"
       response_time: "4h"
       escalation: "8h"
-    
+
     - low: "cosmetic"
       response_time: "24h"
       escalation: "48h"
-  
+
   procedures:
     - detection: "automated"
     - assessment: "manual"

@@ -177,6 +177,10 @@ npm run early-check
 
 # Individual quality checks
 npm run qa:all
+
+# Pre-commit hooks (automatic on commit)
+python -m pre_commit run --all-files  # Run all hooks manually
+python -m pre_commit install          # Install git hooks
 ```
 
 #### 2. Building

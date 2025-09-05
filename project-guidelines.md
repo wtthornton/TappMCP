@@ -146,16 +146,15 @@ Smart MCP implements **6 specialized AI roles** for comprehensive development co
 ---
 
 ## 📋 Pre-commit Policy
-Pre-commit hooks must run automatically inside Cursor/IDE:
+Pre-commit hooks run automatically on every commit using modern pre-commit tool:
 
-- **Secrets scanning**: Gitleaks/TruffleHog.
-- **Vulnerability scanning**: OSV-Scanner + pip-audit.
-- **Semgrep**: OWASP + LLM rules.
-- **Linters**: Ruff, ESLint.
-- **Formatters**: Prettier, Ruff format.
-- **Type-checks**: mypy, tsc.
-- **Unit tests**: Vitest & pytest on changed files.
-- **Coverage check**: ≥85% required on changed files.
+- **Basic checks**: File validation, YAML, JSON, merge conflicts, trailing whitespace.
+- **Code formatting**: Prettier for JavaScript, JSON, Markdown, YAML files.
+- **Code quality**: ESLint with auto-fix for TypeScript files.
+- **Type checking**: TypeScript compilation check for all TypeScript files.
+- **Unit tests**: Full test suite runs on every commit.
+- **Early quality check**: Comprehensive quality validation including coverage.
+- **Security**: Gitleaks secrets scanning (when available).
 - **Complexity check**: ESLint + Radon budgets enforced.
 - **Snapshot guard**: Large deltas blocked.
 

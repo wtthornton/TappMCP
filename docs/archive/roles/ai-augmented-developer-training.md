@@ -66,10 +66,10 @@ try {
   return { ...result, status: 'pass' };
 } catch (error) {
   console.error('Operation failed:', error);
-  return { 
-    status: 'fail', 
+  return {
+    status: 'fail',
     error: error.message,
-    hasErrors: true 
+    hasErrors: true
   };
 }
 ```
@@ -94,7 +94,7 @@ function processData(data: unknown): ProcessedData {
   if (!data || typeof data !== 'object') {
     throw new Error('Invalid data type');
   }
-  
+
   const validated = data as Record<string, unknown>;
   return {
     id: validated.id as string,

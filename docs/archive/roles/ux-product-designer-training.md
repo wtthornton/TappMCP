@@ -233,15 +233,15 @@ This document provides comprehensive training for the UX/Product Designer role t
 <form aria-label="Quality Validation Form">
   <fieldset>
     <legend>Project Configuration</legend>
-    
+
     <div class="form-group">
       <label for="project-name" class="required">
         Project Name
         <span class="sr-only">(required)</span>
       </label>
-      <input 
-        type="text" 
-        id="project-name" 
+      <input
+        type="text"
+        id="project-name"
         name="projectName"
         required
         aria-describedby="project-name-help"
@@ -254,7 +254,7 @@ This document provides comprehensive training for the UX/Product Designer role t
         <!-- Error messages appear here -->
       </div>
     </div>
-    
+
     <div class="form-group">
       <fieldset>
         <legend>Quality Gates</legend>
@@ -269,7 +269,7 @@ This document provides comprehensive training for the UX/Product Designer role t
       </fieldset>
     </div>
   </fieldset>
-  
+
   <div class="form-actions">
     <button type="submit" class="btn btn-primary">
       Validate Quality

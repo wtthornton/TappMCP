@@ -18,20 +18,20 @@ it('should validate project', async () => {
 // ✅ GOOD: Comprehensive test coverage
 it('should validate project with complete data structure', async () => {
   const result = await validateProject(input);
-  
+
   // Test success condition
   expect(result.success).toBe(true);
-  
+
   // Test complete data structure
   expect(result.data).toBeDefined();
   expect(result.data.qualityScorecard).toBeDefined();
   expect(result.data.qualityScorecard.overall).toBeDefined();
   expect(result.data.qualityScorecard.quality).toBeDefined();
   expect(result.data.qualityScorecard.production).toBeDefined();
-  
+
   // Test performance requirements
   expect(result.data.technicalMetrics.responseTime).toBeLessThan(100);
-  
+
   // Test error handling
   expect(result.data.qualityScorecard.overall.status).toMatch(/pass|fail|warning/);
 });
@@ -46,7 +46,7 @@ it('should meet performance requirements', async () => {
   const startTime = Date.now();
   const result = await operation();
   const duration = Date.now() - startTime;
-  
+
   expect(duration).toBeLessThan(100); // <100ms target
   expect(result.data.technicalMetrics.responseTime).toBeLessThan(100);
   expect(result.data.technicalMetrics.memoryUsage).toBeLessThan(256);
@@ -64,14 +64,14 @@ describe('Error handling', () => {
     expect(result.success).toBe(false);
     expect(result.error).toBeDefined();
   });
-  
+
   it('should handle network failures', async () => {
     // Mock network failure
     mockNetworkFailure();
     const result = await operation(validInput);
     expect(result.status).toBe('fail');
   });
-  
+
   it('should handle timeout scenarios', async () => {
     // Mock slow operation
     mockSlowOperation(200); // 200ms
@@ -88,11 +88,11 @@ describe('Error handling', () => {
 // ✅ GOOD: Proper status validation
 it('should return valid status values', async () => {
   const result = await operation();
-  
+
   // Validate status format
   expect(result.status).toMatch(/pass|fail|warning/);
   expect(result.data.qualityScorecard.overall.status).toMatch(/pass|fail|warning/);
-  
+
   // Validate status consistency
   if (result.data.qualityScorecard.overall.score >= 80) {
     expect(result.data.qualityScorecard.overall.status).toBe('pass');
@@ -148,7 +148,7 @@ const testPerformance = async (operation: () => Promise<any>, maxTime: number) =
   const startTime = Date.now();
   const result = await operation();
   const duration = Date.now() - startTime;
-  
+
   expect(duration).toBeLessThan(maxTime);
   return result;
 };
@@ -159,9 +159,9 @@ const testPerformance = async (operation: () => Promise<any>, maxTime: number) =
 const testErrorHandling = async (operation: () => Promise<any>, errorCondition: any) => {
   // Setup error condition
   setupErrorCondition(errorCondition);
-  
+
   const result = await operation();
-  
+
   // Verify error handling
   expect(result.success).toBe(false);
   expect(result.error).toBeDefined();

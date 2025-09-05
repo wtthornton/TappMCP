@@ -128,7 +128,7 @@ class RoleOrchestrator {
             trigger: 'user-experience-needed',
             condition: 'user-interface-required',
             priority: 2,
-        }, 
+        },
         // Development transitions
         {
             fromRole: 'developer',
@@ -148,7 +148,7 @@ class RoleOrchestrator {
             trigger: 'deployment-prep',
             condition: 'deployment-ready',
             priority: 3,
-        }, 
+        },
         // QA transitions
         {
             fromRole: 'qa-engineer',
@@ -168,7 +168,7 @@ class RoleOrchestrator {
             trigger: 'requirements-issues',
             condition: 'business-requirements-unclear',
             priority: 3,
-        }, 
+        },
         // UX Designer transitions
         {
             fromRole: 'ux-designer',
@@ -182,7 +182,7 @@ class RoleOrchestrator {
             trigger: 'design-validation',
             condition: 'usability-testing-needed',
             priority: 2,
-        }, 
+        },
         // Operations transitions
         {
             fromRole: 'operations-engineer',

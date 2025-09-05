@@ -2,7 +2,7 @@
 
 /**
  * Robust Production Deployment System for Smart MCP
- * 
+ *
  * Features:
  * - Pre-deployment validation
  * - Blue-green deployment support
@@ -49,9 +49,9 @@ class RobustDeployer {
       message,
       data
     };
-    
+
     const logLine = `[${timestamp}] ${level.toUpperCase()}: ${message}${data ? ' ' + JSON.stringify(data) : ''}\n`;
-    
+
     // Console output with colors
     const colors = {
       INFO: '\x1b[36m', // Cyan
@@ -60,9 +60,9 @@ class RobustDeployer {
       SUCCESS: '\x1b[32m', // Green
       RESET: '\x1b[0m'
     };
-    
+
     console.log(`${colors[level] || ''}${logLine.trim()}${colors.RESET}`);
-    
+
     // File logging
     try {
       if (!fs.existsSync('logs')) {
@@ -77,7 +77,7 @@ class RobustDeployer {
   async execCommand(command, options = {}) {
     return new Promise((resolve, reject) => {
       this.log('INFO', `Executing: ${command}`);
-      
+
       try {
         const result = execSync(command, {
           encoding: 'utf8',
@@ -94,14 +94,14 @@ class RobustDeployer {
 
   async preDeploymentValidation() {
     this.log('INFO', '🔍 Starting pre-deployment validation...');
-    
+
     const validations = [
       {
         name: 'Docker availability',
         check: () => this.execCommand('docker --version')
       },
       {
-        name: 'Docker Compose availability', 
+        name: 'Docker Compose availability',
         check: () => this.execCommand('docker-compose --version')
       },
       {
@@ -134,13 +134,13 @@ class RobustDeployer {
 
   async buildImage() {
     this.log('INFO', '📦 Building Docker image...');
-    
+
     const tag = `${this.config.imageName}:${this.deploymentId}`;
     await this.execCommand(`docker build -t ${tag} --target production .`);
-    
+
     // Tag as latest for this deployment
     await this.execCommand(`docker tag ${tag} ${this.config.imageName}:latest`);
-    
+
     this.log('SUCCESS', `✅ Image built successfully: ${tag}`);
     return tag;
   }
@@ -159,13 +159,13 @@ class RobustDeployer {
 
   async stopPreviousContainers() {
     this.log('INFO', '🛑 Cleaning up previous containers...');
-    
+
     try {
       // Get all containers with our prefix
       const containers = await this.execCommand(
         `docker ps -a --filter "name=${this.config.containerPrefix}" --format "{{.Names}}"`
       );
-      
+
       if (containers.trim()) {
         const containerList = containers.trim().split('\n');
         for (const container of containerList) {
@@ -183,9 +183,9 @@ class RobustDeployer {
 
   async deployContainer(imageTag) {
     const containerName = `${this.config.containerPrefix}-${this.deploymentId}`;
-    
+
     this.log('INFO', `🚀 Deploying new container: ${containerName}`);
-    
+
     const dockerRunCommand = [
       'docker run -d',
       `--name ${containerName}`,
@@ -203,33 +203,33 @@ class RobustDeployer {
     ].join(' ');
 
     await this.execCommand(dockerRunCommand);
-    
+
     this.currentContainer = containerName;
     this.log('SUCCESS', `✅ Container deployed: ${containerName}`);
-    
+
     return containerName;
   }
 
   async waitForHealthy(containerName) {
     this.log('INFO', '🏥 Waiting for container to become healthy...');
-    
+
     let retries = 0;
     const maxRetries = this.config.healthRetries;
-    
+
     while (retries < maxRetries) {
       try {
         // Check if container is still running
         await this.execCommand(`docker ps --filter "name=${containerName}" --filter "status=running" --format "{{.Names}}" | grep -q "${containerName}"`);
-        
+
         // Check health endpoint
         await this.execCommand(`curl -f --max-time 10 http://localhost:${this.config.port}${this.config.healthPath}`);
-        
+
         this.log('SUCCESS', '✅ Container is healthy and responding');
         return true;
       } catch (error) {
         retries++;
         this.log('WARN', `Health check attempt ${retries}/${maxRetries} failed, retrying in ${this.config.healthInterval}ms...`);
-        
+
         if (retries >= maxRetries) {
           // Get container logs for debugging
           try {
@@ -238,10 +238,10 @@ class RobustDeployer {
           } catch (logError) {
             this.log('ERROR', 'Failed to get container logs', { error: logError.message });
           }
-          
+
           throw new Error(`Health check failed after ${maxRetries} attempts`);
         }
-        
+
         await new Promise(resolve => setTimeout(resolve, this.config.healthInterval));
       }
     }
@@ -249,7 +249,7 @@ class RobustDeployer {
 
   async performSmokeTesting(containerName) {
     this.log('INFO', '🧪 Performing smoke tests...');
-    
+
     const tests = [
       {
         name: 'Health endpoint',
@@ -290,19 +290,19 @@ class RobustDeployer {
 
   async rollback() {
     this.log('WARN', '🔄 Starting rollback process...');
-    
+
     if (this.previousContainer) {
       try {
         // Start the previous container
         await this.execCommand(`docker start ${this.previousContainer}`);
         await this.waitForHealthy(this.previousContainer);
-        
+
         // Stop the failed current container
         if (this.currentContainer) {
           await this.execCommand(`docker stop ${this.currentContainer} || true`);
           await this.execCommand(`docker rm ${this.currentContainer} || true`);
         }
-        
+
         this.log('SUCCESS', '✅ Rollback completed successfully');
         return true;
       } catch (error) {
@@ -317,16 +317,16 @@ class RobustDeployer {
 
   async cleanup() {
     this.log('INFO', '🧹 Performing post-deployment cleanup...');
-    
+
     try {
       // Remove old unused images
       await this.execCommand('docker image prune -f --filter "until=24h"');
-      
+
       // Remove old containers (keep last 3)
       const oldContainers = await this.execCommand(
         `docker ps -a --filter "name=${this.config.containerPrefix}" --format "{{.Names}}" | tail -n +4`
       );
-      
+
       if (oldContainers.trim()) {
         const containerList = oldContainers.trim().split('\n');
         for (const container of containerList) {
@@ -336,7 +336,7 @@ class RobustDeployer {
           }
         }
       }
-      
+
       this.log('SUCCESS', '✅ Cleanup completed');
     } catch (error) {
       this.log('WARN', 'Cleanup had issues but continuing...', { error: error.message });
@@ -358,68 +358,68 @@ class RobustDeployer {
 
     const reportPath = path.join('logs', `deployment-report-${this.deploymentId}.json`);
     fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
-    
+
     this.log('INFO', `📋 Deployment report saved: ${reportPath}`);
-    
+
     return report;
   }
 
   async deploy() {
     const startTime = Date.now();
-    
+
     try {
       this.log('INFO', `🚀 Starting robust deployment [${this.deploymentId}]`);
       this.log('INFO', 'Configuration:', this.config);
-      
+
       // Step 1: Pre-deployment validation
       await this.preDeploymentValidation();
-      
+
       // Step 2: Discover current state
       await this.discoverCurrentContainer();
       this.previousContainer = this.currentContainer;
-      
+
       // Step 3: Build new image
       const imageTag = await this.buildImage();
-      
+
       // Step 4: Deploy new container
       const containerName = await this.deployContainer(imageTag);
-      
+
       // Step 5: Health check
       await this.waitForHealthy(containerName);
-      
+
       // Step 6: Smoke testing
       await this.performSmokeTesting(containerName);
-      
+
       // Step 7: Stop previous containers (after successful deployment)
       await this.stopPreviousContainers();
-      
+
       // Step 8: Cleanup
       await this.cleanup();
-      
+
       // Step 9: Generate report
       const report = await this.generateDeploymentReport();
-      
+
       const duration = Date.now() - startTime;
       this.log('SUCCESS', `🎉 Deployment completed successfully in ${duration}ms`);
       this.log('SUCCESS', `🌐 Application is running at http://localhost:${this.config.port}`);
       this.log('SUCCESS', `🏥 Health endpoint: http://localhost:${this.config.port}${this.config.healthPath}`);
-      
+
       return { success: true, report, duration };
-      
+
     } catch (error) {
       this.log('ERROR', '❌ Deployment failed', { error: error.message });
-      
+
       // Attempt rollback
       const rollbackSuccess = await this.rollback();
-      
+
       const duration = Date.now() - startTime;
       const report = await this.generateDeploymentReport();
       report.status = 'failed';
       report.error = error.message;
       report.rollbackSuccess = rollbackSuccess;
-      
+
       this.log('ERROR', `💥 Deployment failed after ${duration}ms`);
-      
+
       return { success: false, report, duration, error: error.message };
     }
   }
@@ -429,7 +429,7 @@ class RobustDeployer {
 async function main() {
   const args = process.argv.slice(2);
   const options = {};
-  
+
   // Parse command line arguments
   for (let i = 0; i < args.length; i += 2) {
     const key = args[i]?.replace('--', '');
@@ -438,10 +438,10 @@ async function main() {
       options[key] = value;
     }
   }
-  
+
   const deployer = new RobustDeployer(options);
   const result = await deployer.deploy();
-  
+
   process.exit(result.success ? 0 : 1);
 }
 

@@ -73,7 +73,6 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "lint-staged": "^16.1.6",
-    "pre-commit": "^1.0.10",
     "prettier": "^3.6.2",
     "retire": "^5.3.0",
     "ts-node": "^10.9.0",
@@ -81,15 +80,12 @@
     "vitest": "^3.2.4"
   },
   "lint-staged": {
-    "*.{ts,js}": [
+    "src/**/*.{ts,js}": [
       "eslint --fix",
       "prettier --write"
     ],
     "*.{json,md,yaml,yml}": [
       "prettier --write"
-    ],
-    "*.ts": [
-      "tsc --noEmit"
     ]
   },
   "private": true

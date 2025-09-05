@@ -10,7 +10,7 @@ This guide covers the robust local Docker deployment process for the Smart MCP s
 # Robust deployment with validation
 npm run deploy:local
 
-# Standard docker-compose deployment  
+# Standard docker-compose deployment
 npm run deploy:docker
 
 # Stop deployment
