@@ -189,13 +189,13 @@ export class SmartOrchestrateMCPTool extends MCPTool<
 > {
   private orchestrationEngine: OrchestrationEngine;
   private contextBroker: BusinessContextBroker;
-  private mcpCoordinator: MCPCoordinator;
+  private _mcpCoordinator: MCPCoordinator; // Used for external knowledge gathering (currently commented out)
 
   constructor() {
     super(config);
     this.orchestrationEngine = new OrchestrationEngine();
     this.contextBroker = new BusinessContextBroker();
-    this.mcpCoordinator = new MCPCoordinator();
+    this._mcpCoordinator = new MCPCoordinator();
   }
 
   /**

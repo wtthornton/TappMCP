@@ -189,11 +189,11 @@ npm run security:semgrep # Static analysis
 src/
 ├── server.ts              # Main MCP server
 ├── tools/                 # Core MCP tools
-│   ├── smart_begin.ts
-│   ├── smart_plan.ts
-│   ├── smart_write.ts
-│   ├── smart_finish.ts
-│   └── smart_orchestrate.ts
+│   ├── smart-begin.ts (plus variants)
+│   ├── smart-plan.ts (plus variants)
+│   ├── smart-write.ts (plus variants)
+│   ├── smart-finish.ts (plus variants)
+│   └── smart-orchestrate.ts (plus variants)
 ├── core/                  # Core functionality
 ├── integration/           # Integration tests
 └── types/                 # TypeScript definitions
@@ -209,16 +209,17 @@ docs/
 
 ### ✅ Working
 - Core MCP server implementation
-- 5 main tools (smart_begin, smart_plan, smart_write, smart_finish, smart_orchestrate)
+- 5 main tools (smart-begin, smart-plan, smart-write, smart-finish, smart-orchestrate) with multiple variants
 - Role-based AI assistance
 - Docker support
 - Quality framework
 
-### ⚠️ Issues
-- Some test failures (7 failing tests)
+### ⚠️ Current Issues
+- Test failures (5 failed tests, 530 passed)
+- Code formatting issues (5 files)
+- TypeScript compilation errors
+- ESLint code quality issues
 - Performance optimizations needed
-- Test coverage below threshold
-- Minor ESLint warnings
 
 ### 🚀 Next Steps
 1. Fix failing tests

@@ -124,9 +124,13 @@ This is a Model Context Protocol (MCP) server built with TypeScript and Node.js.
 
 **Core Structure:**
 - `src/server.ts` - Main MCP server implementation with tool registry
-- `src/tools/` - MCP tool implementations (smart_begin, smart_plan, smart_write, smart_finish, smart_orchestrate)
+- `src/tools/` - MCP tool implementations (smart-begin, smart-plan, smart-write, smart-finish, smart-orchestrate with variants)
 - `src/core/` - Core utilities and shared logic
 - `src/types/` - TypeScript type definitions
+
+**Package Information:**
+- **NPM Package Name**: `smart-mcp`
+- **Project Directory**: `TappMCP`
 
 **Key Patterns:**
 - All tools use JSON Schema validation via Zod
@@ -175,10 +179,16 @@ The project implements 6 specialized AI roles. When working on this codebase:
 
 ### Critical Process Requirements
 
+**Current Status (September 2025)**: ⚠️ Quality issues need attention
+- 5 failing tests out of 535 (99.1% pass rate)
+- TypeScript compilation errors present
+- ESLint code quality issues in multiple files
+- Code formatting issues in 5 files
+
 **Before starting any work:**
-1. Run `npm run early-check` - MUST PASS (TypeScript, ESLint, tests)
+1. Run `npm run early-check` - ⚠️ CURRENTLY FAILING (TypeScript, ESLint, formatting, tests)
 2. Explicitly confirm your role (e.g., "I am now in the AI-Augmented Developer role")
-3. Review the Process Compliance Checklist: `docs/implementation/06-supporting-docs/process-compliance-checklist.md`
+3. Review the Process Compliance Checklist (archived documentation)
 4. Ensure all dependencies are installed with `npm ci`
 5. Verify Docker is available for Linux runtime testing
 6. Check that pre-commit hooks are installed

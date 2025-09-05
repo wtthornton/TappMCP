@@ -2,6 +2,14 @@
 
 A Model Context Protocol (MCP) server implementation with AI-assisted development capabilities, featuring role-based AI assistant configuration for both Cursor AI and Claude Code.
 
+## 📚 Documentation
+
+- **[Quick Start Guide](./docs/QUICK_START.md)** - Get up and running in under 10 minutes
+- **[User Guide](./docs/USER_GUIDE.md)** - Comprehensive usage documentation with examples
+- **[API Documentation](./docs/API_DOCUMENTATION.md)** - Complete API reference for all tools
+- **[Deployment Guide](./DEPLOYMENT.md)** - Docker and production deployment instructions
+- **[Developer Guide](./CLAUDE.md)** - Development setup and Claude Code integration
+
 ## 🚀 Features
 
 - **Role-Based AI Development**: Switch between 6 specialized roles using natural language commands
@@ -111,11 +119,11 @@ TappMCP/
 ├── src/                           # Source code
 │   ├── server.ts                  # MCP server implementation
 │   ├── tools/                     # MCP Tools (kebab-case naming)
-│   │   ├── smart-begin.ts
-│   │   ├── smart-plan.ts
-│   │   ├── smart-write.ts
-│   │   ├── smart-finish.ts
-│   │   └── smart-orchestrate.ts
+│   │   ├── smart-begin.ts (with -mcp variants)
+│   │   ├── smart-plan.ts (with -mcp, -enhanced variants)
+│   │   ├── smart-write.ts (with -mcp variants)
+│   │   ├── smart-finish.ts (with -mcp variants)
+│   │   └── smart-orchestrate.ts (with -mcp variants)
 │   ├── resources/                 # MCP Resources
 │   ├── prompts/                   # MCP Prompts
 │   ├── schemas/                   # Zod schemas for validation
@@ -223,6 +231,13 @@ npm start
 - **Performance**: <100ms response time for all tools
 - **Security**: Zero critical vulnerabilities, no secrets in repository
 - **Code Quality**: ESLint complexity ≤10, duplication ≤5%
+
+### Current Quality Status (September 2025)
+⚠️ **Known Issues**:
+- 5 failing tests out of 535 (99.1% pass rate)
+- TypeScript compilation errors
+- ESLint code quality issues
+- Code formatting issues in 5 files
 
 ### Pre-commit Requirements
 All commits must pass:
