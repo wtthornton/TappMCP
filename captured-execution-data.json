@@ -1,0 +1,676 @@
+{
+  "timestamp": "2025-09-05T04:52:05.579Z",
+  "testRun": {
+    "id": "test_1757047925580",
+    "startTime": 1757047925580,
+    "endTime": 1757047925634,
+    "duration": 54
+  },
+  "functionCalls": [
+    {
+      "functionName": "handleSmartBegin",
+      "inputParams": {
+        "projectName": "html-test-project",
+        "projectType": "web",
+        "description": "Test project for HTML generation quality testing"
+      },
+      "startTime": 1757047925587,
+      "endTime": 1757047925625,
+      "duration": 38,
+      "response": {
+        "success": true,
+        "data": {
+          "projectId": "proj_1757047925624_html-test-project",
+          "projectStructure": {
+            "folders": [
+              "src",
+              "docs",
+              "tests",
+              "scripts",
+              "config"
+            ],
+            "files": [
+              "README.md",
+              "package.json",
+              "tsconfig.json",
+              ".gitignore",
+              ".env.example"
+            ],
+            "configFiles": [
+              "tsconfig.json",
+              "package.json",
+              ".eslintrc.json",
+              ".prettierrc",
+              "vitest.config.ts"
+            ]
+          },
+          "qualityGates": [
+            {
+              "name": "TypeScript Strict Mode",
+              "description": "Enforces strict TypeScript compilation",
+              "status": "enabled"
+            },
+            {
+              "name": "ESLint Code Quality",
+              "description": "Enforces code quality standards",
+              "status": "enabled"
+            },
+            {
+              "name": "Prettier Formatting",
+              "description": "Enforces consistent code formatting",
+              "status": "enabled"
+            },
+            {
+              "name": "Security Scanning",
+              "description": "Scans for security vulnerabilities",
+              "status": "enabled"
+            },
+            {
+              "name": "Test Coverage",
+              "description": "Enforces minimum test coverage",
+              "status": "enabled"
+            }
+          ],
+          "nextSteps": [
+            "Project 'html-test-project' initialized successfully",
+            "Review generated project structure and configuration",
+            "Install dependencies with 'npm install'",
+            "Run tests with 'npm test'",
+            "Start development with 'npm run dev'"
+          ],
+          "businessValue": {
+            "costPrevention": 10000,
+            "timeSaved": 2.5,
+            "qualityImprovements": [
+              "Production-ready project structure",
+              "Security scanning and vulnerability prevention",
+              "Code quality enforcement",
+              "Automated testing framework",
+              "Consistent development standards"
+            ]
+          },
+          "technicalMetrics": {
+            "responseTime": 2,
+            "securityScore": 95,
+            "complexityScore": 85
+          }
+        },
+        "timestamp": "2025-09-05T04:52:05.625Z"
+      },
+      "error": null
+    },
+    {
+      "functionName": "handleSmartWrite",
+      "inputParams": {
+        "projectId": "proj_1757047925624_html-test-project",
+        "featureDescription": "create me an html page that has a header a footer and says 'i'am the best' in the body",
+        "targetRole": "developer",
+        "codeType": "component",
+        "techStack": [
+          "HTML",
+          "CSS",
+          "JavaScript"
+        ]
+      },
+      "startTime": 1757047925625,
+      "endTime": 1757047925631,
+      "duration": 6,
+      "response": {
+        "success": true,
+        "data": {
+          "codeId": "code_1757047925631_create_me_an_html_page_that_has_a_header_a_footer_and_says_'i'am_the_best'_in_the_body",
+          "generatedCode": {
+            "files": [
+              {
+                "path": "public/create_me_an_html_page_that_has_a_header_a_footer_and_says_'i'am_the_best'_in_the_body.html",
+                "content": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Generated HTML Page</title>\n    <style>\n        * {\n            margin: 0;\n            padding: 0;\n            box-sizing: border-box;\n        }\n\n        body {\n            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n            line-height: 1.6;\n            color: #333;\n            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n            min-height: 100vh;\n            display: flex;\n            flex-direction: column;\n        }\n\n        header {\n            background: rgba(255, 255, 255, 0.95);\n            padding: 20px;\n            text-align: center;\n            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);\n        }\n\n        header h1 {\n            color: #2c3e50;\n            font-size: 2.5em;\n            margin-bottom: 10px;\n        }\n\n        main {\n            flex: 1;\n            display: flex;\n            align-items: center;\n            justify-content: center;\n            padding: 40px 20px;\n        }\n\n        main p {\n            background: rgba(255, 255, 255, 0.95);\n            padding: 30px;\n            border-radius: 15px;\n            font-size: 2em;\n            font-weight: bold;\n            text-align: center;\n            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);\n            color: #2c3e50;\n        }\n\n        footer {\n            background: rgba(44, 62, 80, 0.95);\n            color: white;\n            padding: 20px;\n            text-align: center;\n            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);\n        }\n\n        footer p {\n            margin: 0;\n            font-size: 1.1em;\n        }\n\n        @media (max-width: 768px) {\n            header h1 {\n                font-size: 2em;\n            }\n\n            main p {\n                font-size: 1.5em;\n                padding: 20px;\n            }\n        }\n    </style>\n</head>\n<body>\n    <header>\n        <h1>Welcome to My Page</h1>\n    </header>\n\n    <main>\n        <p>I'm the best!</p>\n    </main>\n\n    <footer>\n        <p>&copy; 2025 - Generated by TappMCP - All rights reserved</p>\n    </footer>\n</body>\n</html>",
+                "type": "html"
+              }
+            ],
+            "dependencies": [
+              "html",
+              "css"
+            ],
+            "imports": [
+              "// HTML page generated successfully"
+            ],
+            "thoughtProcess": {
+              "step1_analysis": {
+                "description": "Analyzing user request and determining code type",
+                "input": "create me an html page that has a header a footer and says 'i'am the best' in the body",
+                "detectedKeywords": [
+                  "html",
+                  "page",
+                  "header",
+                  "footer",
+                  "body"
+                ],
+                "decision": "Generate HTML page",
+                "reasoning": "User explicitly requested HTML page with header, footer, and body content"
+              },
+              "step2_detection": {
+                "description": "Detecting HTML vs TypeScript requirements",
+                "isHtmlRequest": true,
+                "detectionCriteria": [
+                  "Contains 'html': true",
+                  "Contains 'page': true",
+                  "Tech stack includes HTML: false",
+                  "Keywords found: html, page, header, footer, body"
+                ],
+                "confidence": 95
+              },
+              "step3_generation": {
+                "description": "Generating appropriate code structure",
+                "chosenApproach": "HTML5 structure with CSS styling",
+                "filesToCreate": [
+                  "HTML file with embedded CSS"
+                ],
+                "dependencies": [
+                  "HTML5",
+                  "CSS3"
+                ],
+                "qualityConsiderations": [
+                  "Semantic HTML structure",
+                  "Responsive design",
+                  "Accessibility compliance",
+                  "Modern CSS features",
+                  "Cross-browser compatibility"
+                ]
+              },
+              "step4_validation": {
+                "description": "Validating generated code meets requirements",
+                "requirementsCheck": [
+                  "✅ HTML5 DOCTYPE included",
+                  "✅ Header element present",
+                  "✅ Footer element present",
+                  "✅ Body content with 'I'm the best' text",
+                  "✅ CSS styling embedded",
+                  "✅ Responsive design implemented",
+                  "✅ Semantic HTML structure"
+                ],
+                "qualityMetrics": {
+                  "structure": "Excellent",
+                  "accessibility": "Good",
+                  "performance": "Excellent",
+                  "maintainability": "Good"
+                },
+                "potentialIssues": [
+                  "Could add more semantic elements (main, section)",
+                  "Could include ARIA labels for better accessibility",
+                  "Could add JavaScript for interactivity"
+                ]
+              }
+            }
+          },
+          "thoughtProcess": {
+            "step1_analysis": {
+              "description": "Analyzing user request and determining code type",
+              "input": "create me an html page that has a header a footer and says 'i'am the best' in the body",
+              "detectedKeywords": [
+                "html",
+                "page",
+                "header",
+                "footer",
+                "body"
+              ],
+              "decision": "Generate HTML page",
+              "reasoning": "User explicitly requested HTML page with header, footer, and body content"
+            },
+            "step2_detection": {
+              "description": "Detecting HTML vs TypeScript requirements",
+              "isHtmlRequest": true,
+              "detectionCriteria": [
+                "Contains 'html': true",
+                "Contains 'page': true",
+                "Tech stack includes HTML: false",
+                "Keywords found: html, page, header, footer, body"
+              ],
+              "confidence": 95
+            },
+            "step3_generation": {
+              "description": "Generating appropriate code structure",
+              "chosenApproach": "HTML5 structure with CSS styling",
+              "filesToCreate": [
+                "HTML file with embedded CSS"
+              ],
+              "dependencies": [
+                "HTML5",
+                "CSS3"
+              ],
+              "qualityConsiderations": [
+                "Semantic HTML structure",
+                "Responsive design",
+                "Accessibility compliance",
+                "Modern CSS features",
+                "Cross-browser compatibility"
+              ]
+            },
+            "step4_validation": {
+              "description": "Validating generated code meets requirements",
+              "requirementsCheck": [
+                "✅ HTML5 DOCTYPE included",
+                "✅ Header element present",
+                "✅ Footer element present",
+                "✅ Body content with 'I'm the best' text",
+                "✅ CSS styling embedded",
+                "✅ Responsive design implemented",
+                "✅ Semantic HTML structure"
+              ],
+              "qualityMetrics": {
+                "structure": "Excellent",
+                "accessibility": "Good",
+                "performance": "Excellent",
+                "maintainability": "Good"
+              },
+              "potentialIssues": [
+                "Could add more semantic elements (main, section)",
+                "Could include ARIA labels for better accessibility",
+                "Could add JavaScript for interactivity"
+              ]
+            }
+          },
+          "qualityMetrics": {
+            "testCoverage": 80,
+            "complexity": 4,
+            "securityScore": 75,
+            "maintainability": 85
+          },
+          "businessValue": {
+            "timeSaved": 2,
+            "qualityImprovement": 75,
+            "costPrevention": 4000
+          },
+          "nextSteps": [
+            "Code generated for create me an html page that has a header a footer and says 'i'am the best' in the body",
+            "Review and customize the generated code",
+            "Add tests to meet coverage requirements",
+            "Integrate into your project",
+            "Continue development with additional features",
+            "Run comprehensive testing suite",
+            "Prepare for deployment to production"
+          ],
+          "technicalMetrics": {
+            "responseTime": 1,
+            "generationTime": 1,
+            "linesGenerated": 50,
+            "filesCreated": 1
+          }
+        },
+        "timestamp": "2025-09-05T04:52:05.631Z"
+      },
+      "error": null
+    }
+  ],
+  "responses": [
+    {
+      "functionName": "handleSmartBegin",
+      "response": {
+        "success": true,
+        "data": {
+          "projectId": "proj_1757047925624_html-test-project",
+          "projectStructure": {
+            "folders": [
+              "src",
+              "docs",
+              "tests",
+              "scripts",
+              "config"
+            ],
+            "files": [
+              "README.md",
+              "package.json",
+              "tsconfig.json",
+              ".gitignore",
+              ".env.example"
+            ],
+            "configFiles": [
+              "tsconfig.json",
+              "package.json",
+              ".eslintrc.json",
+              ".prettierrc",
+              "vitest.config.ts"
+            ]
+          },
+          "qualityGates": [
+            {
+              "name": "TypeScript Strict Mode",
+              "description": "Enforces strict TypeScript compilation",
+              "status": "enabled"
+            },
+            {
+              "name": "ESLint Code Quality",
+              "description": "Enforces code quality standards",
+              "status": "enabled"
+            },
+            {
+              "name": "Prettier Formatting",
+              "description": "Enforces consistent code formatting",
+              "status": "enabled"
+            },
+            {
+              "name": "Security Scanning",
+              "description": "Scans for security vulnerabilities",
+              "status": "enabled"
+            },
+            {
+              "name": "Test Coverage",
+              "description": "Enforces minimum test coverage",
+              "status": "enabled"
+            }
+          ],
+          "nextSteps": [
+            "Project 'html-test-project' initialized successfully",
+            "Review generated project structure and configuration",
+            "Install dependencies with 'npm install'",
+            "Run tests with 'npm test'",
+            "Start development with 'npm run dev'"
+          ],
+          "businessValue": {
+            "costPrevention": 10000,
+            "timeSaved": 2.5,
+            "qualityImprovements": [
+              "Production-ready project structure",
+              "Security scanning and vulnerability prevention",
+              "Code quality enforcement",
+              "Automated testing framework",
+              "Consistent development standards"
+            ]
+          },
+          "technicalMetrics": {
+            "responseTime": 2,
+            "securityScore": 95,
+            "complexityScore": 85
+          }
+        },
+        "timestamp": "2025-09-05T04:52:05.625Z"
+      },
+      "duration": 38,
+      "timestamp": "2025-09-05T04:52:05.625Z"
+    },
+    {
+      "functionName": "handleSmartWrite",
+      "response": {
+        "success": true,
+        "data": {
+          "codeId": "code_1757047925631_create_me_an_html_page_that_has_a_header_a_footer_and_says_'i'am_the_best'_in_the_body",
+          "generatedCode": {
+            "files": [
+              {
+                "path": "public/create_me_an_html_page_that_has_a_header_a_footer_and_says_'i'am_the_best'_in_the_body.html",
+                "content": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Generated HTML Page</title>\n    <style>\n        * {\n            margin: 0;\n            padding: 0;\n            box-sizing: border-box;\n        }\n\n        body {\n            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n            line-height: 1.6;\n            color: #333;\n            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n            min-height: 100vh;\n            display: flex;\n            flex-direction: column;\n        }\n\n        header {\n            background: rgba(255, 255, 255, 0.95);\n            padding: 20px;\n            text-align: center;\n            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);\n        }\n\n        header h1 {\n            color: #2c3e50;\n            font-size: 2.5em;\n            margin-bottom: 10px;\n        }\n\n        main {\n            flex: 1;\n            display: flex;\n            align-items: center;\n            justify-content: center;\n            padding: 40px 20px;\n        }\n\n        main p {\n            background: rgba(255, 255, 255, 0.95);\n            padding: 30px;\n            border-radius: 15px;\n            font-size: 2em;\n            font-weight: bold;\n            text-align: center;\n            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);\n            color: #2c3e50;\n        }\n\n        footer {\n            background: rgba(44, 62, 80, 0.95);\n            color: white;\n            padding: 20px;\n            text-align: center;\n            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);\n        }\n\n        footer p {\n            margin: 0;\n            font-size: 1.1em;\n        }\n\n        @media (max-width: 768px) {\n            header h1 {\n                font-size: 2em;\n            }\n\n            main p {\n                font-size: 1.5em;\n                padding: 20px;\n            }\n        }\n    </style>\n</head>\n<body>\n    <header>\n        <h1>Welcome to My Page</h1>\n    </header>\n\n    <main>\n        <p>I'm the best!</p>\n    </main>\n\n    <footer>\n        <p>&copy; 2025 - Generated by TappMCP - All rights reserved</p>\n    </footer>\n</body>\n</html>",
+                "type": "html"
+              }
+            ],
+            "dependencies": [
+              "html",
+              "css"
+            ],
+            "imports": [
+              "// HTML page generated successfully"
+            ],
+            "thoughtProcess": {
+              "step1_analysis": {
+                "description": "Analyzing user request and determining code type",
+                "input": "create me an html page that has a header a footer and says 'i'am the best' in the body",
+                "detectedKeywords": [
+                  "html",
+                  "page",
+                  "header",
+                  "footer",
+                  "body"
+                ],
+                "decision": "Generate HTML page",
+                "reasoning": "User explicitly requested HTML page with header, footer, and body content"
+              },
+              "step2_detection": {
+                "description": "Detecting HTML vs TypeScript requirements",
+                "isHtmlRequest": true,
+                "detectionCriteria": [
+                  "Contains 'html': true",
+                  "Contains 'page': true",
+                  "Tech stack includes HTML: false",
+                  "Keywords found: html, page, header, footer, body"
+                ],
+                "confidence": 95
+              },
+              "step3_generation": {
+                "description": "Generating appropriate code structure",
+                "chosenApproach": "HTML5 structure with CSS styling",
+                "filesToCreate": [
+                  "HTML file with embedded CSS"
+                ],
+                "dependencies": [
+                  "HTML5",
+                  "CSS3"
+                ],
+                "qualityConsiderations": [
+                  "Semantic HTML structure",
+                  "Responsive design",
+                  "Accessibility compliance",
+                  "Modern CSS features",
+                  "Cross-browser compatibility"
+                ]
+              },
+              "step4_validation": {
+                "description": "Validating generated code meets requirements",
+                "requirementsCheck": [
+                  "✅ HTML5 DOCTYPE included",
+                  "✅ Header element present",
+                  "✅ Footer element present",
+                  "✅ Body content with 'I'm the best' text",
+                  "✅ CSS styling embedded",
+                  "✅ Responsive design implemented",
+                  "✅ Semantic HTML structure"
+                ],
+                "qualityMetrics": {
+                  "structure": "Excellent",
+                  "accessibility": "Good",
+                  "performance": "Excellent",
+                  "maintainability": "Good"
+                },
+                "potentialIssues": [
+                  "Could add more semantic elements (main, section)",
+                  "Could include ARIA labels for better accessibility",
+                  "Could add JavaScript for interactivity"
+                ]
+              }
+            }
+          },
+          "thoughtProcess": {
+            "step1_analysis": {
+              "description": "Analyzing user request and determining code type",
+              "input": "create me an html page that has a header a footer and says 'i'am the best' in the body",
+              "detectedKeywords": [
+                "html",
+                "page",
+                "header",
+                "footer",
+                "body"
+              ],
+              "decision": "Generate HTML page",
+              "reasoning": "User explicitly requested HTML page with header, footer, and body content"
+            },
+            "step2_detection": {
+              "description": "Detecting HTML vs TypeScript requirements",
+              "isHtmlRequest": true,
+              "detectionCriteria": [
+                "Contains 'html': true",
+                "Contains 'page': true",
+                "Tech stack includes HTML: false",
+                "Keywords found: html, page, header, footer, body"
+              ],
+              "confidence": 95
+            },
+            "step3_generation": {
+              "description": "Generating appropriate code structure",
+              "chosenApproach": "HTML5 structure with CSS styling",
+              "filesToCreate": [
+                "HTML file with embedded CSS"
+              ],
+              "dependencies": [
+                "HTML5",
+                "CSS3"
+              ],
+              "qualityConsiderations": [
+                "Semantic HTML structure",
+                "Responsive design",
+                "Accessibility compliance",
+                "Modern CSS features",
+                "Cross-browser compatibility"
+              ]
+            },
+            "step4_validation": {
+              "description": "Validating generated code meets requirements",
+              "requirementsCheck": [
+                "✅ HTML5 DOCTYPE included",
+                "✅ Header element present",
+                "✅ Footer element present",
+                "✅ Body content with 'I'm the best' text",
+                "✅ CSS styling embedded",
+                "✅ Responsive design implemented",
+                "✅ Semantic HTML structure"
+              ],
+              "qualityMetrics": {
+                "structure": "Excellent",
+                "accessibility": "Good",
+                "performance": "Excellent",
+                "maintainability": "Good"
+              },
+              "potentialIssues": [
+                "Could add more semantic elements (main, section)",
+                "Could include ARIA labels for better accessibility",
+                "Could add JavaScript for interactivity"
+              ]
+            }
+          },
+          "qualityMetrics": {
+            "testCoverage": 80,
+            "complexity": 4,
+            "securityScore": 75,
+            "maintainability": 85
+          },
+          "businessValue": {
+            "timeSaved": 2,
+            "qualityImprovement": 75,
+            "costPrevention": 4000
+          },
+          "nextSteps": [
+            "Code generated for create me an html page that has a header a footer and says 'i'am the best' in the body",
+            "Review and customize the generated code",
+            "Add tests to meet coverage requirements",
+            "Integrate into your project",
+            "Continue development with additional features",
+            "Run comprehensive testing suite",
+            "Prepare for deployment to production"
+          ],
+          "technicalMetrics": {
+            "responseTime": 1,
+            "generationTime": 1,
+            "linesGenerated": 50,
+            "filesCreated": 1
+          }
+        },
+        "timestamp": "2025-09-05T04:52:05.631Z"
+      },
+      "duration": 6,
+      "timestamp": "2025-09-05T04:52:05.631Z"
+    }
+  ],
+  "aiReasoning": [
+    {
+      "timestamp": "2025-09-05T04:52:05.631Z",
+      "thoughtProcess": {
+        "step1_analysis": {
+          "description": "Analyzing user request and determining code type",
+          "input": "create me an html page that has a header a footer and says 'i'am the best' in the body",
+          "detectedKeywords": [
+            "html",
+            "page",
+            "header",
+            "footer",
+            "body"
+          ],
+          "decision": "Generate HTML page",
+          "reasoning": "User explicitly requested HTML page with header, footer, and body content"
+        },
+        "step2_detection": {
+          "description": "Detecting HTML vs TypeScript requirements",
+          "isHtmlRequest": true,
+          "detectionCriteria": [
+            "Contains 'html': true",
+            "Contains 'page': true",
+            "Tech stack includes HTML: false",
+            "Keywords found: html, page, header, footer, body"
+          ],
+          "confidence": 95
+        },
+        "step3_generation": {
+          "description": "Generating appropriate code structure",
+          "chosenApproach": "HTML5 structure with CSS styling",
+          "filesToCreate": [
+            "HTML file with embedded CSS"
+          ],
+          "dependencies": [
+            "HTML5",
+            "CSS3"
+          ],
+          "qualityConsiderations": [
+            "Semantic HTML structure",
+            "Responsive design",
+            "Accessibility compliance",
+            "Modern CSS features",
+            "Cross-browser compatibility"
+          ]
+        },
+        "step4_validation": {
+          "description": "Validating generated code meets requirements",
+          "requirementsCheck": [
+            "✅ HTML5 DOCTYPE included",
+            "✅ Header element present",
+            "✅ Footer element present",
+            "✅ Body content with 'I'm the best' text",
+            "✅ CSS styling embedded",
+            "✅ Responsive design implemented",
+            "✅ Semantic HTML structure"
+          ],
+          "qualityMetrics": {
+            "structure": "Excellent",
+            "accessibility": "Good",
+            "performance": "Excellent",
+            "maintainability": "Good"
+          },
+          "potentialIssues": [
+            "Could add more semantic elements (main, section)",
+            "Could include ARIA labels for better accessibility",
+            "Could add JavaScript for interactivity"
+          ]
+        }
+      },
+      "stepCount": 4,
+      "confidence": 95
+    }
+  ],
+  "qualityMetrics": [
+    {
+      "timestamp": "2025-09-05T04:52:05.632Z",
+      "metrics": {
+        "testCoverage": 80,
+        "complexity": 4,
+        "securityScore": 75,
+        "maintainability": 85
+      },
+      "overallScore": 80
+    }
+  ],
+  "errors": [],
+  "generatedFiles": [
+    {
+      "timestamp": "2025-09-05T04:52:05.633Z",
+      "filePath": "C:\\cursor\\TappMCP\\captured-generated\\captured-html-1757047925633.html",
+      "fileType": "html",
+      "contentLength": 2204,
+      "content": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Generated HTML Page</title>\n    <style>\n        * {\n            margin: 0;\n            padding: 0;\n            box-sizing: border-box;\n        }\n\n        body {\n            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n            line-height: 1.6;\n            color: #333;\n            background: linear-gradient(135deg, #667eea 0...",
+      "fullPath": "C:\\cursor\\TappMCP\\captured-generated\\captured-html-1757047925633.html"
+    }
+  ]
+}

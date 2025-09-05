@@ -1,0 +1,36 @@
+{
+  "timestamp": "2025-09-05T04:54:12.350Z",
+  "testRun": {
+    "id": "deployed_test_1757048052351",
+    "startTime": 1757048052351,
+    "endTime": 1757048052735,
+    "duration": 384
+  },
+  "functionCalls": [
+    {
+      "functionName": "smart_begin",
+      "inputParams": {
+        "projectName": "deployed-html-test",
+        "projectType": "web",
+        "description": "Test project for deployed MCP HTML generation"
+      },
+      "startTime": 1757048052356,
+      "endTime": null,
+      "duration": null,
+      "response": null,
+      "error": null
+    }
+  ],
+  "responses": [],
+  "aiReasoning": [],
+  "qualityMetrics": [],
+  "errors": [
+    {
+      "timestamp": "2025-09-05T04:54:12.734Z",
+      "functionName": "testDeployedHTMLGeneration",
+      "error": "MCP server exited with code 1: node:events:502\n      throw er; // Unhandled 'error' event\n      ^\n\nError: listen EADDRINUSE: address already in use 0.0.0.0:3000\n    at Server.setupListenHandle [as _listen2] (node:net:1908:16)\n    at listenInCluster (node:net:1965:12)\n    at doListen (node:net:2139:7)\n    at process.processTicksAndRejections (node:internal/process/task_queues:83:21)\nEmitted 'error' event on Server instance at:\n    at emitErrorNT (node:net:1944:8)\n    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {\n  code: 'EADDRINUSE',\n  errno: -98,\n  syscall: 'listen',\n  address: '0.0.0.0',\n  port: 3000\n}\n\nNode.js v20.19.5\n",
+      "stack": "Error: MCP server exited with code 1: node:events:502\n      throw er; // Unhandled 'error' event\n      ^\n\nError: listen EADDRINUSE: address already in use 0.0.0.0:3000\n    at Server.setupListenHandle [as _listen2] (node:net:1908:16)\n    at listenInCluster (node:net:1965:12)\n    at doListen (node:net:2139:7)\n    at process.processTicksAndRejections (node:internal/process/task_queues:83:21)\nEmitted 'error' event on Server instance at:\n    at emitErrorNT (node:net:1944:8)\n    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {\n  code: 'EADDRINUSE',\n  errno: -98,\n  syscall: 'listen',\n  address: '0.0.0.0',\n  port: 3000\n}\n\nNode.js v20.19.5\n\n    at ChildProcess.<anonymous> (C:\\cursor\\TappMCP\\test-deployed-mcp-real.js:69:16)\n    at ChildProcess.emit (node:events:518:28)\n    at maybeClose (node:internal/child_process:1101:16)\n    at ChildProcess._handle.onexit (node:internal/child_process:304:5)"
+    }
+  ],
+  "generatedFiles": []
+}

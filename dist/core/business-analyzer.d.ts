@@ -67,20 +67,20 @@ export declare const RiskSchema: z.ZodObject<{
     severity: z.ZodEnum<["low", "medium", "high", "critical"]>;
     mitigation: z.ZodArray<z.ZodString, "many">;
 }, "strip", z.ZodTypeAny, {
-    id: string;
-    name: string;
     description: string;
+    name: string;
+    id: string;
     severity: "high" | "medium" | "low" | "critical";
-    category: "resource" | "timeline" | "business" | "quality" | "technical";
+    category: "timeline" | "business" | "quality" | "technical" | "resource";
     impact: "high" | "medium" | "low";
     probability: "high" | "medium" | "low";
     mitigation: string[];
 }, {
-    id: string;
-    name: string;
     description: string;
+    name: string;
+    id: string;
     severity: "high" | "medium" | "low" | "critical";
-    category: "resource" | "timeline" | "business" | "quality" | "technical";
+    category: "timeline" | "business" | "quality" | "technical" | "resource";
     impact: "high" | "medium" | "low";
     probability: "high" | "medium" | "low";
     mitigation: string[];
@@ -96,20 +96,20 @@ export declare const UserStorySchema: z.ZodObject<{
     priority: z.ZodEnum<["low", "medium", "high", "critical"]>;
     estimatedEffort: z.ZodNumber;
 }, "strip", z.ZodTypeAny, {
-    id: string;
     description: string;
     priority: "high" | "medium" | "low" | "critical";
     estimatedEffort: number;
+    id: string;
     title: string;
     asA: string;
     iWant: string;
     soThat: string;
     acceptanceCriteria: string[];
 }, {
-    id: string;
     description: string;
     priority: "high" | "medium" | "low" | "critical";
     estimatedEffort: number;
+    id: string;
     title: string;
     asA: string;
     iWant: string;

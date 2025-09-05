@@ -119,10 +119,64 @@ export const smartWriteTool: Tool = {
   },
 };
 
+// Execution logging system - reset for each call
+let executionLog = {
+  startTime: Date.now(),
+  functionCalls: [] as Array<{function: string, timestamp: number, duration?: number, externalTools?: string[]}>,
+  externalTools: [] as Array<{tool: string, timestamp: number, purpose: string}>,
+  dataFlow: [] as Array<{step: string, data: any, timestamp: number}>
+};
+
+function logFunctionCall(functionName: string, externalTools: string[] = []) {
+  const timestamp = Date.now();
+  executionLog.functionCalls.push({
+    function: functionName,
+    timestamp,
+    externalTools
+  });
+  console.log(`🔧 [MCP-LOG] Function called: ${functionName} at ${new Date(timestamp).toISOString()}`);
+  if (externalTools.length > 0) {
+    console.log(`🔧 [MCP-LOG] External tools used: ${externalTools.join(', ')}`);
+  }
+}
+
+function logExternalTool(tool: string, purpose: string) {
+  const timestamp = Date.now();
+  executionLog.externalTools.push({
+    tool,
+    timestamp,
+    purpose
+  });
+  console.log(`🔧 [MCP-LOG] External tool: ${tool} - ${purpose} at ${new Date(timestamp).toISOString()}`);
+}
+
+function logDataFlow(step: string, data: any) {
+  const timestamp = Date.now();
+  executionLog.dataFlow.push({
+    step,
+    data,
+    timestamp
+  });
+  console.log(`🔧 [MCP-LOG] Data flow: ${step} at ${new Date(timestamp).toISOString()}`);
+}
+
+function resetExecutionLog() {
+  executionLog = {
+    startTime: Date.now(),
+    functionCalls: [],
+    externalTools: [],
+    dataFlow: []
+  };
+}
+
 // Generate real, functional code
 function generateRealCode(input: any) {
+  logFunctionCall('generateRealCode', ['zod', 'Date', 'Math', 'String']);
+
   const featureName = input.featureDescription.toLowerCase().replace(/\s+/g, '_');
   const functionName = input.featureDescription.replace(/\s+/g, '');
+
+  logDataFlow('input_processing', { featureName, functionName });
 
   // Thought process tracking
   const thoughtProcess = {
@@ -155,15 +209,23 @@ function generateRealCode(input: any) {
   };
 
   // Step 1: Analyze the request
+  logFunctionCall('analyzeRequest', ['String', 'Array']);
   const keywords = input.featureDescription.toLowerCase().split(' ');
   thoughtProcess.step1_analysis.detectedKeywords = keywords.filter((word: string) =>
     ['html', 'page', 'header', 'footer', 'body', 'css', 'javascript', 'web', 'website'].includes(word)
   );
+  logExternalTool('String.prototype.split', 'Keyword extraction');
+  logExternalTool('Array.prototype.filter', 'Keyword filtering');
+  logDataFlow('keyword_analysis', { keywords: thoughtProcess.step1_analysis.detectedKeywords });
 
   // Step 2: Detect HTML vs TypeScript
+  logFunctionCall('detectCodeType', ['String', 'Array']);
   const isHtmlRequest = input.featureDescription.toLowerCase().includes('html') ||
                        input.featureDescription.toLowerCase().includes('page') ||
                        input.techStack?.includes('html');
+  logExternalTool('String.prototype.includes', 'HTML detection');
+  logExternalTool('Array.prototype.includes', 'Tech stack checking');
+  logDataFlow('type_detection', { isHtmlRequest });
 
   thoughtProcess.step2_detection.isHtmlRequest = isHtmlRequest;
   thoughtProcess.step2_detection.detectionCriteria = [
@@ -175,6 +237,7 @@ function generateRealCode(input: any) {
   thoughtProcess.step2_detection.confidence = isHtmlRequest ? 95 : 85;
 
   if (isHtmlRequest) {
+    logFunctionCall('generateHTMLCode', ['String', 'Template', 'CSS']);
     thoughtProcess.step1_analysis.decision = "Generate HTML page";
     thoughtProcess.step1_analysis.reasoning = "User explicitly requested HTML page with header, footer, and body content";
     thoughtProcess.step3_generation.chosenApproach = "HTML5 structure with CSS styling";
@@ -187,6 +250,9 @@ function generateRealCode(input: any) {
       "Modern CSS features",
       "Cross-browser compatibility"
     ];
+    logExternalTool('Template Literals', 'HTML code generation');
+    logExternalTool('CSS3 Features', 'Styling and responsive design');
+    logDataFlow('html_generation', { approach: 'HTML5 + CSS3' });
   } else {
     thoughtProcess.step1_analysis.decision = "Generate TypeScript function";
     thoughtProcess.step1_analysis.reasoning = "No HTML keywords detected, defaulting to TypeScript function";
@@ -487,10 +553,15 @@ export async function handleSmartWrite(input: unknown): Promise<{
   timestamp: string;
 }> {
   const startTime = Date.now();
+  resetExecutionLog(); // Reset execution log for this call
+  logFunctionCall('handleSmartWrite', ['zod', 'JSON', 'Date']);
 
   try {
     // Validate input
+    logFunctionCall('validateInput', ['zod']);
     const validatedInput = SmartWriteInputSchema.parse(input);
+    logExternalTool('Zod Schema', 'Input validation');
+    logDataFlow('input_validation', { success: true, projectId: validatedInput.projectId });
 
     // Generate real, functional code
     const codeId = `code_${Date.now()}_${validatedInput.featureDescription.toLowerCase().replace(/\s+/g, '_')}`;
@@ -529,9 +600,27 @@ export async function handleSmartWrite(input: unknown): Promise<{
       },
     };
 
+    // Complete execution logging
+    const handlerEndTime = Date.now();
+    executionLog.functionCalls[executionLog.functionCalls.length - 1].duration = handlerEndTime - startTime;
+
+    logDataFlow('response_generation', {
+      codeId,
+      filesGenerated: generatedCode.files.length,
+      totalDuration: handlerEndTime - startTime
+    });
+
     return {
       success: true,
-      data: response,
+      data: {
+        ...response,
+        executionLog: {
+          totalDuration: handlerEndTime - startTime,
+          functionCalls: executionLog.functionCalls,
+          externalTools: executionLog.externalTools,
+          dataFlow: executionLog.dataFlow
+        }
+      },
       timestamp: new Date().toISOString(),
     };
   } catch (error) {

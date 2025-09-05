@@ -21,7 +21,8 @@
       "Bash(node:*)",
       "Bash(docker:*)",
       "Bash(npm audit:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(git rm:*)"
     ],
     "deny": [],
     "ask": []

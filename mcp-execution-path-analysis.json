@@ -1,0 +1,495 @@
+{
+  "serverEntry": {
+    "file": "src/server.ts",
+    "mainFunction": "main()",
+    "transport": "StdioServerTransport",
+    "toolRegistration": "Dynamic tool registration via MCP SDK",
+    "healthServer": "Separate HTTP server on port 3000"
+  },
+  "toolHandlers": {
+    "smart_begin": {
+      "file": "src/tools/smart_begin.ts",
+      "functions": [
+        "generateProjectStructure",
+        "generateQualityGates",
+        "generateNextSteps",
+        "calculateBusinessValue",
+        "handleSmartBegin",
+        "object",
+        "string",
+        "min",
+        "optional",
+        "array",
+        "default",
+        "enum",
+        "number",
+        "includes",
+        "push",
+        "now",
+        "parse",
+        "toLowerCase",
+        "replace",
+        "toISOString"
+      ],
+      "externalDependencies": [
+        "zod",
+        "@modelcontextprotocol/sdk/types.js"
+      ],
+      "zodSchemas": "Yes",
+      "businessLogic": [
+        "Business Value Calculation",
+        "Schema Validation",
+        "Timestamp Generation"
+      ]
+    },
+    "smart_write": {
+      "file": "src/tools/smart_write.ts",
+      "functions": [
+        "generateRealCode",
+        "with",
+        "for",
+        "generated",
+        "handleSmartWrite",
+        "object",
+        "string",
+        "min",
+        "enum",
+        "default",
+        "array",
+        "optional",
+        "number",
+        "max",
+        "toLowerCase",
+        "replace",
+        "split",
+        "filter",
+        "includes",
+        "join",
+        "trim",
+        "toISOString",
+        "toBe",
+        "toContain",
+        "toBeDefined",
+        "now",
+        "toBeLessThan",
+        "parse"
+      ],
+      "externalDependencies": [
+        "zod",
+        "@modelcontextprotocol/sdk/types.js",
+        "vitest",
+        "./${featureName}"
+      ],
+      "zodSchemas": "Yes",
+      "businessLogic": [
+        "Code Generation",
+        "AI Reasoning",
+        "Quality Assessment",
+        "Business Value Calculation",
+        "Schema Validation",
+        "Timestamp Generation"
+      ]
+    },
+    "smart_plan": {
+      "file": "src/tools/smart_plan.ts",
+      "functions": [
+        "handleSmartPlan",
+        "object",
+        "string",
+        "min",
+        "enum",
+        "default",
+        "array",
+        "optional",
+        "number",
+        "max",
+        "now",
+        "parse",
+        "toISOString",
+        "split",
+        "round",
+        "reduce"
+      ],
+      "externalDependencies": [
+        "zod",
+        "@modelcontextprotocol/sdk/types.js"
+      ],
+      "zodSchemas": "Yes",
+      "businessLogic": [
+        "Business Value Calculation",
+        "Schema Validation",
+        "Timestamp Generation",
+        "Mathematical Calculations"
+      ]
+    },
+    "smart_orchestrate": {
+      "file": "src/tools/smart_orchestrate.ts",
+      "functions": [
+        "generateEnhancedWorkflowPhases",
+        "generateNextSteps",
+        "handleSmartOrchestrate",
+        "object",
+        "string",
+        "min",
+        "array",
+        "optional",
+        "default",
+        "number",
+        "boolean",
+        "enum",
+        "record",
+        "unknown",
+        "includes",
+        "push",
+        "filter",
+        "forEach",
+        "join",
+        "now",
+        "parse",
+        "toISOString",
+        "setContext",
+        "gatherKnowledge",
+        "toUpperCase",
+        "executeWorkflow",
+        "getBusinessValue",
+        "generateContextInsights",
+        "round"
+      ],
+      "externalDependencies": [
+        "zod",
+        "@modelcontextprotocol/sdk/types.js",
+        "../core/mcp-coordinator.js"
+      ],
+      "zodSchemas": "Yes",
+      "businessLogic": [
+        "Business Value Calculation",
+        "Schema Validation",
+        "Timestamp Generation",
+        "Mathematical Calculations"
+      ]
+    },
+    "smart_finish": {
+      "file": "src/tools/smart_finish.ts",
+      "functions": [
+        "handleSmartFinish",
+        "generateNextSteps",
+        "object",
+        "string",
+        "min",
+        "array",
+        "number",
+        "max",
+        "default",
+        "optional",
+        "boolean",
+        "now",
+        "parse",
+        "cwd",
+        "fill",
+        "map",
+        "all",
+        "runSecurityScan",
+        "resolve",
+        "runStaticAnalysis",
+        "random",
+        "generateScorecard",
+        "toISOString",
+        "push"
+      ],
+      "externalDependencies": [
+        "zod",
+        "@modelcontextprotocol/sdk/types.js",
+        "../core/security-scanner.js",
+        "../core/static-analyzer.js",
+        "../core/quality-scorecard.js"
+      ],
+      "zodSchemas": "Yes",
+      "businessLogic": [
+        "Business Value Calculation",
+        "Schema Validation",
+        "Timestamp Generation"
+      ]
+    }
+  },
+  "externalDependencies": {
+    "runtime": {
+      "@modelcontextprotocol/sdk": "^0.4.0",
+      "zod": "^3.22.0"
+    },
+    "devDependencies": {
+      "@types/node": "^20.0.0",
+      "@typescript-eslint/eslint-plugin": "^8.42.0",
+      "@typescript-eslint/parser": "^8.42.0",
+      "@vitest/coverage-v8": "^3.2.4",
+      "eslint": "^8.0.0",
+      "eslint-config-prettier": "^10.1.8",
+      "eslint-plugin-prettier": "^5.5.4",
+      "lint-staged": "^16.1.6",
+      "pre-commit": "^1.0.10",
+      "prettier": "^3.6.2",
+      "retire": "^5.3.0",
+      "ts-node": "^10.9.0",
+      "typescript": "^5.0.0",
+      "vitest": "^3.2.4"
+    },
+    "scripts": {
+      "build": "tsc",
+      "start": "node dist/server.js",
+      "dev": "ts-node src/server.ts",
+      "test": "vitest run",
+      "test:watch": "vitest",
+      "test:coverage": "vitest run --coverage",
+      "test:changed": "vitest run --coverage --reporter=verbose",
+      "test:real-world": "npm run build && npm test -- src/integration/real_world_workflow.test.ts",
+      "test:report": "node scripts/run-test-and-report.js",
+      "test:report:open": "node scripts/run-test-and-report.js && start test-report.html",
+      "test:detailed": "node scripts/generate-detailed-report.js",
+      "test:detailed:open": "node scripts/generate-detailed-report.js && start detailed-test-report.html",
+      "test:html": "npm run build && npm test -- src/integration/html_generation.test.ts",
+      "test:html:report": "node scripts/generate-html-analysis-report.js",
+      "test:html:open": "node scripts/generate-html-analysis-report.js && start html-analysis-report.html",
+      "test:mcp": "npm run build && npx vitest run src/integration/mcp_stdio_test.ts",
+      "test:mcp:html": "npm run build && npx vitest run src/integration/mcp_html_generation_test.ts",
+      "lint": "eslint src/**/*.ts --fix",
+      "lint:check": "eslint src/**/*.ts",
+      "format": "prettier --write \"src/**/*.{ts,js,json,md}\"",
+      "format:check": "prettier --check \"src/**/*.{ts,js,json,md}\"",
+      "type-check": "tsc --noEmit",
+      "pre-commit": "lint-staged",
+      "pre-commit:install": "pre-commit install",
+      "pre-commit:update": "pre-commit autoupdate",
+      "pre-commit:run": "pre-commit run --all-files",
+      "qa:check": "node scripts/qa-check.js",
+      "qa:eslint": "npm run lint:check",
+      "qa:typescript": "npm run type-check",
+      "qa:format": "npm run format:check",
+      "qa:tests": "npm run test:coverage",
+      "qa:all": "npm run qa:eslint && npm run qa:typescript && npm run qa:format && npm run qa:tests",
+      "early-check": "node scripts/early-quality-check.js",
+      "security:scan": "gitleaks detect --source . --verbose",
+      "security:osv": "osv-scanner -r .",
+      "security:semgrep": "semgrep --config=auto --config=p/owasp-top-ten .",
+      "docker:build": "docker build -t smart-mcp .",
+      "docker:dev": "docker-compose up -d",
+      "docker:test": "docker-compose exec app npm test",
+      "deploy:prod": "node scripts/deploy.js",
+      "deploy:docker": "docker-compose -f docker-compose.yml up -d",
+      "deploy:local": "node scripts/deploy-local.js",
+      "deploy:stop": "docker-compose down",
+      "deploy:logs": "docker-compose logs -f",
+      "deploy:health": "curl -f http://localhost:8080/health || exit 1",
+      "deploy:status": "docker ps --filter name=tappmcp-smart-mcp --format \"table {{.Names}}\\t{{.Status}}\\t{{.Ports}}\"",
+      "deploy:monitor": "docker stats tappmcp-smart-mcp-1 --no-stream",
+      "deploy:rollback": "node scripts/rollback.js"
+    }
+  },
+  "functionCallTree": {
+    "handleSmart_begin": {
+      "tool": "smart_begin",
+      "functions": [
+        "generateProjectStructure",
+        "generateQualityGates",
+        "generateNextSteps",
+        "calculateBusinessValue",
+        "handleSmartBegin",
+        "object",
+        "string",
+        "min",
+        "optional",
+        "array",
+        "default",
+        "enum",
+        "number",
+        "includes",
+        "push",
+        "now",
+        "parse",
+        "toLowerCase",
+        "replace",
+        "toISOString"
+      ],
+      "externalDependencies": [
+        "zod",
+        "@modelcontextprotocol/sdk/types.js"
+      ],
+      "businessLogic": [
+        "Business Value Calculation",
+        "Schema Validation",
+        "Timestamp Generation"
+      ]
+    },
+    "handleSmart_write": {
+      "tool": "smart_write",
+      "functions": [
+        "generateRealCode",
+        "with",
+        "for",
+        "generated",
+        "handleSmartWrite",
+        "object",
+        "string",
+        "min",
+        "enum",
+        "default",
+        "array",
+        "optional",
+        "number",
+        "max",
+        "toLowerCase",
+        "replace",
+        "split",
+        "filter",
+        "includes",
+        "join",
+        "trim",
+        "toISOString",
+        "toBe",
+        "toContain",
+        "toBeDefined",
+        "now",
+        "toBeLessThan",
+        "parse"
+      ],
+      "externalDependencies": [
+        "zod",
+        "@modelcontextprotocol/sdk/types.js",
+        "vitest",
+        "./${featureName}"
+      ],
+      "businessLogic": [
+        "Code Generation",
+        "AI Reasoning",
+        "Quality Assessment",
+        "Business Value Calculation",
+        "Schema Validation",
+        "Timestamp Generation"
+      ]
+    },
+    "handleSmart_plan": {
+      "tool": "smart_plan",
+      "functions": [
+        "handleSmartPlan",
+        "object",
+        "string",
+        "min",
+        "enum",
+        "default",
+        "array",
+        "optional",
+        "number",
+        "max",
+        "now",
+        "parse",
+        "toISOString",
+        "split",
+        "round",
+        "reduce"
+      ],
+      "externalDependencies": [
+        "zod",
+        "@modelcontextprotocol/sdk/types.js"
+      ],
+      "businessLogic": [
+        "Business Value Calculation",
+        "Schema Validation",
+        "Timestamp Generation",
+        "Mathematical Calculations"
+      ]
+    },
+    "handleSmart_orchestrate": {
+      "tool": "smart_orchestrate",
+      "functions": [
+        "generateEnhancedWorkflowPhases",
+        "generateNextSteps",
+        "handleSmartOrchestrate",
+        "object",
+        "string",
+        "min",
+        "array",
+        "optional",
+        "default",
+        "number",
+        "boolean",
+        "enum",
+        "record",
+        "unknown",
+        "includes",
+        "push",
+        "filter",
+        "forEach",
+        "join",
+        "now",
+        "parse",
+        "toISOString",
+        "setContext",
+        "gatherKnowledge",
+        "toUpperCase",
+        "executeWorkflow",
+        "getBusinessValue",
+        "generateContextInsights",
+        "round"
+      ],
+      "externalDependencies": [
+        "zod",
+        "@modelcontextprotocol/sdk/types.js",
+        "../core/mcp-coordinator.js"
+      ],
+      "businessLogic": [
+        "Business Value Calculation",
+        "Schema Validation",
+        "Timestamp Generation",
+        "Mathematical Calculations"
+      ]
+    },
+    "handleSmart_finish": {
+      "tool": "smart_finish",
+      "functions": [
+        "handleSmartFinish",
+        "generateNextSteps",
+        "object",
+        "string",
+        "min",
+        "array",
+        "number",
+        "max",
+        "default",
+        "optional",
+        "boolean",
+        "now",
+        "parse",
+        "cwd",
+        "fill",
+        "map",
+        "all",
+        "runSecurityScan",
+        "resolve",
+        "runStaticAnalysis",
+        "random",
+        "generateScorecard",
+        "toISOString",
+        "push"
+      ],
+      "externalDependencies": [
+        "zod",
+        "@modelcontextprotocol/sdk/types.js",
+        "../core/security-scanner.js",
+        "../core/static-analyzer.js",
+        "../core/quality-scorecard.js"
+      ],
+      "businessLogic": [
+        "Business Value Calculation",
+        "Schema Validation",
+        "Timestamp Generation"
+      ]
+    }
+  },
+  "executionFlow": {
+    "step1": "MCP Client sends JSON-RPC request via stdio",
+    "step2": "Server receives request and validates with Zod schemas",
+    "step3": "Tool handler function is called with validated parameters",
+    "step4": "Business logic executes (code generation, analysis, etc.)",
+    "step5": "External tools and libraries are called as needed",
+    "step6": "Response is formatted and returned via stdio",
+    "step7": "Health server provides monitoring and status endpoints"
+  }
+}

@@ -2,7 +2,7 @@
 
 /**
  * MCP Stdio Client Test
- * 
+ *
  * This script tests the deployed TappMCP Docker container by communicating
  * via stdio with the MCP server running inside the container.
  */
@@ -20,7 +20,7 @@ class MCPClient {
   async connect() {
     return new Promise((resolve, reject) => {
       console.log('🔌 Connecting to MCP server via stdio...');
-      
+
       // Connect to the MCP server via stdio
       this.process = spawn('docker', ['exec', '-i', 'tappmcp-smart-mcp-1', 'node', 'dist/server.js'], {
         stdio: ['pipe', 'pipe', 'pipe']
@@ -79,7 +79,7 @@ class MCPClient {
     if (message.id && this.pendingRequests.has(message.id)) {
       const { resolve, reject } = this.pendingRequests.get(message.id);
       this.pendingRequests.delete(message.id);
-      
+
       if (message.error) {
         reject(new Error(message.error.message || 'MCP Error'));
       } else {
@@ -92,11 +92,11 @@ class MCPClient {
     return new Promise((resolve, reject) => {
       const id = this.messageId++;
       message.id = id;
-      
+
       this.pendingRequests.set(id, { resolve, reject });
-      
+
       this.process.stdin.write(JSON.stringify(message) + '\n');
-      
+
       // Timeout after 30 seconds
       setTimeout(() => {
         if (this.pendingRequests.has(id)) {
@@ -110,7 +110,7 @@ class MCPClient {
   async callTool(toolName, arguments_) {
     console.log(`🔧 Calling MCP Tool: ${toolName}`);
     console.log(`📝 Arguments:`, JSON.stringify(arguments_, null, 2));
-    
+
     const result = await this.sendMessage({
       jsonrpc: '2.0',
       method: 'tools/call',
@@ -119,7 +119,7 @@ class MCPClient {
         arguments: arguments_
       }
     });
-    
+
     console.log(`✅ MCP Response:`, JSON.stringify(result, null, 2));
     return result;
   }
@@ -135,7 +135,7 @@ class MCPClient {
 // Test functions
 async function testMCPConnection() {
   console.log('\n🧪 Testing: MCP Stdio Connection');
-  
+
   const client = new MCPClient();
   try {
     await client.connect();
@@ -149,7 +149,7 @@ async function testMCPConnection() {
 
 async function testProjectInitialization(client) {
   console.log('\n🧪 Testing: Project Initialization via MCP');
-  
+
   try {
     const result = await client.callTool('smart_begin', {
       projectName: 'HTML Test Project',
@@ -158,7 +158,7 @@ async function testProjectInitialization(client) {
       targetUsers: ['developer'],
       businessGoals: ['test html generation', 'validate mcp deployment']
     });
-    
+
     if (result.success) {
       console.log('✅ Project initialized successfully');
       console.log(`📊 Project ID: ${result.data.projectId}`);
@@ -177,7 +177,7 @@ async function testProjectInitialization(client) {
 
 async function testHTMLGeneration(client, projectId) {
   console.log('\n🧪 Testing: HTML Generation via MCP');
-  
+
   try {
     const result = await client.callTool('smart_write', {
       projectId: projectId,
@@ -196,13 +196,13 @@ async function testHTMLGeneration(client, projectId) {
         securityLevel: 'medium'
       }
     });
-    
+
     if (result.success) {
       console.log('✅ HTML generation successful');
       console.log(`📊 Files Created: ${result.data.generatedCode?.files?.length || 'N/A'}`);
       console.log(`📏 Lines Generated: ${result.data.technicalMetrics?.linesGenerated || 'N/A'}`);
       console.log(`⏱️ Response Time: ${result.data.technicalMetrics?.responseTime || 'N/A'}ms`);
-      
+
       // Display thought process if available
       if (result.data.thoughtProcess) {
         console.log('\n🧠 TappMCP Thought Process:');
@@ -212,14 +212,14 @@ async function testHTMLGeneration(client, projectId) {
         console.log(`   - Approach: ${result.data.thoughtProcess.step3_generation?.chosenApproach || 'N/A'}`);
         console.log(`   - Requirements Met: ${result.data.thoughtProcess.step4_validation?.requirementsCheck?.filter(check => check.includes('✅')).length || 0}/${result.data.thoughtProcess.step4_validation?.requirementsCheck?.length || 0}`);
       }
-      
+
       // Analyze generated HTML
       const generatedCode = result.data.generatedCode;
       if (generatedCode && generatedCode.files) {
-        const htmlFile = generatedCode.files.find(file => 
+        const htmlFile = generatedCode.files.find(file =>
           file.path.endsWith('.html') || file.type === 'html' || file.content.includes('<html')
         );
-        
+
         if (htmlFile) {
           console.log('\n📄 Generated HTML Analysis:');
           console.log(`   - File Path: ${htmlFile.path}`);
@@ -230,11 +230,11 @@ async function testHTMLGeneration(client, projectId) {
           console.log(`   - Has "I'm the best": ${htmlFile.content.includes("I'm the best") ? '✅' : '❌'}`);
           console.log(`   - Has DOCTYPE: ${htmlFile.content.includes('<!DOCTYPE') ? '✅' : '❌'}`);
           console.log(`   - Has CSS: ${htmlFile.content.includes('<style') ? '✅' : '❌'}`);
-          
+
           // Save the generated HTML for inspection
           fs.writeFileSync('deployed-mcp-generated.html', htmlFile.content);
           console.log('💾 Generated HTML saved to: deployed-mcp-generated.html');
-          
+
           return { success: true, htmlFile };
         } else {
           console.log('❌ No HTML file found in generated code');
@@ -258,39 +258,39 @@ async function testHTMLGeneration(client, projectId) {
 async function runTests() {
   console.log('🚀 Starting MCP Deployed Server Tests (Stdio)');
   console.log('==============================================');
-  
+
   const results = {
     connection: false,
     projectInit: false,
     htmlGeneration: false
   };
-  
+
   let client = null;
   let projectId = null;
-  
+
   try {
     // Test 1: Connection
     const connectionResult = await testMCPConnection();
     results.connection = connectionResult.success;
     client = connectionResult.client;
-    
+
     if (!results.connection) {
       throw new Error('Failed to connect to MCP server');
     }
-    
+
     // Test 2: Project Initialization
     const initResult = await testProjectInitialization(client);
     results.projectInit = initResult.success;
     projectId = initResult.projectId;
-    
+
     if (!results.projectInit) {
       throw new Error('Failed to initialize project');
     }
-    
+
     // Test 3: HTML Generation
     const htmlResult = await testHTMLGeneration(client, projectId);
     results.htmlGeneration = htmlResult.success;
-    
+
   } catch (error) {
     console.error('❌ Test execution failed:', error.message);
   } finally {
@@ -298,21 +298,21 @@ async function runTests() {
       await client.disconnect();
     }
   }
-  
+
   // Summary
   console.log('\n📊 Test Results Summary');
   console.log('========================');
   console.log(`MCP Connection: ${results.connection ? '✅ PASS' : '❌ FAIL'}`);
   console.log(`Project Initialization: ${results.projectInit ? '✅ PASS' : '❌ FAIL'}`);
   console.log(`HTML Generation: ${results.htmlGeneration ? '✅ PASS' : '❌ FAIL'}`);
-  
+
   const passCount = Object.values(results).filter(Boolean).length;
   const totalCount = Object.keys(results).length;
   const score = Math.round((passCount / totalCount) * 100);
-  
+
   console.log(`\nOverall Score: ${score}% (${passCount}/${totalCount} tests passed)`);
   console.log('Grade:', score >= 90 ? 'A' : score >= 80 ? 'B' : score >= 70 ? 'C' : score >= 60 ? 'D' : 'F');
-  
+
   if (results.htmlGeneration) {
     console.log('\n🎉 HTML Generation Test PASSED!');
     console.log('📄 Check the generated HTML file: deployed-mcp-generated.html');

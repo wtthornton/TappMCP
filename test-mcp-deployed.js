@@ -2,7 +2,7 @@
 
 /**
  * Simple MCP Deployed Server Test
- * 
+ *
  * This script tests the deployed TappMCP Docker container by making
  * direct HTTP requests to test HTML generation capabilities.
  */
@@ -90,7 +90,7 @@ async function testMCPTools() {
 
 async function testHTMLGeneration() {
   console.log('\n🧪 Testing: HTML Generation via MCP');
-  
+
   try {
     // Test project initialization
     console.log('📝 Step 1: Initializing project...');
@@ -101,21 +101,21 @@ async function testHTMLGeneration() {
       targetUsers: ['developer'],
       businessGoals: ['test html generation']
     });
-    
+
     console.log(`✅ Project initialization: ${beginResult.status}`);
     console.log(`📊 Project data:`, JSON.stringify(beginResult.data, null, 2));
-    
+
     if (beginResult.status !== 200 || !beginResult.data.success) {
       console.log('❌ Project initialization failed');
       return false;
     }
-    
+
     const projectId = beginResult.data.data?.projectId;
     if (!projectId) {
       console.log('❌ No project ID returned');
       return false;
     }
-    
+
     // Test HTML generation
     console.log('📝 Step 2: Generating HTML page...');
     const writeResult = await makeRequest('/mcp/smart_write', 'POST', {
@@ -125,22 +125,22 @@ async function testHTMLGeneration() {
       codeType: 'component',
       techStack: ['html', 'css', 'javascript']
     });
-    
+
     console.log(`✅ HTML generation: ${writeResult.status}`);
     console.log(`📊 Generated code:`, JSON.stringify(writeResult.data, null, 2));
-    
+
     if (writeResult.status !== 200 || !writeResult.data.success) {
       console.log('❌ HTML generation failed');
       return false;
     }
-    
+
     // Analyze generated HTML
     const generatedCode = writeResult.data.data?.generatedCode;
     if (generatedCode && generatedCode.files) {
-      const htmlFile = generatedCode.files.find(file => 
+      const htmlFile = generatedCode.files.find(file =>
         file.path.endsWith('.html') || file.type === 'html' || file.content.includes('<html')
       );
-      
+
       if (htmlFile) {
         console.log('📄 Generated HTML file found:');
         console.log(`   - Path: ${htmlFile.path}`);
@@ -149,12 +149,12 @@ async function testHTMLGeneration() {
         console.log(`   - Has Footer: ${htmlFile.content.includes('<footer') ? '✅' : '❌'}`);
         console.log(`   - Has Body: ${htmlFile.content.includes('<body') ? '✅' : '❌'}`);
         console.log(`   - Has "I'm the best": ${htmlFile.content.includes("I'm the best") ? '✅' : '❌'}`);
-        
+
         // Save the generated HTML for inspection
         const fs = require('fs');
         fs.writeFileSync('deployed-mcp-generated.html', htmlFile.content);
         console.log('💾 Generated HTML saved to: deployed-mcp-generated.html');
-        
+
         return true;
       } else {
         console.log('❌ No HTML file found in generated code');
@@ -164,7 +164,7 @@ async function testHTMLGeneration() {
       console.log('❌ No generated code found in response');
       return false;
     }
-    
+
   } catch (error) {
     console.log(`❌ HTML generation test failed: ${error.message}`);
     return false;
@@ -175,32 +175,32 @@ async function testHTMLGeneration() {
 async function runTests() {
   console.log('🚀 Starting MCP Deployed Server Tests');
   console.log('=====================================');
-  
+
   const results = {
     health: false,
     tools: false,
     htmlGeneration: false
   };
-  
+
   // Run tests
   results.health = await testHealthEndpoint();
   results.tools = await testMCPTools();
   results.htmlGeneration = await testHTMLGeneration();
-  
+
   // Summary
   console.log('\n📊 Test Results Summary');
   console.log('========================');
   console.log(`Health Endpoint: ${results.health ? '✅ PASS' : '❌ FAIL'}`);
   console.log(`Tools Discovery: ${results.tools ? '✅ PASS' : '❌ FAIL'}`);
   console.log(`HTML Generation: ${results.htmlGeneration ? '✅ PASS' : '❌ FAIL'}`);
-  
+
   const passCount = Object.values(results).filter(Boolean).length;
   const totalCount = Object.keys(results).length;
   const score = Math.round((passCount / totalCount) * 100);
-  
+
   console.log(`\nOverall Score: ${score}% (${passCount}/${totalCount} tests passed)`);
   console.log('Grade:', score >= 90 ? 'A' : score >= 80 ? 'B' : score >= 70 ? 'C' : score >= 60 ? 'D' : 'F');
-  
+
   if (results.htmlGeneration) {
     console.log('\n🎉 HTML Generation Test PASSED!');
     console.log('📄 Check the generated HTML file: deployed-mcp-generated.html');

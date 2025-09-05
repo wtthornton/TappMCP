@@ -1,0 +1,43 @@
+{
+  "timestamp": "2025-09-05T04:55:09.892Z",
+  "testRun": {
+    "id": "mcp_client_test_1757048109893",
+    "startTime": 1757048109893,
+    "endTime": 1757048110334,
+    "duration": 441
+  },
+  "functionCalls": [
+    {
+      "functionName": "smart_begin",
+      "inputParams": {
+        "projectName": "mcp-client-test",
+        "projectType": "web",
+        "description": "Test project for MCP client HTML generation"
+      },
+      "startTime": 1757048109897,
+      "endTime": 1757048110333,
+      "duration": 436,
+      "response": "\n",
+      "error": null
+    }
+  ],
+  "responses": [
+    {
+      "functionName": "smart_begin",
+      "response": "\n",
+      "duration": 436,
+      "timestamp": "2025-09-05T04:55:10.333Z"
+    }
+  ],
+  "aiReasoning": [],
+  "qualityMetrics": [],
+  "errors": [
+    {
+      "timestamp": "2025-09-05T04:55:10.334Z",
+      "functionName": "testMCPClientHTMLGeneration",
+      "error": "Could not extract project ID from smart_begin response",
+      "stack": "Error: Could not extract project ID from smart_begin response\n    at testMCPClientHTMLGeneration (C:\\cursor\\TappMCP\\test-mcp-client-proper.js:238:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async runMCPClientTest (C:\\cursor\\TappMCP\\test-mcp-client-proper.js:447:18)"
+    }
+  ],
+  "generatedFiles": []
+}
