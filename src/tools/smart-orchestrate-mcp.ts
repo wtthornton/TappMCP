@@ -254,7 +254,7 @@ export class SmartOrchestrateMCPTool extends MCPTool<
 
     // Gather external knowledge if enabled
     const externalIntegrationStart = Date.now();
-    let _externalKnowledge = null;
+    let externalKnowledge = null;
     const mcpStatus = {
       context7Status: externalSources?.useContext7 ? 'active' : 'disabled',
       webSearchStatus: externalSources?.useWebSearch ? 'active' : 'disabled',
@@ -268,7 +268,7 @@ export class SmartOrchestrateMCPTool extends MCPTool<
       externalSources?.useMemory
     ) {
       try {
-        _externalKnowledge = await this.mcpCoordinator.gatherKnowledge({
+        externalKnowledge = await this.mcpCoordinator.gatherKnowledge({
           projectId: businessContext.projectId,
           businessRequest: request,
           domain: businessContext.marketContext?.industry ?? 'technology',

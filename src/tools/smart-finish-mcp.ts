@@ -139,9 +139,9 @@ export type SmartFinishOutput = z.infer<typeof SmartFinishOutputSchema>;
  * performance monitoring, and standardized patterns.
  */
 export class SmartFinishMCPTool extends MCPTool<SmartFinishInput, SmartFinishOutput> {
-  private _securityScanner?: SecurityScanner;
-  private _staticAnalyzer?: StaticAnalyzer;
-  private _qualityScorecardGenerator?: QualityScorecardGenerator;
+  private _securityScanner?: SecurityScanner; // TODO: Implement security scanning
+  private _staticAnalyzer?: StaticAnalyzer; // TODO: Implement static analysis
+  private _qualityScorecardGenerator?: QualityScorecardGenerator; // TODO: Implement quality scorecard
 
   constructor() {
     super(config);
@@ -217,9 +217,9 @@ export class SmartFinishMCPTool extends MCPTool<SmartFinishInput, SmartFinishOut
    */
   private async initializeScanners(): Promise<void> {
     const projectPath = process.cwd();
-    this._securityScanner = new SecurityScanner(projectPath);
-    this._staticAnalyzer = new StaticAnalyzer(projectPath);
-    this._qualityScorecardGenerator = new QualityScorecardGenerator();
+    // this._securityScanner = new SecurityScanner(projectPath); // TODO: Implement
+    // this._staticAnalyzer = new StaticAnalyzer(projectPath); // TODO: Implement
+    // this._qualityScorecardGenerator = new QualityScorecardGenerator(); // TODO: Implement
   }
 
   /**
@@ -640,7 +640,7 @@ export async function handleSmartFinish(input: unknown): Promise<{
   return {
     success: result.success,
     data: result.data,
-    error: result.error ?? undefined,
+    ...(result.error && { error: result.error }),
     timestamp: result.metadata.timestamp,
   };
 }

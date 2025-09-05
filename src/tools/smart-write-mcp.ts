@@ -713,7 +713,7 @@ See the examples directory for more detailed usage examples.`;
    */
   private generateDocumentation(
     featureDescription: string,
-    language: string,
+    _language: string,
     codeType: string
   ): SmartWriteOutput['generatedCode']['documentation'] {
     return {
@@ -910,7 +910,7 @@ export async function handleSmartWrite(input: unknown): Promise<{
   return {
     success: result.success,
     data: result.data,
-    error: result.error ?? undefined,
+    ...(result.error && { error: result.error }),
     timestamp: result.metadata.timestamp,
   };
 }

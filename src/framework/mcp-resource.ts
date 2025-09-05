@@ -92,7 +92,7 @@ export abstract class MCPResource<TConnection = any, TData = any> {
   /**
    * Get a connection from the pool
    */
-  async getConnection(): Promise<TConnection> {
+  protected async getConnection(): Promise<TConnection> {
     if (!this.isInitialized) {
       await this.initialize();
     }

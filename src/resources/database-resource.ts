@@ -549,7 +549,7 @@ export class DatabaseResource extends MCPResource {
   /**
    * Get connection from pool
    */
-  private async getConnection(): Promise<any> {
+  protected async getConnection(): Promise<any> {
     if (this.connectionPool.length > 0) {
       return this.connectionPool.pop()!;
     }

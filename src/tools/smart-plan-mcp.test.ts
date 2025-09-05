@@ -631,6 +631,7 @@ describe('SmartPlanMCPTool', () => {
         planType: 'development',
         externalMCPs: [],
         scope: {
+          features: ['basic functionality', 'user interface'],
           resources: {
             teamSize: 2,
             budget: 10000, // Low budget

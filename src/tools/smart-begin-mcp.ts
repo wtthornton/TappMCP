@@ -349,7 +349,7 @@ export async function handleSmartBegin(input: unknown): Promise<{
   return {
     success: result.success,
     data: result.data,
-    error: result.error || undefined,
+    ...(result.error && { error: result.error }),
     timestamp: result.metadata.timestamp,
   };
 }

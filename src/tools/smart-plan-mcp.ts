@@ -835,9 +835,7 @@ export class SmartPlanMCPTool extends MCPTool<SmartPlanInput, SmartPlanOutput> {
    */
   private calculateTimeline(
     phases: SmartPlanOutput['projectPlan']['phases'],
-    timelineInput?: SmartPlanInput['scope'] extends { timeline: any }
-      ? SmartPlanInput['scope']['timeline']
-      : undefined
+    timelineInput?: { startDate?: string; endDate?: string; duration?: number }
   ): SmartPlanOutput['projectPlan']['timeline'] {
     const totalDuration = phases.reduce((sum, phase) => sum + phase.duration, 0);
     const startDate = timelineInput?.startDate ?? this.getDateString(0);
@@ -861,10 +859,8 @@ export class SmartPlanMCPTool extends MCPTool<SmartPlanInput, SmartPlanOutput> {
    * Allocate resources
    */
   private allocateResources(
-    resourcesInput?: SmartPlanInput['scope'] extends { resources: any }
-      ? SmartPlanInput['scope']['resources']
-      : undefined,
-    _duration: number,
+    resourcesInput?: { teamSize?: number; budget?: number; externalTools?: string[] },
+    _duration?: number,
     _businessContext?: SmartPlanInput['businessContext']
   ): SmartPlanOutput['projectPlan']['resources'] {
     const teamSize = resourcesInput?.teamSize ?? 3;
@@ -927,7 +923,7 @@ export class SmartPlanMCPTool extends MCPTool<SmartPlanInput, SmartPlanOutput> {
    */
   private defineQualityRequirements(
     qualityRequirements?: SmartPlanInput['qualityRequirements'],
-    _planType: string
+    _planType?: string
   ): SmartPlanOutput['projectPlan']['quality'] {
     const testCoverage = qualityRequirements?.testCoverage ?? 85;
     const securityLevel = qualityRequirements?.securityLevel ?? 'medium';
@@ -1027,12 +1023,12 @@ export class SmartPlanMCPTool extends MCPTool<SmartPlanInput, SmartPlanOutput> {
     projectPlan: SmartPlanOutput['projectPlan']
   ): SmartPlanOutput['businessValue'] {
     const budget = projectPlan.resources.budget.total;
-    const _duration = projectPlan.timeline.totalDuration;
+    const duration = projectPlan.timeline.totalDuration;
 
     // Calculate ROI based on plan type and duration
     let expectedSavings = 0;
     const developmentCost = budget;
-    const maintenanceCost = budget * 0.2; // 20% of development cost
+    const maintenanceCost = budget * 0.2 * (duration / 30); // 20% of development cost, adjusted for duration
 
     switch (input.planType) {
       case 'development':
@@ -1181,7 +1177,7 @@ export async function handleSmartPlan(input: unknown): Promise<{
   return {
     success: result.success,
     data: result.data,
-    error: result.error ?? undefined,
+    ...(result.error && { error: result.error }),
     timestamp: result.metadata.timestamp,
   };
 }

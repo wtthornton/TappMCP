@@ -403,8 +403,15 @@ describe('SmartOrchestrateMCPTool', () => {
           qualityLevel: 'standard' as const,
           businessContext: {
             projectId: 'data-pipeline',
+            businessGoals: [],
+            success: { metrics: [], criteria: [] },
+            requirements: [],
+            stakeholders: [],
+            constraints: {}
           },
         },
+        workflow: 'standard',
+        externalSources: []
       };
 
       const result = await tool.execute(input);
@@ -461,8 +468,15 @@ describe('SmartOrchestrateMCPTool', () => {
           qualityLevel: 'standard' as const,
           businessContext: {
             projectId: 'ecommerce-platform',
+            businessGoals: [],
+            success: { metrics: [], criteria: [] },
+            requirements: [],
+            stakeholders: [],
+            constraints: {}
           },
         },
+        workflow: 'standard',
+        externalSources: []
       };
 
       const startTime = Date.now();
