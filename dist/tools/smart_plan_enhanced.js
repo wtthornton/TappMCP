@@ -130,7 +130,7 @@ async function handleSmartPlan(input) {
         const mcpCoordinator = new mcp_coordinator_js_1.MCPCoordinator();
         // Gather external knowledge if requested (Phase 2A requirement)
         let externalKnowledge = [];
-        let integrationStartTime = Date.now();
+        const integrationStartTime = Date.now();
         if (validatedInput.externalSources) {
             const knowledgeRequest = {
                 projectId: validatedInput.projectId,

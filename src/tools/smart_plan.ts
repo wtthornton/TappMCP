@@ -371,8 +371,8 @@ export async function handleSmartPlan(input: unknown): Promise<{
       successMetrics,
       nextSteps,
       technicalMetrics: {
-        responseTime,
-        planningTime,
+        responseTime: Math.max(1, responseTime),
+        planningTime: Math.max(1, planningTime),
         phasesPlanned: projectPlan.phases.length,
         tasksPlanned: projectPlan.phases.reduce((sum, phase) => sum + phase.tasks.length, 0),
       },

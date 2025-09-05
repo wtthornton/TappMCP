@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import type { BusinessContext, BusinessValueMetrics } from '../core/business-context-broker.js';
-import type { WorkflowResult } from '../core/orchestration-engine.js';
+import { type WorkflowResult } from '../core/orchestration-engine.js';
+import { type BusinessContext, type BusinessValueMetrics } from '../core/business-context-broker.js';
 export declare const smartOrchestrateTool: Tool;
 export declare function handleSmartOrchestrate(input: unknown): Promise<{
     success: boolean;

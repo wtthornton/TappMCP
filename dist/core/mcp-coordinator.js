@@ -209,7 +209,8 @@ class MCPCoordinator {
             // Extract key technologies/topics from the business request
             const topics = this.extractTopics(request.businessRequest, request.domain);
             // Gather documentation
-            for (const topic of topics.slice(0, 2)) { // Limit to 2 topics for performance
+            for (const topic of topics.slice(0, 2)) {
+                // Limit to 2 topics for performance
                 const docs = await this.context7.getDocumentation(topic);
                 knowledge.push(...docs.map(doc => this.transformDocumentation(doc)));
                 const examples = await this.context7.getCodeExamples(topic, 'best practices');
@@ -253,7 +254,8 @@ class MCPCoordinator {
             // Extract problems from business request
             const problems = this.extractProblems(request.businessRequest);
             // Get lessons learned
-            for (const problem of problems.slice(0, 2)) { // Limit for performance
+            for (const problem of problems.slice(0, 2)) {
+                // Limit for performance
                 const lessons = await this.memory.getLessonsLearned(request.domain, problem);
                 knowledge.push(...lessons.map(lesson => this.transformLesson(lesson)));
                 const patterns = await this.memory.getPatterns(problem, request.domain);
@@ -274,7 +276,14 @@ class MCPCoordinator {
      */
     extractTopics(businessRequest, domain) {
         // Simple extraction - in a real implementation, this could use NLP
-        const commonTech = ['API', 'database', 'authentication', 'security', 'performance', 'monitoring'];
+        const commonTech = [
+            'API',
+            'database',
+            'authentication',
+            'security',
+            'performance',
+            'monitoring',
+        ];
         const topics = [domain];
         const requestLower = businessRequest.toLowerCase();
         for (const tech of commonTech) {
@@ -458,7 +467,8 @@ class MCPCoordinator {
      */
     updatePerformanceMetrics(totalTime, resultCount) {
         // Log performance metrics for monitoring
-        if (totalTime > 8000) { // 8 second warning threshold
+        if (totalTime > 8000) {
+            // 8 second warning threshold
             console.warn(`MCP knowledge gathering took ${totalTime}ms for ${resultCount} results`);
         }
     }

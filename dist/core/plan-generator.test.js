@@ -170,7 +170,7 @@ const plan_generator_js_1 = require("./plan-generator.js");
                 (0, vitest_1.expect)(Array.isArray(gate.criteria)).toBe(true);
             });
             // Should include security-specific quality gates for high security
-            const hasSecurityGate = result.qualityGates.some((gate) =>
+            const hasSecurityGate = result.qualityGates.some((gate) => 
             // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
             gate.phase.toLowerCase().includes('security') ||
                 gate.criteria.some((criterion) => criterion.toLowerCase().includes('security')));

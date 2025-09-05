@@ -52,7 +52,7 @@ class MemoryBroker {
                     solution: `Effective solution approach for ${problem}: Start with requirements analysis, implement incrementally, test thoroughly, and monitor performance.`,
                     outcome: 'success',
                     tags: [domain.toLowerCase(), problem.toLowerCase(), 'success', 'best-practice'],
-                    dateAdded: new Date(Date.now() - (30 * 24 * 60 * 60 * 1000)), // 30 days ago
+                    dateAdded: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
                     applicability: 0.85,
                     confidence: 0.9,
                 },
@@ -65,7 +65,7 @@ class MemoryBroker {
                     solution: `Avoid these pitfalls: rushing implementation, insufficient testing, ignoring edge cases, and poor error handling.`,
                     outcome: 'failure',
                     tags: [domain.toLowerCase(), problem.toLowerCase(), 'pitfall', 'avoid'],
-                    dateAdded: new Date(Date.now() - (60 * 24 * 60 * 60 * 1000)), // 60 days ago
+                    dateAdded: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000), // 60 days ago
                     applicability: 0.75,
                     confidence: 0.8,
                 },
@@ -78,7 +78,7 @@ class MemoryBroker {
                     solution: `Performance optimizations: implement caching, optimize database queries, use async processing, and monitor bottlenecks.`,
                     outcome: 'success',
                     tags: [domain.toLowerCase(), problem.toLowerCase(), 'performance', 'optimization'],
-                    dateAdded: new Date(Date.now() - (15 * 24 * 60 * 60 * 1000)), // 15 days ago
+                    dateAdded: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000), // 15 days ago
                     applicability: 0.8,
                     confidence: 0.85,
                 },
@@ -113,11 +113,15 @@ class MemoryBroker {
                     context,
                     solution: `Implement a resolver that handles ${problem} through systematic analysis, staged implementation, and validation`,
                     consequences: ['Improved reliability', 'Reduced complexity', 'Better maintainability'],
-                    applicableScenarios: [`${context} projects`, 'enterprise applications', 'high-reliability systems'],
+                    applicableScenarios: [
+                        `${context} projects`,
+                        'enterprise applications',
+                        'high-reliability systems',
+                    ],
                     relatedPatterns: ['Error Handling Pattern', 'Validation Pattern', 'Monitoring Pattern'],
                     usageCount: 15,
                     successRate: 0.87,
-                    lastUsed: new Date(Date.now() - (7 * 24 * 60 * 60 * 1000)), // 7 days ago
+                    lastUsed: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
                 },
                 {
                     id: `pattern-${problem.replace(/\s+/g, '-')}-2`,
@@ -127,11 +131,15 @@ class MemoryBroker {
                     context,
                     solution: `Implement preventive measures including early detection, validation gates, and monitoring systems`,
                     consequences: ['Reduced incidents', 'Better user experience', 'Lower maintenance costs'],
-                    applicableScenarios: [`${context} development`, 'quality-focused projects', 'production systems'],
+                    applicableScenarios: [
+                        `${context} development`,
+                        'quality-focused projects',
+                        'production systems',
+                    ],
                     relatedPatterns: ['Validation Pattern', 'Monitoring Pattern', 'Circuit Breaker Pattern'],
                     usageCount: 23,
                     successRate: 0.92,
-                    lastUsed: new Date(Date.now() - (3 * 24 * 60 * 60 * 1000)), // 3 days ago
+                    lastUsed: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
                 },
             ];
             this.validateResponseTime(startTime, 'getPatterns');
@@ -235,7 +243,8 @@ class MemoryBroker {
             // Generate sample historical data
             const dataPoints = this.generateSampleDataPoints(metric, timeframe);
             const average = dataPoints.reduce((sum, point) => sum + point.value, 0) / dataPoints.length;
-            const variance = dataPoints.reduce((sum, point) => sum + Math.pow(point.value - average, 2), 0) / dataPoints.length;
+            const variance = dataPoints.reduce((sum, point) => sum + Math.pow(point.value - average, 2), 0) /
+                dataPoints.length;
             const data = {
                 id: `historical-${metric.replace(/\s+/g, '-')}-${timeframe}`,
                 metric,
@@ -287,7 +296,7 @@ class MemoryBroker {
      * Simulate API call with configurable delay
      */
     async simulateAPICall(delay = 100) {
-        await new Promise((resolve) => setTimeout(resolve, delay));
+        await new Promise(resolve => setTimeout(resolve, delay));
     }
     /**
      * Validate response time meets performance requirements
@@ -313,7 +322,7 @@ class MemoryBroker {
                 solution: 'Implement sliding window rate limiting with Redis backend',
                 outcome: 'success',
                 tags: ['api', 'rate-limiting', 'redis', 'performance'],
-                dateAdded: new Date(Date.now() - (90 * 24 * 60 * 60 * 1000)),
+                dateAdded: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000),
                 applicability: 0.9,
                 confidence: 0.95,
             },
@@ -330,7 +339,7 @@ class MemoryBroker {
         const baseValue = 50 + Math.random() * 50; // Base value between 50-100
         const days = timeframe.includes('month') ? 30 : timeframe.includes('week') ? 7 : 365;
         for (let i = 0; i < Math.min(days, 20); i++) {
-            const date = new Date(Date.now() - (i * 24 * 60 * 60 * 1000));
+            const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
             const value = baseValue + (Math.random() - 0.5) * 20; // Variation of ±10
             points.push({
                 date,
@@ -374,9 +383,9 @@ class MemoryBroker {
                 trendMultiplier = 1;
         }
         for (let i = 1; i <= 5; i++) {
-            const futureDate = new Date(Date.now() + (i * 7 * 24 * 60 * 60 * 1000)); // Weekly predictions
+            const futureDate = new Date(Date.now() + i * 7 * 24 * 60 * 60 * 1000); // Weekly predictions
             const predictedValue = average * Math.pow(trendMultiplier, i);
-            const confidence = Math.max(0.5, 0.9 - (i * 0.1)); // Decreasing confidence over time
+            const confidence = Math.max(0.5, 0.9 - i * 0.1); // Decreasing confidence over time
             predictions.push({
                 date: futureDate,
                 predictedValue,
@@ -440,7 +449,7 @@ class MemoryBroker {
     }
     getFallbackHistoricalData(metric, timeframe) {
         const samplePoints = [
-            { date: new Date(Date.now() - (7 * 24 * 60 * 60 * 1000)), value: 50, context: 'Sample data' },
+            { date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), value: 50, context: 'Sample data' },
             { date: new Date(), value: 55, context: 'Sample data' },
         ];
         return {
@@ -452,7 +461,11 @@ class MemoryBroker {
             average: 52.5,
             variance: 12.5,
             predictions: [
-                { date: new Date(Date.now() + (7 * 24 * 60 * 60 * 1000)), predictedValue: 55, confidence: 0.5 },
+                {
+                    date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+                    predictedValue: 55,
+                    confidence: 0.5,
+                },
             ],
         };
     }

@@ -45,10 +45,10 @@ class WebSearchBroker {
                 title: `${query} - Result ${i + 1}`,
                 url: `https://example-${i + 1}.com/article/${query.replace(/\s+/g, '-')}`,
                 snippet: `Comprehensive information about ${query}. This search result provides detailed insights and analysis relevant to your research on ${query}.`,
-                publishedDate: new Date(Date.now() - (i * 24 * 60 * 60 * 1000)), // Recent dates
+                publishedDate: new Date(Date.now() - i * 24 * 60 * 60 * 1000), // Recent dates
                 source: `Source ${i + 1}`,
-                relevanceScore: 0.95 - (i * 0.05), // Decreasing relevance
-                trustScore: 0.85 + (Math.random() * 0.1), // Random trust score
+                relevanceScore: 0.95 - i * 0.05, // Decreasing relevance
+                trustScore: 0.85 + Math.random() * 0.1, // Random trust score
             }));
             this.validateResponseTime(startTime, 'searchRelevantInfo');
             return results;
@@ -133,7 +133,7 @@ class WebSearchBroker {
                 id: `validation-${assumption.slice(0, 20).replace(/\s+/g, '-')}`,
                 assumption,
                 isValid: Math.random() > 0.3, // 70% chance of being valid
-                confidence: 0.75 + (Math.random() * 0.2), // 75-95% confidence
+                confidence: 0.75 + Math.random() * 0.2, // 75-95% confidence
                 sources,
                 supportingEvidence: [
                     `Recent studies support aspects of: ${assumption}`,
@@ -239,7 +239,7 @@ class WebSearchBroker {
      * Simulate API call with configurable delay
      */
     async simulateAPICall(delay = 200) {
-        await new Promise((resolve) => setTimeout(resolve, delay));
+        await new Promise(resolve => setTimeout(resolve, delay));
     }
     /**
      * Validate response time meets performance requirements
@@ -258,7 +258,7 @@ class WebSearchBroker {
             url: `https://fallback-example.com/${query.replace(/\s+/g, '-')}`,
             snippet: `Basic information about ${query}. Web search service unavailable.`,
             source: 'Fallback Source',
-            relevanceScore: 0.5 - (i * 0.1),
+            relevanceScore: 0.5 - i * 0.1,
             trustScore: 0.6,
         }));
     }

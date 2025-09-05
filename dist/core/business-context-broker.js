@@ -59,7 +59,7 @@ class BusinessContextBroker {
      * Preserve context during role transitions
      */
     preserveContext(transition) {
-        const projectId = transition.context.projectId;
+        const { projectId } = transition.context;
         // Store transition in role history
         const history = this.roleHistory.get(projectId) ?? [];
         history.push(transition);
@@ -109,12 +109,12 @@ class BusinessContextBroker {
         const businessGoalCount = context.businessGoals.length;
         const requirementCount = context.requirements.length;
         return {
-            costPrevention: Math.min(50000, 5000 + (businessGoalCount * 2000) + (roleTransitionCount * 1000)),
-            timesSaved: Math.min(20, 2 + (businessGoalCount * 0.5) + (roleTransitionCount * 0.3)),
-            qualityImprovement: Math.min(100, 70 + (businessGoalCount * 2) + (roleTransitionCount * 1)),
-            riskMitigation: Math.min(100, 60 + (requirementCount * 3) + (roleTransitionCount * 2)),
-            strategicAlignment: Math.min(100, 80 + (businessGoalCount * 1.5)),
-            userSatisfaction: Math.min(100, 85 + (businessGoalCount * 1) + (roleTransitionCount * 0.5)),
+            costPrevention: Math.min(50000, 5000 + businessGoalCount * 2000 + roleTransitionCount * 1000),
+            timesSaved: Math.min(20, 2 + businessGoalCount * 0.5 + roleTransitionCount * 0.3),
+            qualityImprovement: Math.min(100, 70 + businessGoalCount * 2 + roleTransitionCount * 1),
+            riskMitigation: Math.min(100, 60 + requirementCount * 3 + roleTransitionCount * 2),
+            strategicAlignment: Math.min(100, 80 + businessGoalCount * 1.5),
+            userSatisfaction: Math.min(100, 85 + businessGoalCount * 1 + roleTransitionCount * 0.5),
         };
     }
     /**
@@ -131,7 +131,7 @@ class BusinessContextBroker {
                 }
             }
         });
-        keysToRemove.forEach((key) => {
+        keysToRemove.forEach(key => {
             this.contextStore.delete(key);
             this.contextMetadata.delete(key);
         });
@@ -167,7 +167,7 @@ class BusinessContextBroker {
             issues.push('No requirements defined');
             recommendations.push('Define project requirements');
         }
-        if (!context.success || !context.success.metrics || context.success.metrics.length === 0) {
+        if (!context.success?.metrics || context.success.metrics.length === 0) {
             issues.push('No success metrics defined');
             recommendations.push('Define measurable success metrics');
         }
@@ -199,10 +199,10 @@ class BusinessContextBroker {
             };
         }
         // Calculate business alignment score
-        const businessAlignment = Math.min(100, (context.businessGoals.length * 15) +
-            (context.requirements.length * 10) +
-            (context.success.metrics.length * 20) +
-            (context.stakeholders.length * 5));
+        const businessAlignment = Math.min(100, context.businessGoals.length * 15 +
+            context.requirements.length * 10 +
+            context.success.metrics.length * 20 +
+            context.stakeholders.length * 5);
         // Calculate context richness
         const contextRichness = Math.min(100, (context.businessGoals.length > 0 ? 25 : 0) +
             (context.requirements.length > 0 ? 25 : 0) +
@@ -215,7 +215,8 @@ class BusinessContextBroker {
                 const prevTime = new Date(history[index].timestamp).getTime();
                 const currTime = new Date(transition.timestamp).getTime();
                 return acc + (currTime - prevTime);
-            }, 0) / (history.length - 1)
+            }, 0) /
+                (history.length - 1)
             : 0;
         const roleTransitionEfficiency = Math.max(0, Math.min(100, 100 - (avgTransitionTime / (5 * 60 * 1000)) * 10 // Penalty for transitions > 5 minutes
         ));

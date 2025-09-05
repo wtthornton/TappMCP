@@ -139,7 +139,11 @@ class Context7Broker {
                     description: `Performance optimization strategies for ${domain} including caching, lazy loading, and resource optimization.`,
                     category: 'performance',
                     priority: 'medium',
-                    applicableScenarios: ['high-traffic applications', 'mobile optimization', 'resource constraints'],
+                    applicableScenarios: [
+                        'high-traffic applications',
+                        'mobile optimization',
+                        'resource constraints',
+                    ],
                     benefits: ['Faster load times', 'Better user experience', 'Reduced server costs'],
                     relevanceScore: 0.87,
                 },
@@ -234,7 +238,7 @@ class Context7Broker {
      * Simulate API call with configurable delay
      */
     async simulateAPICall(delay = 150) {
-        await new Promise((resolve) => setTimeout(resolve, delay));
+        await new Promise(resolve => setTimeout(resolve, delay));
     }
     /**
      * Validate response time meets performance requirements

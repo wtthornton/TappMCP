@@ -373,7 +373,9 @@ class BusinessAnalyzer {
                     `System implements ${goal}`,
                     'Solution meets performance requirements',
                     'User experience is intuitive',
-                    ...(externalExamples.length > 0 ? [`Consider external examples: ${externalExamples[0]}`] : []),
+                    ...(externalExamples.length > 0
+                        ? [`Consider external examples: ${externalExamples[0]}`]
+                        : []),
                 ],
                 priority: index === 0 ? 'high' : 'medium',
                 estimatedEffort: this.estimateStoryEffort(goal),

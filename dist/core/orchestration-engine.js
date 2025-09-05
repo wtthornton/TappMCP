@@ -60,7 +60,7 @@ class OrchestrationEngine {
             // Execute workflow phases
             let currentRole = 'product-strategist'; // Start with strategic planning
             for (const phase of workflow.phases) {
-                const phaseStartTime = Date.now();
+                // Execute phase tasks
                 // Determine if role switch is needed
                 const nextRole = this.roleOrchestrator.determineNextRole(context, phase.description);
                 if (nextRole !== currentRole) {
@@ -220,7 +220,7 @@ class OrchestrationEngine {
             improvements.push('Optimized role assignments to reduce transitions');
         }
         // Optimize tool usage
-        optimized.phases.forEach((phase) => {
+        optimized.phases.forEach(phase => {
             const optimizedTools = this.optimizeToolUsage(phase.tools, phase.role);
             if (optimizedTools.length !== phase.tools.length ||
                 !optimizedTools.every((tool, index) => tool === phase.tools[index])) {
@@ -261,11 +261,11 @@ class OrchestrationEngine {
             phase.status = 'running';
             phase.startTime = new Date().toISOString();
             // Simulate phase execution
-            await new Promise((resolve) => setTimeout(resolve, 100 + Math.random() * 200)); // 100-300ms
+            await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200)); // 100-300ms
             // Generate deliverables based on phase type
-            const deliverables = this.generatePhaseDeliverables(phase.name, role);
+            const deliverables = this.generatePhaseDeliverables(phase.name);
             // Calculate quality metrics
-            const qualityMetrics = this.calculatePhaseQualityMetrics(phase, role, context);
+            const qualityMetrics = this.calculatePhaseQualityMetrics(phase, context, role);
             const duration = Date.now() - startTime;
             return {
                 phase: phase.name,
@@ -289,7 +289,7 @@ class OrchestrationEngine {
             };
         }
     }
-    generatePhaseDeliverables(phaseName, role) {
+    generatePhaseDeliverables(phaseName) {
         const deliverables = [];
         switch (phaseName.toLowerCase()) {
             case 'planning':
@@ -312,14 +312,18 @@ class OrchestrationEngine {
         }
         return deliverables;
     }
-    calculatePhaseQualityMetrics(phase, role, context) {
+    calculatePhaseQualityMetrics(phase, context, role) {
         const roleCapabilities = this.roleOrchestrator.getRoleCapabilities(role);
         const metrics = {};
         if (roleCapabilities) {
-            roleCapabilities.qualityGates.forEach((gate) => {
-                // Simulate quality metrics based on business context richness
+            roleCapabilities.qualityGates.forEach(gate => {
+                // Simulate quality metrics based on business context richness and phase complexity
                 const contextScore = context.businessGoals.length * 10 + context.requirements.length * 5;
-                metrics[gate] = Math.min(100, 70 + Math.random() * 25 + (contextScore > 50 ? 5 : 0));
+                const phaseComplexityScore = phase.tools.length * 5 + (phase.description.length > 100 ? 10 : 0);
+                metrics[gate] = Math.min(100, 70 +
+                    Math.random() * 25 +
+                    (contextScore > 50 ? 5 : 0) +
+                    (phaseComplexityScore > 20 ? 5 : 0));
             });
         }
         return metrics;
@@ -327,9 +331,10 @@ class OrchestrationEngine {
     calculateBusinessValue(context, phases, transitions) {
         const baseValue = this.contextBroker.getBusinessValue(context.projectId);
         // Enhance based on phase success
-        const successRate = phases.filter((phase) => phase.success).length / Math.max(phases.length, 1);
-        const transitionEfficiency = transitions.length > 0 ?
-            transitions.reduce((acc, transition) => acc + (Number(transition.preservedData.transitionTime) || 100), 0) / transitions.length : 100;
+        const successRate = phases.filter(phase => phase.success).length / Math.max(phases.length, 1);
+        const transitionEfficiency = transitions.length > 0
+            ? transitions.reduce((acc, transition) => acc + (Number(transition.preservedData.transitionTime) || 100), 0) / transitions.length
+            : 100;
         return {
             costPrevention: Math.round(baseValue.costPrevention * successRate),
             timeToMarket: Math.round(baseValue.timesSaved * successRate),
@@ -338,13 +343,15 @@ class OrchestrationEngine {
             strategicAlignment: Math.round(baseValue.strategicAlignment * successRate),
             businessScore: Math.round((baseValue.strategicAlignment +
                 (transitionEfficiency < 200 ? 10 : 0) + // Bonus for fast transitions
-                (successRate > 0.9 ? 5 : 0)) * successRate), // Bonus for high success rate
+                (successRate > 0.9 ? 5 : 0)) *
+                successRate), // Bonus for high success rate
         };
     }
     calculateTechnicalMetrics(result, executionTime) {
         const totalTransitionTime = result.roleTransitions.reduce((acc, transition) => acc + (Number(transition.preservedData.transitionTime) || 0), 0);
-        const phaseSuccessRate = result.phases.length > 0 ?
-            result.phases.filter((phase) => phase.success).length / result.phases.length : 0;
+        const phaseSuccessRate = result.phases.length > 0
+            ? result.phases.filter(phase => phase.success).length / result.phases.length
+            : 0;
         return {
             totalExecutionTime: executionTime,
             roleTransitionTime: totalTransitionTime / Math.max(result.roleTransitions.length, 1),
@@ -359,8 +366,8 @@ class OrchestrationEngine {
         const optimized = [...phases];
         optimized.sort((a, b) => {
             const order = ['planning', 'design', 'development', 'testing', 'deployment', 'monitoring'];
-            const aIndex = order.findIndex((phase) => a.name.toLowerCase().includes(phase));
-            const bIndex = order.findIndex((phase) => b.name.toLowerCase().includes(phase));
+            const aIndex = order.findIndex(phase => a.name.toLowerCase().includes(phase));
+            const bIndex = order.findIndex(phase => b.name.toLowerCase().includes(phase));
             return aIndex - bIndex;
         });
         return optimized;
@@ -369,12 +376,20 @@ class OrchestrationEngine {
         // Minimize role switches by grouping similar phases
         const optimizedRoles = [];
         let currentRole = '';
-        phases.forEach((phase) => {
-            const suggestedRole = this.roleOrchestrator.determineNextRole({ projectId: 'optimization', businessGoals: [], requirements: [], stakeholders: [],
-                constraints: {}, success: { metrics: [], criteria: [] }, timestamp: '', version: 1 }, phase.description);
+        phases.forEach(phase => {
+            const suggestedRole = this.roleOrchestrator.determineNextRole({
+                projectId: 'optimization',
+                businessGoals: [],
+                requirements: [],
+                stakeholders: [],
+                constraints: {},
+                success: { metrics: [], criteria: [] },
+                timestamp: '',
+                version: 1,
+            }, phase.description);
             // Keep current role if it's capable, reduce transitions
             const currentCapabilities = this.roleOrchestrator.getRoleCapabilities(currentRole);
-            if (currentCapabilities && currentCapabilities.phases.some((p) => phase.name.toLowerCase().includes(p))) {
+            if (currentCapabilities?.phases.some(p => phase.name.toLowerCase().includes(p))) {
                 optimizedRoles.push(currentRole);
             }
             else {
@@ -389,9 +404,9 @@ class OrchestrationEngine {
         if (!roleCapabilities)
             return tools;
         // Filter tools to only those supported by the role
-        const optimizedTools = tools.filter((tool) => roleCapabilities.tools.includes(tool));
+        const optimizedTools = tools.filter(tool => roleCapabilities.tools.includes(tool));
         // Add recommended tools for the role if missing
-        roleCapabilities.tools.forEach((recommendedTool) => {
+        roleCapabilities.tools.forEach(recommendedTool => {
             if (!optimizedTools.includes(recommendedTool)) {
                 optimizedTools.push(recommendedTool);
             }

@@ -60,7 +60,7 @@ export declare class RoleOrchestrator {
     /**
      * Determine the next role based on context and current task
      */
-    determineNextRole(context: BusinessContext, task: string): string;
+    determineNextRole(_context: BusinessContext, task: string): string;
     /**
      * Switch to a new role with context preservation
      */
