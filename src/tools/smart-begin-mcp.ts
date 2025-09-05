@@ -43,12 +43,13 @@ const SmartBeginOutputSchema = z.object({
 // MCP Tool Configuration
 const config: MCPToolConfig = {
   name: 'smart_begin',
-  description: 'Initialize a new project with proper structure, quality gates, and business context for non-technical users',
+  description:
+    'Initialize a new project with proper structure, quality gates, and business context for non-technical users',
   version: '2.0.0',
   inputSchema: SmartBeginInputSchema,
   outputSchema: SmartBeginOutputSchema,
   timeout: 30000, // 30 seconds
-  retries: 2
+  retries: 2,
 };
 
 export type SmartBeginInput = z.infer<typeof SmartBeginInputSchema>;
@@ -68,19 +69,22 @@ export class SmartBeginMCPTool extends MCPTool<SmartBeginInput, SmartBeginOutput
   /**
    * Execute the smart begin tool
    */
-  async execute(input: SmartBeginInput, context?: MCPToolContext): Promise<MCPToolResult<SmartBeginOutput>> {
-    return super.execute(input, context);
+  async execute(
+    input: SmartBeginInput,
+    _context?: MCPToolContext
+  ): Promise<MCPToolResult<SmartBeginOutput>> {
+    return super.execute(input, _context);
   }
 
   /**
    * Process the smart begin logic
    */
-  protected async executeInternal(input: SmartBeginInput, context?: MCPToolContext): Promise<SmartBeginOutput> {
+  protected async executeInternal(
+    input: SmartBeginInput,
+    _context?: MCPToolContext
+  ): Promise<SmartBeginOutput> {
     // Generate project structure
-    const projectStructure = this.generateProjectStructure(
-      input.projectName,
-      input.techStack
-    );
+    const projectStructure = this.generateProjectStructure(input.projectName, input.techStack);
 
     // Generate quality gates
     const qualityGates = this.generateQualityGates(input.techStack);
@@ -89,10 +93,7 @@ export class SmartBeginMCPTool extends MCPTool<SmartBeginInput, SmartBeginOutput
     const nextSteps = this.generateNextSteps(input.projectName, input.targetUsers);
 
     // Calculate business value
-    const businessValue = this.calculateBusinessValue(
-      input.projectName,
-      input.techStack
-    );
+    const businessValue = this.calculateBusinessValue(input.projectName, input.techStack);
 
     // Calculate technical metrics
     const technicalMetrics = this.calculateTechnicalMetrics(input.techStack);
@@ -114,7 +115,7 @@ export class SmartBeginMCPTool extends MCPTool<SmartBeginInput, SmartBeginOutput
    * Generate project structure based on tech stack
    */
   private generateProjectStructure(
-    projectName: string,
+    _projectName: string,
     techStack: string[]
   ): {
     folders: string[];
@@ -242,7 +243,7 @@ export class SmartBeginMCPTool extends MCPTool<SmartBeginInput, SmartBeginOutput
    * Calculate business value metrics
    */
   private calculateBusinessValue(
-    projectName: string,
+    _projectName: string,
     techStack: string[]
   ): {
     costPrevention: number;
@@ -348,7 +349,7 @@ export async function handleSmartBegin(input: unknown): Promise<{
   return {
     success: result.success,
     data: result.data,
-    error: result.error,
+    error: result.error || undefined,
     timestamp: result.metadata.timestamp,
   };
 }

@@ -1,5 +1,10 @@
 import { z } from 'zod';
-import { MCPTool, type MCPToolConfig, type MCPToolContext, type MCPToolResult } from '../framework/mcp-tool.js';
+import {
+  MCPTool,
+  type MCPToolConfig,
+  type MCPToolContext,
+  type MCPToolResult,
+} from '../framework/mcp-tool.js';
 import { PlanGenerator, type PlanGenerationInput } from '../core/plan-generator.js';
 import {
   MCPCoordinator,
@@ -71,10 +76,12 @@ const SmartPlanEnhancedOutputSchema = z.object({
   deliverables: z.object({
     successMetrics: z.array(z.string()),
     nextSteps: z.array(z.string()),
-    qualityTargets: z.array(z.object({
-      phase: z.string(),
-      threshold: z.string(),
-    })),
+    qualityTargets: z.array(
+      z.object({
+        phase: z.string(),
+        threshold: z.string(),
+      })
+    ),
   }),
   technicalMetrics: z.object({
     responseTime: z.number(),
@@ -118,9 +125,10 @@ type SmartPlanEnhancedInput = z.infer<typeof SmartPlanEnhancedInputSchema>;
 type SmartPlanEnhancedOutput = z.infer<typeof SmartPlanEnhancedOutputSchema>;
 
 // Tool configuration
-const config: MCPToolConfig<SmartPlanEnhancedInput, SmartPlanEnhancedOutput> = {
+const config: MCPToolConfig = {
   name: 'smart_plan_enhanced',
-  description: 'Generate comprehensive business and technical plans with advanced analysis, external MCP integration, and strategic planning capabilities',
+  description:
+    'Generate comprehensive business and technical plans with advanced analysis, external MCP integration, and strategic planning capabilities',
   version: '1.0.0',
   inputSchema: SmartPlanEnhancedInputSchema,
   outputSchema: SmartPlanEnhancedOutputSchema,
@@ -130,7 +138,10 @@ const config: MCPToolConfig<SmartPlanEnhancedInput, SmartPlanEnhancedOutput> = {
  * Smart Plan Enhanced MCP Tool
  * Generates comprehensive business and technical plans with external MCP integration
  */
-export class SmartPlanEnhancedMCPTool extends MCPTool<SmartPlanEnhancedInput, SmartPlanEnhancedOutput> {
+export class SmartPlanEnhancedMCPTool extends MCPTool<
+  SmartPlanEnhancedInput,
+  SmartPlanEnhancedOutput
+> {
   private planGenerator: PlanGenerator;
   private mcpCoordinator: MCPCoordinator;
 
@@ -143,14 +154,20 @@ export class SmartPlanEnhancedMCPTool extends MCPTool<SmartPlanEnhancedInput, Sm
   /**
    * Execute the smart plan enhanced tool
    */
-  async execute(input: SmartPlanEnhancedInput, context?: MCPToolContext): Promise<MCPToolResult<SmartPlanEnhancedOutput>> {
-    return super.execute(input, context);
+  async execute(
+    input: SmartPlanEnhancedInput,
+    _context?: MCPToolContext
+  ): Promise<MCPToolResult<SmartPlanEnhancedOutput>> {
+    return super.execute(input, _context);
   }
 
   /**
    * Process the smart plan enhanced logic
    */
-  protected async executeInternal(input: SmartPlanEnhancedInput, context?: MCPToolContext): Promise<SmartPlanEnhancedOutput> {
+  protected async executeInternal(
+    input: SmartPlanEnhancedInput,
+    _context?: MCPToolContext
+  ): Promise<SmartPlanEnhancedOutput> {
     const startTime = Date.now();
 
     // Create a copy of input to avoid modifying the original
@@ -170,7 +187,12 @@ export class SmartPlanEnhancedMCPTool extends MCPTool<SmartPlanEnhancedInput, Sm
     const integrationStartTime = Date.now();
     let integrationTime = 0;
 
-    if (inputCopy.externalSources && (inputCopy.externalSources.useContext7 || inputCopy.externalSources.useWebSearch || inputCopy.externalSources.useMemory)) {
+    if (
+      inputCopy.externalSources &&
+      (inputCopy.externalSources.useContext7 ||
+        inputCopy.externalSources.useWebSearch ||
+        inputCopy.externalSources.useMemory)
+    ) {
       const knowledgeRequest: KnowledgeRequest = {
         projectId: inputCopy.projectId,
         businessRequest: inputCopy.businessRequest,
@@ -359,7 +381,10 @@ export class SmartPlanEnhancedMCPTool extends MCPTool<SmartPlanEnhancedInput, Sm
           technicalPlanningTime: Math.min(responseTime * 0.4, 150),
           validationTime: Math.min(responseTime * 0.1, 50),
           phasesPlanned: comprehensivePlan.phases.length,
-          tasksPlanned: comprehensivePlan.phases.reduce((sum, phase) => sum + phase.tasks.length, 0),
+          tasksPlanned: comprehensivePlan.phases.reduce(
+            (sum, phase) => sum + phase.tasks.length,
+            0
+          ),
           risksIdentified: comprehensivePlan.risks.length,
           userStoriesGenerated: comprehensivePlan.userStories.length,
           componentsMapped: comprehensivePlan.architecture.components.length,

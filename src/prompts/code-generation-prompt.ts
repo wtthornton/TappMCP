@@ -1,4 +1,9 @@
-import { MCPPrompt, MCPPromptConfig, MCPPromptContext, MCPPromptResult } from '../framework/mcp-prompt.js';
+import {
+  MCPPrompt,
+  MCPPromptConfig,
+  MCPPromptContext,
+  MCPPromptResult,
+} from '../framework/mcp-prompt.js';
 import { z } from 'zod';
 
 /**
@@ -10,11 +15,17 @@ export const CodeGenerationPromptSchema = z.object({
   framework: z.string().optional().describe('Framework or library to use'),
   requirements: z.array(z.string()).optional().describe('Specific requirements or constraints'),
   context: z.string().optional().describe('Additional context or background information'),
-  style: z.enum(['functional', 'object-oriented', 'procedural']).optional().describe('Code style preference'),
-  complexity: z.enum(['simple', 'medium', 'complex']).optional().describe('Expected complexity level'),
+  style: z
+    .enum(['functional', 'object-oriented', 'procedural'])
+    .optional()
+    .describe('Code style preference'),
+  complexity: z
+    .enum(['simple', 'medium', 'complex'])
+    .optional()
+    .describe('Expected complexity level'),
   includeTests: z.boolean().optional().describe('Whether to include unit tests'),
   includeComments: z.boolean().optional().describe('Whether to include detailed comments'),
-  includeDocumentation: z.boolean().optional().describe('Whether to include JSDoc/documentation')
+  includeDocumentation: z.boolean().optional().describe('Whether to include JSDoc/documentation'),
 });
 
 export type CodeGenerationPromptInput = z.infer<typeof CodeGenerationPromptSchema>;
@@ -74,14 +85,14 @@ Generate clean, efficient, and well-structured {{language}} code that follows be
     complexity: z.enum(['simple', 'medium', 'complex']).optional(),
     includeTests: z.boolean().optional(),
     includeComments: z.boolean().optional(),
-    includeDocumentation: z.boolean().optional()
+    includeDocumentation: z.boolean().optional(),
   },
   contextSchema: CodeGenerationPromptSchema,
   cacheConfig: {
     enabled: true,
     ttl: 3600000, // 1 hour
-    maxSize: 100
-  }
+    maxSize: 100,
+  },
 };
 
 /**
@@ -95,7 +106,10 @@ export class CodeGenerationPrompt extends MCPPrompt {
   /**
    * Generate code based on input parameters
    */
-  async generateCode(input: CodeGenerationPromptInput, context?: MCPPromptContext): Promise<MCPPromptResult<string>> {
+  async generateCode(
+    input: CodeGenerationPromptInput,
+    context?: MCPPromptContext
+  ): Promise<MCPPromptResult<string>> {
     return this.generate(input, context);
   }
 
@@ -110,10 +124,7 @@ export class CodeGenerationPrompt extends MCPPrompt {
     const patternContext = {
       ...input,
       pattern,
-      requirements: [
-        ...(input.requirements || []),
-        `Implement using ${pattern} design pattern`
-      ]
+      requirements: [...(input.requirements || []), `Implement using ${pattern} design pattern`],
     };
 
     return this.generateCode(patternContext, context);
@@ -134,8 +145,8 @@ export class CodeGenerationPrompt extends MCPPrompt {
         ...(input.requirements || []),
         `Use ${testFramework} testing framework`,
         'Include edge cases and error scenarios',
-        'Achieve at least 80% test coverage'
-      ]
+        'Achieve at least 80% test coverage',
+      ],
     };
 
     return this.generateCode(testContext, context);
@@ -158,10 +169,10 @@ export class CodeGenerationPrompt extends MCPPrompt {
         'Maintain the same functionality',
         'Improve code quality',
         'Add performance optimizations where appropriate',
-        'Ensure code is maintainable and readable'
+        'Ensure code is maintainable and readable',
       ],
       includeComments: true,
-      includeDocumentation: true
+      includeDocumentation: true,
     };
 
     return this.generateCode(optimizationInput, context);

@@ -5,26 +5,28 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { z } from 'zod';
-import { MCPResource, MCPResourceFactory, type MCPResourceConfig, type MCPResourceContext } from './mcp-resource';
+import {
+  MCPResource,
+  MCPResourceFactory,
+  type MCPResourceConfig,
+  type MCPResourceContext,
+} from './mcp-resource';
 
 // Test resource implementation
 class TestMCPResource extends MCPResource<string, any> {
-  private initialized: boolean = false;
-
   constructor(config: MCPResourceConfig) {
     super(config);
   }
 
   protected async initializeInternal(): Promise<void> {
-    this.initialized = true;
+    // Test implementation
   }
 
   protected async createConnection(): Promise<string> {
     return `connection_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  protected async closeConnection(connection: string): Promise<void> {
+  protected async closeConnection(_connection: string): Promise<void> {
     // Mock connection cleanup
   }
 
@@ -39,15 +41,7 @@ class TestMCPResource extends MCPResource<string, any> {
 
 describe('MCPResource', () => {
   let testResource: TestMCPResource;
-  let mockLogger: any;
-
   beforeEach(() => {
-    mockLogger = {
-      info: vi.fn(),
-      error: vi.fn(),
-      warn: vi.fn()
-    };
-
     const config: MCPResourceConfig = {
       name: 'test-resource',
       type: 'memory',
@@ -60,8 +54,8 @@ describe('MCPResource', () => {
       securityConfig: {
         authentication: true,
         authorization: true,
-        encryption: false
-      }
+        encryption: false,
+      },
     };
 
     testResource = new TestMCPResource(config);
@@ -133,7 +127,10 @@ describe('MCPResource', () => {
       const result = await testResource.execute(operation);
 
       expect(result.success).toBe(true);
-      expect(result.data).toEqual({ result: 'success', connection: expect.stringMatching(/^connection_/) });
+      expect(result.data).toEqual({
+        result: 'success',
+        connection: expect.stringMatching(/^connection_/),
+      });
       expect(result.metadata.resourceName).toBe('test-resource');
       expect(result.metadata.executionTime).toBeGreaterThan(0);
     });
@@ -157,10 +154,10 @@ describe('MCPResource', () => {
         sessionId: 'test-session',
         businessContext: { project: 'test-project' },
         role: 'developer',
-        permissions: ['read', 'write']
+        permissions: ['read', 'write'],
       };
 
-      const operation = async (conn: string) => {
+      const operation = async (_conn: string) => {
         return { result: 'success', context: context.requestId };
       };
 
@@ -196,7 +193,7 @@ describe('MCPResource', () => {
     });
 
     it('should execute operations within acceptable time limits', async () => {
-      const operation = async (conn: string) => {
+      const operation = async (_conn: string) => {
         return { result: 'success' };
       };
 
@@ -226,7 +223,7 @@ describe('MCPResourceFactory', () => {
         type: 'memory',
         description: 'Resource for factory testing',
         version: '1.0.0',
-        connectionConfig: {}
+        connectionConfig: {},
       };
 
       const resource = new TestMCPResource(config);
@@ -248,7 +245,7 @@ describe('MCPResourceFactory', () => {
         type: 'memory',
         description: 'Resource 1',
         version: '1.0.0',
-        connectionConfig: {}
+        connectionConfig: {},
       });
 
       const resource2 = new TestMCPResource({
@@ -256,7 +253,7 @@ describe('MCPResourceFactory', () => {
         type: 'database',
         description: 'Resource 2',
         version: '1.0.0',
-        connectionConfig: {}
+        connectionConfig: {},
       });
 
       MCPResourceFactory.registerResource(resource1);
@@ -274,7 +271,7 @@ describe('MCPResourceFactory', () => {
         type: 'memory',
         description: 'Resource for name testing',
         version: '1.0.0',
-        connectionConfig: {}
+        connectionConfig: {},
       });
 
       MCPResourceFactory.registerResource(resource);
@@ -289,7 +286,7 @@ describe('MCPResourceFactory', () => {
         type: 'memory',
         description: 'Resource for clear testing',
         version: '1.0.0',
-        connectionConfig: {}
+        connectionConfig: {},
       });
 
       MCPResourceFactory.registerResource(resource);
@@ -307,7 +304,7 @@ describe('MCPResourceFactory', () => {
         type: 'memory',
         description: 'Resource 1 for init testing',
         version: '1.0.0',
-        connectionConfig: {}
+        connectionConfig: {},
       });
 
       const resource2 = new TestMCPResource({
@@ -315,7 +312,7 @@ describe('MCPResourceFactory', () => {
         type: 'database',
         description: 'Resource 2 for init testing',
         version: '1.0.0',
-        connectionConfig: {}
+        connectionConfig: {},
       });
 
       MCPResourceFactory.registerResource(resource1);
@@ -331,7 +328,7 @@ describe('MCPResourceFactory', () => {
         type: 'memory',
         description: 'Resource for cleanup testing',
         version: '1.0.0',
-        connectionConfig: {}
+        connectionConfig: {},
       });
 
       MCPResourceFactory.registerResource(resource);
@@ -339,16 +336,6 @@ describe('MCPResourceFactory', () => {
 
       await MCPResourceFactory.cleanupAllResources();
       expect(true).toBe(true); // Cleanup completed without error
-    });
-  });
-
-  describe('Logger Configuration', () => {
-    it('should set logger for factory', () => {
-      const mockLogger = { info: vi.fn(), error: vi.fn() };
-      MCPResourceFactory.setLogger(mockLogger);
-
-      // Logger is set but not directly testable without implementation details
-      expect(true).toBe(true); // Placeholder test
     });
   });
 });

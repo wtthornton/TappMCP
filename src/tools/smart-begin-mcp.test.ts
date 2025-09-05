@@ -26,7 +26,7 @@ describe('SmartBeginMCPTool', () => {
         description: 'A test project',
         techStack: ['typescript'],
         targetUsers: ['developers'],
-        businessGoals: ['improve efficiency']
+        businessGoals: ['improve efficiency'],
       };
 
       const result = await tool.execute(input);
@@ -46,7 +46,7 @@ describe('SmartBeginMCPTool', () => {
       const input: SmartBeginInput = {
         projectName: 'minimal-project',
         techStack: [],
-        targetUsers: []
+        targetUsers: [],
       };
 
       const result = await tool.execute(input);
@@ -62,7 +62,7 @@ describe('SmartBeginMCPTool', () => {
       const input: SmartBeginInput = {
         projectName: 'react-project',
         techStack: ['react', 'typescript'],
-        targetUsers: ['developers']
+        targetUsers: ['developers'],
       };
 
       const result = await tool.execute(input);
@@ -73,14 +73,16 @@ describe('SmartBeginMCPTool', () => {
       expect(result.data?.projectStructure.files).toContain('index.html');
       expect(result.data?.projectStructure.files).toContain('src/App.tsx');
       expect(result.data?.qualityGates).toHaveLength(5); // Base + React
-      expect(result.data?.qualityGates.some(gate => gate.name === 'React Best Practices')).toBe(true);
+      expect(result.data?.qualityGates.some(gate => gate.name === 'React Best Practices')).toBe(
+        true
+      );
     });
 
     it('should add Node.js-specific structure and quality gates', async () => {
       const input: SmartBeginInput = {
         projectName: 'nodejs-project',
         techStack: ['nodejs', 'express'],
-        targetUsers: ['developers']
+        targetUsers: ['developers'],
       };
 
       const result = await tool.execute(input);
@@ -97,7 +99,7 @@ describe('SmartBeginMCPTool', () => {
       const input: SmartBeginInput = {
         projectName: 'python-project',
         techStack: ['python'],
-        targetUsers: ['developers']
+        targetUsers: ['developers'],
       };
 
       const result = await tool.execute(input);
@@ -106,7 +108,9 @@ describe('SmartBeginMCPTool', () => {
       expect(result.data?.projectStructure.files).toContain('requirements.txt');
       expect(result.data?.projectStructure.files).toContain('setup.py');
       expect(result.data?.qualityGates).toHaveLength(5); // Base + Python
-      expect(result.data?.qualityGates.some(gate => gate.name === 'Python Code Quality')).toBe(true);
+      expect(result.data?.qualityGates.some(gate => gate.name === 'Python Code Quality')).toBe(
+        true
+      );
     });
   });
 
@@ -115,7 +119,7 @@ describe('SmartBeginMCPTool', () => {
       const input: SmartBeginInput = {
         projectName: 'dev-project',
         techStack: ['typescript'],
-        targetUsers: ['developers']
+        targetUsers: ['developers'],
       };
 
       const result = await tool.execute(input);
@@ -129,7 +133,7 @@ describe('SmartBeginMCPTool', () => {
       const input: SmartBeginInput = {
         projectName: 'design-project',
         techStack: ['react'],
-        targetUsers: ['designers']
+        targetUsers: ['designers'],
       };
 
       const result = await tool.execute(input);
@@ -145,13 +149,13 @@ describe('SmartBeginMCPTool', () => {
       const simpleInput: SmartBeginInput = {
         projectName: 'simple-project',
         techStack: ['typescript'],
-        targetUsers: []
+        targetUsers: [],
       };
 
       const complexInput: SmartBeginInput = {
         projectName: 'complex-project',
         techStack: ['react', 'nodejs', 'python'],
-        targetUsers: ['developers', 'designers']
+        targetUsers: ['developers', 'designers'],
       };
 
       const simpleResult = await tool.execute(simpleInput);
@@ -173,7 +177,7 @@ describe('SmartBeginMCPTool', () => {
       const input: SmartBeginInput = {
         projectName: 'metrics-project',
         techStack: ['react', 'nodejs'],
-        targetUsers: ['developers']
+        targetUsers: ['developers'],
       };
 
       const result = await tool.execute(input);
@@ -192,7 +196,7 @@ describe('SmartBeginMCPTool', () => {
     it('should handle validation errors', async () => {
       const invalidInput = {
         projectName: '', // Invalid: empty string
-        techStack: 'not-an-array' // Invalid: should be array
+        techStack: 'not-an-array', // Invalid: should be array
       } as any;
 
       const result = await tool.execute(invalidInput);
@@ -204,7 +208,7 @@ describe('SmartBeginMCPTool', () => {
     it('should handle missing required fields', async () => {
       const invalidInput = {
         // Missing projectName
-        techStack: ['typescript']
+        techStack: ['typescript'],
       } as any;
 
       const result = await tool.execute(invalidInput);
@@ -219,7 +223,7 @@ describe('SmartBeginMCPTool', () => {
       const input: SmartBeginInput = {
         projectName: 'perf-project',
         techStack: ['react', 'nodejs', 'python'],
-        targetUsers: ['developers', 'designers']
+        targetUsers: ['developers', 'designers'],
       };
 
       const startTime = performance.now();
@@ -236,13 +240,13 @@ describe('SmartBeginMCPTool', () => {
       const input1: SmartBeginInput = {
         projectName: 'unique-project',
         techStack: ['typescript'],
-        targetUsers: []
+        targetUsers: [],
       };
 
       const input2: SmartBeginInput = {
         projectName: 'unique-project',
         techStack: ['typescript'],
-        targetUsers: []
+        targetUsers: [],
       };
 
       const result1 = await tool.execute(input1);
@@ -257,7 +261,7 @@ describe('SmartBeginMCPTool', () => {
       const input: SmartBeginInput = {
         projectName: 'My Awesome Project!',
         techStack: ['typescript'],
-        targetUsers: []
+        targetUsers: [],
       };
 
       const result = await tool.execute(input);

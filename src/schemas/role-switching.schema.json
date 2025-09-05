@@ -15,22 +15,42 @@
         "developer": {
           "type": "array",
           "items": { "type": "string" },
-          "default": ["you are now a developer", "switch to developer", "developer mode", "coding mode"]
+          "default": [
+            "you are now a developer",
+            "switch to developer",
+            "developer mode",
+            "coding mode"
+          ]
         },
         "product": {
           "type": "array",
           "items": { "type": "string" },
-          "default": ["you are now a product strategist", "switch to product", "product mode", "strategy mode"]
+          "default": [
+            "you are now a product strategist",
+            "switch to product",
+            "product mode",
+            "strategy mode"
+          ]
         },
         "architect": {
           "type": "array",
           "items": { "type": "string" },
-          "default": ["you are now an architect", "switch to architect", "architecture mode", "architect mode"]
+          "default": [
+            "you are now an architect",
+            "switch to architect",
+            "architecture mode",
+            "architect mode"
+          ]
         },
         "operations": {
           "type": "array",
           "items": { "type": "string" },
-          "default": ["you are now an operations engineer", "switch to operations", "operations mode", "devops mode"]
+          "default": [
+            "you are now an operations engineer",
+            "switch to operations",
+            "operations mode",
+            "devops mode"
+          ]
         },
         "designer": {
           "type": "array",

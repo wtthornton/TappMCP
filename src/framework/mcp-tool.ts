@@ -75,7 +75,7 @@ export abstract class MCPTool<TInput = any, TOutput = any> {
         toolName: this.config.name,
         requestId,
         executionTime,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
 
       return {
@@ -85,10 +85,9 @@ export abstract class MCPTool<TInput = any, TOutput = any> {
           executionTime,
           timestamp: new Date().toISOString(),
           toolName: this.config.name,
-          version: this.config.version
-        }
+          version: this.config.version,
+        },
       };
-
     } catch (error) {
       const executionTime = performance.now() - startTime;
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -99,7 +98,7 @@ export abstract class MCPTool<TInput = any, TOutput = any> {
         requestId,
         error: errorMessage,
         executionTime,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
 
       return {
@@ -109,8 +108,8 @@ export abstract class MCPTool<TInput = any, TOutput = any> {
           executionTime,
           timestamp: new Date().toISOString(),
           toolName: this.config.name,
-          version: this.config.version
-        }
+          version: this.config.version,
+        },
       };
     }
   }
@@ -122,7 +121,9 @@ export abstract class MCPTool<TInput = any, TOutput = any> {
     try {
       return this.config.inputSchema.parse(input);
     } catch (error) {
-      throw new Error(`Input validation failed: ${error instanceof Error ? error.message : 'Unknown validation error'}`);
+      throw new Error(
+        `Input validation failed: ${error instanceof Error ? error.message : 'Unknown validation error'}`
+      );
     }
   }
 
@@ -133,7 +134,9 @@ export abstract class MCPTool<TInput = any, TOutput = any> {
     try {
       return this.config.outputSchema.parse(output);
     } catch (error) {
-      throw new Error(`Output validation failed: ${error instanceof Error ? error.message : 'Unknown validation error'}`);
+      throw new Error(
+        `Output validation failed: ${error instanceof Error ? error.message : 'Unknown validation error'}`
+      );
     }
   }
 
@@ -180,7 +183,7 @@ export abstract class MCPTool<TInput = any, TOutput = any> {
     } catch (error) {
       this.logger.error('Health check failed', {
         toolName: this.config.name,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
       return false;
     }
@@ -201,11 +204,6 @@ export abstract class MCPTool<TInput = any, TOutput = any> {
  */
 export class MCPToolFactory {
   private static tools = new Map<string, MCPTool>();
-  private static logger: any;
-
-  static setLogger(logger: any): void {
-    MCPToolFactory.logger = logger;
-  }
 
   static registerTool<T extends MCPTool>(tool: T): void {
     MCPToolFactory.tools.set(tool.getName(), tool);

@@ -46,7 +46,7 @@ async function demonstrateResourceLifecycle() {
       maxIdleTime: 5000, // 5 seconds
       maxMemoryUsage: 1024 * 1024, // 1MB
       cleanupInterval: 2000, // 2 seconds
-      forceCleanupThreshold: 10000 // 10 seconds
+      forceCleanupThreshold: 10000, // 10 seconds
     },
     {
       healthCheckInterval: 1000, // 1 second
@@ -54,8 +54,8 @@ async function demonstrateResourceLifecycle() {
       alertThresholds: {
         memoryUsage: 80,
         errorRate: 10,
-        responseTime: 1000
-      }
+        responseTime: 1000,
+      },
     }
   );
 
@@ -70,8 +70,8 @@ async function demonstrateResourceLifecycle() {
       enabled: true,
       maxIdleTime: 3000,
       maxMemoryUsage: 512 * 1024,
-      healthCheckInterval: 500
-    }
+      healthCheckInterval: 500,
+    },
   });
 
   const resource2 = new ExampleEnhancedResource({
@@ -84,8 +84,8 @@ async function demonstrateResourceLifecycle() {
       enabled: true,
       maxIdleTime: 4000,
       maxMemoryUsage: 768 * 1024,
-      healthCheckInterval: 750
-    }
+      healthCheckInterval: 750,
+    },
   });
 
   // Register resources with lifecycle manager
@@ -102,7 +102,7 @@ async function demonstrateResourceLifecycle() {
 
   // Execute some operations on resource1
   for (let i = 0; i < 5; i++) {
-    await resource1.execute(async (connection) => {
+    await resource1.execute(async connection => {
       console.log(`Resource1 operation ${i + 1} using connection ${connection.id}`);
       return `result-${i + 1}`;
     });
@@ -110,7 +110,7 @@ async function demonstrateResourceLifecycle() {
 
   // Execute some operations on resource2
   for (let i = 0; i < 3; i++) {
-    await resource2.execute(async (connection) => {
+    await resource2.execute(async connection => {
       console.log(`Resource2 operation ${i + 1} using connection ${connection.id}`);
       return `result-${i + 1}`;
     });

@@ -1,5 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { SimpleCodePrompt, SimpleCodePromptSchema, type SimpleCodePromptInput } from './simple-code-prompt.js';
+import {
+  SimpleCodePrompt,
+  SimpleCodePromptSchema,
+  type SimpleCodePromptInput,
+} from './simple-code-prompt.js';
 
 describe('SimpleCodePrompt', () => {
   let prompt: SimpleCodePrompt;
@@ -24,7 +28,7 @@ describe('SimpleCodePrompt', () => {
       const input: SimpleCodePromptInput = {
         task: 'Create a function to calculate the factorial of a number',
         language: 'TypeScript',
-        includeTests: true
+        includeTests: true,
       };
 
       const result = await prompt.generateCode(input);
@@ -39,7 +43,7 @@ describe('SimpleCodePrompt', () => {
     it('should generate code without tests', async () => {
       const input: SimpleCodePromptInput = {
         task: 'Create a simple calculator',
-        language: 'JavaScript'
+        language: 'JavaScript',
       };
 
       const result = await prompt.generateCode(input);
@@ -67,7 +71,7 @@ describe('SimpleCodePrompt', () => {
     it('should validate required fields', () => {
       const validInput = {
         task: 'Create a function',
-        language: 'TypeScript'
+        language: 'TypeScript',
       };
 
       expect(() => SimpleCodePromptSchema.parse(validInput)).not.toThrow();
@@ -76,7 +80,7 @@ describe('SimpleCodePrompt', () => {
     it('should reject invalid language type', () => {
       const invalidInput = {
         task: 'Create a function',
-        language: 123 // Should be string
+        language: 123, // Should be string
       };
 
       expect(() => SimpleCodePromptSchema.parse(invalidInput)).toThrow();
@@ -86,7 +90,7 @@ describe('SimpleCodePrompt', () => {
       const validInput = {
         task: 'Create a function',
         language: 'TypeScript',
-        includeTests: true
+        includeTests: true,
       };
 
       expect(() => SimpleCodePromptSchema.parse(validInput)).not.toThrow();
@@ -97,7 +101,7 @@ describe('SimpleCodePrompt', () => {
     it('should complete within reasonable time', async () => {
       const input: SimpleCodePromptInput = {
         task: 'Create a simple calculator',
-        language: 'TypeScript'
+        language: 'TypeScript',
       };
 
       const startTime = performance.now();
@@ -114,7 +118,7 @@ describe('SimpleCodePrompt', () => {
       const input: SimpleCodePromptInput = {
         task: 'Create a data validator',
         language: 'Python',
-        includeTests: true
+        includeTests: true,
       };
 
       const result = await prompt.generateCode(input);
@@ -128,7 +132,7 @@ describe('SimpleCodePrompt', () => {
     it('should handle missing optional variables', async () => {
       const input: SimpleCodePromptInput = {
         task: 'Create a utility function',
-        language: 'JavaScript'
+        language: 'JavaScript',
       };
 
       const result = await prompt.generateCode(input);

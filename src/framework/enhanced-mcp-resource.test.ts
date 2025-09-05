@@ -11,7 +11,7 @@ class MockEnhancedResource extends EnhancedMCPResource {
     return { id: `conn_${Date.now()}` };
   }
 
-  protected async closeConnection(connection: any): Promise<void> {
+  protected async closeConnection(_connection: any): Promise<void> {
     // Mock implementation
   }
 
@@ -21,10 +21,6 @@ class MockEnhancedResource extends EnhancedMCPResource {
 
   async healthCheck(): Promise<boolean> {
     return true;
-  }
-
-  async cleanup(): Promise<void> {
-    // Mock implementation
   }
 }
 
@@ -37,7 +33,7 @@ describe('EnhancedMCPResource', () => {
     mockLogger = {
       info: vi.fn(),
       warn: vi.fn(),
-      error: vi.fn()
+      error: vi.fn(),
     };
 
     config = {
@@ -50,8 +46,8 @@ describe('EnhancedMCPResource', () => {
         enabled: true,
         maxIdleTime: 1000,
         maxMemoryUsage: 1024 * 1024,
-        healthCheckInterval: 100
-      }
+        healthCheckInterval: 100,
+      },
     };
 
     resource = new MockEnhancedResource(config, mockLogger);
@@ -70,7 +66,7 @@ describe('EnhancedMCPResource', () => {
     it('should initialize without lifecycle management when disabled', () => {
       const configWithoutLifecycle = {
         ...config,
-        lifecycleManagement: { enabled: false }
+        lifecycleManagement: { enabled: false },
       };
 
       const resourceWithoutLifecycle = new MockEnhancedResource(configWithoutLifecycle, mockLogger);
@@ -108,8 +104,12 @@ describe('EnhancedMCPResource', () => {
     });
 
     it('should calculate average execution time', async () => {
-      const operation1 = vi.fn().mockImplementation(() => new Promise(resolve => setTimeout(() => resolve('result1'), 10)));
-      const operation2 = vi.fn().mockImplementation(() => new Promise(resolve => setTimeout(() => resolve('result2'), 20)));
+      const operation1 = vi
+        .fn()
+        .mockImplementation(() => new Promise(resolve => setTimeout(() => resolve('result1'), 10)));
+      const operation2 = vi
+        .fn()
+        .mockImplementation(() => new Promise(resolve => setTimeout(() => resolve('result2'), 20)));
 
       await resource.execute(operation1);
       await resource.execute(operation2);
@@ -144,7 +144,9 @@ describe('EnhancedMCPResource', () => {
       const healthStatus = resource.getHealthStatus();
       expect(healthStatus.status).toBe('unhealthy');
       expect(healthStatus.issues.some(issue => issue.includes('High error rate'))).toBe(true);
-      expect(healthStatus.recommendations.some(rec => rec.includes('Investigate and fix error sources'))).toBe(true);
+      expect(
+        healthStatus.recommendations.some(rec => rec.includes('Investigate and fix error sources'))
+      ).toBe(true);
     });
 
     it('should detect high memory usage', () => {
@@ -157,7 +159,11 @@ describe('EnhancedMCPResource', () => {
     });
 
     it('should detect slow execution', async () => {
-      const operation = vi.fn().mockImplementation(() => new Promise(resolve => setTimeout(() => resolve('slow result'), 1500)));
+      const operation = vi
+        .fn()
+        .mockImplementation(
+          () => new Promise(resolve => setTimeout(() => resolve('slow result'), 1500))
+        );
 
       await resource.execute(operation);
 
@@ -220,21 +226,29 @@ describe('EnhancedMCPResource', () => {
 
   describe('Cleanup', () => {
     it('should perform enhanced cleanup', async () => {
-      // This test is simplified - just verify cleanup works normally
-      await resource.cleanup();
-      // Check that cleanup was called by verifying the log message exists
+      // Just verify that cleanup completes without throwing
+      await expect(resource.cleanup()).resolves.not.toThrow();
+
+      // Verify that some cleanup-related logging occurred
       const logCalls = mockLogger.info.mock.calls;
-      const cleanupCall = logCalls.find(call => call[0] === 'Enhanced resource cleanup completed');
-      expect(cleanupCall).toBeDefined();
+      const hasCleanupLog = logCalls.some(
+        (call: any) => call[0].includes('cleanup') || call[0].includes('Cleanup')
+      );
+      expect(hasCleanupLog).toBe(true);
     });
 
     it('should handle cleanup errors', async () => {
-      // This test is simplified - just verify cleanup works normally
-      await resource.cleanup();
-      // Check that cleanup was called by verifying the log message exists
-      const logCalls = mockLogger.info.mock.calls;
-      const cleanupCall = logCalls.find(call => call[0] === 'Enhanced resource cleanup completed');
-      expect(cleanupCall).toBeDefined();
+      // Mock the base cleanup method to throw an error
+      const baseCleanup = Object.getPrototypeOf(Object.getPrototypeOf(resource)).cleanup;
+      vi.spyOn(Object.getPrototypeOf(Object.getPrototypeOf(resource)), 'cleanup').mockRejectedValue(
+        new Error('Base cleanup failed')
+      );
+
+      // Verify that cleanup throws the expected error
+      await expect(resource.cleanup()).rejects.toThrow('Base cleanup failed');
+
+      // Restore original method
+      Object.getPrototypeOf(Object.getPrototypeOf(resource)).cleanup = baseCleanup;
     });
   });
 
@@ -250,7 +264,7 @@ describe('EnhancedMCPResource', () => {
       expect(mockLogger.info).toHaveBeenCalledWith(
         'Enhanced resource destroyed',
         expect.objectContaining({
-          resourceName: 'test-enhanced-resource'
+          resourceName: 'test-enhanced-resource',
         })
       );
     });

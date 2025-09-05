@@ -1,4 +1,4 @@
-import { MCPResource } from '../framework/mcp-resource.js';
+import { MCPResource, MCPResourceConfig } from '../framework/mcp-resource.js';
 import { z } from 'zod';
 
 /**
@@ -13,18 +13,22 @@ export const ApiResourceSchema = z.object({
   timeout: z.number().positive().default(30000),
   retries: z.number().nonnegative().default(3),
   retryDelay: z.number().positive().default(1000),
-  rateLimit: z.object({
-    requests: z.number().positive(),
-    window: z.number().positive() // in milliseconds
-  }).optional(),
-  auth: z.object({
-    type: z.enum(['bearer', 'basic', 'api-key', 'oauth2']),
-    token: z.string().optional(),
-    username: z.string().optional(),
-    password: z.string().optional(),
-    apiKey: z.string().optional(),
-    apiKeyHeader: z.string().default('X-API-Key')
-  }).optional()
+  rateLimit: z
+    .object({
+      requests: z.number().positive(),
+      window: z.number().positive(), // in milliseconds
+    })
+    .optional(),
+  auth: z
+    .object({
+      type: z.enum(['bearer', 'basic', 'api-key', 'oauth2']),
+      token: z.string().optional(),
+      username: z.string().optional(),
+      password: z.string().optional(),
+      apiKey: z.string().optional(),
+      apiKeyHeader: z.string().default('X-API-Key'),
+    })
+    .optional(),
 });
 
 export type ApiResourceConfig = z.infer<typeof ApiResourceSchema>;
@@ -41,11 +45,13 @@ export const ApiResourceResponseSchema = z.object({
   error: z.string().optional(),
   executionTime: z.number().optional(),
   retryCount: z.number().optional(),
-  rateLimitInfo: z.object({
-    remaining: z.number(),
-    resetTime: z.number(),
-    limit: z.number()
-  }).optional()
+  rateLimitInfo: z
+    .object({
+      remaining: z.number(),
+      resetTime: z.number(),
+      limit: z.number(),
+    })
+    .optional(),
 });
 
 export type ApiResourceResponse = z.infer<typeof ApiResourceResponseSchema>;
@@ -58,14 +64,16 @@ export class ApiResource extends MCPResource {
   private rateLimitStore: Map<string, { count: number; resetTime: number }> = new Map();
 
   constructor() {
-    const mcpConfig = {
+    const mcpConfig: MCPResourceConfig = {
       name: 'api-resource',
-      type: 'resource' as const,
+      type: 'api' as const,
       version: '1.0.0',
-      description: 'HTTP API operations with rate limiting and retries'
+      description: 'HTTP API operations with rate limiting and retries',
+      connectionConfig: {},
+      maxConnections: 10,
     };
     super(mcpConfig);
-    this.schema = ApiResourceSchema;
+    this.schema = ApiResourceSchema as any;
   }
 
   /**
@@ -80,7 +88,53 @@ export class ApiResource extends MCPResource {
   /**
    * Execute API request
    */
-  async execute(config: ApiResourceConfig): Promise<ApiResourceResponse> {
+  async execute<TResult = ApiResourceResponse>(
+    operation: (connection: any) => Promise<TResult>,
+    _context?: any
+  ): Promise<{
+    success: boolean;
+    data?: TResult;
+    error?: string;
+    timestamp: string;
+    metadata: {
+      timestamp: string;
+      executionTime: number;
+      resourceName: string;
+      version: string;
+      connectionId?: string;
+    };
+  }> {
+    const startTime = Date.now();
+
+    try {
+      const result = await operation({});
+      return {
+        success: true,
+        data: result,
+        timestamp: new Date().toISOString(),
+        metadata: {
+          timestamp: new Date().toISOString(),
+          executionTime: Date.now() - startTime,
+          resourceName: 'api-resource',
+          version: '1.0.0',
+        },
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+        timestamp: new Date().toISOString(),
+        metadata: {
+          timestamp: new Date().toISOString(),
+          executionTime: Date.now() - startTime,
+          resourceName: 'api-resource',
+          version: '1.0.0',
+        },
+      };
+    }
+  }
+
+  async executeRequest(config: ApiResourceConfig): Promise<ApiResourceResponse> {
     const startTime = Date.now();
 
     try {
@@ -102,24 +156,23 @@ export class ApiResource extends MCPResource {
         url: validatedConfig.url,
         status: result.status,
         executionTime: `${executionTime}ms`,
-        retryCount: result.retryCount || 0
+        retryCount: result.retryCount || 0,
       });
 
       return result;
-
     } catch (error) {
       const executionTime = Date.now() - startTime;
       this.logger.error('API request failed', {
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
         method: config.method,
         url: config.url,
-        executionTime: `${executionTime}ms`
+        executionTime: `${executionTime}ms`,
       });
 
       return {
         success: false,
-        error: error.message,
-        executionTime
+        error: error instanceof Error ? error.message : String(error),
+        executionTime,
       };
     }
   }
@@ -127,7 +180,10 @@ export class ApiResource extends MCPResource {
   /**
    * Execute request with retry logic
    */
-  private async executeWithRetries(config: ApiResourceConfig, startTime: number): Promise<ApiResourceResponse> {
+  private async executeWithRetries(
+    config: ApiResourceConfig,
+    startTime: number
+  ): Promise<ApiResourceResponse> {
     let lastError: Error | null = null;
 
     for (let attempt = 0; attempt <= config.retries; attempt++) {
@@ -143,8 +199,8 @@ export class ApiResource extends MCPResource {
           this.logger.warn('API request failed, retrying', {
             attempt: attempt + 1,
             maxRetries: config.retries,
-            error: error.message,
-            delay: config.retryDelay
+            error: error instanceof Error ? error.message : String(error),
+            delay: config.retryDelay,
           });
 
           await this.delay(config.retryDelay * Math.pow(2, attempt)); // Exponential backoff
@@ -177,7 +233,11 @@ export class ApiResource extends MCPResource {
   /**
    * Simulate HTTP response based on configuration
    */
-  private simulateResponse(config: ApiResourceConfig, url: string, headers: Record<string, string>): ApiResourceResponse {
+  private simulateResponse(
+    config: ApiResourceConfig,
+    url: string,
+    _headers: Record<string, string>
+  ): ApiResourceResponse {
     // Simulate different scenarios based on URL patterns
     if (url.includes('/slow')) {
       // Simulate timeout
@@ -227,7 +287,7 @@ export class ApiResource extends MCPResource {
     const rateLimitInfo = {
       remaining: 5,
       resetTime: Date.now() + 3600000,
-      limit: 10
+      limit: 10,
     };
 
     return {
@@ -239,19 +299,22 @@ export class ApiResource extends MCPResource {
         'content-type': 'application/json',
         'x-ratelimit-remaining': '5',
         'x-ratelimit-reset': String(Date.now() + 3600000),
-        'x-ratelimit-limit': '10'
+        'x-ratelimit-limit': '10',
       },
-      rateLimitInfo
+      rateLimitInfo,
     };
   }
 
   /**
    * Check rate limiting
    */
-  private async checkRateLimit(url: string, rateLimit: { requests: number; window: number }): Promise<void> {
+  private async checkRateLimit(
+    url: string,
+    rateLimit: { requests: number; window: number }
+  ): Promise<void> {
     const key = new URL(url).hostname;
     const now = Date.now();
-    const windowStart = now - rateLimit.window;
+    // const _windowStart = now - rateLimit.window;
 
     const current = this.rateLimitStore.get(key) || { count: 0, resetTime: now + rateLimit.window };
 
@@ -291,7 +354,7 @@ export class ApiResource extends MCPResource {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       'User-Agent': 'MCP-API-Resource/1.0.0',
-      ...config.headers
+      ...config.headers,
     };
 
     // Add authentication headers
@@ -304,7 +367,9 @@ export class ApiResource extends MCPResource {
           break;
         case 'basic':
           if (config.auth.username && config.auth.password) {
-            const credentials = Buffer.from(`${config.auth.username}:${config.auth.password}`).toString('base64');
+            const credentials = Buffer.from(
+              `${config.auth.username}:${config.auth.password}`
+            ).toString('base64');
             headers['Authorization'] = `Basic ${credentials}`;
           }
           break;
@@ -329,30 +394,20 @@ export class ApiResource extends MCPResource {
   /**
    * Health check
    */
-  async healthCheck(): Promise<{ status: string; details: any }> {
+  async healthCheck(): Promise<boolean> {
     try {
       const testConfig: ApiResourceConfig = {
         method: 'GET',
-        url: 'https://httpbin.org/status/200'
+        url: 'https://httpbin.org/status/200',
+        timeout: 5000,
+        retries: 1,
+        retryDelay: 1000,
       };
 
-      const result = await this.execute(testConfig);
-      return {
-        status: result.success ? 'healthy' : 'unhealthy',
-        details: {
-          lastCheck: new Date().toISOString(),
-          responseTime: result.executionTime,
-          status: result.status
-        }
-      };
+      const result = await this.executeRequest(testConfig);
+      return result.success;
     } catch (error) {
-      return {
-        status: 'unhealthy',
-        details: {
-          lastCheck: new Date().toISOString(),
-          error: error.message
-        }
-      };
+      return false;
     }
   }
 
@@ -369,7 +424,7 @@ export class ApiResource extends MCPResource {
     return { id: 'api-connection', type: 'http' };
   }
 
-  protected async closeConnection(connection: any): Promise<void> {
+  protected async closeConnection(_connection: any): Promise<void> {
     // No persistent connection to close
   }
 

@@ -19,7 +19,7 @@ class TestMCPTool extends MCPTool<{ input: string }, { output: string }> {
       description: 'Test tool',
       version: '1.0.0',
       inputSchema: z.object({ input: z.string() }),
-      outputSchema: z.object({ output: z.string() })
+      outputSchema: z.object({ output: z.string() }),
     });
   }
 
@@ -35,7 +35,7 @@ class TestMCPResource extends MCPResource<string, any> {
       type: 'memory',
       description: 'Test resource',
       version: '1.0.0',
-      connectionConfig: {}
+      connectionConfig: {},
     });
   }
 
@@ -47,7 +47,7 @@ class TestMCPResource extends MCPResource<string, any> {
     return `connection_${Date.now()}`;
   }
 
-  protected async closeConnection(connection: string): Promise<void> {
+  protected async closeConnection(_connection: string): Promise<void> {
     // Mock cleanup
   }
 
@@ -64,8 +64,8 @@ class TestMCPPrompt extends MCPPrompt<{ name: string }, string> {
       version: '1.0.0',
       template: 'Hello {{name}}',
       variables: {
-        name: z.string()
-      }
+        name: z.string(),
+      },
     });
   }
 
@@ -82,7 +82,7 @@ describe('MCPRegistry', () => {
     mockLogger = {
       info: vi.fn(),
       error: vi.fn(),
-      warn: vi.fn()
+      warn: vi.fn(),
     };
 
     registry = new MCPRegistry({
@@ -90,7 +90,7 @@ describe('MCPRegistry', () => {
       enableDependencyInjection: true,
       enableHealthMonitoring: true,
       healthCheckInterval: 1000, // 1 second for testing
-      logger: mockLogger
+      logger: mockLogger,
     });
   });
 
@@ -181,7 +181,7 @@ describe('MCPRegistry', () => {
     it('should not discover components when disabled', async () => {
       const noDiscoveryRegistry = new MCPRegistry({
         enableAutoDiscovery: false,
-        logger: mockLogger
+        logger: mockLogger,
       });
 
       await noDiscoveryRegistry.initialize();
@@ -224,7 +224,7 @@ describe('MCPRegistry', () => {
             description: 'Unhealthy tool',
             version: '1.0.0',
             inputSchema: z.object({ input: z.string() }),
-            outputSchema: z.object({ output: z.string() })
+            outputSchema: z.object({ output: z.string() }),
           });
         }
 
@@ -257,7 +257,7 @@ describe('MCPRegistry', () => {
         'Health monitoring check',
         expect.objectContaining({
           stats: expect.any(Object),
-          timestamp: expect.any(String)
+          timestamp: expect.any(String),
         })
       );
     });

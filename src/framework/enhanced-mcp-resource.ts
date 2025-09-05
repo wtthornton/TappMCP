@@ -8,7 +8,12 @@
  * - Health tracking
  */
 
-import { MCPResource, MCPResourceConfig, MCPResourceResult, MCPResourceContext } from './mcp-resource.js';
+import {
+  MCPResource,
+  MCPResourceConfig,
+  MCPResourceResult,
+  MCPResourceContext,
+} from './mcp-resource.js';
 import { ResourceLifecycleManager } from './resource-lifecycle-manager.js';
 
 export interface EnhancedMCPResourceConfig extends MCPResourceConfig {
@@ -20,7 +25,10 @@ export interface EnhancedMCPResourceConfig extends MCPResourceConfig {
   };
 }
 
-export abstract class EnhancedMCPResource<TConnection = any, TData = any> extends MCPResource<TConnection, TData> {
+export abstract class EnhancedMCPResource<TConnection = any, TData = any> extends MCPResource<
+  TConnection,
+  TData
+> {
   protected lifecycleManager?: ResourceLifecycleManager;
   protected operationCount: number = 0;
   protected errorCount: number = 0;
@@ -40,13 +48,15 @@ export abstract class EnhancedMCPResource<TConnection = any, TData = any> extend
   /**
    * Initialize lifecycle management
    */
-  private initializeLifecycleManagement(config?: EnhancedMCPResourceConfig['lifecycleManagement']): void {
+  private initializeLifecycleManagement(
+    config?: EnhancedMCPResourceConfig['lifecycleManagement']
+  ): void {
     this.lifecycleManager = new ResourceLifecycleManager(
       {
         maxIdleTime: config?.maxIdleTime || 300000, // 5 minutes
         maxMemoryUsage: config?.maxMemoryUsage || 100 * 1024 * 1024, // 100MB
         cleanupInterval: 60000, // 1 minute
-        forceCleanupThreshold: 600000 // 10 minutes
+        forceCleanupThreshold: 600000, // 10 minutes
       },
       {
         healthCheckInterval: config?.healthCheckInterval || 30000, // 30 seconds
@@ -54,8 +64,8 @@ export abstract class EnhancedMCPResource<TConnection = any, TData = any> extend
         alertThresholds: {
           memoryUsage: 80,
           errorRate: 10,
-          responseTime: 1000
-        }
+          responseTime: 1000,
+        },
       },
       this.logger
     );
@@ -73,7 +83,7 @@ export abstract class EnhancedMCPResource<TConnection = any, TData = any> extend
     context?: MCPResourceContext
   ): Promise<MCPResourceResult<TResult>> {
     const startTime = performance.now();
-    const requestId = context?.requestId || this.generateRequestId();
+    // const _requestId = context?.requestId || `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
     try {
       // Execute the base operation
@@ -86,7 +96,11 @@ export abstract class EnhancedMCPResource<TConnection = any, TData = any> extend
 
       // Update lifecycle manager metrics
       if (this.lifecycleManager) {
-        this.lifecycleManager.updateOperationMetrics(this.config.name, executionTime, result.success);
+        this.lifecycleManager.updateOperationMetrics(
+          this.config.name,
+          executionTime,
+          result.success
+        );
       }
 
       return result;
@@ -129,9 +143,9 @@ export abstract class EnhancedMCPResource<TConnection = any, TData = any> extend
     const connectionMemory = 64 * 1024; // 64KB per connection
     const operationMemory = 1024; // 1KB per operation
 
-    return baseMemory +
-           (this.connections.size * connectionMemory) +
-           (this.operationCount * operationMemory);
+    return (
+      baseMemory + this.connections.size * connectionMemory + this.operationCount * operationMemory
+    );
   }
 
   /**
@@ -151,11 +165,12 @@ export abstract class EnhancedMCPResource<TConnection = any, TData = any> extend
       operationCount: this.operationCount,
       errorCount: this.errorCount,
       errorRate: this.operationCount > 0 ? (this.errorCount / this.operationCount) * 100 : 0,
-      averageExecutionTime: this.operationCount > 0 ? this.totalExecutionTime / this.operationCount : 0,
+      averageExecutionTime:
+        this.operationCount > 0 ? this.totalExecutionTime / this.operationCount : 0,
       lastOperationTime: this.lastOperationTime,
       memoryUsage: this.memoryUsage,
       connectionCount: this.connections.size,
-      poolSize: this.connectionPool.length
+      poolSize: this.connectionPool.length,
     };
   }
 
@@ -178,7 +193,9 @@ export abstract class EnhancedMCPResource<TConnection = any, TData = any> extend
     }
 
     // Check memory usage
-    const maxMemory = (this.config as EnhancedMCPResourceConfig).lifecycleManagement?.maxMemoryUsage || 100 * 1024 * 1024;
+    const maxMemory =
+      (this.config as EnhancedMCPResourceConfig).lifecycleManagement?.maxMemoryUsage ||
+      100 * 1024 * 1024;
     const memoryUsagePercent = (stats.memoryUsage / maxMemory) * 100;
 
     if (memoryUsagePercent > 80) {
@@ -194,7 +211,8 @@ export abstract class EnhancedMCPResource<TConnection = any, TData = any> extend
 
     // Check idle time
     const idleTime = Date.now() - stats.lastOperationTime.getTime();
-    if (idleTime > 300000) { // 5 minutes
+    if (idleTime > 300000) {
+      // 5 minutes
       issues.push(`Resource idle for ${Math.round(idleTime / 1000)}s`);
       recommendations.push('Consider cleanup if not needed');
     }
@@ -202,7 +220,9 @@ export abstract class EnhancedMCPResource<TConnection = any, TData = any> extend
     // Determine overall status
     let status: 'healthy' | 'degraded' | 'unhealthy' = 'healthy';
     if (issues.length > 0) {
-      status = issues.some(issue => issue.includes('High error rate') || issue.includes('High memory usage'))
+      status = issues.some(
+        issue => issue.includes('High error rate') || issue.includes('High memory usage')
+      )
         ? 'unhealthy'
         : 'degraded';
     }
@@ -210,7 +230,7 @@ export abstract class EnhancedMCPResource<TConnection = any, TData = any> extend
     return {
       status,
       issues,
-      recommendations
+      recommendations,
     };
   }
 
@@ -235,7 +255,7 @@ export abstract class EnhancedMCPResource<TConnection = any, TData = any> extend
           resourceName: this.config.name,
           status: healthStatus.status,
           issues: healthStatus.issues,
-          recommendations: healthStatus.recommendations
+          recommendations: healthStatus.recommendations,
         });
       }
 
@@ -243,7 +263,7 @@ export abstract class EnhancedMCPResource<TConnection = any, TData = any> extend
     } catch (error) {
       this.logger.error('Health check failed', {
         resourceName: this.config.name,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
       return false;
     }
@@ -265,13 +285,13 @@ export abstract class EnhancedMCPResource<TConnection = any, TData = any> extend
 
       this.logger.info('Enhanced resource cleanup completed', {
         resourceName: this.config.name,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     } catch (error) {
       this.logger.error('Enhanced resource cleanup failed', {
         resourceName: this.config.name,
         error: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
       throw error;
     }
@@ -325,7 +345,7 @@ export abstract class EnhancedMCPResource<TConnection = any, TData = any> extend
       // Stop lifecycle management
       if (this.lifecycleManager) {
         await this.lifecycleManager.destroy();
-        this.lifecycleManager = undefined;
+        this.lifecycleManager = undefined as any;
       }
 
       // Perform base cleanup
@@ -333,13 +353,13 @@ export abstract class EnhancedMCPResource<TConnection = any, TData = any> extend
 
       this.logger.info('Enhanced resource destroyed', {
         resourceName: this.config.name,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     } catch (error) {
       this.logger.error('Enhanced resource destruction failed', {
         resourceName: this.config.name,
         error: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
       throw error;
     }

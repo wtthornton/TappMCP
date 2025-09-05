@@ -120,12 +120,13 @@ const SmartFinishOutputSchema = z.object({
 // MCP Tool Configuration
 const config: MCPToolConfig = {
   name: 'smart_finish',
-  description: 'Check quality and validate production readiness with comprehensive quality scorecard',
+  description:
+    'Check quality and validate production readiness with comprehensive quality scorecard',
   version: '2.0.0',
   inputSchema: SmartFinishInputSchema,
   outputSchema: SmartFinishOutputSchema,
   timeout: 60000, // 60 seconds for comprehensive analysis
-  retries: 1
+  retries: 1,
 };
 
 export type SmartFinishInput = z.infer<typeof SmartFinishInputSchema>;
@@ -138,9 +139,9 @@ export type SmartFinishOutput = z.infer<typeof SmartFinishOutputSchema>;
  * performance monitoring, and standardized patterns.
  */
 export class SmartFinishMCPTool extends MCPTool<SmartFinishInput, SmartFinishOutput> {
-  private securityScanner?: SecurityScanner;
-  private staticAnalyzer?: StaticAnalyzer;
-  private qualityScorecardGenerator?: QualityScorecardGenerator;
+  private _securityScanner?: SecurityScanner;
+  private _staticAnalyzer?: StaticAnalyzer;
+  private _qualityScorecardGenerator?: QualityScorecardGenerator;
 
   constructor() {
     super(config);
@@ -149,14 +150,20 @@ export class SmartFinishMCPTool extends MCPTool<SmartFinishInput, SmartFinishOut
   /**
    * Execute the smart finish tool
    */
-  async execute(input: SmartFinishInput, context?: MCPToolContext): Promise<MCPToolResult<SmartFinishOutput>> {
-    return super.execute(input, context);
+  async execute(
+    input: SmartFinishInput,
+    _context?: MCPToolContext
+  ): Promise<MCPToolResult<SmartFinishOutput>> {
+    return super.execute(input, _context);
   }
 
   /**
    * Process the smart finish logic
    */
-  protected async executeInternal(input: SmartFinishInput, context?: MCPToolContext): Promise<SmartFinishOutput> {
+  protected async executeInternal(
+    input: SmartFinishInput,
+    _context?: MCPToolContext
+  ): Promise<SmartFinishOutput> {
     // Initialize scanners
     await this.initializeScanners();
 
@@ -181,13 +188,19 @@ export class SmartFinishMCPTool extends MCPTool<SmartFinishInput, SmartFinishOut
     const businessValue = this.calculateBusinessValue(businessRequirements, qualityScorecard);
 
     // Check production readiness
-    const productionReadinessResults = await this.checkProductionReadiness(productionReadiness, qualityScorecard);
+    const productionReadinessResults = await this.checkProductionReadiness(
+      productionReadiness,
+      qualityScorecard
+    );
 
     // Generate next steps
     const nextSteps = this.generateNextSteps(qualityScorecard, productionReadinessResults);
 
     // Generate recommendations
-    const recommendations = this.generateRecommendations(qualityScorecard, productionReadinessResults);
+    const recommendations = this.generateRecommendations(
+      qualityScorecard,
+      productionReadinessResults
+    );
 
     return {
       projectId: input.projectId,
@@ -204,9 +217,9 @@ export class SmartFinishMCPTool extends MCPTool<SmartFinishInput, SmartFinishOut
    */
   private async initializeScanners(): Promise<void> {
     const projectPath = process.cwd();
-    this.securityScanner = new SecurityScanner(projectPath);
-    this.staticAnalyzer = new StaticAnalyzer(projectPath);
-    this.qualityScorecardGenerator = new QualityScorecardGenerator();
+    this._securityScanner = new SecurityScanner(projectPath);
+    this._staticAnalyzer = new StaticAnalyzer(projectPath);
+    this._qualityScorecardGenerator = new QualityScorecardGenerator();
   }
 
   /**
@@ -214,7 +227,7 @@ export class SmartFinishMCPTool extends MCPTool<SmartFinishInput, SmartFinishOut
    */
   private async generateQualityScorecard(
     input: SmartFinishInput,
-    businessRequirements: SmartFinishInput['businessRequirements']
+    _businessRequirements: SmartFinishInput['businessRequirements']
   ): Promise<SmartFinishOutput['qualityScorecard']> {
     const qualityGates = input.qualityGates ?? {
       testCoverage: 85,
@@ -225,22 +238,35 @@ export class SmartFinishMCPTool extends MCPTool<SmartFinishInput, SmartFinishOut
 
     // Test Coverage Analysis
     const testCoverage = await this.analyzeTestCoverage();
-    const testCoverageScore = Math.min(100, (testCoverage.actual / qualityGates.testCoverage) * 100);
+    const testCoverageScore = Math.min(
+      100,
+      (testCoverage.actual / qualityGates.testCoverage) * 100
+    );
 
     // Security Analysis
     const securityAnalysis = await this.analyzeSecurity();
-    const securityScore = Math.min(100, (securityAnalysis.score / qualityGates.securityScore) * 100);
+    const securityScore = Math.min(
+      100,
+      (securityAnalysis.score / qualityGates.securityScore) * 100
+    );
 
     // Complexity Analysis
     const complexityAnalysis = await this.analyzeComplexity();
-    const complexityScore = Math.min(100, (complexityAnalysis.score / qualityGates.complexityScore) * 100);
+    const complexityScore = Math.min(
+      100,
+      (complexityAnalysis.score / qualityGates.complexityScore) * 100
+    );
 
     // Maintainability Analysis
     const maintainabilityAnalysis = await this.analyzeMaintainability();
-    const maintainabilityScore = Math.min(100, (maintainabilityAnalysis.score / qualityGates.maintainabilityScore) * 100);
+    const maintainabilityScore = Math.min(
+      100,
+      (maintainabilityAnalysis.score / qualityGates.maintainabilityScore) * 100
+    );
 
     // Calculate overall score
-    const overallScore = (testCoverageScore + securityScore + complexityScore + maintainabilityScore) / 4;
+    const overallScore =
+      (testCoverageScore + securityScore + complexityScore + maintainabilityScore) / 4;
 
     return {
       overallScore,
@@ -371,10 +397,10 @@ export class SmartFinishMCPTool extends MCPTool<SmartFinishInput, SmartFinishOut
    * Calculate business value
    */
   private calculateBusinessValue(
-    businessRequirements: SmartFinishInput['businessRequirements'],
+    _businessRequirements: SmartFinishInput['businessRequirements'],
     qualityScorecard: SmartFinishOutput['qualityScorecard']
   ): SmartFinishOutput['businessValue'] {
-    const { costPrevention, timeSaved, userSatisfaction } = businessRequirements!;
+    const { costPrevention, timeSaved, userSatisfaction } = _businessRequirements!;
 
     // Calculate ROI based on quality score
     const qualityMultiplier = qualityScorecard.overallScore / 100;
@@ -460,7 +486,7 @@ export class SmartFinishMCPTool extends MCPTool<SmartFinishInput, SmartFinishOut
 
     // Performance Test
     if (productionReadiness!.performanceTest) {
-      const performanceScore = Math.min(100, (qualityScorecard.overallScore + 10)); // Simulated performance score
+      const performanceScore = Math.min(100, qualityScorecard.overallScore + 10); // Simulated performance score
       results.performanceTest = {
         passed: performanceScore >= 80,
         score: performanceScore,
@@ -614,7 +640,7 @@ export async function handleSmartFinish(input: unknown): Promise<{
   return {
     success: result.success,
     data: result.data,
-    error: result.error,
+    error: result.error ?? undefined,
     timestamp: result.metadata.timestamp,
   };
 }

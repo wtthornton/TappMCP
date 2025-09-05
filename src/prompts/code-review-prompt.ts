@@ -1,4 +1,9 @@
-import { MCPPrompt, MCPPromptConfig, MCPPromptContext, MCPPromptResult } from '../framework/mcp-prompt.js';
+import {
+  MCPPrompt,
+  MCPPromptConfig,
+  MCPPromptContext,
+  MCPPromptResult,
+} from '../framework/mcp-prompt.js';
 import { z } from 'zod';
 
 /**
@@ -7,14 +12,19 @@ import { z } from 'zod';
 export const CodeReviewPromptSchema = z.object({
   code: z.string().describe('The code to review'),
   language: z.string().describe('Programming language'),
-  reviewType: z.enum(['security', 'performance', 'maintainability', 'readability', 'comprehensive']).describe('Type of review to perform'),
+  reviewType: z
+    .enum(['security', 'performance', 'maintainability', 'readability', 'comprehensive'])
+    .describe('Type of review to perform'),
   focusAreas: z.array(z.string()).optional().describe('Specific areas to focus on'),
   standards: z.array(z.string()).optional().describe('Coding standards to check against'),
   context: z.string().optional().describe('Additional context about the code'),
   requirements: z.array(z.string()).optional().describe('Specific requirements to validate'),
   includeSuggestions: z.boolean().optional().describe('Whether to include improvement suggestions'),
   includeExamples: z.boolean().optional().describe('Whether to include code examples'),
-  severity: z.enum(['low', 'medium', 'high']).optional().describe('Minimum severity level for issues')
+  severity: z
+    .enum(['low', 'medium', 'high'])
+    .optional()
+    .describe('Minimum severity level for issues'),
 });
 
 export type CodeReviewPromptInput = z.infer<typeof CodeReviewPromptSchema>;
@@ -109,21 +119,27 @@ Be thorough, constructive, and specific in your feedback.`,
   variables: {
     code: z.string(),
     language: z.string(),
-    reviewType: z.enum(['security', 'performance', 'maintainability', 'readability', 'comprehensive']),
+    reviewType: z.enum([
+      'security',
+      'performance',
+      'maintainability',
+      'readability',
+      'comprehensive',
+    ]),
     focusAreas: z.array(z.string()).optional(),
     standards: z.array(z.string()).optional(),
     context: z.string().optional(),
     requirements: z.array(z.string()).optional(),
     includeSuggestions: z.boolean().optional(),
     includeExamples: z.boolean().optional(),
-    severity: z.enum(['low', 'medium', 'high']).optional()
+    severity: z.enum(['low', 'medium', 'high']).optional(),
   },
   contextSchema: CodeReviewPromptSchema,
   cacheConfig: {
     enabled: true,
     ttl: 7200000, // 2 hours
-    maxSize: 200
-  }
+    maxSize: 200,
+  },
 };
 
 /**
@@ -137,7 +153,10 @@ export class CodeReviewPrompt extends MCPPrompt {
   /**
    * Perform code review
    */
-  async reviewCode(input: CodeReviewPromptInput, context?: MCPPromptContext): Promise<MCPPromptResult<string>> {
+  async reviewCode(
+    input: CodeReviewPromptInput,
+    context?: MCPPromptContext
+  ): Promise<MCPPromptResult<string>> {
     const startTime = performance.now();
 
     try {
@@ -145,17 +164,9 @@ export class CodeReviewPrompt extends MCPPrompt {
       const validatedInput = CodeReviewPromptSchema.parse(input);
 
       // Render the prompt template
-      const prompt = await this.render(validatedInput, context);
+      const prompt = await this.renderTemplate(validatedInput, context);
 
-      // Add code review specific metadata
-      const metadata = {
-        ...this.getBaseMetadata(),
-        variablesUsed: Object.keys(validatedInput),
-        reviewType: validatedInput.reviewType,
-        language: validatedInput.language,
-        codeLength: validatedInput.code.length,
-        severity: validatedInput.severity || 'medium'
-      };
+      // Metadata will be handled by base class
 
       const executionTime = performance.now() - startTime;
 
@@ -164,21 +175,28 @@ export class CodeReviewPrompt extends MCPPrompt {
         prompt,
         data: prompt,
         metadata: {
-          ...metadata,
-          executionTime
-        }
+          executionTime,
+          timestamp: new Date().toISOString(),
+          promptName: this.config.name,
+          version: this.config.version,
+          templateHash: '',
+          variablesUsed: Object.keys(validatedInput),
+        },
       };
-
     } catch (error) {
       const executionTime = performance.now() - startTime;
 
       return {
         success: false,
-        error: error.message,
+        error: error instanceof Error ? error.message : 'Unknown error',
         metadata: {
-          ...this.getBaseMetadata(),
-          executionTime
-        }
+          executionTime,
+          timestamp: new Date().toISOString(),
+          promptName: this.config.name,
+          version: this.config.version,
+          templateHash: '',
+          variablesUsed: [],
+        },
       };
     }
   }
@@ -201,11 +219,11 @@ export class CodeReviewPrompt extends MCPPrompt {
         'Input validation',
         'Authentication and authorization',
         'Data encryption',
-        'Error information disclosure'
+        'Error information disclosure',
       ],
       includeSuggestions: true,
       includeExamples: true,
-      severity: 'medium'
+      severity: 'medium',
     };
 
     return this.reviewCode(input, context);
@@ -229,11 +247,11 @@ export class CodeReviewPrompt extends MCPPrompt {
         'Database queries',
         'Network requests',
         'Caching opportunities',
-        'Resource cleanup'
+        'Resource cleanup',
       ],
       includeSuggestions: true,
       includeExamples: true,
-      severity: 'medium'
+      severity: 'medium',
     };
 
     return this.reviewCode(input, context);
@@ -257,11 +275,11 @@ export class CodeReviewPrompt extends MCPPrompt {
         'Documentation',
         'Error handling',
         'Testability',
-        'Dependencies'
+        'Dependencies',
       ],
       includeSuggestions: true,
       includeExamples: true,
-      severity: 'low'
+      severity: 'low',
     };
 
     return this.reviewCode(input, context);
@@ -271,9 +289,9 @@ export class CodeReviewPrompt extends MCPPrompt {
    * Generate review checklist
    */
   async generateReviewChecklist(
-    language: string,
+    _language: string,
     reviewType: 'security' | 'performance' | 'maintainability' | 'readability' | 'comprehensive',
-    context?: MCPPromptContext
+    _context?: MCPPromptContext
   ): Promise<MCPPromptResult<string[]>> {
     const checklists = {
       security: [
@@ -283,7 +301,7 @@ export class CodeReviewPrompt extends MCPPrompt {
         'Authentication mechanisms',
         'Authorization checks',
         'Error handling without information disclosure',
-        'Secure data storage and transmission'
+        'Secure data storage and transmission',
       ],
       performance: [
         'Algorithm complexity analysis',
@@ -292,7 +310,7 @@ export class CodeReviewPrompt extends MCPPrompt {
         'Caching implementation',
         'Resource cleanup',
         'Async operation handling',
-        'Network request optimization'
+        'Network request optimization',
       ],
       maintainability: [
         'Code organization and structure',
@@ -301,7 +319,7 @@ export class CodeReviewPrompt extends MCPPrompt {
         'Error handling consistency',
         'Test coverage',
         'Dependency management',
-        'Code reusability'
+        'Code reusability',
       ],
       readability: [
         'Variable and function naming',
@@ -310,7 +328,7 @@ export class CodeReviewPrompt extends MCPPrompt {
         'Code organization',
         'Consistent coding patterns',
         'Clear logic flow',
-        'Appropriate abstraction levels'
+        'Appropriate abstraction levels',
       ],
       comprehensive: [
         'All security considerations',
@@ -319,8 +337,8 @@ export class CodeReviewPrompt extends MCPPrompt {
         'All readability considerations',
         'Best practices compliance',
         'Standards adherence',
-        'Overall code quality'
-      ]
+        'Overall code quality',
+      ],
     };
 
     const checklist = checklists[reviewType] || checklists.comprehensive;
@@ -329,11 +347,13 @@ export class CodeReviewPrompt extends MCPPrompt {
       success: true,
       data: checklist,
       metadata: {
-        ...this.getBaseMetadata(),
-        reviewType,
-        language,
-        checklistType: 'code_review'
-      }
+        executionTime: 0,
+        timestamp: new Date().toISOString(),
+        promptName: this.config.name,
+        version: this.config.version,
+        templateHash: '',
+        variablesUsed: [],
+      },
     };
   }
 }

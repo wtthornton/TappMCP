@@ -26,12 +26,15 @@ class MCPClient {
       // Connect to the MCP server via stdio
       this.process = spawn('node', ['dist/server.js'], {
         stdio: ['pipe', 'pipe', 'pipe'],
-        cwd: process.cwd()
+        cwd: process.cwd(),
       });
 
       this.process.stdout.on('data', (data: Buffer) => {
         try {
-          const lines = data.toString().split('\n').filter(line => line.trim());
+          const lines = data
+            .toString()
+            .split('\n')
+            .filter(line => line.trim());
           for (const line of lines) {
             const message = JSON.parse(line);
             this.handleMessage(message);
@@ -63,16 +66,18 @@ class MCPClient {
           params: {
             protocolVersion: '2024-11-05',
             capabilities: {
-              tools: {}
+              tools: {},
             },
             clientInfo: {
               name: 'test-client',
-              version: '1.0.0'
-            }
-          }
-        }).then(() => {
-          resolve();
-        }).catch(reject);
+              version: '1.0.0',
+            },
+          },
+        })
+          .then(() => {
+            resolve();
+          })
+          .catch(reject);
       }, 1000);
     });
   }
@@ -97,7 +102,7 @@ class MCPClient {
 
       this.pendingRequests.set(id, { resolve, reject });
 
-      this.process.stdin.write(JSON.stringify(message) + '\n');
+      this.process.stdin.write(`${JSON.stringify(message)}\n`);
 
       // Timeout after 30 seconds
       setTimeout(() => {
@@ -118,8 +123,8 @@ class MCPClient {
       method: 'tools/call',
       params: {
         name: toolName,
-        arguments: arguments_
-      }
+        arguments: arguments_,
+      },
     });
 
     console.log(`✅ MCP Response:`, JSON.stringify(result, null, 2));
@@ -173,7 +178,10 @@ describe('MCP Stdio HTML Generation Test', () => {
 
     console.log('\n=== MCP STDIO HTML GENERATION TEST RESULTS ===');
     console.log('MCP Connection:', testResults.mcpConnection ? '✅ PASS' : '❌ FAIL');
-    console.log('Project Initialization:', testResults.projectInitialization ? '✅ PASS' : '❌ FAIL');
+    console.log(
+      'Project Initialization:',
+      testResults.projectInitialization ? '✅ PASS' : '❌ FAIL'
+    );
     console.log('HTML Generation:', testResults.htmlGeneration ? '✅ PASS' : '❌ FAIL');
     console.log('Code Quality:', testResults.codeQuality ? '✅ PASS' : '❌ FAIL');
     console.log('Functionality:', testResults.functionality ? '✅ PASS' : '❌ FAIL');
@@ -187,7 +195,10 @@ describe('MCP Stdio HTML Generation Test', () => {
     const score = Math.round((passCount / totalCount) * 100);
 
     console.log(`\nOverall Score: ${score}% (${passCount}/${totalCount} tests passed)`);
-    console.log('Grade:', score >= 90 ? 'A' : score >= 80 ? 'B' : score >= 70 ? 'C' : score >= 60 ? 'D' : 'F');
+    console.log(
+      'Grade:',
+      score >= 90 ? 'A' : score >= 80 ? 'B' : score >= 70 ? 'C' : score >= 60 ? 'D' : 'F'
+    );
   });
 
   it('should connect to MCP server via stdio', async () => {
@@ -213,7 +224,7 @@ describe('MCP Stdio HTML Generation Test', () => {
       description: 'Simple HTML page with header, footer, and body content',
       techStack: ['html', 'css', 'javascript'],
       targetUsers: ['non-technical-founder'],
-      businessGoals: ['create simple web page', 'learn HTML basics', 'build portfolio']
+      businessGoals: ['create simple web page', 'learn HTML basics', 'build portfolio'],
     });
 
     expect(beginResult.success).toBe(true);
@@ -227,7 +238,9 @@ describe('MCP Stdio HTML Generation Test', () => {
       console.log(`✅ Project initialized via MCP: ${data.projectId}`);
       console.log(`   - Folders: ${data.projectStructure?.folders?.length || 'N/A'}`);
       console.log(`   - Quality Gates: ${data.qualityGates?.length || 'N/A'}`);
-      console.log(`   - Cost Prevention: $${data.businessValue?.costPrevention?.toLocaleString() || 'N/A'}`);
+      console.log(
+        `   - Cost Prevention: $${data.businessValue?.costPrevention?.toLocaleString() || 'N/A'}`
+      );
     }
   });
 
@@ -237,21 +250,22 @@ describe('MCP Stdio HTML Generation Test', () => {
     expect(projectId).toBeDefined();
 
     const writeResult = await mcpClient.callTool('smart_write', {
-      projectId: projectId,
-      featureDescription: 'Create me an HTML page that has a header, a footer, and says "I\'m the best" in the body',
+      projectId,
+      featureDescription:
+        'Create me an HTML page that has a header, a footer, and says "I\'m the best" in the body',
       targetRole: 'developer',
       codeType: 'component',
       techStack: ['html', 'css', 'javascript'],
       businessContext: {
         goals: ['create simple web page', 'learn HTML basics'],
         targetUsers: ['non-technical-founder'],
-        priority: 'high'
+        priority: 'high',
       },
       qualityRequirements: {
         testCoverage: 80,
         complexity: 3,
-        securityLevel: 'medium'
-      }
+        securityLevel: 'medium',
+      },
     });
 
     expect(writeResult.success).toBe(true);
@@ -272,9 +286,15 @@ describe('MCP Stdio HTML Generation Test', () => {
         console.log(`\n🧠 TappMCP Thought Process:`);
         console.log(`   - Step 1: ${data.thoughtProcess.step1_analysis?.decision || 'N/A'}`);
         console.log(`   - Reasoning: ${data.thoughtProcess.step1_analysis?.reasoning || 'N/A'}`);
-        console.log(`   - Detection Confidence: ${data.thoughtProcess.step2_detection?.confidence || 'N/A'}%`);
-        console.log(`   - Approach: ${data.thoughtProcess.step3_generation?.chosenApproach || 'N/A'}`);
-        console.log(`   - Requirements Met: ${data.thoughtProcess.step4_validation?.requirementsCheck?.filter((check: string) => check.includes('✅')).length || 0}/${data.thoughtProcess.step4_validation?.requirementsCheck?.length || 0}`);
+        console.log(
+          `   - Detection Confidence: ${data.thoughtProcess.step2_detection?.confidence || 'N/A'}%`
+        );
+        console.log(
+          `   - Approach: ${data.thoughtProcess.step3_generation?.chosenApproach || 'N/A'}`
+        );
+        console.log(
+          `   - Requirements Met: ${data.thoughtProcess.step4_validation?.requirementsCheck?.filter((check: string) => check.includes('✅')).length || 0}/${data.thoughtProcess.step4_validation?.requirementsCheck?.length || 0}`
+        );
       }
     }
   });
@@ -287,8 +307,9 @@ describe('MCP Stdio HTML Generation Test', () => {
     expect(generatedCode.files.length).toBeGreaterThan(0);
 
     // Find the HTML file
-    const htmlFile = generatedCode.files.find((file: any) =>
-      file.path.endsWith('.html') || file.type === 'html' || file.content.includes('<html')
+    const htmlFile = generatedCode.files.find(
+      (file: any) =>
+        file.path.endsWith('.html') || file.type === 'html' || file.content.includes('<html')
     );
 
     if (htmlFile) {
@@ -296,10 +317,16 @@ describe('MCP Stdio HTML Generation Test', () => {
       console.log(`📊 File size: ${htmlFile.content.length} characters`);
 
       // Analyze HTML structure
-      const hasHeader = htmlFile.content.includes('<header') || htmlFile.content.includes('<h1') || htmlFile.content.includes('header');
+      const hasHeader =
+        htmlFile.content.includes('<header') ||
+        htmlFile.content.includes('<h1') ||
+        htmlFile.content.includes('header');
       const hasFooter = htmlFile.content.includes('<footer') || htmlFile.content.includes('footer');
       const hasBody = htmlFile.content.includes('<body') || htmlFile.content.includes('body');
-      const hasContent = htmlFile.content.includes("I'm the best") || htmlFile.content.includes("i'm the best") || htmlFile.content.includes("I am the best");
+      const hasContent =
+        htmlFile.content.includes("I'm the best") ||
+        htmlFile.content.includes("i'm the best") ||
+        htmlFile.content.includes('I am the best');
 
       testResults.structure = hasHeader && hasFooter && hasBody && hasContent;
 
@@ -327,7 +354,10 @@ describe('MCP Stdio HTML Generation Test', () => {
       // Analyze accessibility
       const hasAltText = htmlFile.content.includes('alt=');
       const hasLang = htmlFile.content.includes('lang=');
-      const hasSemanticTags = htmlFile.content.includes('<main') || htmlFile.content.includes('<section') || htmlFile.content.includes('<article');
+      const hasSemanticTags =
+        htmlFile.content.includes('<main') ||
+        htmlFile.content.includes('<section') ||
+        htmlFile.content.includes('<article');
 
       testResults.accessibility = hasLang || hasSemanticTags;
 
@@ -336,8 +366,10 @@ describe('MCP Stdio HTML Generation Test', () => {
       console.log(`   - Has Semantic Tags: ${hasSemanticTags ? '✅' : '❌'}`);
 
       // Analyze functionality
-      const hasJavaScript = htmlFile.content.includes('<script') || htmlFile.content.includes('javascript');
-      const hasInteractive = htmlFile.content.includes('onclick') || htmlFile.content.includes('addEventListener');
+      const hasJavaScript =
+        htmlFile.content.includes('<script') || htmlFile.content.includes('javascript');
+      const hasInteractive =
+        htmlFile.content.includes('onclick') || htmlFile.content.includes('addEventListener');
 
       testResults.functionality = true; // Basic HTML is functional
 
@@ -357,7 +389,6 @@ describe('MCP Stdio HTML Generation Test', () => {
       const htmlPath = join(process.cwd(), 'generated-html-test.html');
       writeFileSync(htmlPath, htmlFile.content);
       console.log(`💾 Generated HTML saved to: ${htmlPath}`);
-
     } else {
       console.log('❌ No HTML file found in MCP generated code');
       testResults.structure = false;

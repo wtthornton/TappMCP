@@ -1,4 +1,4 @@
-import { MCPResource } from '../framework/mcp-resource.js';
+import { MCPResource, MCPResourceConfig } from '../framework/mcp-resource.js';
 import { z } from 'zod';
 
 /**
@@ -14,13 +14,17 @@ export const DatabaseResourceSchema = z.object({
   offset: z.number().nonnegative().optional(),
   orderBy: z.string().optional(),
   orderDirection: z.enum(['ASC', 'DESC']).default('ASC'),
-  transaction: z.array(z.object({
-    operation: z.enum(['query', 'insert', 'update', 'delete']),
-    table: z.string(),
-    query: z.string().optional(),
-    data: z.record(z.any()).optional(),
-    where: z.record(z.any()).optional()
-  })).optional()
+  transaction: z
+    .array(
+      z.object({
+        operation: z.enum(['query', 'insert', 'update', 'delete']),
+        table: z.string(),
+        query: z.string().optional(),
+        data: z.record(z.any()).optional(),
+        where: z.record(z.any()).optional(),
+      })
+    )
+    .optional(),
 });
 
 export type DatabaseResourceConfig = z.infer<typeof DatabaseResourceSchema>;
@@ -36,7 +40,7 @@ export const DatabaseResourceResponseSchema = z.object({
   insertId: z.number().optional(),
   error: z.string().optional(),
   executionTime: z.number().optional(),
-  query: z.string().optional()
+  query: z.string().optional(),
 });
 
 export type DatabaseResourceResponse = z.infer<typeof DatabaseResourceResponseSchema>;
@@ -60,24 +64,26 @@ interface ConnectionPoolConfig {
  * Provides database operations with connection pooling and transaction support
  */
 export class DatabaseResource extends MCPResource {
-  private connectionPool: any[] = [];
+  protected connectionPool: any[] = [];
   private poolConfig: ConnectionPoolConfig;
-  private isInitialized = false;
+  protected isInitialized = false;
   private activeConnections = 0;
   private maxConnections: number;
-  private readonly schema: z.ZodSchema<DatabaseResourceConfig>;
+  private readonly schema: typeof DatabaseResourceSchema;
 
-  constructor(config: {
-    connectionString?: string;
-    poolConfig?: Partial<ConnectionPoolConfig>;
-  } = {}) {
+  constructor(
+    config: {
+      connectionString?: string;
+      poolConfig?: Partial<ConnectionPoolConfig>;
+    } = {}
+  ) {
     const mcpConfig: MCPResourceConfig = {
       name: 'database-resource',
       type: 'database',
       version: '1.0.0',
       description: 'Database operations with connection pooling and transaction support',
       connectionConfig: {},
-      maxConnections: config.poolConfig?.max || 10
+      maxConnections: config.poolConfig?.max || 10,
     };
 
     super(mcpConfig);
@@ -91,7 +97,7 @@ export class DatabaseResource extends MCPResource {
       idleTimeoutMillis: 30000,
       reapIntervalMillis: 1000,
       createRetryIntervalMillis: 200,
-      ...config.poolConfig
+      ...config.poolConfig,
     };
 
     this.maxConnections = this.poolConfig.max;
@@ -109,24 +115,108 @@ export class DatabaseResource extends MCPResource {
 
       this.logger.info('Database resource initialized', {
         poolSize: this.connectionPool.length,
-        maxConnections: this.maxConnections
+        maxConnections: this.maxConnections,
       });
     } catch (error) {
-      this.logger.error('Failed to initialize database resource', { error: error.message });
+      this.logger.error('Failed to initialize database resource', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       throw error;
     }
   }
 
   /**
+   * Internal initialization (required by base class)
+   */
+  protected async initializeInternal(): Promise<void> {
+    // Database resource initialization is handled in initialize()
+  }
+
+  /**
    * Execute database operation
    */
-  async execute(config: DatabaseResourceConfig): Promise<DatabaseResourceResponse> {
+  async execute<TResult = DatabaseResourceResponse>(
+    operation: (connection: any) => Promise<TResult>,
+    _context?: any
+  ): Promise<{
+    success: boolean;
+    data?: TResult;
+    error?: string;
+    timestamp: string;
+    metadata: {
+      timestamp: string;
+      executionTime: number;
+      resourceName: string;
+      version: string;
+      connectionId?: string;
+    };
+  }> {
     const startTime = Date.now();
 
     if (!this.isInitialized) {
       return {
         success: false,
-        error: 'Database resource not initialized'
+        error: 'Database resource not initialized',
+        timestamp: new Date().toISOString(),
+        metadata: {
+          timestamp: new Date().toISOString(),
+          executionTime: 0,
+          resourceName: 'database-resource',
+          version: '1.0.0',
+        },
+      };
+    }
+
+    try {
+      // Get connection from pool
+      const connection = await this.getConnection();
+
+      try {
+        const result = await operation(connection);
+        return {
+          success: true,
+          data: result,
+          timestamp: new Date().toISOString(),
+          metadata: {
+            timestamp: new Date().toISOString(),
+            executionTime: Date.now() - startTime,
+            resourceName: 'database-resource',
+            version: '1.0.0',
+          },
+        };
+      } finally {
+        // Return connection to pool
+        await this.returnConnection(connection);
+      }
+    } catch (error) {
+      this.logger.error('Database operation failed', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+        timestamp: new Date().toISOString(),
+        metadata: {
+          timestamp: new Date().toISOString(),
+          executionTime: Date.now() - startTime,
+          resourceName: 'database-resource',
+          version: '1.0.0',
+        },
+      };
+    }
+  }
+
+  /**
+   * Execute database operation with config
+   */
+  async executeOperation(config: DatabaseResourceConfig): Promise<DatabaseResourceResponse> {
+    const startTime = Date.now();
+
+    if (!this.isInitialized) {
+      return {
+        success: false,
+        error: 'Database resource not initialized',
       };
     }
 
@@ -168,29 +258,27 @@ export class DatabaseResource extends MCPResource {
           operation: validatedConfig.operation,
           table: validatedConfig.table,
           executionTime: `${result.executionTime}ms`,
-          affectedRows: result.affectedRows || 0
+          affectedRows: result.affectedRows || 0,
         });
 
         return result;
-
       } finally {
         // Return connection to pool
-        this.returnConnection(connection);
+        await this.returnConnection(connection);
       }
-
     } catch (error) {
       const executionTime = Date.now() - startTime;
       this.logger.error('Database operation failed', {
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
         operation: config.operation,
         table: config.table,
-        executionTime: `${executionTime}ms`
+        executionTime: `${executionTime}ms`,
       });
 
       return {
         success: false,
-        error: error.message,
-        executionTime
+        error: error instanceof Error ? error.message : String(error),
+        executionTime,
       };
     }
   }
@@ -198,7 +286,10 @@ export class DatabaseResource extends MCPResource {
   /**
    * Execute SELECT query
    */
-  private async executeQuery(connection: any, config: DatabaseResourceConfig): Promise<DatabaseResourceResponse> {
+  private async executeQuery(
+    connection: any,
+    config: DatabaseResourceConfig
+  ): Promise<DatabaseResourceResponse> {
     const query = this.buildSelectQuery(config);
     const results = await this.runQuery(connection, query);
 
@@ -206,14 +297,17 @@ export class DatabaseResource extends MCPResource {
       success: true,
       data: results,
       count: results.length,
-      query
+      query,
     };
   }
 
   /**
    * Execute INSERT operation
    */
-  private async executeInsert(connection: any, config: DatabaseResourceConfig): Promise<DatabaseResourceResponse> {
+  private async executeInsert(
+    connection: any,
+    config: DatabaseResourceConfig
+  ): Promise<DatabaseResourceResponse> {
     if (!config.data) {
       throw new Error('Data is required for insert operation');
     }
@@ -225,14 +319,17 @@ export class DatabaseResource extends MCPResource {
       success: true,
       affectedRows: 1,
       insertId: result.insertId,
-      query
+      query,
     };
   }
 
   /**
    * Execute UPDATE operation
    */
-  private async executeUpdate(connection: any, config: DatabaseResourceConfig): Promise<DatabaseResourceResponse> {
+  private async executeUpdate(
+    connection: any,
+    config: DatabaseResourceConfig
+  ): Promise<DatabaseResourceResponse> {
     if (!config.data || !config.where) {
       throw new Error('Data and where clause are required for update operation');
     }
@@ -243,14 +340,17 @@ export class DatabaseResource extends MCPResource {
     return {
       success: true,
       affectedRows: result.affectedRows,
-      query
+      query,
     };
   }
 
   /**
    * Execute DELETE operation
    */
-  private async executeDelete(connection: any, config: DatabaseResourceConfig): Promise<DatabaseResourceResponse> {
+  private async executeDelete(
+    connection: any,
+    config: DatabaseResourceConfig
+  ): Promise<DatabaseResourceResponse> {
     if (!config.where) {
       throw new Error('Where clause is required for delete operation');
     }
@@ -261,14 +361,17 @@ export class DatabaseResource extends MCPResource {
     return {
       success: true,
       affectedRows: result.affectedRows,
-      query
+      query,
     };
   }
 
   /**
    * Execute transaction
    */
-  private async executeTransaction(connection: any, config: DatabaseResourceConfig): Promise<DatabaseResourceResponse> {
+  private async executeTransaction(
+    connection: any,
+    config: DatabaseResourceConfig
+  ): Promise<DatabaseResourceResponse> {
     if (!config.transaction || config.transaction.length === 0) {
       throw new Error('Transaction operations are required');
     }
@@ -284,16 +387,28 @@ export class DatabaseResource extends MCPResource {
 
         switch (operation.operation) {
           case 'query':
-            result = await this.executeQuery(connection, operation);
+            result = await this.executeQuery(connection, {
+              ...operation,
+              orderDirection: 'ASC' as const,
+            });
             break;
           case 'insert':
-            result = await this.executeInsert(connection, operation);
+            result = await this.executeInsert(connection, {
+              ...operation,
+              orderDirection: 'ASC' as const,
+            });
             break;
           case 'update':
-            result = await this.executeUpdate(connection, operation);
+            result = await this.executeUpdate(connection, {
+              ...operation,
+              orderDirection: 'ASC' as const,
+            });
             break;
           case 'delete':
-            result = await this.executeDelete(connection, operation);
+            result = await this.executeDelete(connection, {
+              ...operation,
+              orderDirection: 'ASC' as const,
+            });
             break;
           default:
             throw new Error(`Unsupported transaction operation: ${operation.operation}`);
@@ -308,15 +423,16 @@ export class DatabaseResource extends MCPResource {
       return {
         success: true,
         data: results,
-        count: results.length
+        count: results.length,
       };
-
     } catch (error) {
       // Rollback transaction on error
       try {
         await this.runQuery(connection, 'ROLLBACK');
       } catch (rollbackError) {
-        this.logger.error('Failed to rollback transaction', { error: rollbackError.message });
+        this.logger.error('Failed to rollback transaction', {
+          error: rollbackError instanceof Error ? rollbackError.message : String(rollbackError),
+        });
       }
       throw error;
     }
@@ -335,8 +451,10 @@ export class DatabaseResource extends MCPResource {
       query += ` WHERE ${whereClause}`;
     }
 
-    if (config.orderBy) {
-      query += ` ORDER BY ${config.orderBy} ${config.orderDirection}`;
+    if (config.orderBy || config.orderDirection) {
+      const orderBy = config.orderBy || 'id'; // Default to 'id' if only orderDirection is provided
+      const orderDirection = config.orderDirection || 'ASC';
+      query += ` ORDER BY ${orderBy} ${orderDirection}`;
     }
 
     if (config.limit) {
@@ -372,7 +490,7 @@ export class DatabaseResource extends MCPResource {
       .join(', ');
 
     const whereClause = Object.entries(config.where!)
-      .map(([key, value]) => `${key} = ${value}`)
+      .map(([key, value]) => `${key} = '${value}'`)
       .join(' AND ');
 
     return `UPDATE ${config.table} SET ${setClause} WHERE ${whereClause}`;
@@ -392,7 +510,7 @@ export class DatabaseResource extends MCPResource {
   /**
    * Run SQL query
    */
-  private async runQuery(connection: any, query: string): Promise<any> {
+  private async runQuery(_connection: any, query: string): Promise<any> {
     // Mock database query execution
     // In a real implementation, this would use a database driver
     return new Promise((resolve, reject) => {
@@ -404,7 +522,11 @@ export class DatabaseResource extends MCPResource {
           resolve({ insertId: 1, affectedRows: 1 });
         } else if (query.includes('UPDATE') || query.includes('DELETE')) {
           resolve({ affectedRows: 1 });
-        } else if (query.includes('BEGIN') || query.includes('COMMIT') || query.includes('ROLLBACK')) {
+        } else if (
+          query.includes('BEGIN') ||
+          query.includes('COMMIT') ||
+          query.includes('ROLLBACK')
+        ) {
           resolve({});
         } else {
           reject(new Error('Invalid query'));
@@ -424,7 +546,6 @@ export class DatabaseResource extends MCPResource {
     }
   }
 
-
   /**
    * Get connection from pool
    */
@@ -439,7 +560,7 @@ export class DatabaseResource extends MCPResource {
     }
 
     // Wait for available connection
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const checkForConnection = () => {
         if (this.connectionPool.length > 0) {
           resolve(this.connectionPool.pop()!);
@@ -454,8 +575,8 @@ export class DatabaseResource extends MCPResource {
   /**
    * Return connection to pool
    */
-  private returnConnection(connection: any): void {
-    if (connection && connection.connected) {
+  private async returnConnection(connection: any): Promise<void> {
+    if (connection?.connected) {
       this.connectionPool.push(connection);
     } else {
       this.activeConnections--;
@@ -465,29 +586,17 @@ export class DatabaseResource extends MCPResource {
   /**
    * Health check
    */
-  async healthCheck(): Promise<{ status: string; details: any }> {
+  async healthCheck(): Promise<boolean> {
     try {
       const connection = await this.getConnection();
       this.returnConnection(connection);
 
-      return {
-        status: 'healthy',
-        details: {
-          poolSize: this.connectionPool.length,
-          activeConnections: this.activeConnections,
-          maxConnections: this.maxConnections,
-          poolConfig: this.poolConfig
-        }
-      };
+      return true;
     } catch (error) {
-      return {
-        status: 'unhealthy',
-        details: {
-          error: error.message,
-          poolSize: this.connectionPool.length,
-          activeConnections: this.activeConnections
-        }
-      };
+      this.logger.error('Database resource health check failed', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      return false;
     }
   }
 
@@ -499,7 +608,7 @@ export class DatabaseResource extends MCPResource {
     return {
       id: Math.random().toString(36).substr(2, 9),
       connected: true,
-      createdAt: new Date()
+      createdAt: new Date(),
     };
   }
 
@@ -523,7 +632,7 @@ export class DatabaseResource extends MCPResource {
   async cleanup(): Promise<void> {
     // Close all connections in pool
     for (const connection of this.connectionPool) {
-      if (connection && connection.connected) {
+      if (connection?.connected) {
         // Close connection (mock)
         connection.connected = false;
       }

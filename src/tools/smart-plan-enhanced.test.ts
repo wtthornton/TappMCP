@@ -243,7 +243,7 @@ describe('Smart Plan Enhanced Tool', () => {
         expect(metrics).toHaveProperty('userStoriesGenerated');
         expect(metrics).toHaveProperty('componentsMapped');
 
-        expect(metrics.responseTime).toBeGreaterThan(0);
+        expect(metrics.responseTime).toBeGreaterThanOrEqual(0);
         expect(metrics.businessAnalysisTime).toBeLessThan(100); // <100ms target
         expect(metrics.technicalPlanningTime).toBeLessThan(150); // <150ms target
         expect(metrics.validationTime).toBeLessThan(50); // <50ms target

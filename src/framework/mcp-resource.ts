@@ -9,7 +9,6 @@
  * - Error handling and recovery
  */
 
-import { z } from 'zod';
 import { performance } from 'perf_hooks';
 
 export interface MCPResourceConfig {
@@ -78,13 +77,13 @@ export abstract class MCPResource<TConnection = any, TData = any> {
       this.logger.info('Resource initialized successfully', {
         resourceName: this.config.name,
         type: this.config.type,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     } catch (error) {
       this.logger.error('Resource initialization failed', {
         resourceName: this.config.name,
         error: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
       throw error;
     }
@@ -154,7 +153,7 @@ export abstract class MCPResource<TConnection = any, TData = any> {
         requestId,
         connectionId,
         executionTime,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
 
       return {
@@ -165,10 +164,9 @@ export abstract class MCPResource<TConnection = any, TData = any> {
           timestamp: new Date().toISOString(),
           resourceName: this.config.name,
           version: this.config.version,
-          connectionId
-        }
+          connectionId,
+        },
       };
-
     } catch (error) {
       const executionTime = performance.now() - startTime;
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -179,7 +177,7 @@ export abstract class MCPResource<TConnection = any, TData = any> {
         requestId,
         error: errorMessage,
         executionTime,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
 
       return {
@@ -189,10 +187,9 @@ export abstract class MCPResource<TConnection = any, TData = any> {
           executionTime,
           timestamp: new Date().toISOString(),
           resourceName: this.config.name,
-          version: this.config.version
-        }
+          version: this.config.version,
+        },
       };
-
     } finally {
       // Return connection to pool
       if (connection) {
@@ -284,7 +281,7 @@ export abstract class MCPResource<TConnection = any, TData = any> {
     } catch (error) {
       this.logger.error('Health check failed', {
         resourceName: this.config.name,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
       return false;
     }
@@ -293,7 +290,7 @@ export abstract class MCPResource<TConnection = any, TData = any> {
   /**
    * Test connection health
    */
-  protected async testConnection(connection: TConnection): Promise<boolean> {
+  protected async testConnection(_connection: TConnection): Promise<boolean> {
     // Basic health check - can be overridden by subclasses
     return true;
   }
@@ -310,7 +307,7 @@ export abstract class MCPResource<TConnection = any, TData = any> {
       this.connectionPool = [];
 
       // Close all active connections
-      for (const [id, connection] of this.connections) {
+      for (const [_id, connection] of this.connections) {
         await this.closeConnection(connection);
       }
       this.connections.clear();
@@ -319,13 +316,13 @@ export abstract class MCPResource<TConnection = any, TData = any> {
 
       this.logger.info('Resource cleanup completed', {
         resourceName: this.config.name,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     } catch (error) {
       this.logger.error('Resource cleanup failed', {
         resourceName: this.config.name,
         error: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
       throw error;
     }
@@ -346,11 +343,6 @@ export abstract class MCPResource<TConnection = any, TData = any> {
  */
 export class MCPResourceFactory {
   private static resources = new Map<string, MCPResource>();
-  private static logger: any;
-
-  static setLogger(logger: any): void {
-    MCPResourceFactory.logger = logger;
-  }
 
   static registerResource<T extends MCPResource>(resource: T): void {
     MCPResourceFactory.resources.set(resource.getName(), resource);

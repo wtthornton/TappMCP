@@ -12,7 +12,7 @@ class MockMCPResource extends MCPResource {
     return { id: `conn_${Date.now()}` };
   }
 
-  protected async closeConnection(connection: any): Promise<void> {
+  protected async closeConnection(_connection: any): Promise<void> {
     // Mock implementation
   }
 
@@ -38,7 +38,7 @@ describe('ResourceLifecycleManager', () => {
     mockLogger = {
       info: vi.fn(),
       warn: vi.fn(),
-      error: vi.fn()
+      error: vi.fn(),
     };
 
     manager = new ResourceLifecycleManager(
@@ -46,7 +46,7 @@ describe('ResourceLifecycleManager', () => {
         maxIdleTime: 1000, // 1 second for testing
         maxMemoryUsage: 1024 * 1024, // 1MB for testing
         cleanupInterval: 500, // 500ms for testing
-        forceCleanupThreshold: 2000 // 2 seconds for testing
+        forceCleanupThreshold: 2000, // 2 seconds for testing
       },
       {
         healthCheckInterval: 100, // 100ms for testing
@@ -54,8 +54,8 @@ describe('ResourceLifecycleManager', () => {
         alertThresholds: {
           memoryUsage: 80,
           errorRate: 10,
-          responseTime: 1000
-        }
+          responseTime: 1000,
+        },
       },
       mockLogger
     );
@@ -65,7 +65,7 @@ describe('ResourceLifecycleManager', () => {
       type: 'file',
       description: 'Test resource',
       version: '1.0.0',
-      connectionConfig: {}
+      connectionConfig: {},
     });
   });
 
@@ -92,7 +92,7 @@ describe('ResourceLifecycleManager', () => {
         'Resource registered for lifecycle management',
         expect.objectContaining({
           resourceName: 'test-resource',
-          resourceType: 'file'
+          resourceType: 'file',
         })
       );
     });
@@ -110,7 +110,7 @@ describe('ResourceLifecycleManager', () => {
         'Resource lifecycle management started',
         expect.objectContaining({
           cleanupInterval: 500,
-          monitoringInterval: 50
+          monitoringInterval: 50,
         })
       );
     });
@@ -271,7 +271,7 @@ describe('ResourceLifecycleManager', () => {
         type: 'file',
         description: 'Error resource',
         version: '1.0.0',
-        connectionConfig: {}
+        connectionConfig: {},
       });
 
       // Mock cleanup to throw error
@@ -284,7 +284,7 @@ describe('ResourceLifecycleManager', () => {
         'Resource cleanup failed',
         expect.objectContaining({
           resourceName: 'error-resource',
-          error: 'Cleanup failed'
+          error: 'Cleanup failed',
         })
       );
     });

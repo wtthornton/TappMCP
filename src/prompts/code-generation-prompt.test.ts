@@ -1,5 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { CodeGenerationPrompt, CodeGenerationPromptSchema, type CodeGenerationPromptInput } from './code-generation-prompt.js';
+import {
+  CodeGenerationPrompt,
+  CodeGenerationPromptSchema,
+  type CodeGenerationPromptInput,
+} from './code-generation-prompt.js';
 
 describe('CodeGenerationPrompt', () => {
   let prompt: CodeGenerationPrompt;
@@ -25,7 +29,7 @@ describe('CodeGenerationPrompt', () => {
         task: 'Create a function to calculate the factorial of a number',
         language: 'TypeScript',
         includeTests: true,
-        includeComments: true
+        includeComments: true,
       };
 
       const result = await prompt.generateCode(input);
@@ -44,7 +48,7 @@ describe('CodeGenerationPrompt', () => {
         language: 'TypeScript',
         framework: 'React',
         requirements: ['Use hooks', 'Include form validation'],
-        includeTests: true
+        includeTests: true,
       };
 
       const result = await prompt.generateCode(input);
@@ -62,7 +66,7 @@ describe('CodeGenerationPrompt', () => {
         language: 'Python',
         style: 'functional',
         complexity: 'medium',
-        includeDocumentation: true
+        includeDocumentation: true,
       };
 
       const result = await prompt.generateCode(input);
@@ -90,7 +94,7 @@ describe('CodeGenerationPrompt', () => {
     it('should generate code with singleton pattern', async () => {
       const input: CodeGenerationPromptInput = {
         task: 'Create a database connection manager',
-        language: 'TypeScript'
+        language: 'TypeScript',
       };
 
       const result = await prompt.generateWithPattern(input, 'singleton');
@@ -103,7 +107,7 @@ describe('CodeGenerationPrompt', () => {
     it('should generate code with factory pattern', async () => {
       const input: CodeGenerationPromptInput = {
         task: 'Create a payment processor',
-        language: 'TypeScript'
+        language: 'TypeScript',
       };
 
       const result = await prompt.generateWithPattern(input, 'factory');
@@ -116,7 +120,7 @@ describe('CodeGenerationPrompt', () => {
     it('should generate code with observer pattern', async () => {
       const input: CodeGenerationPromptInput = {
         task: 'Create an event system',
-        language: 'TypeScript'
+        language: 'TypeScript',
       };
 
       const result = await prompt.generateWithPattern(input, 'observer');
@@ -131,7 +135,7 @@ describe('CodeGenerationPrompt', () => {
     it('should generate tests with Jest', async () => {
       const input: CodeGenerationPromptInput = {
         task: 'Create a utility function for string manipulation',
-        language: 'TypeScript'
+        language: 'TypeScript',
       };
 
       const result = await prompt.generateTests(input, 'jest');
@@ -144,7 +148,7 @@ describe('CodeGenerationPrompt', () => {
     it('should generate tests with Vitest', async () => {
       const input: CodeGenerationPromptInput = {
         task: 'Create a data validation function',
-        language: 'TypeScript'
+        language: 'TypeScript',
       };
 
       const result = await prompt.generateTests(input, 'vitest');
@@ -157,7 +161,7 @@ describe('CodeGenerationPrompt', () => {
     it('should generate tests with pytest', async () => {
       const input: CodeGenerationPromptInput = {
         task: 'Create a data processing function',
-        language: 'Python'
+        language: 'Python',
       };
 
       const result = await prompt.generateTests(input, 'pytest');
@@ -186,7 +190,7 @@ describe('CodeGenerationPrompt', () => {
 
       expect(result.success).toBe(true);
       expect(result.prompt).toContain('performance');
-      expect(result.prompt).toContain('optimize');
+      expect(result.prompt).toContain('Optimize');
     });
 
     it('should optimize code for readability', async () => {
@@ -209,7 +213,10 @@ describe('CodeGenerationPrompt', () => {
         }
       `;
 
-      const result = await prompt.optimizeCode(code, 'JavaScript', ['performance', 'maintainability']);
+      const result = await prompt.optimizeCode(code, 'JavaScript', [
+        'performance',
+        'maintainability',
+      ]);
 
       expect(result.success).toBe(true);
       expect(result.prompt).toContain('performance');
@@ -221,7 +228,7 @@ describe('CodeGenerationPrompt', () => {
     it('should validate required fields', () => {
       const validInput = {
         task: 'Create a function',
-        language: 'TypeScript'
+        language: 'TypeScript',
       };
 
       expect(() => CodeGenerationPromptSchema.parse(validInput)).not.toThrow();
@@ -230,7 +237,7 @@ describe('CodeGenerationPrompt', () => {
     it('should reject invalid language', () => {
       const invalidInput = {
         task: 'Create a function',
-        language: 123 // Should be string
+        language: 123, // Should be string
       };
 
       expect(() => CodeGenerationPromptSchema.parse(invalidInput)).toThrow();
@@ -240,7 +247,7 @@ describe('CodeGenerationPrompt', () => {
       const invalidInput = {
         task: 'Create a function',
         language: 'TypeScript',
-        style: 'invalid-style'
+        style: 'invalid-style',
       };
 
       expect(() => CodeGenerationPromptSchema.parse(invalidInput)).toThrow();
@@ -250,7 +257,7 @@ describe('CodeGenerationPrompt', () => {
       const invalidInput = {
         task: 'Create a function',
         language: 'TypeScript',
-        complexity: 'very-complex'
+        complexity: 'very-complex',
       };
 
       expect(() => CodeGenerationPromptSchema.parse(invalidInput)).toThrow();
@@ -261,7 +268,7 @@ describe('CodeGenerationPrompt', () => {
     it('should complete within reasonable time', async () => {
       const input: CodeGenerationPromptInput = {
         task: 'Create a simple calculator',
-        language: 'TypeScript'
+        language: 'TypeScript',
       };
 
       const startTime = performance.now();
@@ -277,7 +284,7 @@ describe('CodeGenerationPrompt', () => {
     it('should use caching for repeated requests', async () => {
       const input: CodeGenerationPromptInput = {
         task: 'Create a simple function',
-        language: 'TypeScript'
+        language: 'TypeScript',
       };
 
       // First call

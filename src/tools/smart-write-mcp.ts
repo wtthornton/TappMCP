@@ -39,19 +39,23 @@ const SmartWriteOutputSchema = z.object({
     framework: z.string().optional(),
     thoughtProcess: z.array(z.string()),
     dependencies: z.array(z.string()),
-    testCases: z.array(z.object({
-      name: z.string(),
-      description: z.string(),
-      code: z.string(),
-    })),
+    testCases: z.array(
+      z.object({
+        name: z.string(),
+        description: z.string(),
+        code: z.string(),
+      })
+    ),
     documentation: z.object({
       description: z.string(),
-      parameters: z.array(z.object({
-        name: z.string(),
-        type: z.string(),
-        description: z.string(),
-        required: z.boolean(),
-      })),
+      parameters: z.array(
+        z.object({
+          name: z.string(),
+          type: z.string(),
+          description: z.string(),
+          required: z.boolean(),
+        })
+      ),
       returns: z.string(),
       examples: z.array(z.string()),
     }),
@@ -75,12 +79,13 @@ const SmartWriteOutputSchema = z.object({
 // MCP Tool Configuration
 const config: MCPToolConfig = {
   name: 'smart_write',
-  description: 'Generate code with role-based expertise, integrating seamlessly with smart_begin project context',
+  description:
+    'Generate code with role-based expertise, integrating seamlessly with smart_begin project context',
   version: '2.0.0',
   inputSchema: SmartWriteInputSchema,
   outputSchema: SmartWriteOutputSchema,
   timeout: 60000, // 60 seconds for code generation
-  retries: 1
+  retries: 1,
 };
 
 export type SmartWriteInput = z.infer<typeof SmartWriteInputSchema>;
@@ -100,14 +105,20 @@ export class SmartWriteMCPTool extends MCPTool<SmartWriteInput, SmartWriteOutput
   /**
    * Execute the smart write tool
    */
-  async execute(input: SmartWriteInput, context?: MCPToolContext): Promise<MCPToolResult<SmartWriteOutput>> {
-    return super.execute(input, context);
+  async execute(
+    input: SmartWriteInput,
+    _context?: MCPToolContext
+  ): Promise<MCPToolResult<SmartWriteOutput>> {
+    return super.execute(input, _context);
   }
 
   /**
    * Process the smart write logic
    */
-  protected async executeInternal(input: SmartWriteInput, context?: MCPToolContext): Promise<SmartWriteOutput> {
+  protected async executeInternal(
+    input: SmartWriteInput,
+    _context?: MCPToolContext
+  ): Promise<SmartWriteOutput> {
     // Generate code ID
     const codeId = this.generateCodeId(input.featureDescription);
 
@@ -141,7 +152,10 @@ export class SmartWriteMCPTool extends MCPTool<SmartWriteInput, SmartWriteOutput
    */
   private generateCodeId(featureDescription: string): string {
     const timestamp = Date.now();
-    const cleanDescription = featureDescription.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+    const cleanDescription = featureDescription
+      .toLowerCase()
+      .replace(/\s+/g, '_')
+      .replace(/[^a-z0-9_]/g, '');
     return `code_${timestamp}_${cleanDescription}`;
   }
 
@@ -159,13 +173,24 @@ export class SmartWriteMCPTool extends MCPTool<SmartWriteInput, SmartWriteOutput
     const thoughtProcess = this.generateThoughtProcess(featureDescription, targetRole, codeType);
 
     // Generate code content
-    const content = this.generateCodeContent(featureDescription, language, framework, codeType, qualityRequirements);
+    const content = this.generateCodeContent(
+      featureDescription,
+      language,
+      framework,
+      codeType,
+      qualityRequirements
+    );
 
     // Generate dependencies
     const dependencies = this.generateDependencies(techStack, framework);
 
     // Generate test cases
-    const testCases = this.generateTestCases(featureDescription, language, framework, qualityRequirements?.testCoverage || 85);
+    const testCases = this.generateTestCases(
+      featureDescription,
+      language,
+      framework,
+      qualityRequirements?.testCoverage ?? 85
+    );
 
     // Generate documentation
     const documentation = this.generateDocumentation(featureDescription, language, codeType);
@@ -210,7 +235,11 @@ export class SmartWriteMCPTool extends MCPTool<SmartWriteInput, SmartWriteOutput
   /**
    * Generate thought process for code generation
    */
-  private generateThoughtProcess(featureDescription: string, targetRole: string, codeType: string): string[] {
+  private generateThoughtProcess(
+    featureDescription: string,
+    targetRole: string,
+    codeType: string
+  ): string[] {
     const thoughts = [
       `Analyzing feature: ${featureDescription}`,
       `Target role: ${targetRole}`,
@@ -250,12 +279,12 @@ export class SmartWriteMCPTool extends MCPTool<SmartWriteInput, SmartWriteOutput
   private generateCodeContent(
     featureDescription: string,
     language: string,
-    framework: string | undefined,
+    _framework: string | undefined,
     codeType: string,
     qualityRequirements?: SmartWriteInput['qualityRequirements']
   ): string {
-    const securityLevel = qualityRequirements?.securityLevel || 'medium';
-    const complexity = qualityRequirements?.complexity || 5;
+    const securityLevel = qualityRequirements?.securityLevel ?? 'medium';
+    const complexity = qualityRequirements?.complexity ?? 5;
 
     let code = '';
 
@@ -264,16 +293,16 @@ export class SmartWriteMCPTool extends MCPTool<SmartWriteInput, SmartWriteOutput
         code = this.generateFunctionCode(featureDescription, language, securityLevel, complexity);
         break;
       case 'component':
-        code = this.generateComponentCode(featureDescription, language, framework, securityLevel);
+        code = this.generateComponentCode(featureDescription, language, _framework, securityLevel);
         break;
       case 'api':
-        code = this.generateApiCode(featureDescription, language, framework, securityLevel);
+        code = this.generateApiCode(featureDescription, language, _framework, securityLevel);
         break;
       case 'test':
-        code = this.generateTestCode(featureDescription, language, framework);
+        code = this.generateTestCode(featureDescription, language, _framework);
         break;
       case 'config':
-        code = this.generateConfigCode(featureDescription, language, framework);
+        code = this.generateConfigCode(featureDescription, language, _framework);
         break;
       case 'documentation':
         code = this.generateDocumentationCode(featureDescription, language);
@@ -288,7 +317,12 @@ export class SmartWriteMCPTool extends MCPTool<SmartWriteInput, SmartWriteOutput
   /**
    * Generate function code
    */
-  private generateFunctionCode(featureDescription: string, language: string, securityLevel: string, complexity: number): string {
+  private generateFunctionCode(
+    featureDescription: string,
+    language: string,
+    securityLevel: string,
+    _complexity: number
+  ): string {
     if (language === 'TypeScript') {
       return `/**
  * ${featureDescription}
@@ -390,8 +424,13 @@ def process_feature(input_str: str) -> Dict[str, Any]:
   /**
    * Generate component code
    */
-  private generateComponentCode(featureDescription: string, language: string, framework: string | undefined, securityLevel: string): string {
-    if (framework === 'React' && language === 'TypeScript') {
+  private generateComponentCode(
+    featureDescription: string,
+    language: string,
+    _framework: string | undefined,
+    securityLevel: string
+  ): string {
+    if (_framework === 'React' && language === 'TypeScript') {
       return `import React, { useState, useEffect } from 'react';
 
 interface ${this.toPascalCase(featureDescription)}Props {
@@ -439,14 +478,19 @@ export const ${this.toPascalCase(featureDescription)}: React.FC<${this.toPascalC
 };`;
     }
 
-    return `// ${featureDescription} component\n// Implementation for ${framework || language}`;
+    return `// ${featureDescription} component\n// Implementation for ${_framework ?? language}`;
   }
 
   /**
    * Generate API code
    */
-  private generateApiCode(featureDescription: string, language: string, framework: string | undefined, securityLevel: string): string {
-    if (framework === 'Express.js' && language === 'TypeScript') {
+  private generateApiCode(
+    featureDescription: string,
+    language: string,
+    _framework: string | undefined,
+    securityLevel: string
+  ): string {
+    if (_framework === 'Express.js' && language === 'TypeScript') {
       return `import express, { Request, Response } from 'express';
 import { z } from 'zod';
 
@@ -498,13 +542,17 @@ function processFeature(input: string, options?: any) {
 export default router;`;
     }
 
-    return `// ${featureDescription} API endpoint\n// Implementation for ${framework || language}`;
+    return `// ${featureDescription} API endpoint\n// Implementation for ${_framework ?? language}`;
   }
 
   /**
    * Generate test code
    */
-  private generateTestCode(featureDescription: string, language: string, framework: string | undefined): string {
+  private generateTestCode(
+    featureDescription: string,
+    language: string,
+    _framework: string | undefined
+  ): string {
     if (language === 'TypeScript') {
       return `import { describe, it, expect, beforeEach } from 'vitest';
 import { processFeature } from './${this.toKebabCase(featureDescription)}';
@@ -542,7 +590,11 @@ describe('${this.toPascalCase(featureDescription)}', () => {
   /**
    * Generate config code
    */
-  private generateConfigCode(featureDescription: string, language: string, framework: string | undefined): string {
+  private generateConfigCode(
+    featureDescription: string,
+    language: string,
+    _framework: string | undefined
+  ): string {
     if (language === 'TypeScript') {
       return `export const ${this.toCamelCase(featureDescription)}Config = {
   // ${featureDescription} configuration
@@ -588,7 +640,7 @@ See the examples directory for more detailed usage examples.`;
   /**
    * Generate dependencies
    */
-  private generateDependencies(techStack: string[], framework: string | undefined): string[] {
+  private generateDependencies(techStack: string[], _framework: string | undefined): string[] {
     const dependencies: string[] = [];
 
     if (techStack.includes('typescript')) {
@@ -617,7 +669,12 @@ See the examples directory for more detailed usage examples.`;
   /**
    * Generate test cases
    */
-  private generateTestCases(featureDescription: string, language: string, framework: string | undefined, testCoverage: number): Array<{
+  private generateTestCases(
+    _featureDescription: string,
+    _language: string,
+    _framework: string | undefined,
+    testCoverage: number
+  ): Array<{
     name: string;
     description: string;
     code: string;
@@ -626,25 +683,25 @@ See the examples directory for more detailed usage examples.`;
       {
         name: 'should handle valid input',
         description: 'Test with valid input parameters',
-        code: `expect(processFeature('valid input')).toBeDefined();`
+        code: `expect(processFeature('valid input')).toBeDefined();`,
       },
       {
         name: 'should handle empty input',
         description: 'Test with empty input',
-        code: `expect(processFeature('')).toThrow();`
+        code: `expect(processFeature('')).toThrow();`,
       },
       {
         name: 'should handle invalid input',
         description: 'Test with invalid input type',
-        code: `expect(processFeature(null)).toThrow();`
-      }
+        code: `expect(processFeature(null)).toThrow();`,
+      },
     ];
 
     if (testCoverage > 80) {
       testCases.push({
         name: 'should handle edge cases',
         description: 'Test with edge case inputs',
-        code: `expect(processFeature('a')).toBeDefined();`
+        code: `expect(processFeature('a')).toBeDefined();`,
       });
     }
 
@@ -654,7 +711,11 @@ See the examples directory for more detailed usage examples.`;
   /**
    * Generate documentation
    */
-  private generateDocumentation(featureDescription: string, language: string, codeType: string): SmartWriteOutput['generatedCode']['documentation'] {
+  private generateDocumentation(
+    featureDescription: string,
+    language: string,
+    codeType: string
+  ): SmartWriteOutput['generatedCode']['documentation'] {
     return {
       description: `This ${codeType} provides functionality for ${featureDescription}`,
       parameters: [
@@ -662,24 +723,27 @@ See the examples directory for more detailed usage examples.`;
           name: 'input',
           type: 'string',
           description: 'The input parameter to process',
-          required: true
-        }
+          required: true,
+        },
       ],
       returns: 'Object containing result, success status, and optional data',
       examples: [
         `const result = processFeature('example input');`,
-        `if (result.success) { console.log(result.data); }`
-      ]
+        `if (result.success) { console.log(result.data); }`,
+      ],
     };
   }
 
   /**
    * Calculate quality metrics
    */
-  private calculateQualityMetrics(input: SmartWriteInput, generatedCode: SmartWriteOutput['generatedCode']): SmartWriteOutput['qualityMetrics'] {
-    const baseCoverage = input.qualityRequirements?.testCoverage || 85;
-    const baseComplexity = input.qualityRequirements?.complexity || 5;
-    const securityLevel = input.qualityRequirements?.securityLevel || 'medium';
+  private calculateQualityMetrics(
+    input: SmartWriteInput,
+    _generatedCode: SmartWriteOutput['generatedCode']
+  ): SmartWriteOutput['qualityMetrics'] {
+    const baseCoverage = input.qualityRequirements?.testCoverage ?? 85;
+    const baseComplexity = input.qualityRequirements?.complexity ?? 5;
+    const securityLevel = input.qualityRequirements?.securityLevel ?? 'medium';
 
     let securityScore = 60; // Base score
     if (securityLevel === 'high') securityScore = 90;
@@ -697,9 +761,12 @@ See the examples directory for more detailed usage examples.`;
   /**
    * Calculate business value
    */
-  private calculateBusinessValue(input: SmartWriteInput, generatedCode: SmartWriteOutput['generatedCode']): SmartWriteOutput['businessValue'] {
-    const priority = input.businessContext?.priority || 'medium';
-    const codeType = input.codeType;
+  private calculateBusinessValue(
+    input: SmartWriteInput,
+    _generatedCode: SmartWriteOutput['generatedCode']
+  ): SmartWriteOutput['businessValue'] {
+    const priority = input.businessContext?.priority ?? 'medium';
+    const { codeType } = input;
 
     let timeSaved = 2; // Base hours
     let costPrevention = 500; // Base cost
@@ -729,20 +796,23 @@ See the examples directory for more detailed usage examples.`;
         'Reduced development time',
         'Improved code quality',
         'Enhanced maintainability',
-        'Better error handling'
-      ]
+        'Better error handling',
+      ],
     };
   }
 
   /**
    * Generate next steps
    */
-  private generateNextSteps(input: SmartWriteInput, generatedCode: SmartWriteOutput['generatedCode']): string[] {
+  private generateNextSteps(
+    input: SmartWriteInput,
+    _generatedCode: SmartWriteOutput['generatedCode']
+  ): string[] {
     const steps = [
       'Review the generated code',
       'Run tests to verify functionality',
       'Integrate with existing codebase',
-      'Update documentation'
+      'Update documentation',
     ];
 
     if (input.codeType === 'api') {
@@ -757,7 +827,10 @@ See the examples directory for more detailed usage examples.`;
   /**
    * Generate role-specific insights
    */
-  private generateRoleSpecificInsights(input: SmartWriteInput, generatedCode: SmartWriteOutput['generatedCode']): string[] {
+  private generateRoleSpecificInsights(
+    input: SmartWriteInput,
+    _generatedCode: SmartWriteOutput['generatedCode']
+  ): string[] {
     const insights: string[] = [];
 
     switch (input.targetRole) {
@@ -795,9 +868,11 @@ See the examples directory for more detailed usage examples.`;
    * Convert string to PascalCase
    */
   private toPascalCase(str: string): string {
-    return str.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) =>
-      index === 0 ? word.toUpperCase() : word.toLowerCase()
-    ).replace(/\s+/g, '');
+    return str
+      .replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) =>
+        index === 0 ? word.toUpperCase() : word.toLowerCase()
+      )
+      .replace(/\s+/g, '');
   }
 
   /**
@@ -812,7 +887,10 @@ See the examples directory for more detailed usage examples.`;
    * Convert string to kebab-case
    */
   private toKebabCase(str: string): string {
-    return str.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    return str
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '');
   }
 }
 
@@ -832,7 +910,7 @@ export async function handleSmartWrite(input: unknown): Promise<{
   return {
     success: result.success,
     data: result.data,
-    error: result.error,
+    error: result.error ?? undefined,
     timestamp: result.metadata.timestamp,
   };
 }

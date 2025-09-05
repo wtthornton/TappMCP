@@ -11,6 +11,7 @@
 
 import { z } from 'zod';
 import { performance } from 'perf_hooks';
+import Handlebars from 'handlebars';
 
 export interface MCPPromptConfig {
   name: string;
@@ -97,8 +98,11 @@ export abstract class MCPPrompt<TVariables = any, TOutput = any> {
         requestId,
         executionTime,
         templateHash,
-        variablesUsed: Object.keys(validatedVariables),
-        timestamp: new Date().toISOString()
+        variablesUsed:
+          validatedVariables && typeof validatedVariables === 'object'
+            ? Object.keys(validatedVariables)
+            : [],
+        timestamp: new Date().toISOString(),
       });
 
       return {
@@ -111,10 +115,12 @@ export abstract class MCPPrompt<TVariables = any, TOutput = any> {
           promptName: this.config.name,
           version: this.config.version,
           templateHash,
-          variablesUsed: Object.keys(validatedVariables)
-        }
+          variablesUsed:
+            validatedVariables && typeof validatedVariables === 'object'
+              ? Object.keys(validatedVariables)
+              : [],
+        },
       };
-
     } catch (error) {
       const executionTime = performance.now() - startTime;
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -125,7 +131,7 @@ export abstract class MCPPrompt<TVariables = any, TOutput = any> {
         requestId,
         error: errorMessage,
         executionTime,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
 
       return {
@@ -137,8 +143,8 @@ export abstract class MCPPrompt<TVariables = any, TOutput = any> {
           promptName: this.config.name,
           version: this.config.version,
           templateHash: '',
-          variablesUsed: []
-        }
+          variablesUsed: [],
+        },
       };
     }
   }
@@ -149,9 +155,11 @@ export abstract class MCPPrompt<TVariables = any, TOutput = any> {
   protected async validateVariables(variables: TVariables): Promise<TVariables> {
     try {
       const validationSchema = z.object(this.config.variables);
-      return validationSchema.parse(variables);
+      return validationSchema.parse(variables) as TVariables;
     } catch (error) {
-      throw new Error(`Variable validation failed: ${error instanceof Error ? error.message : 'Unknown validation error'}`);
+      throw new Error(
+        `Variable validation failed: ${error instanceof Error ? error.message : 'Unknown validation error'}`
+      );
     }
   }
 
@@ -166,12 +174,14 @@ export abstract class MCPPrompt<TVariables = any, TOutput = any> {
     try {
       return this.config.contextSchema.parse(context);
     } catch (error) {
-      throw new Error(`Context validation failed: ${error instanceof Error ? error.message : 'Unknown validation error'}`);
+      throw new Error(
+        `Context validation failed: ${error instanceof Error ? error.message : 'Unknown validation error'}`
+      );
     }
   }
 
   /**
-   * Render template with variables and context
+   * Render template with variables and context using Handlebars
    */
   protected async renderTemplate(
     variables: TVariables,
@@ -184,55 +194,49 @@ export abstract class MCPPrompt<TVariables = any, TOutput = any> {
       return this.templateCache.get(templateKey)!;
     }
 
-    let renderedTemplate = this.config.template;
+    try {
+      // Compile Handlebars template
+      const template = Handlebars.compile(this.config.template);
 
-    // Replace variables
-    for (const [key, value] of Object.entries(variables)) {
-      const placeholder = `{{${key}}}`;
-      renderedTemplate = renderedTemplate.replace(new RegExp(placeholder, 'g'), String(value));
-    }
+      // Prepare template data
+      const templateData = {
+        ...variables,
+        context: context || {},
+      };
 
-    // Replace context variables
-    if (context) {
-      for (const [key, value] of Object.entries(context)) {
-        if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
-          const placeholder = `{{context.${key}}}`;
-          renderedTemplate = renderedTemplate.replace(new RegExp(placeholder, 'g'), String(value));
-        }
-      }
+      // Render template
+      const renderedTemplate = template(templateData);
 
-      // Also replace businessContext variables
-      if (context.businessContext) {
-        for (const [key, value] of Object.entries(context.businessContext)) {
-          if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
-            const placeholder = `{{context.${key}}}`;
-            renderedTemplate = renderedTemplate.replace(new RegExp(placeholder, 'g'), String(value));
+      // Cache the rendered template
+      if (this.config.cacheConfig?.enabled) {
+        this.templateCache.set(templateKey, renderedTemplate);
+
+        // Cleanup cache if it exceeds max size
+        if (this.templateCache.size > (this.config.cacheConfig.maxSize || 100)) {
+          const firstKey = this.templateCache.keys().next().value;
+          if (firstKey !== undefined) {
+            this.templateCache.delete(firstKey);
           }
         }
       }
+
+      return renderedTemplate;
+    } catch (error) {
+      this.logger.error('Template rendering failed', {
+        promptName: this.config.name,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        template: `${this.config.template.substring(0, 100)}...`,
+      });
+      throw new Error(
+        `Template rendering failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
-
-    // Cache the rendered template
-    if (this.config.cacheConfig?.enabled) {
-      this.templateCache.set(templateKey, renderedTemplate);
-
-      // Cleanup cache if it exceeds max size
-      if (this.templateCache.size > (this.config.cacheConfig.maxSize || 100)) {
-        const firstKey = this.templateCache.keys().next().value;
-        this.templateCache.delete(firstKey);
-      }
-    }
-
-    return renderedTemplate;
   }
 
   /**
    * Process the rendered prompt (can be overridden by subclasses)
    */
-  protected async processPrompt(
-    prompt: string,
-    context?: MCPPromptContext
-  ): Promise<TOutput> {
+  protected async processPrompt(prompt: string, _context?: MCPPromptContext): Promise<TOutput> {
     // Default implementation returns the prompt as-is
     return prompt as TOutput;
   }
@@ -260,7 +264,7 @@ export abstract class MCPPrompt<TVariables = any, TOutput = any> {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // Convert to 32-bit integer
     }
     return Math.abs(hash).toString(36);
@@ -306,7 +310,7 @@ export abstract class MCPPrompt<TVariables = any, TOutput = any> {
     } catch (error) {
       this.logger.error('Health check failed', {
         promptName: this.config.name,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
       return false;
     }
@@ -315,7 +319,7 @@ export abstract class MCPPrompt<TVariables = any, TOutput = any> {
   /**
    * Create test variables for health check
    */
-  protected createTestVariables(): Partial<TVariables> {
+  protected createTestVariables(): TVariables {
     const testVariables: any = {};
     for (const [key, schema] of Object.entries(this.config.variables)) {
       // Create minimal test value based on schema type
@@ -333,7 +337,7 @@ export abstract class MCPPrompt<TVariables = any, TOutput = any> {
         testVariables[key] = null;
       }
     }
-    return testVariables;
+    return testVariables as TVariables;
   }
 
   /**
@@ -349,7 +353,7 @@ export abstract class MCPPrompt<TVariables = any, TOutput = any> {
   getCacheStats(): { size: number; maxSize: number } {
     return {
       size: this.templateCache.size,
-      maxSize: this.config.cacheConfig?.maxSize || 100
+      maxSize: this.config.cacheConfig?.maxSize || 100,
     };
   }
 
@@ -368,10 +372,9 @@ export abstract class MCPPrompt<TVariables = any, TOutput = any> {
  */
 export class MCPPromptFactory {
   private static prompts = new Map<string, MCPPrompt>();
-  private static logger: any;
 
-  static setLogger(logger: any): void {
-    MCPPromptFactory.logger = logger;
+  static setLogger(_logger: any): void {
+    // Logger functionality not yet implemented
   }
 
   static registerPrompt<T extends MCPPrompt>(prompt: T): void {

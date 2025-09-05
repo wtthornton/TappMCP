@@ -1,4 +1,9 @@
-import { MCPPrompt, MCPPromptConfig, MCPPromptContext, MCPPromptResult } from '../framework/mcp-prompt.js';
+import {
+  MCPPrompt,
+  MCPPromptConfig,
+  MCPPromptContext,
+  MCPPromptResult,
+} from '../framework/mcp-prompt.js';
 import { z } from 'zod';
 
 /**
@@ -7,16 +12,27 @@ import { z } from 'zod';
 export const DocumentationPromptSchema = z.object({
   code: z.string().describe('The code to document'),
   language: z.string().describe('Programming language'),
-  docType: z.enum(['api', 'function', 'class', 'module', 'readme', 'tutorial', 'guide']).describe('Type of documentation to generate'),
-  style: z.enum(['jsdoc', 'tsdoc', 'sphinx', 'markdown', 'asciidoc', 'plain']).optional().describe('Documentation style'),
-  audience: z.enum(['developer', 'end-user', 'maintainer', 'beginner', 'expert']).optional().describe('Target audience'),
+  docType: z
+    .enum(['api', 'function', 'class', 'module', 'readme', 'tutorial', 'guide'])
+    .describe('Type of documentation to generate'),
+  style: z
+    .enum(['jsdoc', 'tsdoc', 'sphinx', 'markdown', 'asciidoc', 'plain'])
+    .optional()
+    .describe('Documentation style'),
+  audience: z
+    .enum(['developer', 'end-user', 'maintainer', 'beginner', 'expert'])
+    .optional()
+    .describe('Target audience'),
   includeExamples: z.boolean().optional().describe('Whether to include code examples'),
   includeParameters: z.boolean().optional().describe('Whether to include parameter documentation'),
-  includeReturnValues: z.boolean().optional().describe('Whether to include return value documentation'),
+  includeReturnValues: z
+    .boolean()
+    .optional()
+    .describe('Whether to include return value documentation'),
   includeErrors: z.boolean().optional().describe('Whether to include error documentation'),
   includeUsage: z.boolean().optional().describe('Whether to include usage examples'),
   context: z.string().optional().describe('Additional context about the code'),
-  requirements: z.array(z.string()).optional().describe('Specific documentation requirements')
+  requirements: z.array(z.string()).optional().describe('Specific documentation requirements'),
 });
 
 export type DocumentationPromptInput = z.infer<typeof DocumentationPromptSchema>;
@@ -108,14 +124,14 @@ Format the documentation according to {{style}} standards and make it suitable f
     includeErrors: z.boolean().optional(),
     includeUsage: z.boolean().optional(),
     context: z.string().optional(),
-    requirements: z.array(z.string()).optional()
+    requirements: z.array(z.string()).optional(),
   },
   contextSchema: DocumentationPromptSchema,
   cacheConfig: {
     enabled: true,
     ttl: 10800000, // 3 hours
-    maxSize: 150
-  }
+    maxSize: 150,
+  },
 };
 
 /**
@@ -129,7 +145,10 @@ export class DocumentationPrompt extends MCPPrompt {
   /**
    * Generate documentation
    */
-  async generateDocumentation(input: DocumentationPromptInput, context?: MCPPromptContext): Promise<MCPPromptResult<string>> {
+  async generateDocumentation(
+    input: DocumentationPromptInput,
+    context?: MCPPromptContext
+  ): Promise<MCPPromptResult<string>> {
     const startTime = performance.now();
 
     try {
@@ -137,18 +156,9 @@ export class DocumentationPrompt extends MCPPrompt {
       const validatedInput = DocumentationPromptSchema.parse(input);
 
       // Render the prompt template
-      const prompt = await this.render(validatedInput, context);
+      const prompt = await this.renderTemplate(validatedInput, context);
 
-      // Add documentation specific metadata
-      const metadata = {
-        ...this.getBaseMetadata(),
-        variablesUsed: Object.keys(validatedInput),
-        docType: validatedInput.docType,
-        language: validatedInput.language,
-        style: validatedInput.style || 'markdown',
-        audience: validatedInput.audience || 'developer',
-        codeLength: validatedInput.code.length
-      };
+      // Metadata will be handled by base class
 
       const executionTime = performance.now() - startTime;
 
@@ -157,21 +167,28 @@ export class DocumentationPrompt extends MCPPrompt {
         prompt,
         data: prompt,
         metadata: {
-          ...metadata,
-          executionTime
-        }
+          executionTime,
+          timestamp: new Date().toISOString(),
+          promptName: this.config.name,
+          version: this.config.version,
+          templateHash: '',
+          variablesUsed: Object.keys(validatedInput),
+        },
       };
-
     } catch (error) {
       const executionTime = performance.now() - startTime;
 
       return {
         success: false,
-        error: error.message,
+        error: error instanceof Error ? error.message : 'Unknown error',
         metadata: {
-          ...this.getBaseMetadata(),
-          executionTime
-        }
+          executionTime,
+          timestamp: new Date().toISOString(),
+          promptName: this.config.name,
+          version: this.config.version,
+          templateHash: '',
+          variablesUsed: [],
+        },
       };
     }
   }
@@ -195,7 +212,7 @@ export class DocumentationPrompt extends MCPPrompt {
       includeReturnValues: true,
       includeErrors: true,
       includeUsage: true,
-      includeExamples: true
+      includeExamples: true,
     };
 
     return this.generateDocumentation(input, context);
@@ -222,10 +239,10 @@ export class DocumentationPrompt extends MCPPrompt {
         'Include usage examples',
         'Include API reference',
         'Include contributing guidelines',
-        'Include license information'
+        'Include license information',
       ],
       includeUsage: true,
-      includeExamples: true
+      includeExamples: true,
     };
 
     return this.generateDocumentation(input, context);
@@ -252,10 +269,10 @@ export class DocumentationPrompt extends MCPPrompt {
         'Beginner-friendly explanations',
         'Common pitfalls and how to avoid them',
         'Progressive complexity',
-        'Practical examples'
+        'Practical examples',
       ],
       includeUsage: true,
-      includeExamples: true
+      includeExamples: true,
     };
 
     return this.generateDocumentation(input, context);
@@ -280,7 +297,7 @@ export class DocumentationPrompt extends MCPPrompt {
       includeReturnValues: true,
       includeErrors: true,
       includeUsage: true,
-      includeExamples: true
+      includeExamples: true,
     };
 
     return this.generateDocumentation(input, context);
@@ -311,8 +328,8 @@ export class DocumentationPrompt extends MCPPrompt {
         'Document all properties',
         'Include inheritance information',
         'Include usage patterns',
-        'Include design rationale'
-      ]
+        'Include design rationale',
+      ],
     };
 
     return this.generateDocumentation(input, context);

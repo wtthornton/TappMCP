@@ -122,17 +122,22 @@ export const smartWriteTool: Tool = {
 // Execution logging system - reset for each call
 let executionLog = {
   startTime: Date.now(),
-  functionCalls: [] as Array<{function: string, timestamp: number, duration?: number, externalTools?: string[]}>,
-  externalTools: [] as Array<{tool: string, timestamp: number, purpose: string}>,
-  dataFlow: [] as Array<{step: string, data: any, timestamp: number}>,
+  functionCalls: [] as Array<{
+    function: string;
+    timestamp: number;
+    duration?: number;
+    externalTools?: string[];
+  }>,
+  externalTools: [] as Array<{ tool: string; timestamp: number; purpose: string }>,
+  dataFlow: [] as Array<{ step: string; data: any; timestamp: number }>,
   llmCommunication: [] as Array<{
-    callNumber: number,
-    timestamp: number,
-    prompt: string,
-    response: string,
-    tokensUsed: number,
-    duration: number
-  }>
+    callNumber: number;
+    timestamp: number;
+    prompt: string;
+    response: string;
+    tokensUsed: number;
+    duration: number;
+  }>,
 };
 
 function logFunctionCall(functionName: string, externalTools: string[] = []) {
@@ -140,9 +145,11 @@ function logFunctionCall(functionName: string, externalTools: string[] = []) {
   executionLog.functionCalls.push({
     function: functionName,
     timestamp,
-    externalTools
+    externalTools,
   });
-  console.log(`🔧 [MCP-LOG] Function called: ${functionName} at ${new Date(timestamp).toISOString()}`);
+  console.log(
+    `🔧 [MCP-LOG] Function called: ${functionName} at ${new Date(timestamp).toISOString()}`
+  );
   if (externalTools.length > 0) {
     console.log(`🔧 [MCP-LOG] External tools used: ${externalTools.join(', ')}`);
   }
@@ -153,9 +160,11 @@ function logExternalTool(tool: string, purpose: string) {
   executionLog.externalTools.push({
     tool,
     timestamp,
-    purpose
+    purpose,
   });
-  console.log(`🔧 [MCP-LOG] External tool: ${tool} - ${purpose} at ${new Date(timestamp).toISOString()}`);
+  console.log(
+    `🔧 [MCP-LOG] External tool: ${tool} - ${purpose} at ${new Date(timestamp).toISOString()}`
+  );
 }
 
 function logDataFlow(step: string, data: any) {
@@ -163,12 +172,17 @@ function logDataFlow(step: string, data: any) {
   executionLog.dataFlow.push({
     step,
     data,
-    timestamp
+    timestamp,
   });
   console.log(`🔧 [MCP-LOG] Data flow: ${step} at ${new Date(timestamp).toISOString()}`);
 }
 
-function logLLMCommunication(prompt: string, response: string, tokensUsed: number, duration: number) {
+function logLLMCommunication(
+  prompt: string,
+  response: string,
+  tokensUsed: number,
+  duration: number
+) {
   const timestamp = Date.now();
   const callNumber = executionLog.llmCommunication.length + 1;
   executionLog.llmCommunication.push({
@@ -177,7 +191,7 @@ function logLLMCommunication(prompt: string, response: string, tokensUsed: numbe
     prompt,
     response,
     tokensUsed,
-    duration
+    duration,
   });
   console.log(`🤖 [LLM-CALL] Call #${callNumber} at ${new Date(timestamp).toISOString()}`);
   console.log(`🤖 [LLM-CALL] Prompt: ${prompt.substring(0, 100)}...`);
@@ -191,7 +205,7 @@ function resetExecutionLog() {
     functionCalls: [],
     externalTools: [],
     dataFlow: [],
-    llmCommunication: []
+    llmCommunication: [],
   };
 }
 
@@ -207,38 +221,40 @@ function generateRealCode(input: any) {
   // Thought process tracking
   const thoughtProcess = {
     step1_analysis: {
-      description: "Analyzing user request and determining code type",
+      description: 'Analyzing user request and determining code type',
       input: input.featureDescription,
       detectedKeywords: [] as string[],
-      decision: "",
-      reasoning: ""
+      decision: '',
+      reasoning: '',
     },
     step2_detection: {
-      description: "Detecting HTML vs TypeScript requirements",
+      description: 'Detecting HTML vs TypeScript requirements',
       isHtmlRequest: false,
       detectionCriteria: [] as string[],
-      confidence: 0
+      confidence: 0,
     },
     step3_generation: {
-      description: "Generating appropriate code structure",
-      chosenApproach: "",
+      description: 'Generating appropriate code structure',
+      chosenApproach: '',
       filesToCreate: [] as string[],
       dependencies: [] as string[],
-      qualityConsiderations: [] as string[]
+      qualityConsiderations: [] as string[],
     },
     step4_validation: {
-      description: "Validating generated code meets requirements",
+      description: 'Validating generated code meets requirements',
       requirementsCheck: [] as string[],
       qualityMetrics: {} as Record<string, string>,
-      potentialIssues: [] as string[]
-    }
+      potentialIssues: [] as string[],
+    },
   };
 
   // Step 1: Analyze the request
   logFunctionCall('analyzeRequest', ['String', 'Array']);
   const keywords = input.featureDescription.toLowerCase().split(' ');
   thoughtProcess.step1_analysis.detectedKeywords = keywords.filter((word: string) =>
-    ['html', 'page', 'header', 'footer', 'body', 'css', 'javascript', 'web', 'website'].includes(word)
+    ['html', 'page', 'header', 'footer', 'body', 'css', 'javascript', 'web', 'website'].includes(
+      word
+    )
   );
   logExternalTool('String.prototype.split', 'Keyword extraction');
   logExternalTool('Array.prototype.filter', 'Keyword filtering');
@@ -246,9 +262,10 @@ function generateRealCode(input: any) {
 
   // Step 2: Detect HTML vs TypeScript
   logFunctionCall('detectCodeType', ['String', 'Array']);
-  const isHtmlRequest = input.featureDescription.toLowerCase().includes('html') ||
-                       input.featureDescription.toLowerCase().includes('page') ||
-                       input.techStack?.includes('html');
+  const isHtmlRequest =
+    input.featureDescription.toLowerCase().includes('html') ||
+    input.featureDescription.toLowerCase().includes('page') ||
+    input.techStack?.includes('html');
   logExternalTool('String.prototype.includes', 'HTML detection');
   logExternalTool('Array.prototype.includes', 'Tech stack checking');
   logDataFlow('type_detection', { isHtmlRequest });
@@ -258,23 +275,24 @@ function generateRealCode(input: any) {
     `Contains 'html': ${input.featureDescription.toLowerCase().includes('html')}`,
     `Contains 'page': ${input.featureDescription.toLowerCase().includes('page')}`,
     `Tech stack includes HTML: ${input.techStack?.includes('html')}`,
-    `Keywords found: ${thoughtProcess.step1_analysis.detectedKeywords.join(', ')}`
+    `Keywords found: ${thoughtProcess.step1_analysis.detectedKeywords.join(', ')}`,
   ];
   thoughtProcess.step2_detection.confidence = isHtmlRequest ? 95 : 85;
 
   if (isHtmlRequest) {
     logFunctionCall('generateHTMLCode', ['String', 'Template', 'CSS']);
-    thoughtProcess.step1_analysis.decision = "Generate HTML page";
-    thoughtProcess.step1_analysis.reasoning = "User explicitly requested HTML page with header, footer, and body content";
-    thoughtProcess.step3_generation.chosenApproach = "HTML5 structure with CSS styling";
-    thoughtProcess.step3_generation.filesToCreate = ["HTML file with embedded CSS"];
-    thoughtProcess.step3_generation.dependencies = ["HTML5", "CSS3"];
+    thoughtProcess.step1_analysis.decision = 'Generate HTML page';
+    thoughtProcess.step1_analysis.reasoning =
+      'User explicitly requested HTML page with header, footer, and body content';
+    thoughtProcess.step3_generation.chosenApproach = 'HTML5 structure with CSS styling';
+    thoughtProcess.step3_generation.filesToCreate = ['HTML file with embedded CSS'];
+    thoughtProcess.step3_generation.dependencies = ['HTML5', 'CSS3'];
     thoughtProcess.step3_generation.qualityConsiderations = [
-      "Semantic HTML structure",
-      "Responsive design",
-      "Accessibility compliance",
-      "Modern CSS features",
-      "Cross-browser compatibility"
+      'Semantic HTML structure',
+      'Responsive design',
+      'Accessibility compliance',
+      'Modern CSS features',
+      'Cross-browser compatibility',
     ];
     logExternalTool('Template Literals', 'HTML code generation');
     logExternalTool('CSS3 Features', 'Styling and responsive design');
@@ -373,17 +391,18 @@ Provide the complete HTML code with embedded CSS.`;
 
     logLLMCommunication(htmlPrompt2, htmlResponse2, 420, 1100);
   } else {
-    thoughtProcess.step1_analysis.decision = "Generate TypeScript function";
-    thoughtProcess.step1_analysis.reasoning = "No HTML keywords detected, defaulting to TypeScript function";
-    thoughtProcess.step3_generation.chosenApproach = "TypeScript function with test file";
-    thoughtProcess.step3_generation.filesToCreate = ["TypeScript function", "Vitest test file"];
-    thoughtProcess.step3_generation.dependencies = ["TypeScript", "Zod", "Vitest"];
+    thoughtProcess.step1_analysis.decision = 'Generate TypeScript function';
+    thoughtProcess.step1_analysis.reasoning =
+      'No HTML keywords detected, defaulting to TypeScript function';
+    thoughtProcess.step3_generation.chosenApproach = 'TypeScript function with test file';
+    thoughtProcess.step3_generation.filesToCreate = ['TypeScript function', 'Vitest test file'];
+    thoughtProcess.step3_generation.dependencies = ['TypeScript', 'Zod', 'Vitest'];
     thoughtProcess.step3_generation.qualityConsiderations = [
-      "Type safety",
-      "Error handling",
-      "Input validation",
-      "Test coverage",
-      "Performance optimization"
+      'Type safety',
+      'Error handling',
+      'Input validation',
+      'Test coverage',
+      'Performance optimization',
     ];
 
     // Simulate realistic LLM communication flow for TypeScript generation
@@ -645,29 +664,29 @@ describe('calculateCircleArea', () => {
     </footer>
 </body>
 </html>`,
-      type: 'html'
+      type: 'html',
     };
 
     // Step 4: Validate HTML generation
     thoughtProcess.step4_validation.requirementsCheck = [
-      "✅ HTML5 DOCTYPE included",
-      "✅ Header element present",
-      "✅ Footer element present",
+      '✅ HTML5 DOCTYPE included',
+      '✅ Header element present',
+      '✅ Footer element present',
       "✅ Body content with 'I'm the best' text",
-      "✅ CSS styling embedded",
-      "✅ Responsive design implemented",
-      "✅ Semantic HTML structure"
+      '✅ CSS styling embedded',
+      '✅ Responsive design implemented',
+      '✅ Semantic HTML structure',
     ];
     thoughtProcess.step4_validation.qualityMetrics = {
-      structure: "Excellent",
-      accessibility: "Good",
-      performance: "Excellent",
-      maintainability: "Good"
+      structure: 'Excellent',
+      accessibility: 'Good',
+      performance: 'Excellent',
+      maintainability: 'Good',
     };
     thoughtProcess.step4_validation.potentialIssues = [
-      "Could add more semantic elements (main, section)",
-      "Could include ARIA labels for better accessibility",
-      "Could add JavaScript for interactivity"
+      'Could add more semantic elements (main, section)',
+      'Could include ARIA labels for better accessibility',
+      'Could add JavaScript for interactivity',
     ];
 
     // Simulate LLM communication for HTML validation
@@ -698,7 +717,7 @@ Areas for improvement: ARIA labels, more semantic elements, JavaScript interacti
       files: [htmlFile],
       dependencies: ['html', 'css'],
       imports: ['// HTML page generated successfully'],
-      thoughtProcess: thoughtProcess
+      thoughtProcess,
     };
   } else {
     // Generate TypeScript function for non-HTML requests
@@ -769,7 +788,7 @@ Areas for improvement: ARIA labels, more semantic elements, JavaScript interacti
     };
   }
 }`,
-      type: input.codeType || 'function'
+      type: input.codeType ?? 'function',
     };
 
     // Generate real test file
@@ -815,28 +834,28 @@ describe('${functionName}', () => {
     expect(endTime - startTime).toBeLessThan(100); // <100ms requirement
   });
 });`,
-      type: 'test'
+      type: 'test',
     };
 
     // Step 4: Validate TypeScript generation
     thoughtProcess.step4_validation.requirementsCheck = [
-      "✅ TypeScript function generated",
-      "✅ Input validation implemented",
-      "✅ Error handling included",
-      "✅ Test file created",
-      "✅ Type safety enforced",
-      "✅ Performance requirements met"
+      '✅ TypeScript function generated',
+      '✅ Input validation implemented',
+      '✅ Error handling included',
+      '✅ Test file created',
+      '✅ Type safety enforced',
+      '✅ Performance requirements met',
     ];
     thoughtProcess.step4_validation.qualityMetrics = {
-      typeSafety: "Excellent",
-      errorHandling: "Good",
-      testCoverage: "Good",
-      performance: "Excellent"
+      typeSafety: 'Excellent',
+      errorHandling: 'Good',
+      testCoverage: 'Good',
+      performance: 'Excellent',
     };
     thoughtProcess.step4_validation.potentialIssues = [
-      "Could add more comprehensive input validation",
-      "Could include more edge case handling",
-      "Could add JSDoc documentation"
+      'Could add more comprehensive input validation',
+      'Could include more edge case handling',
+      'Could add JSDoc documentation',
     ];
 
     // Simulate LLM communication for validation
@@ -865,7 +884,7 @@ Areas for improvement: More comprehensive validation, JSDoc documentation`;
       files: [mainFile, testFile],
       dependencies: ['typescript', 'zod'],
       imports: ['// Add imports as needed'],
-      thoughtProcess: thoughtProcess
+      thoughtProcess,
     };
   }
 }
@@ -927,12 +946,13 @@ export async function handleSmartWrite(input: unknown): Promise<{
 
     // Complete execution logging
     const handlerEndTime = Date.now();
-    executionLog.functionCalls[executionLog.functionCalls.length - 1].duration = handlerEndTime - startTime;
+    executionLog.functionCalls[executionLog.functionCalls.length - 1].duration =
+      handlerEndTime - startTime;
 
     logDataFlow('response_generation', {
       codeId,
       filesGenerated: generatedCode.files.length,
-      totalDuration: handlerEndTime - startTime
+      totalDuration: handlerEndTime - startTime,
     });
 
     return {
@@ -943,8 +963,8 @@ export async function handleSmartWrite(input: unknown): Promise<{
           totalDuration: handlerEndTime - startTime,
           functionCalls: executionLog.functionCalls,
           externalTools: executionLog.externalTools,
-          dataFlow: executionLog.dataFlow
-        }
+          dataFlow: executionLog.dataFlow,
+        },
       },
       timestamp: new Date().toISOString(),
     };

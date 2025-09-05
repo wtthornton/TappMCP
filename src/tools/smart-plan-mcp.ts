@@ -67,33 +67,41 @@ const SmartPlanInputSchema = z.object({
 const SmartPlanOutputSchema = z.object({
   planId: z.string(),
   projectPlan: z.object({
-    phases: z.array(z.object({
-      name: z.string(),
-      description: z.string(),
-      duration: z.number(),
-      tasks: z.array(z.object({
+    phases: z.array(
+      z.object({
         name: z.string(),
         description: z.string(),
-        effort: z.number(),
-        dependencies: z.array(z.string()),
-        deliverables: z.array(z.string()),
-        assignee: z.string().optional(),
-        status: z.enum(['pending', 'in-progress', 'completed', 'blocked']).default('pending'),
-      })),
-      milestones: z.array(z.object({
-        name: z.string(),
-        description: z.string(),
-        dueDate: z.string(),
-        successCriteria: z.array(z.string()),
-        dependencies: z.array(z.string()),
-      })),
-      risks: z.array(z.object({
-        description: z.string(),
-        impact: z.enum(['low', 'medium', 'high']),
-        probability: z.enum(['low', 'medium', 'high']),
-        mitigation: z.string(),
-      })),
-    })),
+        duration: z.number(),
+        tasks: z.array(
+          z.object({
+            name: z.string(),
+            description: z.string(),
+            effort: z.number(),
+            dependencies: z.array(z.string()),
+            deliverables: z.array(z.string()),
+            assignee: z.string().optional(),
+            status: z.enum(['pending', 'in-progress', 'completed', 'blocked']).default('pending'),
+          })
+        ),
+        milestones: z.array(
+          z.object({
+            name: z.string(),
+            description: z.string(),
+            dueDate: z.string(),
+            successCriteria: z.array(z.string()),
+            dependencies: z.array(z.string()),
+          })
+        ),
+        risks: z.array(
+          z.object({
+            description: z.string(),
+            impact: z.enum(['low', 'medium', 'high']),
+            probability: z.enum(['low', 'medium', 'high']),
+            mitigation: z.string(),
+          })
+        ),
+      })
+    ),
     timeline: z.object({
       startDate: z.string(),
       endDate: z.string(),
@@ -101,25 +109,29 @@ const SmartPlanOutputSchema = z.object({
       criticalPath: z.array(z.string()),
     }),
     resources: z.object({
-      team: z.array(z.object({
-        role: z.string(),
-        name: z.string(),
-        skills: z.array(z.string()),
-        availability: z.number().min(0).max(100),
-        cost: z.number(),
-      })),
+      team: z.array(
+        z.object({
+          role: z.string(),
+          name: z.string(),
+          skills: z.array(z.string()),
+          availability: z.number().min(0).max(100),
+          cost: z.number(),
+        })
+      ),
       budget: z.object({
         total: z.number(),
         allocated: z.number(),
         remaining: z.number(),
         breakdown: z.record(z.number()),
       }),
-      tools: z.array(z.object({
-        name: z.string(),
-        type: z.string(),
-        cost: z.number(),
-        necessity: z.enum(['required', 'recommended', 'optional']),
-      })),
+      tools: z.array(
+        z.object({
+          name: z.string(),
+          type: z.string(),
+          cost: z.number(),
+          necessity: z.enum(['required', 'recommended', 'optional']),
+        })
+      ),
     }),
     quality: z.object({
       testStrategy: z.object({
@@ -169,11 +181,13 @@ const SmartPlanOutputSchema = z.object({
       businessRisks: z.array(z.string()),
       mitigationStrategies: z.array(z.string()),
     }),
-    successMetrics: z.array(z.object({
-      metric: z.string(),
-      target: z.string(),
-      measurement: z.string(),
-    })),
+    successMetrics: z.array(
+      z.object({
+        metric: z.string(),
+        target: z.string(),
+        measurement: z.string(),
+      })
+    ),
   }),
   nextSteps: z.array(z.string()),
   recommendations: z.array(z.string()),
@@ -182,12 +196,13 @@ const SmartPlanOutputSchema = z.object({
 // MCP Tool Configuration
 const config: MCPToolConfig = {
   name: 'smart_plan',
-  description: 'Generate comprehensive project plans with timeline, resources, and quality requirements',
+  description:
+    'Generate comprehensive project plans with timeline, resources, and quality requirements',
   version: '2.0.0',
   inputSchema: SmartPlanInputSchema,
   outputSchema: SmartPlanOutputSchema,
   timeout: 45000, // 45 seconds for complex planning
-  retries: 1
+  retries: 1,
 };
 
 export type SmartPlanInput = z.infer<typeof SmartPlanInputSchema>;
@@ -207,14 +222,20 @@ export class SmartPlanMCPTool extends MCPTool<SmartPlanInput, SmartPlanOutput> {
   /**
    * Execute the smart plan tool
    */
-  async execute(input: SmartPlanInput, context?: MCPToolContext): Promise<MCPToolResult<SmartPlanOutput>> {
-    return super.execute(input, context);
+  async execute(
+    input: SmartPlanInput,
+    _context?: MCPToolContext
+  ): Promise<MCPToolResult<SmartPlanOutput>> {
+    return super.execute(input, _context);
   }
 
   /**
    * Process the smart plan logic
    */
-  protected async executeInternal(input: SmartPlanInput, context?: MCPToolContext): Promise<SmartPlanOutput> {
+  protected async executeInternal(
+    input: SmartPlanInput,
+    _context?: MCPToolContext
+  ): Promise<SmartPlanOutput> {
     // Generate plan ID
     const planId = this.generatePlanId(input.projectId, input.planType);
 
@@ -258,10 +279,14 @@ export class SmartPlanMCPTool extends MCPTool<SmartPlanInput, SmartPlanOutput> {
     const phases = this.generatePhases(planType, scope, externalMCPs, qualityRequirements);
 
     // Calculate timeline
-    const timeline = this.calculateTimeline(phases, scope?.timeline);
+    const timeline = this.calculateTimeline(phases, scope?.timeline as any);
 
     // Allocate resources
-    const resources = this.allocateResources(scope?.resources, timeline.totalDuration, businessContext);
+    const resources = this.allocateResources(
+      scope?.resources as any,
+      timeline.totalDuration,
+      businessContext
+    );
 
     // Define quality requirements
     const quality = this.defineQualityRequirements(qualityRequirements, planType);
@@ -279,117 +304,414 @@ export class SmartPlanMCPTool extends MCPTool<SmartPlanInput, SmartPlanOutput> {
    */
   private generatePhases(
     planType: string,
-    scope: SmartPlanInput['scope'],
+    _scope: SmartPlanInput['scope'],
     externalMCPs: SmartPlanInput['externalMCPs'],
-    qualityRequirements: SmartPlanInput['qualityRequirements']
+    _qualityRequirements: SmartPlanInput['qualityRequirements']
   ): SmartPlanOutput['projectPlan']['phases'] {
     const phases = [];
 
     switch (planType) {
       case 'development':
         phases.push(
-          this.createPhase('Planning and Setup', 'Project planning, requirements gathering, and initial setup', 1, [
-            this.createTask('Requirements Analysis', 'Gather and analyze project requirements', 3, [], ['Requirements Document', 'User Stories']),
-            this.createTask('Technical Architecture', 'Design system architecture and technical specifications', 5, ['Requirements Analysis'], ['Architecture Document', 'Technical Specs']),
-            this.createTask('Environment Setup', 'Set up development, staging, and production environments', 2, [], ['Environment Configs', 'CI/CD Pipeline']),
-          ], [
-            this.createMilestone('Project Kickoff', 'Project officially starts with all stakeholders aligned', this.getDateString(0), ['Requirements Document', 'Architecture Document']),
-          ]),
-          this.createPhase('Core Development', 'Implement core features and functionality', 3, [
-            this.createTask('Backend Development', 'Implement server-side logic and APIs', 8, ['Technical Architecture'], ['API Endpoints', 'Database Schema']),
-            this.createTask('Frontend Development', 'Implement user interface and client-side logic', 6, ['Technical Architecture'], ['UI Components', 'User Flows']),
-            this.createTask('Integration Development', 'Integrate frontend and backend components', 4, ['Backend Development', 'Frontend Development'], ['Integrated Features']),
-          ], [
-            this.createMilestone('MVP Complete', 'Minimum viable product is ready for testing', this.getDateString(4), ['Core Features', 'Basic UI']),
-          ]),
-          this.createPhase('Testing and Quality Assurance', 'Comprehensive testing and quality validation', 2, [
-            this.createTask('Unit Testing', 'Write and execute unit tests for all components', 3, ['Core Development'], ['Unit Test Suite', 'Test Coverage Report']),
-            this.createTask('Integration Testing', 'Test component interactions and data flow', 2, ['Integration Development'], ['Integration Test Suite', 'Test Results']),
-            this.createTask('User Acceptance Testing', 'Validate features against user requirements', 2, ['Integration Testing'], ['UAT Report', 'User Feedback']),
-          ], [
-            this.createMilestone('Quality Gate Passed', 'All quality requirements met and validated', this.getDateString(6), ['Test Coverage', 'Quality Metrics']),
-          ]),
-          this.createPhase('Deployment and Launch', 'Deploy to production and launch the application', 1, [
-            this.createTask('Production Deployment', 'Deploy application to production environment', 1, ['Quality Gate Passed'], ['Production Deployment', 'Monitoring Setup']),
-            this.createTask('Launch Activities', 'Execute launch strategy and user onboarding', 1, ['Production Deployment'], ['Launch Plan', 'User Documentation']),
-          ], [
-            this.createMilestone('Production Launch', 'Application is live and available to users', this.getDateString(7), ['Live Application', 'User Onboarding']),
-          ])
+          this.createPhase(
+            'Planning and Setup',
+            'Project planning, requirements gathering, and initial setup',
+            1,
+            [
+              this.createTask(
+                'Requirements Analysis',
+                'Gather and analyze project requirements',
+                3,
+                [],
+                ['Requirements Document', 'User Stories']
+              ),
+              this.createTask(
+                'Technical Architecture',
+                'Design system architecture and technical specifications',
+                5,
+                ['Requirements Analysis'],
+                ['Architecture Document', 'Technical Specs']
+              ),
+              this.createTask(
+                'Environment Setup',
+                'Set up development, staging, and production environments',
+                2,
+                [],
+                ['Environment Configs', 'CI/CD Pipeline']
+              ),
+            ],
+            [
+              this.createMilestone(
+                'Project Kickoff',
+                'Project officially starts with all stakeholders aligned',
+                this.getDateString(0),
+                ['Requirements Document', 'Architecture Document']
+              ),
+            ]
+          ),
+          this.createPhase(
+            'Core Development',
+            'Implement core features and functionality',
+            3,
+            [
+              this.createTask(
+                'Backend Development',
+                'Implement server-side logic and APIs',
+                8,
+                ['Technical Architecture'],
+                ['API Endpoints', 'Database Schema']
+              ),
+              this.createTask(
+                'Frontend Development',
+                'Implement user interface and client-side logic',
+                6,
+                ['Technical Architecture'],
+                ['UI Components', 'User Flows']
+              ),
+              this.createTask(
+                'Integration Development',
+                'Integrate frontend and backend components',
+                4,
+                ['Backend Development', 'Frontend Development'],
+                ['Integrated Features']
+              ),
+            ],
+            [
+              this.createMilestone(
+                'MVP Complete',
+                'Minimum viable product is ready for testing',
+                this.getDateString(4),
+                ['Core Features', 'Basic UI']
+              ),
+            ]
+          ),
+          this.createPhase(
+            'Testing and Quality Assurance',
+            'Comprehensive testing and quality validation',
+            2,
+            [
+              this.createTask(
+                'Unit Testing',
+                'Write and execute unit tests for all components',
+                3,
+                ['Core Development'],
+                ['Unit Test Suite', 'Test Coverage Report']
+              ),
+              this.createTask(
+                'Integration Testing',
+                'Test component interactions and data flow',
+                2,
+                ['Integration Development'],
+                ['Integration Test Suite', 'Test Results']
+              ),
+              this.createTask(
+                'User Acceptance Testing',
+                'Validate features against user requirements',
+                2,
+                ['Integration Testing'],
+                ['UAT Report', 'User Feedback']
+              ),
+            ],
+            [
+              this.createMilestone(
+                'Quality Gate Passed',
+                'All quality requirements met and validated',
+                this.getDateString(6),
+                ['Test Coverage', 'Quality Metrics']
+              ),
+            ]
+          ),
+          this.createPhase(
+            'Deployment and Launch',
+            'Deploy to production and launch the application',
+            1,
+            [
+              this.createTask(
+                'Production Deployment',
+                'Deploy application to production environment',
+                1,
+                ['Quality Gate Passed'],
+                ['Production Deployment', 'Monitoring Setup']
+              ),
+              this.createTask(
+                'Launch Activities',
+                'Execute launch strategy and user onboarding',
+                1,
+                ['Production Deployment'],
+                ['Launch Plan', 'User Documentation']
+              ),
+            ],
+            [
+              this.createMilestone(
+                'Production Launch',
+                'Application is live and available to users',
+                this.getDateString(7),
+                ['Live Application', 'User Onboarding']
+              ),
+            ]
+          )
         );
         break;
 
       case 'testing':
         phases.push(
-          this.createPhase('Test Planning', 'Plan and design comprehensive testing strategy', 1, [
-            this.createTask('Test Strategy Design', 'Design overall testing approach and methodology', 2, [], ['Test Strategy Document', 'Test Plan']),
-            this.createTask('Test Environment Setup', 'Set up testing environments and tools', 1, [], ['Test Environment', 'Test Tools']),
-          ], [
-            this.createMilestone('Test Strategy Approved', 'Testing approach is validated and approved', this.getDateString(1), ['Test Strategy Document']),
-          ]),
-          this.createPhase('Test Execution', 'Execute all planned tests and collect results', 2, [
-            this.createTask('Automated Testing', 'Run automated test suites and analyze results', 3, ['Test Environment Setup'], ['Test Results', 'Bug Reports']),
-            this.createTask('Manual Testing', 'Perform manual testing and exploratory testing', 2, ['Test Environment Setup'], ['Manual Test Results', 'User Scenarios']),
-          ], [
-            this.createMilestone('Testing Complete', 'All tests executed and results analyzed', this.getDateString(3), ['Test Results', 'Quality Report']),
-          ])
+          this.createPhase(
+            'Test Planning',
+            'Plan and design comprehensive testing strategy',
+            1,
+            [
+              this.createTask(
+                'Test Strategy Design',
+                'Design overall testing approach and methodology',
+                2,
+                [],
+                ['Test Strategy Document', 'Test Plan']
+              ),
+              this.createTask(
+                'Test Environment Setup',
+                'Set up testing environments and tools',
+                1,
+                [],
+                ['Test Environment', 'Test Tools']
+              ),
+            ],
+            [
+              this.createMilestone(
+                'Test Strategy Approved',
+                'Testing approach is validated and approved',
+                this.getDateString(1),
+                ['Test Strategy Document']
+              ),
+            ]
+          ),
+          this.createPhase(
+            'Test Execution',
+            'Execute all planned tests and collect results',
+            2,
+            [
+              this.createTask(
+                'Automated Testing',
+                'Run automated test suites and analyze results',
+                3,
+                ['Test Environment Setup'],
+                ['Test Results', 'Bug Reports']
+              ),
+              this.createTask(
+                'Manual Testing',
+                'Perform manual testing and exploratory testing',
+                2,
+                ['Test Environment Setup'],
+                ['Manual Test Results', 'User Scenarios']
+              ),
+            ],
+            [
+              this.createMilestone(
+                'Testing Complete',
+                'All tests executed and results analyzed',
+                this.getDateString(3),
+                ['Test Results', 'Quality Report']
+              ),
+            ]
+          )
         );
         break;
 
       case 'deployment':
         phases.push(
-          this.createPhase('Deployment Planning', 'Plan deployment strategy and prepare environments', 1, [
-            this.createTask('Deployment Strategy', 'Design deployment approach and rollback plan', 2, [], ['Deployment Plan', 'Rollback Strategy']),
-            this.createTask('Environment Preparation', 'Prepare production and staging environments', 1, [], ['Environment Setup', 'Configuration']),
-          ], [
-            this.createMilestone('Deployment Ready', 'All systems ready for deployment', this.getDateString(1), ['Deployment Plan', 'Environment Setup']),
-          ]),
-          this.createPhase('Deployment Execution', 'Execute deployment and validate functionality', 1, [
-            this.createTask('Production Deployment', 'Deploy application to production', 1, ['Deployment Ready'], ['Production Deployment', 'Health Checks']),
-            this.createTask('Post-Deployment Validation', 'Validate deployment and monitor system health', 1, ['Production Deployment'], ['Validation Report', 'Monitoring Data']),
-          ], [
-            this.createMilestone('Deployment Complete', 'Application successfully deployed and validated', this.getDateString(2), ['Live Application', 'Health Validation']),
-          ])
+          this.createPhase(
+            'Deployment Planning',
+            'Plan deployment strategy and prepare environments',
+            1,
+            [
+              this.createTask(
+                'Deployment Strategy',
+                'Design deployment approach and rollback plan',
+                2,
+                [],
+                ['Deployment Plan', 'Rollback Strategy']
+              ),
+              this.createTask(
+                'Environment Preparation',
+                'Prepare production and staging environments',
+                1,
+                [],
+                ['Environment Setup', 'Configuration']
+              ),
+            ],
+            [
+              this.createMilestone(
+                'Deployment Ready',
+                'All systems ready for deployment',
+                this.getDateString(1),
+                ['Deployment Plan', 'Environment Setup']
+              ),
+            ]
+          ),
+          this.createPhase(
+            'Deployment Execution',
+            'Execute deployment and validate functionality',
+            1,
+            [
+              this.createTask(
+                'Production Deployment',
+                'Deploy application to production',
+                1,
+                ['Deployment Ready'],
+                ['Production Deployment', 'Health Checks']
+              ),
+              this.createTask(
+                'Post-Deployment Validation',
+                'Validate deployment and monitor system health',
+                1,
+                ['Production Deployment'],
+                ['Validation Report', 'Monitoring Data']
+              ),
+            ],
+            [
+              this.createMilestone(
+                'Deployment Complete',
+                'Application successfully deployed and validated',
+                this.getDateString(2),
+                ['Live Application', 'Health Validation']
+              ),
+            ]
+          )
         );
         break;
 
       case 'maintenance':
         phases.push(
-          this.createPhase('Maintenance Planning', 'Plan ongoing maintenance activities', 1, [
-            this.createTask('Maintenance Strategy', 'Define maintenance approach and schedule', 1, [], ['Maintenance Plan', 'Schedule']),
-            this.createTask('Monitoring Setup', 'Set up monitoring and alerting systems', 1, [], ['Monitoring Dashboard', 'Alert Configuration']),
-          ], [
-            this.createMilestone('Maintenance Ready', 'Maintenance systems and processes in place', this.getDateString(1), ['Maintenance Plan', 'Monitoring Setup']),
-          ]),
-          this.createPhase('Ongoing Maintenance', 'Execute regular maintenance activities', 4, [
-            this.createTask('Regular Updates', 'Apply security patches and updates', 2, ['Maintenance Ready'], ['Update Log', 'Security Patches']),
-            this.createTask('Performance Monitoring', 'Monitor system performance and optimize', 2, ['Maintenance Ready'], ['Performance Reports', 'Optimization Recommendations']),
-          ], [
-            this.createMilestone('Maintenance Cycle Complete', 'First maintenance cycle completed successfully', this.getDateString(5), ['Maintenance Reports', 'System Health']),
-          ])
+          this.createPhase(
+            'Maintenance Planning',
+            'Plan ongoing maintenance activities',
+            1,
+            [
+              this.createTask(
+                'Maintenance Strategy',
+                'Define maintenance approach and schedule',
+                1,
+                [],
+                ['Maintenance Plan', 'Schedule']
+              ),
+              this.createTask(
+                'Monitoring Setup',
+                'Set up monitoring and alerting systems',
+                1,
+                [],
+                ['Monitoring Dashboard', 'Alert Configuration']
+              ),
+            ],
+            [
+              this.createMilestone(
+                'Maintenance Ready',
+                'Maintenance systems and processes in place',
+                this.getDateString(1),
+                ['Maintenance Plan', 'Monitoring Setup']
+              ),
+            ]
+          ),
+          this.createPhase(
+            'Ongoing Maintenance',
+            'Execute regular maintenance activities',
+            4,
+            [
+              this.createTask(
+                'Regular Updates',
+                'Apply security patches and updates',
+                2,
+                ['Maintenance Ready'],
+                ['Update Log', 'Security Patches']
+              ),
+              this.createTask(
+                'Performance Monitoring',
+                'Monitor system performance and optimize',
+                2,
+                ['Maintenance Ready'],
+                ['Performance Reports', 'Optimization Recommendations']
+              ),
+            ],
+            [
+              this.createMilestone(
+                'Maintenance Cycle Complete',
+                'First maintenance cycle completed successfully',
+                this.getDateString(5),
+                ['Maintenance Reports', 'System Health']
+              ),
+            ]
+          )
         );
         break;
 
       case 'migration':
         phases.push(
-          this.createPhase('Migration Planning', 'Plan migration strategy and prepare for transition', 2, [
-            this.createTask('Migration Strategy', 'Design migration approach and timeline', 3, [], ['Migration Plan', 'Risk Assessment']),
-            this.createTask('Data Analysis', 'Analyze existing data and dependencies', 2, [], ['Data Analysis Report', 'Dependency Map']),
-          ], [
-            this.createMilestone('Migration Plan Approved', 'Migration strategy is validated and approved', this.getDateString(2), ['Migration Plan', 'Risk Assessment']),
-          ]),
-          this.createPhase('Migration Execution', 'Execute migration and validate results', 3, [
-            this.createTask('Data Migration', 'Migrate data to new system', 4, ['Migration Plan Approved'], ['Data Migration Report', 'Validation Results']),
-            this.createTask('System Migration', 'Migrate application components', 3, ['Data Migration'], ['System Migration Report', 'Integration Tests']),
-          ], [
-            this.createMilestone('Migration Complete', 'Migration successfully completed and validated', this.getDateString(5), ['Migration Report', 'System Validation']),
-          ])
+          this.createPhase(
+            'Migration Planning',
+            'Plan migration strategy and prepare for transition',
+            2,
+            [
+              this.createTask(
+                'Migration Strategy',
+                'Design migration approach and timeline',
+                3,
+                [],
+                ['Migration Plan', 'Risk Assessment']
+              ),
+              this.createTask(
+                'Data Analysis',
+                'Analyze existing data and dependencies',
+                2,
+                [],
+                ['Data Analysis Report', 'Dependency Map']
+              ),
+            ],
+            [
+              this.createMilestone(
+                'Migration Plan Approved',
+                'Migration strategy is validated and approved',
+                this.getDateString(2),
+                ['Migration Plan', 'Risk Assessment']
+              ),
+            ]
+          ),
+          this.createPhase(
+            'Migration Execution',
+            'Execute migration and validate results',
+            3,
+            [
+              this.createTask(
+                'Data Migration',
+                'Migrate data to new system',
+                4,
+                ['Migration Plan Approved'],
+                ['Data Migration Report', 'Validation Results']
+              ),
+              this.createTask(
+                'System Migration',
+                'Migrate application components',
+                3,
+                ['Data Migration'],
+                ['System Migration Report', 'Integration Tests']
+              ),
+            ],
+            [
+              this.createMilestone(
+                'Migration Complete',
+                'Migration successfully completed and validated',
+                this.getDateString(5),
+                ['Migration Report', 'System Validation']
+              ),
+            ]
+          )
         );
         break;
     }
 
     // Add external MCP integration tasks if specified
     if (externalMCPs && externalMCPs.length > 0) {
-      const integrationPhase = this.createPhase('External Integration', 'Integrate with external MCPs and services', 2,
+      const integrationPhase = this.createPhase(
+        'External Integration',
+        'Integrate with external MCPs and services',
+        2,
         externalMCPs.map(mcp =>
           this.createTask(
             `Integrate ${mcp.name}`,
@@ -400,7 +722,12 @@ export class SmartPlanMCPTool extends MCPTool<SmartPlanInput, SmartPlanOutput> {
           )
         ),
         [
-          this.createMilestone('External Integration Complete', 'All external MCPs successfully integrated', this.getDateString(phases.length + 1), ['Integration Reports', 'API Documentation']),
+          this.createMilestone(
+            'External Integration Complete',
+            'All external MCPs successfully integrated',
+            this.getDateString(phases.length + 1),
+            ['Integration Reports', 'API Documentation']
+          ),
         ]
       );
       phases.push(integrationPhase);
@@ -472,7 +799,10 @@ export class SmartPlanMCPTool extends MCPTool<SmartPlanInput, SmartPlanOutput> {
   /**
    * Generate risks for a phase
    */
-  private generateRisks(phaseName: string, duration: number): SmartPlanOutput['projectPlan']['phases'][0]['risks'] {
+  private generateRisks(
+    _phaseName: string,
+    duration: number
+  ): SmartPlanOutput['projectPlan']['phases'][0]['risks'] {
     const risks = [
       {
         description: 'Resource availability issues',
@@ -492,7 +822,7 @@ export class SmartPlanMCPTool extends MCPTool<SmartPlanInput, SmartPlanOutput> {
       risks.push({
         description: 'Scope creep during long phase',
         impact: 'medium' as const,
-        probability: 'high' as const,
+        probability: 'medium' as const,
         mitigation: 'Implement strict change control process and regular reviews',
       });
     }
@@ -505,11 +835,13 @@ export class SmartPlanMCPTool extends MCPTool<SmartPlanInput, SmartPlanOutput> {
    */
   private calculateTimeline(
     phases: SmartPlanOutput['projectPlan']['phases'],
-    timelineInput?: SmartPlanInput['scope']['timeline']
+    timelineInput?: SmartPlanInput['scope'] extends { timeline: any }
+      ? SmartPlanInput['scope']['timeline']
+      : undefined
   ): SmartPlanOutput['projectPlan']['timeline'] {
     const totalDuration = phases.reduce((sum, phase) => sum + phase.duration, 0);
-    const startDate = timelineInput?.startDate || this.getDateString(0);
-    const endDate = timelineInput?.endDate || this.getDateString(totalDuration);
+    const startDate = timelineInput?.startDate ?? this.getDateString(0);
+    const endDate = timelineInput?.endDate ?? this.getDateString(totalDuration);
 
     // Calculate critical path (simplified - just the longest phase)
     const criticalPath = phases
@@ -529,16 +861,18 @@ export class SmartPlanMCPTool extends MCPTool<SmartPlanInput, SmartPlanOutput> {
    * Allocate resources
    */
   private allocateResources(
-    resourcesInput?: SmartPlanInput['scope']['resources'],
-    duration: number,
-    businessContext?: SmartPlanInput['businessContext']
+    resourcesInput?: SmartPlanInput['scope'] extends { resources: any }
+      ? SmartPlanInput['scope']['resources']
+      : undefined,
+    _duration: number,
+    _businessContext?: SmartPlanInput['businessContext']
   ): SmartPlanOutput['projectPlan']['resources'] {
-    const teamSize = resourcesInput?.teamSize || 3;
-    const budget = resourcesInput?.budget || 50000;
-    const externalTools = resourcesInput?.externalTools || [];
+    const teamSize = resourcesInput?.teamSize ?? 3;
+    const budget = resourcesInput?.budget ?? 50000;
+    const externalTools = resourcesInput?.externalTools ?? [];
 
     // Generate team based on plan type and size
-    const team = this.generateTeam(teamSize, businessContext);
+    const team = this.generateTeam(teamSize, _businessContext);
 
     // Calculate costs
     const teamCost = team.reduce((sum, member) => sum + member.cost, 0);
@@ -548,8 +882,8 @@ export class SmartPlanMCPTool extends MCPTool<SmartPlanInput, SmartPlanOutput> {
     const budgetBreakdown = {
       'Team Costs': teamCost,
       'Tools & Licenses': toolCost,
-      'Infrastructure': totalCost * 0.2,
-      'Contingency': totalCost * 0.1,
+      Infrastructure: totalCost * 0.2,
+      Contingency: totalCost * 0.1,
     };
 
     return {
@@ -560,7 +894,7 @@ export class SmartPlanMCPTool extends MCPTool<SmartPlanInput, SmartPlanOutput> {
         remaining: budget - totalCost,
         breakdown: budgetBreakdown,
       },
-      tools: externalTools.map(tool => ({
+      tools: externalTools.map((tool: any) => ({
         name: tool,
         type: 'External Service',
         cost: 1000,
@@ -572,7 +906,10 @@ export class SmartPlanMCPTool extends MCPTool<SmartPlanInput, SmartPlanOutput> {
   /**
    * Generate team members
    */
-  private generateTeam(size: number, businessContext?: SmartPlanInput['businessContext']): SmartPlanOutput['projectPlan']['resources']['team'] {
+  private generateTeam(
+    size: number,
+    _businessContext?: SmartPlanInput['businessContext']
+  ): SmartPlanOutput['projectPlan']['resources']['team'] {
     const roles = ['Developer', 'QA Engineer', 'DevOps Engineer', 'Product Manager', 'Designer'];
     const skills = ['TypeScript', 'React', 'Node.js', 'Testing', 'CI/CD', 'AWS', 'Docker'];
 
@@ -581,7 +918,7 @@ export class SmartPlanMCPTool extends MCPTool<SmartPlanInput, SmartPlanOutput> {
       name: `Team Member ${i + 1}`,
       skills: skills.slice(0, 3 + (i % 3)),
       availability: 80 + (i % 20),
-      cost: 5000 + (i * 1000),
+      cost: 5000 + i * 1000,
     }));
   }
 
@@ -590,11 +927,11 @@ export class SmartPlanMCPTool extends MCPTool<SmartPlanInput, SmartPlanOutput> {
    */
   private defineQualityRequirements(
     qualityRequirements?: SmartPlanInput['qualityRequirements'],
-    planType: string
+    _planType: string
   ): SmartPlanOutput['projectPlan']['quality'] {
-    const testCoverage = qualityRequirements?.testCoverage || 85;
-    const securityLevel = qualityRequirements?.securityLevel || 'medium';
-    const performanceTargets = qualityRequirements?.performanceTargets || {
+    const testCoverage = qualityRequirements?.testCoverage ?? 85;
+    const securityLevel = qualityRequirements?.securityLevel ?? 'medium';
+    const performanceTargets = qualityRequirements?.performanceTargets ?? {
       responseTime: 100,
       throughput: 1000,
       availability: 99.9,
@@ -626,7 +963,11 @@ export class SmartPlanMCPTool extends MCPTool<SmartPlanInput, SmartPlanOutput> {
       },
       performance: {
         targets: performanceTargets,
-        monitoring: ['Application Performance Monitoring', 'Database Monitoring', 'Infrastructure Monitoring'],
+        monitoring: [
+          'Application Performance Monitoring',
+          'Database Monitoring',
+          'Infrastructure Monitoring',
+        ],
         estimatedEffort: 2,
       },
     };
@@ -670,19 +1011,9 @@ export class SmartPlanMCPTool extends MCPTool<SmartPlanInput, SmartPlanOutput> {
     const baseTools = ['ESLint security rules', 'npm audit'];
 
     if (level === 'high') {
-      return [
-        ...baseTools,
-        'OWASP ZAP',
-        'Snyk',
-        'SonarQube',
-        'Burp Suite',
-      ];
+      return [...baseTools, 'OWASP ZAP', 'Snyk', 'SonarQube', 'Burp Suite'];
     } else if (level === 'medium') {
-      return [
-        ...baseTools,
-        'Snyk',
-        'SonarQube',
-      ];
+      return [...baseTools, 'Snyk', 'SonarQube'];
     }
 
     return baseTools;
@@ -696,12 +1027,12 @@ export class SmartPlanMCPTool extends MCPTool<SmartPlanInput, SmartPlanOutput> {
     projectPlan: SmartPlanOutput['projectPlan']
   ): SmartPlanOutput['businessValue'] {
     const budget = projectPlan.resources.budget.total;
-    const duration = projectPlan.timeline.totalDuration;
+    const _duration = projectPlan.timeline.totalDuration;
 
     // Calculate ROI based on plan type and duration
     let expectedSavings = 0;
-    let developmentCost = budget;
-    let maintenanceCost = budget * 0.2; // 20% of development cost
+    const developmentCost = budget;
+    const maintenanceCost = budget * 0.2; // 20% of development cost
 
     switch (input.planType) {
       case 'development':
@@ -738,11 +1069,7 @@ export class SmartPlanMCPTool extends MCPTool<SmartPlanInput, SmartPlanOutput> {
           'Integration challenges',
           'Performance bottlenecks',
         ],
-        businessRisks: [
-          'Market changes',
-          'Competitor actions',
-          'Regulatory changes',
-        ],
+        businessRisks: ['Market changes', 'Competitor actions', 'Regulatory changes'],
         mitigationStrategies: [
           'Regular technical reviews',
           'Agile development approach',
@@ -774,7 +1101,7 @@ export class SmartPlanMCPTool extends MCPTool<SmartPlanInput, SmartPlanOutput> {
    */
   private generateNextSteps(
     input: SmartPlanInput,
-    projectPlan: SmartPlanOutput['projectPlan']
+    _projectPlan: SmartPlanOutput['projectPlan']
   ): string[] {
     const steps = [
       'Review and approve the project plan',
@@ -805,7 +1132,7 @@ export class SmartPlanMCPTool extends MCPTool<SmartPlanInput, SmartPlanOutput> {
    */
   private generateRecommendations(
     input: SmartPlanInput,
-    projectPlan: SmartPlanOutput['projectPlan']
+    _projectPlan: SmartPlanOutput['projectPlan']
   ): string[] {
     const recommendations = [
       'Consider adding buffer time for unexpected delays',
@@ -813,11 +1140,11 @@ export class SmartPlanMCPTool extends MCPTool<SmartPlanInput, SmartPlanOutput> {
       'Establish clear communication channels',
     ];
 
-    if (projectPlan.timeline.totalDuration > 8) {
+    if (_projectPlan.timeline.totalDuration > 8) {
       recommendations.push('Consider breaking down into smaller phases for better manageability');
     }
 
-    if (projectPlan.resources.budget.remaining < 0) {
+    if (_projectPlan.resources.budget.remaining < 0) {
       recommendations.push('Review budget allocation - current plan exceeds available budget');
     }
 
@@ -833,7 +1160,7 @@ export class SmartPlanMCPTool extends MCPTool<SmartPlanInput, SmartPlanOutput> {
    */
   private getDateString(weeksFromNow: number): string {
     const date = new Date();
-    date.setDate(date.getDate() + (weeksFromNow * 7));
+    date.setDate(date.getDate() + weeksFromNow * 7);
     return date.toISOString().split('T')[0];
   }
 }
@@ -854,7 +1181,7 @@ export async function handleSmartPlan(input: unknown): Promise<{
   return {
     success: result.success,
     data: result.data,
-    error: result.error,
+    error: result.error ?? undefined,
     timestamp: result.metadata.timestamp,
   };
 }

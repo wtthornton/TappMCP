@@ -30,13 +30,13 @@ describe('SmartWriteMCPTool', () => {
         businessContext: {
           goals: ['improve efficiency'],
           targetUsers: ['developers'],
-          priority: 'high'
+          priority: 'high',
         },
         qualityRequirements: {
           testCoverage: 90,
           complexity: 3,
-          securityLevel: 'high'
-        }
+          securityLevel: 'high',
+        },
       };
 
       const result = await tool.execute(input);
@@ -62,7 +62,7 @@ describe('SmartWriteMCPTool', () => {
         featureDescription: 'Simple feature',
         techStack: [],
         targetRole: 'developer',
-        codeType: 'function'
+        codeType: 'function',
       };
 
       const result = await tool.execute(input);
@@ -81,7 +81,7 @@ describe('SmartWriteMCPTool', () => {
         featureDescription: 'User input form',
         targetRole: 'designer',
         codeType: 'component',
-        techStack: ['react', 'typescript']
+        techStack: ['react', 'typescript'],
       };
 
       const result = await tool.execute(input);
@@ -98,7 +98,7 @@ describe('SmartWriteMCPTool', () => {
         featureDescription: 'User authentication endpoint',
         targetRole: 'operations-engineer',
         codeType: 'api',
-        techStack: ['express', 'typescript']
+        techStack: ['express', 'typescript'],
       };
 
       const result = await tool.execute(input);
@@ -115,7 +115,7 @@ describe('SmartWriteMCPTool', () => {
         featureDescription: 'Data validation tests',
         targetRole: 'qa-engineer',
         codeType: 'test',
-        techStack: ['typescript', 'vitest']
+        techStack: ['typescript', 'vitest'],
       };
 
       const result = await tool.execute(input);
@@ -132,7 +132,7 @@ describe('SmartWriteMCPTool', () => {
         featureDescription: 'Database configuration',
         targetRole: 'operations-engineer',
         codeType: 'config',
-        techStack: ['typescript']
+        techStack: ['typescript'],
       };
 
       const result = await tool.execute(input);
@@ -148,7 +148,7 @@ describe('SmartWriteMCPTool', () => {
         featureDescription: 'API documentation',
         targetRole: 'developer',
         codeType: 'documentation',
-        techStack: ['markdown']
+        techStack: ['markdown'],
       };
 
       const result = await tool.execute(input);
@@ -166,7 +166,7 @@ describe('SmartWriteMCPTool', () => {
         featureDescription: 'Data processing function',
         targetRole: 'developer',
         codeType: 'function',
-        techStack: ['python']
+        techStack: ['python'],
       };
 
       const result = await tool.execute(input);
@@ -183,7 +183,7 @@ describe('SmartWriteMCPTool', () => {
         featureDescription: 'Test feature',
         targetRole: 'developer',
         codeType: 'function',
-        techStack: ['unknown']
+        techStack: ['unknown'],
       };
 
       const result = await tool.execute(input);
@@ -200,7 +200,7 @@ describe('SmartWriteMCPTool', () => {
         featureDescription: 'Complex algorithm',
         targetRole: 'developer',
         codeType: 'function',
-        techStack: ['typescript']
+        techStack: ['typescript'],
       };
 
       const result = await tool.execute(input);
@@ -216,13 +216,15 @@ describe('SmartWriteMCPTool', () => {
         featureDescription: 'User feature',
         targetRole: 'product-strategist',
         codeType: 'function',
-        techStack: ['typescript']
+        techStack: ['typescript'],
       };
 
       const result = await tool.execute(input);
 
       expect(result.success).toBe(true);
-      expect(result.data?.roleSpecificInsights).toContain('Feature aligns with business requirements');
+      expect(result.data?.roleSpecificInsights).toContain(
+        'Feature aligns with business requirements'
+      );
       expect(result.data?.roleSpecificInsights).toContain('Includes user-focused error messages');
     });
 
@@ -232,7 +234,7 @@ describe('SmartWriteMCPTool', () => {
         featureDescription: 'UI component',
         targetRole: 'designer',
         codeType: 'component',
-        techStack: ['react', 'typescript']
+        techStack: ['react', 'typescript'],
       };
 
       const result = await tool.execute(input);
@@ -248,7 +250,7 @@ describe('SmartWriteMCPTool', () => {
         featureDescription: 'Testable function',
         targetRole: 'qa-engineer',
         codeType: 'function',
-        techStack: ['typescript']
+        techStack: ['typescript'],
       };
 
       const result = await tool.execute(input);
@@ -264,7 +266,7 @@ describe('SmartWriteMCPTool', () => {
         featureDescription: 'Production service',
         targetRole: 'operations-engineer',
         codeType: 'api',
-        techStack: ['express', 'typescript']
+        techStack: ['express', 'typescript'],
       };
 
       const result = await tool.execute(input);
@@ -286,8 +288,8 @@ describe('SmartWriteMCPTool', () => {
         qualityRequirements: {
           testCoverage: 95,
           complexity: 2,
-          securityLevel: 'high'
-        }
+          securityLevel: 'high',
+        },
       };
 
       const result = await tool.execute(input);
@@ -308,8 +310,8 @@ describe('SmartWriteMCPTool', () => {
         qualityRequirements: {
           testCoverage: 80,
           complexity: 5,
-          securityLevel: 'medium'
-        }
+          securityLevel: 'medium',
+        },
       };
 
       const result = await tool.execute(input);
@@ -330,8 +332,8 @@ describe('SmartWriteMCPTool', () => {
         qualityRequirements: {
           testCoverage: 70,
           complexity: 8,
-          securityLevel: 'low'
-        }
+          securityLevel: 'low',
+        },
       };
 
       const result = await tool.execute(input);
@@ -352,8 +354,8 @@ describe('SmartWriteMCPTool', () => {
         codeType: 'function',
         techStack: ['typescript'],
         businessContext: {
-          priority: 'high'
-        }
+          priority: 'high',
+        },
       };
 
       const lowPriorityInput: SmartWriteInput = {
@@ -363,8 +365,8 @@ describe('SmartWriteMCPTool', () => {
         codeType: 'function',
         techStack: ['typescript'],
         businessContext: {
-          priority: 'low'
-        }
+          priority: 'low',
+        },
       };
 
       const highResult = await tool.execute(highPriorityInput);
@@ -373,10 +375,10 @@ describe('SmartWriteMCPTool', () => {
       expect(highResult.success).toBe(true);
       expect(lowResult.success).toBe(true);
       expect(highResult.data?.businessValue.timeSaved).toBeGreaterThan(
-        lowResult.data?.businessValue.timeSaved || 0
+        lowResult.data?.businessValue.timeSaved ?? 0
       );
       expect(highResult.data?.businessValue.costPrevention).toBeGreaterThan(
-        lowResult.data?.businessValue.costPrevention || 0
+        lowResult.data?.businessValue.costPrevention ?? 0
       );
     });
 
@@ -386,7 +388,7 @@ describe('SmartWriteMCPTool', () => {
         featureDescription: 'API endpoint',
         targetRole: 'developer',
         codeType: 'api',
-        techStack: ['typescript']
+        techStack: ['typescript'],
       };
 
       const functionInput: SmartWriteInput = {
@@ -394,7 +396,7 @@ describe('SmartWriteMCPTool', () => {
         featureDescription: 'Simple function',
         targetRole: 'developer',
         codeType: 'function',
-        techStack: ['typescript']
+        techStack: ['typescript'],
       };
 
       const apiResult = await tool.execute(apiInput);
@@ -403,7 +405,7 @@ describe('SmartWriteMCPTool', () => {
       expect(apiResult.success).toBe(true);
       expect(functionResult.success).toBe(true);
       expect(apiResult.data?.businessValue.timeSaved).toBeGreaterThan(
-        functionResult.data?.businessValue.timeSaved || 0
+        functionResult.data?.businessValue.timeSaved ?? 0
       );
     });
   });
@@ -415,7 +417,7 @@ describe('SmartWriteMCPTool', () => {
         featureDescription: 'Test feature 1',
         targetRole: 'developer',
         codeType: 'function',
-        techStack: ['typescript']
+        techStack: ['typescript'],
       };
 
       const input2: SmartWriteInput = {
@@ -423,7 +425,7 @@ describe('SmartWriteMCPTool', () => {
         featureDescription: 'Test feature 2',
         targetRole: 'developer',
         codeType: 'function',
-        techStack: ['typescript']
+        techStack: ['typescript'],
       };
 
       const result1 = await tool.execute(input1);
@@ -442,7 +444,7 @@ describe('SmartWriteMCPTool', () => {
         featureDescription: 'Complex Feature with Special Characters!',
         targetRole: 'developer',
         codeType: 'function',
-        techStack: ['typescript']
+        techStack: ['typescript'],
       };
 
       const result = await tool.execute(input);
@@ -459,7 +461,7 @@ describe('SmartWriteMCPTool', () => {
       const invalidInput = {
         projectId: '', // Invalid: empty string
         featureDescription: '', // Invalid: empty string
-        techStack: 'not-an-array' // Invalid: should be array
+        techStack: 'not-an-array', // Invalid: should be array
       } as any;
 
       const result = await tool.execute(invalidInput);
@@ -471,7 +473,7 @@ describe('SmartWriteMCPTool', () => {
     it('should handle missing required fields', async () => {
       const invalidInput = {
         // Missing projectId and featureDescription
-        techStack: ['typescript']
+        techStack: ['typescript'],
       } as any;
 
       const result = await tool.execute(invalidInput);
@@ -491,13 +493,13 @@ describe('SmartWriteMCPTool', () => {
         techStack: ['typescript', 'react', 'express'],
         businessContext: {
           goals: ['performance'],
-          priority: 'high'
+          priority: 'high',
         },
         qualityRequirements: {
           testCoverage: 95,
           complexity: 2,
-          securityLevel: 'high'
-        }
+          securityLevel: 'high',
+        },
       };
 
       const startTime = performance.now();
@@ -516,7 +518,7 @@ describe('SmartWriteMCPTool', () => {
         featureDescription: 'Feature with dependencies',
         targetRole: 'developer',
         codeType: 'function',
-        techStack: ['typescript', 'react', 'express', 'zod', 'vitest']
+        techStack: ['typescript', 'react', 'express', 'zod', 'vitest'],
       };
 
       const result = await tool.execute(input);
@@ -539,8 +541,10 @@ describe('SmartWriteMCPTool', () => {
         codeType: 'function',
         techStack: ['typescript'],
         qualityRequirements: {
-          testCoverage: 95
-        }
+          testCoverage: 95,
+          securityLevel: 'high',
+          complexity: 2,
+        },
       };
 
       const lowCoverageInput: SmartWriteInput = {
@@ -550,8 +554,10 @@ describe('SmartWriteMCPTool', () => {
         codeType: 'function',
         techStack: ['typescript'],
         qualityRequirements: {
-          testCoverage: 70
-        }
+          testCoverage: 70,
+          securityLevel: 'low',
+          complexity: 8,
+        },
       };
 
       const highResult = await tool.execute(highCoverageInput);
@@ -560,7 +566,7 @@ describe('SmartWriteMCPTool', () => {
       expect(highResult.success).toBe(true);
       expect(lowResult.success).toBe(true);
       expect(highResult.data?.generatedCode.testCases.length).toBeGreaterThan(
-        lowResult.data?.generatedCode.testCases.length || 0
+        lowResult.data?.generatedCode.testCases.length ?? 0
       );
     });
   });

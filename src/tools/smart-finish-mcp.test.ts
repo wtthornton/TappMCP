@@ -4,20 +4,20 @@ import { SmartFinishMCPTool, type SmartFinishInput } from './smart-finish-mcp.js
 // Mock the core modules
 vi.mock('../core/security-scanner.js', () => ({
   SecurityScanner: vi.fn().mockImplementation(() => ({
-    scan: vi.fn().mockResolvedValue({ vulnerabilities: [], score: 95 })
-  }))
+    scan: vi.fn().mockResolvedValue({ vulnerabilities: [], score: 95 }),
+  })),
 }));
 
 vi.mock('../core/static-analyzer.js', () => ({
   StaticAnalyzer: vi.fn().mockImplementation(() => ({
-    analyze: vi.fn().mockResolvedValue({ complexity: 5, maintainability: 80 })
-  }))
+    analyze: vi.fn().mockResolvedValue({ complexity: 5, maintainability: 80 }),
+  })),
 }));
 
 vi.mock('../core/quality-scorecard.js', () => ({
   QualityScorecardGenerator: vi.fn().mockImplementation(() => ({
-    generate: vi.fn().mockResolvedValue({ overallScore: 85 })
-  }))
+    generate: vi.fn().mockResolvedValue({ overallScore: 85 }),
+  })),
 }));
 
 describe('SmartFinishMCPTool', () => {
@@ -59,7 +59,7 @@ describe('SmartFinishMCPTool', () => {
           performanceTest: true,
           documentationComplete: true,
           deploymentReady: true,
-        }
+        },
       };
 
       const result = await tool.execute(input);
@@ -80,7 +80,7 @@ describe('SmartFinishMCPTool', () => {
     it('should handle minimal input with defaults', async () => {
       const input: SmartFinishInput = {
         projectId: 'minimal-project',
-        codeIds: ['code-1']
+        codeIds: ['code-1'],
       };
 
       const result = await tool.execute(input);
@@ -104,7 +104,7 @@ describe('SmartFinishMCPTool', () => {
           securityScore: 90,
           complexityScore: 70,
           maintainabilityScore: 70,
-        }
+        },
       };
 
       const result = await tool.execute(input);
@@ -126,7 +126,7 @@ describe('SmartFinishMCPTool', () => {
           securityScore: 90,
           complexityScore: 70,
           maintainabilityScore: 70,
-        }
+        },
       };
 
       const result = await tool.execute(input);
@@ -149,14 +149,16 @@ describe('SmartFinishMCPTool', () => {
           securityScore: 90,
           complexityScore: 70,
           maintainabilityScore: 70,
-        }
+        },
       };
 
       const result = await tool.execute(input);
 
       expect(result.success).toBe(true);
       expect(result.data?.qualityScorecard.complexityScore.score).toBeGreaterThan(0);
-      expect(result.data?.qualityScorecard.complexityScore.details).toContain('Complexity score: 60%');
+      expect(result.data?.qualityScorecard.complexityScore.details).toContain(
+        'Complexity score: 60%'
+      );
       expect(result.data?.qualityScorecard.complexityScore.metrics.cyclomaticComplexity).toBe(8.5);
       expect(result.data?.qualityScorecard.complexityScore.metrics.maintainabilityIndex).toBe(72);
       expect(result.data?.qualityScorecard.complexityScore.metrics.duplicationPercentage).toBe(3.2);
@@ -174,17 +176,23 @@ describe('SmartFinishMCPTool', () => {
           securityScore: 90,
           complexityScore: 70,
           maintainabilityScore: 70,
-        }
+        },
       };
 
       const result = await tool.execute(input);
 
       expect(result.success).toBe(true);
       expect(result.data?.qualityScorecard.maintainabilityScore.score).toBeGreaterThan(0);
-      expect(result.data?.qualityScorecard.maintainabilityScore.details).toContain('Maintainability score: 65%');
+      expect(result.data?.qualityScorecard.maintainabilityScore.details).toContain(
+        'Maintainability score: 65%'
+      );
       expect(result.data?.qualityScorecard.maintainabilityScore.metrics.codeSmells).toBe(12);
-      expect(result.data?.qualityScorecard.maintainabilityScore.metrics.technicalDebt).toBe('2.5 days');
-      expect(result.data?.qualityScorecard.maintainabilityScore.metrics.documentationCoverage).toBe(85);
+      expect(result.data?.qualityScorecard.maintainabilityScore.metrics.technicalDebt).toBe(
+        '2.5 days'
+      );
+      expect(result.data?.qualityScorecard.maintainabilityScore.metrics.documentationCoverage).toBe(
+        85
+      );
       expect(result.data?.qualityScorecard.maintainabilityScore.recommendations).toHaveLength(3);
     });
   });
@@ -198,7 +206,7 @@ describe('SmartFinishMCPTool', () => {
           costPrevention: 20000,
           timeSaved: 5,
           userSatisfaction: 95,
-        }
+        },
       };
 
       const result = await tool.execute(input);
@@ -219,7 +227,7 @@ describe('SmartFinishMCPTool', () => {
           costPrevention: 10000,
           timeSaved: 2,
           userSatisfaction: 90,
-        }
+        },
       };
 
       const result = await tool.execute(input);
@@ -242,7 +250,7 @@ describe('SmartFinishMCPTool', () => {
           performanceTest: true,
           documentationComplete: true,
           deploymentReady: true,
-        }
+        },
       };
 
       const result = await tool.execute(input);
@@ -263,7 +271,7 @@ describe('SmartFinishMCPTool', () => {
           performanceTest: false,
           documentationComplete: false,
           deploymentReady: false,
-        }
+        },
       };
 
       const result = await tool.execute(input);
@@ -284,7 +292,7 @@ describe('SmartFinishMCPTool', () => {
           performanceTest: true,
           documentationComplete: false,
           deploymentReady: false,
-        }
+        },
       };
 
       const result = await tool.execute(input);
@@ -307,7 +315,7 @@ describe('SmartFinishMCPTool', () => {
           performanceTest: false,
           documentationComplete: true,
           deploymentReady: false,
-        }
+        },
       };
 
       const result = await tool.execute(input);
@@ -315,10 +323,16 @@ describe('SmartFinishMCPTool', () => {
       expect(result.success).toBe(true);
       expect(result.data?.productionReadiness.documentationComplete.passed).toBe(true); // Score >= 80
       expect(result.data?.productionReadiness.documentationComplete.score).toBe(85);
-      expect(result.data?.productionReadiness.documentationComplete.coverage.apiDocumentation).toBe(85);
+      expect(result.data?.productionReadiness.documentationComplete.coverage.apiDocumentation).toBe(
+        85
+      );
       expect(result.data?.productionReadiness.documentationComplete.coverage.userGuide).toBe(90);
-      expect(result.data?.productionReadiness.documentationComplete.coverage.technicalDocs).toBe(75);
-      expect(result.data?.productionReadiness.documentationComplete.recommendations).toHaveLength(3);
+      expect(result.data?.productionReadiness.documentationComplete.coverage.technicalDocs).toBe(
+        75
+      );
+      expect(result.data?.productionReadiness.documentationComplete.recommendations).toHaveLength(
+        3
+      );
     });
 
     it('should handle deployment readiness', async () => {
@@ -330,7 +344,7 @@ describe('SmartFinishMCPTool', () => {
           performanceTest: false,
           documentationComplete: false,
           deploymentReady: true,
-        }
+        },
       };
 
       const result = await tool.execute(input);
@@ -353,13 +367,15 @@ describe('SmartFinishMCPTool', () => {
           securityScore: 95,
           complexityScore: 85,
           maintainabilityScore: 85,
-        }
+        },
       };
 
       const result = await tool.execute(input);
 
       expect(result.success).toBe(true);
-      expect(result.data?.nextSteps).toContain('Address quality issues before production deployment');
+      expect(result.data?.nextSteps).toContain(
+        'Address quality issues before production deployment'
+      );
       expect(result.data?.nextSteps).toContain('Fix security vulnerabilities identified in scan');
       expect(result.data?.nextSteps).toContain('Complete remaining production readiness checks');
     });
@@ -373,7 +389,7 @@ describe('SmartFinishMCPTool', () => {
           securityScore: 60,
           complexityScore: 50,
           maintainabilityScore: 50,
-        }
+        },
       };
 
       const result = await tool.execute(input);
@@ -389,14 +405,16 @@ describe('SmartFinishMCPTool', () => {
     it('should generate comprehensive recommendations', async () => {
       const input: SmartFinishInput = {
         projectId: 'recommendations-project',
-        codeIds: ['code-1']
+        codeIds: ['code-1'],
       };
 
       const result = await tool.execute(input);
 
       expect(result.success).toBe(true);
       expect(result.data?.recommendations).toHaveLength(4);
-      expect(result.data?.recommendations).toContain('Implement continuous integration and deployment');
+      expect(result.data?.recommendations).toContain(
+        'Implement continuous integration and deployment'
+      );
       expect(result.data?.recommendations).toContain('Set up automated quality monitoring');
       expect(result.data?.recommendations).toContain('Establish regular code review processes');
     });
@@ -407,7 +425,7 @@ describe('SmartFinishMCPTool', () => {
       const invalidInput = {
         projectId: '', // Invalid: empty string
         codeIds: [], // Invalid: empty array
-        qualityGates: 'not-an-object' // Invalid: should be object
+        qualityGates: 'not-an-object', // Invalid: should be object
       } as any;
 
       const result = await tool.execute(invalidInput);
@@ -425,7 +443,7 @@ describe('SmartFinishMCPTool', () => {
           securityScore: 90,
           complexityScore: 70,
           maintainabilityScore: 70,
-        }
+        },
       } as any;
 
       const result = await tool.execute(invalidInput);
@@ -456,7 +474,7 @@ describe('SmartFinishMCPTool', () => {
           performanceTest: true,
           documentationComplete: true,
           deploymentReady: true,
-        }
+        },
       };
 
       const startTime = performance.now();
@@ -478,7 +496,7 @@ describe('SmartFinishMCPTool', () => {
           securityScore: 50, // Low target
           complexityScore: 80,
           maintainabilityScore: 70,
-        }
+        },
       };
 
       const result = await tool.execute(input);
@@ -501,13 +519,15 @@ describe('SmartFinishMCPTool', () => {
           securityScore: 95,
           complexityScore: 80,
           maintainabilityScore: 80,
-        }
+        },
       };
 
       const result = await tool.execute(input);
 
       expect(result.success).toBe(true);
-      expect(result.data?.businessValue.riskMitigation).toContain('Good maintainability reduces future costs');
+      expect(result.data?.businessValue.riskMitigation).toContain(
+        'Good maintainability reduces future costs'
+      );
     });
   });
 });

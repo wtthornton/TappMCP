@@ -1,4 +1,9 @@
-import { MCPPrompt, MCPPromptConfig, MCPPromptContext, MCPPromptResult } from '../framework/mcp-prompt.js';
+import {
+  MCPPrompt,
+  MCPPromptConfig,
+  MCPPromptContext,
+  MCPPromptResult,
+} from '../framework/mcp-prompt.js';
 import { z } from 'zod';
 
 /**
@@ -7,7 +12,7 @@ import { z } from 'zod';
 export const SimpleCodePromptSchema = z.object({
   task: z.string().describe('The coding task to be performed'),
   language: z.string().describe('Programming language'),
-  includeTests: z.boolean().optional().describe('Whether to include unit tests')
+  includeTests: z.boolean().optional().describe('Whether to include unit tests'),
 });
 
 export type SimpleCodePromptInput = z.infer<typeof SimpleCodePromptSchema>;
@@ -29,14 +34,14 @@ Generate clean, efficient, and well-structured {{language}} code.`,
   variables: {
     language: z.string(),
     task: z.string(),
-    includeTests: z.boolean().optional()
+    includeTests: z.boolean().optional(),
   },
   contextSchema: SimpleCodePromptSchema,
   cacheConfig: {
     enabled: true,
     ttl: 3600000, // 1 hour
-    maxSize: 100
-  }
+    maxSize: 100,
+  },
 };
 
 /**
@@ -50,7 +55,10 @@ export class SimpleCodePrompt extends MCPPrompt<SimpleCodePromptInput, string> {
   /**
    * Generate code based on input parameters
    */
-  async generateCode(input: SimpleCodePromptInput, context?: MCPPromptContext): Promise<MCPPromptResult<string>> {
+  async generateCode(
+    input: SimpleCodePromptInput,
+    context?: MCPPromptContext
+  ): Promise<MCPPromptResult<string>> {
     return this.generate(input, context);
   }
 }

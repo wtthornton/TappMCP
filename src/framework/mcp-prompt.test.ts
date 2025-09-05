@@ -6,7 +6,12 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { z } from 'zod';
-import { MCPPrompt, MCPPromptFactory, type MCPPromptConfig, type MCPPromptContext } from './mcp-prompt';
+import {
+  MCPPrompt,
+  MCPPromptFactory,
+  type MCPPromptConfig,
+  type MCPPromptContext,
+} from './mcp-prompt';
 
 // Test prompt implementation
 class TestMCPPrompt extends MCPPrompt<{ name: string; task: string }, string> {
@@ -14,22 +19,15 @@ class TestMCPPrompt extends MCPPrompt<{ name: string; task: string }, string> {
     super(config);
   }
 
-  protected async processPrompt(prompt: string, context?: MCPPromptContext): Promise<string> {
+  protected async processPrompt(prompt: string, _context?: MCPPromptContext): Promise<string> {
     return `Processed: ${prompt}`;
   }
 }
 
 describe('MCPPrompt', () => {
   let testPrompt: TestMCPPrompt;
-  let mockLogger: any;
 
   beforeEach(() => {
-    mockLogger = {
-      info: vi.fn(),
-      error: vi.fn(),
-      warn: vi.fn()
-    };
-
     const config: MCPPromptConfig = {
       name: 'test-prompt',
       description: 'Test prompt for unit testing',
@@ -37,18 +35,18 @@ describe('MCPPrompt', () => {
       template: 'Hello {{name}}, please complete this task: {{task}}',
       variables: {
         name: z.string(),
-        task: z.string()
+        task: z.string(),
       },
       contextSchema: z.object({
         requestId: z.string(),
         userId: z.string().optional(),
-        role: z.string().optional()
+        role: z.string().optional(),
       }),
       cacheConfig: {
         enabled: true,
         ttl: 3600000, // 1 hour
-        maxSize: 100
-      }
+        maxSize: 100,
+      },
     };
 
     testPrompt = new TestMCPPrompt(config);
@@ -104,9 +102,9 @@ describe('MCPPrompt', () => {
           {
             role: 'user',
             content: 'I need help with testing',
-            timestamp: new Date().toISOString()
-          }
-        ]
+            timestamp: new Date().toISOString(),
+          },
+        ],
       };
 
       const result = await testPrompt.generate(variables, context);
@@ -117,7 +115,7 @@ describe('MCPPrompt', () => {
     });
 
     it('should fail with invalid variables', async () => {
-      const invalidVariables = { name: 123, task: 'invalid' }; // name should be string
+      const invalidVariables = { name: 123, task: 'invalid' } as any; // name as number instead of string
       const result = await testPrompt.generate(invalidVariables);
 
       expect(result.success).toBe(false);
@@ -127,7 +125,7 @@ describe('MCPPrompt', () => {
 
     it('should fail with invalid context', async () => {
       const variables = { name: 'John', task: 'write tests' };
-      const invalidContext = { requestId: 123 }; // requestId should be string
+      const invalidContext = { requestId: 123 } as any; // requestId as number instead of string
 
       const result = await testPrompt.generate(variables, invalidContext);
 
@@ -140,24 +138,27 @@ describe('MCPPrompt', () => {
         name: 'context-prompt',
         description: 'Prompt with context variables',
         version: '1.0.0',
-        template: 'Hello {{name}}, your role is {{context.role}} and you are working on {{context.project}}',
+        template:
+          'Hello {{name}}, your role is {{context.role}} and you are working on {{context.businessContext.project}}',
         variables: {
-          name: z.string()
-        }
+          name: z.string(),
+        },
       };
 
       const contextPrompt = new TestMCPPrompt(config);
-      const variables = { name: 'Alice' };
+      const variables = { name: 'Alice', task: 'develop' };
       const context: MCPPromptContext = {
         requestId: 'test-123',
         role: 'developer',
-        businessContext: { project: 'test-project' }
+        businessContext: { project: 'test-project' },
       };
 
       const result = await contextPrompt.generate(variables, context);
 
       expect(result.success).toBe(true);
-      expect(result.prompt).toBe('Hello Alice, your role is developer and you are working on test-project');
+      expect(result.prompt).toBe(
+        'Hello Alice, your role is developer and you are working on test-project'
+      );
     });
   });
 
@@ -220,11 +221,12 @@ describe('MCPPrompt', () => {
         name: 'complex-prompt',
         description: 'Complex template for testing',
         version: '1.0.0',
-        template: 'User: {{name}}\nTask: {{task}}\nContext: {{context.role}}\nProject: {{context.project}}',
+        template:
+          'User: {{name}}\nTask: {{task}}\nContext: {{context.role}}\nProject: {{context.businessContext.project}}',
         variables: {
           name: z.string(),
-          task: z.string()
-        }
+          task: z.string(),
+        },
       };
 
       const complexPrompt = new TestMCPPrompt(config);
@@ -232,7 +234,7 @@ describe('MCPPrompt', () => {
       const context: MCPPromptContext = {
         requestId: 'test-123',
         role: 'developer',
-        businessContext: { project: 'awesome-project' }
+        businessContext: { project: 'awesome-project' },
       };
 
       const result = await complexPrompt.generate(variables, context);
@@ -263,8 +265,8 @@ describe('MCPPromptFactory', () => {
         version: '1.0.0',
         template: 'Test template {{variable}}',
         variables: {
-          variable: z.string()
-        }
+          variable: z.string(),
+        },
       };
 
       const prompt = new TestMCPPrompt(config);
@@ -286,7 +288,7 @@ describe('MCPPromptFactory', () => {
         description: 'Prompt 1',
         version: '1.0.0',
         template: 'Template 1 {{var}}',
-        variables: { var: z.string() }
+        variables: { var: z.string() },
       });
 
       const prompt2 = new TestMCPPrompt({
@@ -294,7 +296,7 @@ describe('MCPPromptFactory', () => {
         description: 'Prompt 2',
         version: '1.0.0',
         template: 'Template 2 {{var}}',
-        variables: { var: z.string() }
+        variables: { var: z.string() },
       });
 
       MCPPromptFactory.registerPrompt(prompt1);
@@ -312,7 +314,7 @@ describe('MCPPromptFactory', () => {
         description: 'Prompt for name testing',
         version: '1.0.0',
         template: 'Template {{var}}',
-        variables: { var: z.string() }
+        variables: { var: z.string() },
       });
 
       MCPPromptFactory.registerPrompt(prompt);
@@ -327,7 +329,7 @@ describe('MCPPromptFactory', () => {
         description: 'Prompt for clear testing',
         version: '1.0.0',
         template: 'Template {{var}}',
-        variables: { var: z.string() }
+        variables: { var: z.string() },
       });
 
       MCPPromptFactory.registerPrompt(prompt);

@@ -1,16 +1,17 @@
 import { z } from 'zod';
-import { MCPTool, type MCPToolConfig, type MCPToolContext, type MCPToolResult } from '../framework/mcp-tool.js';
+import {
+  MCPTool,
+  type MCPToolConfig,
+  type MCPToolContext,
+  type MCPToolResult,
+} from '../framework/mcp-tool.js';
 import {
   OrchestrationEngine,
   type Workflow,
   type WorkflowPhase as EngineWorkflowPhase,
   type WorkflowResult,
 } from '../core/orchestration-engine.js';
-import {
-  BusinessContextBroker,
-  type BusinessContext,
-  type BusinessValueMetrics,
-} from '../core/business-context-broker.js';
+import { BusinessContextBroker, type BusinessContext } from '../core/business-context-broker.js';
 import { MCPCoordinator } from '../core/mcp-coordinator.js';
 
 // Input schema for smart-orchestrate tool
@@ -72,11 +73,13 @@ const SmartOrchestrateOutputSchema = z.object({
     requirements: z.array(z.string()),
     stakeholders: z.array(z.string()),
     constraints: z.record(z.unknown()),
-    marketContext: z.object({
-      industry: z.string(),
-      targetMarket: z.string(),
-      competitors: z.array(z.string()),
-    }).optional(),
+    marketContext: z
+      .object({
+        industry: z.string(),
+        targetMarket: z.string(),
+        competitors: z.array(z.string()),
+      })
+      .optional(),
     success: z.object({
       metrics: z.array(z.string()),
       criteria: z.array(z.string()),
@@ -99,12 +102,14 @@ const SmartOrchestrateOutputSchema = z.object({
     contextPreservationAccuracy: z.number(),
     businessAlignmentScore: z.number(),
   }),
-  nextSteps: z.array(z.object({
-    step: z.string(),
-    role: z.string(),
-    estimatedTime: z.string(),
-    priority: z.enum(['high', 'medium', 'low']),
-  })),
+  nextSteps: z.array(
+    z.object({
+      step: z.string(),
+      role: z.string(),
+      estimatedTime: z.string(),
+      priority: z.enum(['high', 'medium', 'low']),
+    })
+  ),
   externalIntegration: z.object({
     context7Status: z.string(),
     webSearchStatus: z.string(),
@@ -117,11 +122,13 @@ const SmartOrchestrateOutputSchema = z.object({
     orchestration: z.object({
       workflow: z.object({
         phases: z.array(z.any()),
-        integrations: z.array(z.object({
-          name: z.string(),
-          type: z.string(),
-          priority: z.string(),
-        })),
+        integrations: z.array(
+          z.object({
+            name: z.string(),
+            type: z.string(),
+            priority: z.string(),
+          })
+        ),
         qualityGates: z.array(z.string()),
       }),
       automation: z.object({
@@ -148,12 +155,14 @@ const SmartOrchestrateOutputSchema = z.object({
       integrationsConfigured: z.number(),
       qualityGatesConfigured: z.number(),
     }),
-    nextSteps: z.array(z.object({
-      step: z.string(),
-      role: z.string(),
-      estimatedTime: z.string(),
-      priority: z.enum(['high', 'medium', 'low']),
-    })),
+    nextSteps: z.array(
+      z.object({
+        step: z.string(),
+        role: z.string(),
+        estimatedTime: z.string(),
+        priority: z.enum(['high', 'medium', 'low']),
+      })
+    ),
   }),
 });
 
@@ -161,9 +170,10 @@ type SmartOrchestrateInput = z.infer<typeof SmartOrchestrateInputSchema>;
 type SmartOrchestrateOutput = z.infer<typeof SmartOrchestrateOutputSchema>;
 
 // Tool configuration
-const config: MCPToolConfig<SmartOrchestrateInput, SmartOrchestrateOutput> = {
+const config: MCPToolConfig = {
   name: 'smart_orchestrate',
-  description: 'Phase 2B: Orchestrate complete SDLC workflows with automatic role switching, business context management, and comprehensive business value validation',
+  description:
+    'Phase 2B: Orchestrate complete SDLC workflows with automatic role switching, business context management, and comprehensive business value validation',
   version: '1.0.0',
   inputSchema: SmartOrchestrateInputSchema,
   outputSchema: SmartOrchestrateOutputSchema,
@@ -173,7 +183,10 @@ const config: MCPToolConfig<SmartOrchestrateInput, SmartOrchestrateOutput> = {
  * Smart Orchestrate MCP Tool
  * Orchestrates complete SDLC workflows with role switching and business context management
  */
-export class SmartOrchestrateMCPTool extends MCPTool<SmartOrchestrateInput, SmartOrchestrateOutput> {
+export class SmartOrchestrateMCPTool extends MCPTool<
+  SmartOrchestrateInput,
+  SmartOrchestrateOutput
+> {
   private orchestrationEngine: OrchestrationEngine;
   private contextBroker: BusinessContextBroker;
   private mcpCoordinator: MCPCoordinator;
@@ -188,14 +201,20 @@ export class SmartOrchestrateMCPTool extends MCPTool<SmartOrchestrateInput, Smar
   /**
    * Execute the smart orchestrate tool
    */
-  async execute(input: SmartOrchestrateInput, context?: MCPToolContext): Promise<MCPToolResult<SmartOrchestrateOutput>> {
-    return super.execute(input, context);
+  async execute(
+    input: SmartOrchestrateInput,
+    _context?: MCPToolContext
+  ): Promise<MCPToolResult<SmartOrchestrateOutput>> {
+    return super.execute(input, _context);
   }
 
   /**
    * Process the smart orchestrate logic
    */
-  protected async executeInternal(input: SmartOrchestrateInput, context?: MCPToolContext): Promise<SmartOrchestrateOutput> {
+  protected async executeInternal(
+    input: SmartOrchestrateInput,
+    _context?: MCPToolContext
+  ): Promise<SmartOrchestrateOutput> {
     const startTime = Date.now();
     const { request, options, workflow: workflowType, externalSources } = input;
 
@@ -235,7 +254,7 @@ export class SmartOrchestrateMCPTool extends MCPTool<SmartOrchestrateInput, Smar
 
     // Gather external knowledge if enabled
     const externalIntegrationStart = Date.now();
-    let externalKnowledge = null;
+    let _externalKnowledge = null;
     const mcpStatus = {
       context7Status: externalSources?.useContext7 ? 'active' : 'disabled',
       webSearchStatus: externalSources?.useWebSearch ? 'active' : 'disabled',
@@ -249,7 +268,7 @@ export class SmartOrchestrateMCPTool extends MCPTool<SmartOrchestrateInput, Smar
       externalSources?.useMemory
     ) {
       try {
-        externalKnowledge = await this.mcpCoordinator.gatherKnowledge({
+        _externalKnowledge = await this.mcpCoordinator.gatherKnowledge({
           projectId: businessContext.projectId,
           businessRequest: request,
           domain: businessContext.marketContext?.industry ?? 'technology',
@@ -281,7 +300,10 @@ export class SmartOrchestrateMCPTool extends MCPTool<SmartOrchestrateInput, Smar
     };
 
     // Execute the workflow with role orchestration
-    const workflowResult = await this.orchestrationEngine.executeWorkflow(workflow, businessContext);
+    const workflowResult = await this.orchestrationEngine.executeWorkflow(
+      workflow,
+      businessContext
+    );
 
     // Get business value metrics
     const businessValue = this.contextBroker.getBusinessValue(businessContext.projectId);
@@ -306,7 +328,9 @@ export class SmartOrchestrateMCPTool extends MCPTool<SmartOrchestrateInput, Smar
         costPrevention: businessValue.costPrevention,
         timesSaved: businessValue.timesSaved,
         qualityImprovement: businessValue.qualityImprovement,
-        riskMitigation: businessValue.riskMitigation,
+        riskMitigation: Array.isArray(businessValue.riskMitigation)
+          ? businessValue.riskMitigation
+          : [],
         strategicAlignment: businessValue.strategicAlignment,
         userSatisfaction: businessValue.userSatisfaction,
       },

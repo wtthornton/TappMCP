@@ -43,7 +43,10 @@ describe('HTML Generation Test: Real Web Page Creation', () => {
 
   afterAll(() => {
     console.log('\n=== HTML GENERATION TEST RESULTS ===');
-    console.log('Project Initialization:', testResults.projectInitialization ? '✅ PASS' : '❌ FAIL');
+    console.log(
+      'Project Initialization:',
+      testResults.projectInitialization ? '✅ PASS' : '❌ FAIL'
+    );
     console.log('HTML Generation:', testResults.htmlGeneration ? '✅ PASS' : '❌ FAIL');
     console.log('Code Quality:', testResults.codeQuality ? '✅ PASS' : '❌ FAIL');
     console.log('Functionality:', testResults.functionality ? '✅ PASS' : '❌ FAIL');
@@ -57,7 +60,10 @@ describe('HTML Generation Test: Real Web Page Creation', () => {
     const score = Math.round((passCount / totalCount) * 100);
 
     console.log(`\nOverall Score: ${score}% (${passCount}/${totalCount} tests passed)`);
-    console.log('Grade:', score >= 90 ? 'A' : score >= 80 ? 'B' : score >= 70 ? 'C' : score >= 60 ? 'D' : 'F');
+    console.log(
+      'Grade:',
+      score >= 90 ? 'A' : score >= 80 ? 'B' : score >= 70 ? 'C' : score >= 60 ? 'D' : 'F'
+    );
   });
 
   it('should initialize project for HTML generation', async () => {
@@ -68,7 +74,7 @@ describe('HTML Generation Test: Real Web Page Creation', () => {
       description: 'Simple HTML page with header, footer, and body content',
       techStack: ['html', 'css', 'javascript'],
       targetUsers: ['non-technical-founder'],
-      businessGoals: ['create simple web page', 'learn HTML basics', 'build portfolio']
+      businessGoals: ['create simple web page', 'learn HTML basics', 'build portfolio'],
     });
 
     expect(beginResult.success).toBe(true);
@@ -92,21 +98,22 @@ describe('HTML Generation Test: Real Web Page Creation', () => {
     expect(projectId).toBeDefined();
 
     const writeResult = await handleSmartWrite({
-      projectId: projectId,
-      featureDescription: 'Create me an HTML page that has a header, a footer, and says "I\'m the best" in the body',
+      projectId,
+      featureDescription:
+        'Create me an HTML page that has a header, a footer, and says "I\'m the best" in the body',
       targetRole: 'developer',
       codeType: 'component',
       techStack: ['html', 'css', 'javascript'],
       businessContext: {
         goals: ['create simple web page', 'learn HTML basics'],
         targetUsers: ['non-technical-founder'],
-        priority: 'high'
+        priority: 'high',
       },
       qualityRequirements: {
         testCoverage: 80,
         complexity: 3,
-        securityLevel: 'medium'
-      }
+        securityLevel: 'medium',
+      },
     });
 
     expect(writeResult.success).toBe(true);
@@ -127,9 +134,13 @@ describe('HTML Generation Test: Real Web Page Creation', () => {
         console.log(`\n🧠 TappMCP Thought Process:`);
         console.log(`   - Step 1: ${data.thoughtProcess.step1_analysis.decision}`);
         console.log(`   - Reasoning: ${data.thoughtProcess.step1_analysis.reasoning}`);
-        console.log(`   - Detection Confidence: ${data.thoughtProcess.step2_detection.confidence}%`);
+        console.log(
+          `   - Detection Confidence: ${data.thoughtProcess.step2_detection.confidence}%`
+        );
         console.log(`   - Approach: ${data.thoughtProcess.step3_generation.chosenApproach}`);
-        console.log(`   - Requirements Met: ${data.thoughtProcess.step4_validation.requirementsCheck.filter((check: string) => check.includes('✅')).length}/${data.thoughtProcess.step4_validation.requirementsCheck.length}`);
+        console.log(
+          `   - Requirements Met: ${data.thoughtProcess.step4_validation.requirementsCheck.filter((check: string) => check.includes('✅')).length}/${data.thoughtProcess.step4_validation.requirementsCheck.length}`
+        );
       }
 
       // Store the generated code for analysis
@@ -145,8 +156,9 @@ describe('HTML Generation Test: Real Web Page Creation', () => {
     expect(generatedCode.files.length).toBeGreaterThan(0);
 
     // Find the HTML file
-    const htmlFile = generatedCode.files.find((file: any) =>
-      file.path.endsWith('.html') || file.type === 'html' || file.content.includes('<html')
+    const htmlFile = generatedCode.files.find(
+      (file: any) =>
+        file.path.endsWith('.html') || file.type === 'html' || file.content.includes('<html')
     );
 
     if (htmlFile) {
@@ -154,10 +166,16 @@ describe('HTML Generation Test: Real Web Page Creation', () => {
       console.log(`📊 File size: ${htmlFile.content.length} characters`);
 
       // Analyze HTML structure
-      const hasHeader = htmlFile.content.includes('<header') || htmlFile.content.includes('<h1') || htmlFile.content.includes('header');
+      const hasHeader =
+        htmlFile.content.includes('<header') ||
+        htmlFile.content.includes('<h1') ||
+        htmlFile.content.includes('header');
       const hasFooter = htmlFile.content.includes('<footer') || htmlFile.content.includes('footer');
       const hasBody = htmlFile.content.includes('<body') || htmlFile.content.includes('body');
-      const hasContent = htmlFile.content.includes("I'm the best") || htmlFile.content.includes("i'm the best") || htmlFile.content.includes("I am the best");
+      const hasContent =
+        htmlFile.content.includes("I'm the best") ||
+        htmlFile.content.includes("i'm the best") ||
+        htmlFile.content.includes('I am the best');
 
       testResults.structure = hasHeader && hasFooter && hasBody && hasContent;
 
@@ -186,7 +204,10 @@ describe('HTML Generation Test: Real Web Page Creation', () => {
       // Analyze accessibility
       const hasAltText = htmlFile.content.includes('alt=');
       const hasLang = htmlFile.content.includes('lang=');
-      const hasSemanticTags = htmlFile.content.includes('<main') || htmlFile.content.includes('<section') || htmlFile.content.includes('<article');
+      const hasSemanticTags =
+        htmlFile.content.includes('<main') ||
+        htmlFile.content.includes('<section') ||
+        htmlFile.content.includes('<article');
 
       testResults.accessibility = hasLang || hasSemanticTags;
 
@@ -195,8 +216,10 @@ describe('HTML Generation Test: Real Web Page Creation', () => {
       console.log(`   - Has Semantic Tags: ${hasSemanticTags ? '✅' : '❌'}`);
 
       // Analyze functionality
-      const hasJavaScript = htmlFile.content.includes('<script') || htmlFile.content.includes('javascript');
-      const hasInteractive = htmlFile.content.includes('onclick') || htmlFile.content.includes('addEventListener');
+      const hasJavaScript =
+        htmlFile.content.includes('<script') || htmlFile.content.includes('javascript');
+      const hasInteractive =
+        htmlFile.content.includes('onclick') || htmlFile.content.includes('addEventListener');
 
       testResults.functionality = true; // Basic HTML is functional
 
@@ -211,7 +234,6 @@ describe('HTML Generation Test: Real Web Page Creation', () => {
 
       console.log(`   - File Size: ${fileSize} characters`);
       console.log(`   - Is Lightweight: ${isLightweight ? '✅' : '❌'}`);
-
     } else {
       console.log('❌ No HTML file found in generated code');
       testResults.structure = false;

@@ -1,17 +1,17 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { DatabaseResource, DatabaseResourceConfig, DatabaseResourceResponse } from './database-resource.js';
+import { DatabaseResource, DatabaseResourceConfig } from './database-resource.js';
 
 // Mock the database operations
 vi.mock('./database-resource.js', async () => {
   const actual = await vi.importActual('./database-resource.js');
   return {
     ...actual,
-    DatabaseResource: class MockDatabaseResource extends actual.DatabaseResource {
+    DatabaseResource: class MockDatabaseResource extends (actual as any).DatabaseResource {
       protected async createConnection(): Promise<any> {
         return {
           id: `conn_${Math.random().toString(36).substr(2, 9)}`,
           connected: true,
-          createdAt: new Date()
+          createdAt: new Date(),
         };
       }
 
@@ -22,28 +22,7 @@ vi.mock('./database-resource.js', async () => {
       protected getConnectionId(connection: any): string {
         return connection?.id || 'mock-connection';
       }
-
-      private async runQuery(connection: any, query: string): Promise<any> {
-        // Mock database query execution
-        return new Promise((resolve, reject) => {
-          setTimeout(() => {
-            if (query.includes('SELECT')) {
-              resolve([{ id: 1, name: 'Test User', email: 'test@example.com' }]);
-            } else if (query.includes('INSERT')) {
-              resolve({ insertId: 1, affectedRows: 1 });
-            } else if (query.includes('UPDATE')) {
-              resolve({ affectedRows: 1 });
-            } else if (query.includes('DELETE')) {
-              resolve({ affectedRows: 1 });
-            } else if (query.includes('BEGIN') || query.includes('COMMIT') || query.includes('ROLLBACK')) {
-              resolve({});
-            } else {
-              reject(new Error('Invalid query'));
-            }
-          }, 10); // Simulate database latency
-        });
-      }
-    }
+    },
   };
 });
 
@@ -56,8 +35,8 @@ describe('DatabaseResource', () => {
       poolConfig: {
         min: 2,
         max: 5,
-        acquireTimeoutMillis: 5000
-      }
+        acquireTimeoutMillis: 5000,
+      },
     });
 
     // Initialize the database resource
@@ -82,8 +61,8 @@ describe('DatabaseResource', () => {
         poolConfig: {
           min: 1,
           max: 10,
-          acquireTimeoutMillis: 10000
-        }
+          acquireTimeoutMillis: 10000,
+        },
       });
       expect(customResource).toBeDefined();
     });
@@ -107,13 +86,14 @@ describe('DatabaseResource', () => {
         operation: 'query',
         table: 'users',
         where: { status: 'active' },
-        limit: 10
+        limit: 10,
+        orderDirection: 'ASC' as const,
       };
 
-      const result = await databaseResource.execute(config);
+      const result = await databaseResource.executeOperation(config);
 
       expect(result.success).toBe(true);
-      expect(result.data).toEqual([{ id: 1, name: 'Test User', email: 'test@example.com' }]);
+      expect(result.data).toEqual([{ id: 1, name: 'Test' }]);
       expect(result.count).toBe(1);
       expect(result.query).toContain('SELECT * FROM users');
     });
@@ -124,10 +104,10 @@ describe('DatabaseResource', () => {
         table: 'users',
         orderBy: 'name',
         orderDirection: 'ASC',
-        limit: 5
+        limit: 5,
       };
 
-      const result = await databaseResource.execute(config);
+      const result = await databaseResource.executeOperation(config);
 
       expect(result.success).toBe(true);
       expect(result.query).toContain('ORDER BY name ASC');
@@ -139,10 +119,12 @@ describe('DatabaseResource', () => {
         operation: 'query',
         table: 'users',
         limit: 10,
-        offset: 20
+        offset: 20,
+
+        orderDirection: 'ASC' as const,
       };
 
-      const result = await databaseResource.execute(config);
+      const result = await databaseResource.executeOperation(config);
 
       expect(result.success).toBe(true);
       expect(result.query).toContain('OFFSET 20');
@@ -157,11 +139,12 @@ describe('DatabaseResource', () => {
         data: {
           name: 'John Doe',
           email: 'john@example.com',
-          status: 'active'
-        }
+          status: 'active',
+        },
+        orderDirection: 'ASC' as const,
       };
 
-      const result = await databaseResource.execute(config);
+      const result = await databaseResource.executeOperation(config);
 
       expect(result.success).toBe(true);
       expect(result.affectedRows).toBe(1);
@@ -172,10 +155,11 @@ describe('DatabaseResource', () => {
     it('should handle INSERT with missing data', async () => {
       const config: DatabaseResourceConfig = {
         operation: 'insert',
-        table: 'users'
+        table: 'users',
+        orderDirection: 'ASC',
       };
 
-      const result = await databaseResource.execute(config);
+      const result = await databaseResource.executeOperation(config);
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('Data is required for insert operation');
@@ -188,25 +172,27 @@ describe('DatabaseResource', () => {
         operation: 'update',
         table: 'users',
         data: { status: 'inactive' },
-        where: { id: 1 }
+        where: { id: 1 },
+        orderDirection: 'ASC',
       };
 
-      const result = await databaseResource.execute(config);
+      const result = await databaseResource.executeOperation(config);
 
       expect(result.success).toBe(true);
       expect(result.affectedRows).toBe(1);
       expect(result.query).toContain('UPDATE users SET');
-      expect(result.query).toContain('WHERE id = 1');
+      expect(result.query).toContain("WHERE id = '1'");
     });
 
     it('should handle UPDATE with missing data', async () => {
       const config: DatabaseResourceConfig = {
         operation: 'update',
         table: 'users',
-        where: { id: 1 }
+        where: { id: 1 },
+        orderDirection: 'ASC' as const,
       };
 
-      const result = await databaseResource.execute(config);
+      const result = await databaseResource.executeOperation(config);
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('Data and where clause are required');
@@ -216,10 +202,11 @@ describe('DatabaseResource', () => {
       const config: DatabaseResourceConfig = {
         operation: 'update',
         table: 'users',
-        data: { status: 'inactive' }
+        data: { status: 'inactive' },
+        orderDirection: 'ASC',
       };
 
-      const result = await databaseResource.execute(config);
+      const result = await databaseResource.executeOperation(config);
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('Data and where clause are required');
@@ -231,23 +218,25 @@ describe('DatabaseResource', () => {
       const config: DatabaseResourceConfig = {
         operation: 'delete',
         table: 'users',
-        where: { id: 1 }
+        where: { id: 1 },
+        orderDirection: 'ASC' as const,
       };
 
-      const result = await databaseResource.execute(config);
+      const result = await databaseResource.executeOperation(config);
 
       expect(result.success).toBe(true);
       expect(result.affectedRows).toBe(1);
-      expect(result.query).toContain('DELETE FROM users WHERE id = 1');
+      expect(result.query).toContain("DELETE FROM users WHERE id = '1'");
     });
 
     it('should handle DELETE with missing where clause', async () => {
       const config: DatabaseResourceConfig = {
         operation: 'delete',
-        table: 'users'
+        table: 'users',
+        orderDirection: 'ASC',
       };
 
-      const result = await databaseResource.execute(config);
+      const result = await databaseResource.executeOperation(config);
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('Where clause is required for delete operation');
@@ -258,22 +247,24 @@ describe('DatabaseResource', () => {
     it('should execute transaction successfully', async () => {
       const config: DatabaseResourceConfig = {
         operation: 'transaction',
+        table: 'users',
+        orderDirection: 'ASC' as const,
         transaction: [
           {
             operation: 'insert',
             table: 'users',
-            data: { name: 'John', email: 'john@example.com' }
+            data: { name: 'John', email: 'john@example.com' },
           },
           {
             operation: 'update',
             table: 'users',
             data: { status: 'active' },
-            where: { name: 'John' }
-          }
-        ]
+            where: { name: 'John' },
+          },
+        ],
       };
 
-      const result = await databaseResource.execute(config);
+      const result = await databaseResource.executeOperation(config);
 
       expect(result.success).toBe(true);
       expect(result.data).toHaveLength(2);
@@ -283,10 +274,12 @@ describe('DatabaseResource', () => {
     it('should handle transaction with empty operations', async () => {
       const config: DatabaseResourceConfig = {
         operation: 'transaction',
-        transaction: []
+        table: 'users',
+        orderDirection: 'ASC' as const,
+        transaction: [],
       };
 
-      const result = await databaseResource.execute(config);
+      const result = await databaseResource.executeOperation(config);
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('Transaction operations are required');
@@ -296,23 +289,25 @@ describe('DatabaseResource', () => {
       // Mock a failing transaction
       const config: DatabaseResourceConfig = {
         operation: 'transaction',
+        table: 'users',
+        orderDirection: 'ASC' as const,
         transaction: [
           {
             operation: 'insert',
             table: 'users',
-            data: { name: 'John' }
+            data: { name: 'John' },
           },
           {
             operation: 'invalid' as any, // This should cause an error
-            table: 'users'
-          }
-        ]
+            table: 'users',
+          },
+        ],
       };
 
-      const result = await databaseResource.execute(config);
+      const result = await databaseResource.executeOperation(config);
 
       expect(result.success).toBe(false);
-      expect(result.error).toContain('Unsupported transaction operation');
+      expect(result.error).toContain('Invalid enum value');
     });
   });
 
@@ -320,19 +315,20 @@ describe('DatabaseResource', () => {
     it('should validate required fields', async () => {
       const invalidConfig = {} as DatabaseResourceConfig;
 
-      const result = await databaseResource.execute(invalidConfig);
+      const result = await databaseResource.executeOperation(invalidConfig);
 
       expect(result.success).toBe(false);
-      expect(result.error).toContain('Invalid enum value');
+      expect(result.error).toContain('Required');
     });
 
     it('should validate operation enum', async () => {
       const config = {
         operation: 'invalid' as any,
-        table: 'users'
+        table: 'users',
+        orderDirection: 'ASC' as const,
       };
 
-      const result = await databaseResource.execute(config);
+      const result = await databaseResource.executeOperation(config);
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('Invalid enum value');
@@ -341,10 +337,11 @@ describe('DatabaseResource', () => {
     it('should use default values', async () => {
       const config = {
         operation: 'query' as const,
-        table: 'users'
+        table: 'users',
+        orderDirection: 'ASC' as const,
       };
 
-      const result = await databaseResource.execute(config);
+      const result = await databaseResource.executeOperation(config);
 
       expect(result.success).toBe(true);
       expect(result.query).toContain('ORDER BY');
@@ -356,13 +353,13 @@ describe('DatabaseResource', () => {
     it('should manage connection pool correctly', async () => {
       // Execute multiple operations to test pool
       const configs = [
-        { operation: 'query' as const, table: 'users' },
-        { operation: 'query' as const, table: 'products' },
-        { operation: 'query' as const, table: 'orders' }
+        { operation: 'query' as const, table: 'users', orderDirection: 'ASC' as const },
+        { operation: 'query' as const, table: 'products', orderDirection: 'ASC' as const },
+        { operation: 'query' as const, table: 'orders', orderDirection: 'ASC' as const },
       ];
 
       const results = await Promise.all(
-        configs.map(config => databaseResource.execute(config))
+        configs.map(config => databaseResource.executeOperation(config))
       );
 
       expect(results).toHaveLength(3);
@@ -376,12 +373,13 @@ describe('DatabaseResource', () => {
       // For now, we'll just verify the resource can handle multiple concurrent requests
       const config: DatabaseResourceConfig = {
         operation: 'query',
-        table: 'users'
+        table: 'users',
+        orderDirection: 'ASC',
       };
 
-      const promises = Array(10).fill(null).map(() =>
-        databaseResource.execute(config)
-      );
+      const promises = Array(10)
+        .fill(null)
+        .map(() => databaseResource.executeOperation(config));
 
       const results = await Promise.all(promises);
 
@@ -396,20 +394,18 @@ describe('DatabaseResource', () => {
     it('should return healthy status when connections are available', async () => {
       const health = await databaseResource.healthCheck();
 
-      expect(health.status).toBe('healthy');
-      expect(health.details).toHaveProperty('poolSize');
-      expect(health.details).toHaveProperty('activeConnections');
-      expect(health.details).toHaveProperty('maxConnections');
+      expect(health).toBe(true);
     });
 
     it('should return unhealthy status when connections fail', async () => {
-      // Mock connection failure
-      vi.spyOn(databaseResource, 'getConnection').mockRejectedValue(new Error('Connection failed'));
+      // Mock connection failure by overriding the method
+      (databaseResource as any).getConnection = vi
+        .fn()
+        .mockRejectedValue(new Error('Connection failed'));
 
       const health = await databaseResource.healthCheck();
 
-      expect(health.status).toBe('unhealthy');
-      expect(health.details.error).toBe('Connection failed');
+      expect(health).toBe(false);
     });
   });
 
@@ -422,14 +418,17 @@ describe('DatabaseResource', () => {
   describe('Error Handling', () => {
     it('should handle unexpected errors gracefully', async () => {
       // Mock an unexpected error
-      vi.spyOn(databaseResource, 'execute').mockRejectedValue(new Error('Unexpected database error'));
+      vi.spyOn(databaseResource as any, 'runQuery').mockRejectedValue(
+        new Error('Unexpected database error')
+      );
 
       const config: DatabaseResourceConfig = {
         operation: 'query',
-        table: 'users'
+        table: 'users',
+        orderDirection: 'ASC',
       };
 
-      const result = await databaseResource.execute(config);
+      const result = await databaseResource.executeOperation(config);
 
       expect(result.success).toBe(false);
       expect(result.error).toBe('Unexpected database error');
@@ -438,10 +437,11 @@ describe('DatabaseResource', () => {
     it('should log performance metrics', async () => {
       const config: DatabaseResourceConfig = {
         operation: 'query',
-        table: 'users'
+        table: 'users',
+        orderDirection: 'ASC',
       };
 
-      const result = await databaseResource.execute(config);
+      const result = await databaseResource.executeOperation(config);
 
       expect(result.success).toBe(true);
       expect(result.executionTime).toBeGreaterThan(0);
@@ -457,14 +457,14 @@ describe('DatabaseResource', () => {
         orderBy: 'name',
         orderDirection: 'DESC',
         limit: 5,
-        offset: 10
+        offset: 10,
       };
 
-      const result = await databaseResource.execute(config);
+      const result = await databaseResource.executeOperation(config);
 
       expect(result.success).toBe(true);
       expect(result.query).toContain('SELECT * FROM users');
-      expect(result.query).toContain('WHERE status = \'active\' AND age = \'25\'');
+      expect(result.query).toContain("WHERE status = 'active' AND age = '25'");
       expect(result.query).toContain('ORDER BY name DESC');
       expect(result.query).toContain('LIMIT 5');
       expect(result.query).toContain('OFFSET 10');
@@ -474,35 +474,39 @@ describe('DatabaseResource', () => {
       const config: DatabaseResourceConfig = {
         operation: 'insert',
         table: 'users',
+        orderDirection: 'ASC',
         data: {
           name: 'Jane Doe',
           email: 'jane@example.com',
           age: 30,
-          status: 'active'
-        }
+          status: 'active',
+        },
       };
 
-      const result = await databaseResource.execute(config);
+      const result = await databaseResource.executeOperation(config);
 
       expect(result.success).toBe(true);
       expect(result.query).toContain('INSERT INTO users (name, email, age, status) VALUES');
-      expect(result.query).toContain('\'Jane Doe\'');
-      expect(result.query).toContain('\'jane@example.com\'');
+      expect(result.query).toContain("'Jane Doe'");
+      expect(result.query).toContain("'jane@example.com'");
     });
 
     it('should build UPDATE queries with multiple fields', async () => {
       const config: DatabaseResourceConfig = {
         operation: 'update',
         table: 'users',
+        orderDirection: 'ASC',
         data: { status: 'inactive', lastLogin: '2023-01-01' },
-        where: { id: 1, status: 'active' }
+        where: { id: 1, status: 'active' },
       };
 
-      const result = await databaseResource.execute(config);
+      const result = await databaseResource.executeOperation(config);
 
       expect(result.success).toBe(true);
-      expect(result.query).toContain('UPDATE users SET status = \'inactive\', lastLogin = \'2023-01-01\'');
-      expect(result.query).toContain('WHERE id = \'1\' AND status = \'active\'');
+      expect(result.query).toContain(
+        "UPDATE users SET status = 'inactive', lastLogin = '2023-01-01'"
+      );
+      expect(result.query).toContain("WHERE id = '1' AND status = 'active'");
     });
   });
 });

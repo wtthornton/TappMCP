@@ -8,7 +8,6 @@
  * - Connection pool management
  */
 
-import { performance } from 'perf_hooks';
 import { MCPResource } from './mcp-resource.js';
 
 export interface ResourceMetrics {
@@ -62,7 +61,7 @@ export class ResourceLifecycleManager {
       maxIdleTime: 300000, // 5 minutes
       maxMemoryUsage: 100 * 1024 * 1024, // 100MB
       cleanupInterval: 60000, // 1 minute
-      forceCleanupThreshold: 600000 // 10 minutes
+      forceCleanupThreshold: 600000, // 10 minutes
     },
     monitoringConfig: MonitoringConfig = {
       healthCheckInterval: 30000, // 30 seconds
@@ -70,8 +69,8 @@ export class ResourceLifecycleManager {
       alertThresholds: {
         memoryUsage: 80, // 80%
         errorRate: 10, // 10%
-        responseTime: 1000 // 1 second
-      }
+        responseTime: 1000, // 1 second
+      },
     },
     logger?: any
   ) {
@@ -99,13 +98,13 @@ export class ResourceLifecycleManager {
       totalOperations: 0,
       errorCount: 0,
       averageResponseTime: 0,
-      healthStatus: 'healthy'
+      healthStatus: 'healthy',
     });
 
     this.logger.info('Resource registered for lifecycle management', {
       resourceName: name,
       resourceType: resource.getType(),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 
@@ -133,7 +132,7 @@ export class ResourceLifecycleManager {
     this.logger.info('Resource lifecycle management started', {
       cleanupInterval: this.cleanupConfig.cleanupInterval,
       monitoringInterval: this.monitoringConfig.metricsCollectionInterval,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 
@@ -150,16 +149,16 @@ export class ResourceLifecycleManager {
     // Clear intervals
     if (this.cleanupInterval) {
       clearInterval(this.cleanupInterval);
-      this.cleanupInterval = undefined;
+      this.cleanupInterval = undefined as any;
     }
 
     if (this.monitoringInterval) {
       clearInterval(this.monitoringInterval);
-      this.monitoringInterval = undefined;
+      this.monitoringInterval = undefined as any;
     }
 
     this.logger.info('Resource lifecycle management stopped', {
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 
@@ -186,8 +185,12 @@ export class ResourceLifecycleManager {
           resourceName: name,
           idleTime,
           memoryUsage: metrics.memoryUsage,
-          reason: idleTime > this.cleanupConfig.forceCleanupThreshold ? 'force' :
-                  idleTime > this.cleanupConfig.maxIdleTime ? 'idle' : 'memory'
+          reason:
+            idleTime > this.cleanupConfig.forceCleanupThreshold
+              ? 'force'
+              : idleTime > this.cleanupConfig.maxIdleTime
+                ? 'idle'
+                : 'memory',
         });
 
         cleanupPromises.push(this.cleanupResource(resource, name));
@@ -217,13 +220,13 @@ export class ResourceLifecycleManager {
 
       this.logger.info('Resource cleanup completed', {
         resourceName: name,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     } catch (error) {
       this.logger.error('Resource cleanup failed', {
         resourceName: name,
         error: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     }
   }
@@ -250,7 +253,7 @@ export class ResourceLifecycleManager {
       } catch (error) {
         this.logger.error('Failed to collect metrics for resource', {
           resourceName: name,
-          error: error instanceof Error ? error.message : 'Unknown error'
+          error: error instanceof Error ? error.message : 'Unknown error',
         });
       }
     }
@@ -284,7 +287,7 @@ export class ResourceLifecycleManager {
         if (!isHealthy) {
           this.logger.warn('Resource health check failed', {
             resourceName: name,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           });
         }
       }
@@ -298,7 +301,7 @@ export class ResourceLifecycleManager {
       this.logger.error('Resource health check error', {
         resourceName: name,
         error: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     }
   }
@@ -306,14 +309,14 @@ export class ResourceLifecycleManager {
   /**
    * Estimate memory usage for a resource
    */
-  private estimateMemoryUsage(resource: MCPResource): number {
+  private estimateMemoryUsage(_resource: MCPResource): number {
     // Simplified memory estimation
     // In a real implementation, this would use process.memoryUsage() and track actual usage
     const baseMemory = 1024 * 1024; // 1MB base
     const connectionMemory = 64 * 1024; // 64KB per connection
 
     // This is a simplified estimation - real implementation would track actual memory usage
-    return baseMemory + (connectionMemory * 2); // Assume 2 connections
+    return baseMemory + connectionMemory * 2; // Assume 2 connections
   }
 
   /**
@@ -326,12 +329,15 @@ export class ResourceLifecycleManager {
     const memoryUsagePercent = (metrics.memoryUsage / this.cleanupConfig.maxMemoryUsage) * 100;
 
     // Check error rate
-    const errorRate = metrics.totalOperations > 0 ? (metrics.errorCount / metrics.totalOperations) * 100 : 0;
+    const errorRate =
+      metrics.totalOperations > 0 ? (metrics.errorCount / metrics.totalOperations) * 100 : 0;
 
     // Determine health status
-    if (memoryUsagePercent > alertThresholds.memoryUsage ||
-        errorRate > alertThresholds.errorRate ||
-        metrics.averageResponseTime > alertThresholds.responseTime) {
+    if (
+      memoryUsagePercent > alertThresholds.memoryUsage ||
+      errorRate > alertThresholds.errorRate ||
+      metrics.averageResponseTime > alertThresholds.responseTime
+    ) {
       metrics.healthStatus = 'degraded';
     } else if (metrics.errorCount > 0 && errorRate > alertThresholds.errorRate * 2) {
       metrics.healthStatus = 'unhealthy';
@@ -373,7 +379,8 @@ export class ResourceLifecycleManager {
       degraded: allMetrics.filter(m => m.healthStatus === 'degraded').length,
       unhealthy: allMetrics.filter(m => m.healthStatus === 'unhealthy').length,
       totalMemoryUsage: allMetrics.reduce((sum, m) => sum + m.memoryUsage, 0),
-      averageResponseTime: allMetrics.reduce((sum, m) => sum + m.averageResponseTime, 0) / allMetrics.length || 0
+      averageResponseTime:
+        allMetrics.reduce((sum, m) => sum + m.averageResponseTime, 0) / allMetrics.length || 0,
     };
   }
 
@@ -382,7 +389,7 @@ export class ResourceLifecycleManager {
    */
   async forceCleanupAll(): Promise<void> {
     this.logger.info('Force cleanup of all resources initiated', {
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     const cleanupPromises: Promise<void>[] = [];
@@ -394,7 +401,7 @@ export class ResourceLifecycleManager {
     await Promise.allSettled(cleanupPromises);
 
     this.logger.info('Force cleanup of all resources completed', {
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 
@@ -414,7 +421,8 @@ export class ResourceLifecycleManager {
 
     // Update average response time
     metrics.averageResponseTime =
-      (metrics.averageResponseTime * (metrics.totalOperations - 1) + executionTime) / metrics.totalOperations;
+      (metrics.averageResponseTime * (metrics.totalOperations - 1) + executionTime) /
+      metrics.totalOperations;
   }
 
   /**
@@ -432,7 +440,7 @@ export class ResourceLifecycleManager {
 
     this.logger.info('Cleanup configuration updated', {
       config: this.cleanupConfig,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 
@@ -451,7 +459,7 @@ export class ResourceLifecycleManager {
 
     this.logger.info('Monitoring configuration updated', {
       config: this.monitoringConfig,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 
@@ -465,7 +473,7 @@ export class ResourceLifecycleManager {
     this.metrics.clear();
 
     this.logger.info('Resource lifecycle manager destroyed', {
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 }

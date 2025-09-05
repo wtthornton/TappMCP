@@ -49,7 +49,7 @@ export class MCPRegistry {
       enableDependencyInjection: true,
       enableHealthMonitoring: true,
       healthCheckInterval: 30000, // 30 seconds
-      ...config
+      ...config,
     };
     this.logger = this.config.logger || console;
   }
@@ -64,9 +64,7 @@ export class MCPRegistry {
 
     try {
       // Set up factories
-      MCPToolFactory.setLogger(this.logger);
-      MCPResourceFactory.setLogger(this.logger);
-      MCPPromptFactory.setLogger(this.logger);
+      // Note: Logger setup removed as factory classes no longer use static loggers
 
       // Initialize all resources
       await MCPResourceFactory.initializeAllResources();
@@ -80,13 +78,12 @@ export class MCPRegistry {
 
       this.logger.info('MCP Registry initialized successfully', {
         timestamp: new Date().toISOString(),
-        config: this.config
+        config: this.config,
       });
-
     } catch (error) {
       this.logger.error('MCP Registry initialization failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
       throw error;
     }
@@ -100,7 +97,7 @@ export class MCPRegistry {
     this.logger.info('Tool registered', {
       toolName: tool.getName(),
       version: tool.getVersion(),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 
@@ -113,7 +110,7 @@ export class MCPRegistry {
       resourceName: resource.getName(),
       type: resource.getType(),
       version: resource.getVersion(),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 
@@ -125,7 +122,7 @@ export class MCPRegistry {
     this.logger.info('Prompt registered', {
       promptName: prompt.getName(),
       version: prompt.getVersion(),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 
@@ -204,12 +201,12 @@ export class MCPRegistry {
       // This would typically scan for components in a specific directory
       // For now, we'll just log that discovery is enabled
       this.logger.info('Component discovery enabled', {
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     } catch (error) {
       this.logger.error('Component discovery failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     }
   }
@@ -223,9 +220,7 @@ export class MCPRegistry {
     const prompts = this.getAllPrompts();
 
     // Check health of all components
-    const toolHealthChecks = await Promise.allSettled(
-      tools.map(tool => tool.healthCheck())
-    );
+    const toolHealthChecks = await Promise.allSettled(tools.map(tool => tool.healthCheck()));
     const resourceHealthChecks = await Promise.allSettled(
       resources.map(resource => resource.healthCheck())
     );
@@ -233,20 +228,20 @@ export class MCPRegistry {
       prompts.map(prompt => prompt.healthCheck())
     );
 
-    const healthyTools = toolHealthChecks.filter(result =>
-      result.status === 'fulfilled' && result.value
+    const healthyTools = toolHealthChecks.filter(
+      result => result.status === 'fulfilled' && result.value
     ).length;
 
-    const healthyResources = resourceHealthChecks.filter(result =>
-      result.status === 'fulfilled' && result.value
+    const healthyResources = resourceHealthChecks.filter(
+      result => result.status === 'fulfilled' && result.value
     ).length;
 
-    const healthyPrompts = promptHealthChecks.filter(result =>
-      result.status === 'fulfilled' && result.value
+    const healthyPrompts = promptHealthChecks.filter(
+      result => result.status === 'fulfilled' && result.value
     ).length;
 
     // Calculate total connections for resources
-    const totalConnections = resources.reduce((total, resource) => {
+    const totalConnections = resources.reduce((total, _resource) => {
       // This would need to be implemented in the resource classes
       return total + 0; // Placeholder
     }, 0);
@@ -261,20 +256,20 @@ export class MCPRegistry {
       tools: {
         total: tools.length,
         healthy: healthyTools,
-        unhealthy: tools.length - healthyTools
+        unhealthy: tools.length - healthyTools,
       },
       resources: {
         total: resources.length,
         healthy: healthyResources,
         unhealthy: resources.length - healthyResources,
-        connections: totalConnections
+        connections: totalConnections,
       },
       prompts: {
         total: prompts.length,
         healthy: healthyPrompts,
         unhealthy: prompts.length - healthyPrompts,
-        cacheSize: totalCacheSize
-      }
+        cacheSize: totalCacheSize,
+      },
     };
   }
 
@@ -292,35 +287,34 @@ export class MCPRegistry {
 
         this.logger.info('Health monitoring check', {
           stats,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         });
 
         // Log warnings for unhealthy components
         if (stats.tools.unhealthy > 0) {
           this.logger.warn('Unhealthy tools detected', {
             count: stats.tools.unhealthy,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           });
         }
 
         if (stats.resources.unhealthy > 0) {
           this.logger.warn('Unhealthy resources detected', {
             count: stats.resources.unhealthy,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           });
         }
 
         if (stats.prompts.unhealthy > 0) {
           this.logger.warn('Unhealthy prompts detected', {
             count: stats.prompts.unhealthy,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           });
         }
-
       } catch (error) {
         this.logger.error('Health monitoring check failed', {
           error: error instanceof Error ? error.message : 'Unknown error',
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         });
       }
     }, this.config.healthCheckInterval);
@@ -332,7 +326,7 @@ export class MCPRegistry {
   stopHealthMonitoring(): void {
     if (this.healthCheckInterval) {
       clearInterval(this.healthCheckInterval);
-      this.healthCheckInterval = undefined;
+      this.healthCheckInterval = undefined as any;
     }
   }
 
@@ -355,13 +349,12 @@ export class MCPRegistry {
       this.isInitialized = false;
 
       this.logger.info('MCP Registry cleanup completed', {
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
-
     } catch (error) {
       this.logger.error('MCP Registry cleanup failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
       throw error;
     }

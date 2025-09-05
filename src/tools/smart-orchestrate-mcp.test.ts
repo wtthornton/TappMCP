@@ -84,6 +84,10 @@ describe('SmartOrchestrateMCPTool', () => {
       const input = {
         request: 'Build a user management system with authentication',
         options: {
+          costPrevention: true,
+          skipPhases: [],
+          focusAreas: [],
+          qualityLevel: 'standard' as const,
           businessContext: {
             projectId: 'test-project',
             businessGoals: ['Improve user experience'],
@@ -120,6 +124,7 @@ describe('SmartOrchestrateMCPTool', () => {
       const input = {
         request: 'Implement a microservices architecture',
         options: {
+          costPrevention: true,
           skipPhases: ['testing'],
           focusAreas: ['architecture', 'scalability'],
           qualityLevel: 'high' as const,
@@ -162,6 +167,10 @@ describe('SmartOrchestrateMCPTool', () => {
       const input = {
         request: 'Create a project management dashboard',
         options: {
+          costPrevention: true,
+          skipPhases: [],
+          focusAreas: [],
+          qualityLevel: 'standard' as const,
           businessContext: {
             projectId: 'dashboard-project',
             businessGoals: ['Improve project visibility'],
@@ -175,6 +184,11 @@ describe('SmartOrchestrateMCPTool', () => {
           },
         },
         workflow: 'project' as const,
+        externalSources: {
+          useContext7: true,
+          useWebSearch: true,
+          useMemory: true,
+        },
       };
 
       const result = await tool.execute(input);
@@ -191,6 +205,10 @@ describe('SmartOrchestrateMCPTool', () => {
       const input = {
         request: 'Develop a mobile banking app',
         options: {
+          costPrevention: true,
+          skipPhases: [],
+          focusAreas: [],
+          qualityLevel: 'standard' as const,
           businessContext: {
             projectId: 'mobile-banking',
             businessGoals: ['Increase customer engagement', 'Reduce support calls'],
@@ -222,6 +240,10 @@ describe('SmartOrchestrateMCPTool', () => {
       const input = {
         request: 'Create a simple calculator app',
         options: {
+          costPrevention: true,
+          skipPhases: [],
+          focusAreas: [],
+          qualityLevel: 'standard' as const,
           businessContext: {
             projectId: 'calculator-app',
           },
@@ -231,7 +253,9 @@ describe('SmartOrchestrateMCPTool', () => {
       const result = await tool.execute(input);
 
       expect(result.success).toBe(true);
-      expect(result.data?.businessContext.businessGoals).toContain('Implement: Create a simple calculator app');
+      expect(result.data?.businessContext.businessGoals).toContain(
+        'Implement: Create a simple calculator app'
+      );
       expect(result.data?.businessContext.requirements).toContain('Create a simple calculator app');
     });
   });
@@ -241,6 +265,10 @@ describe('SmartOrchestrateMCPTool', () => {
       const input = {
         request: 'Build an AI-powered recommendation system',
         options: {
+          costPrevention: true,
+          skipPhases: [],
+          focusAreas: [],
+          qualityLevel: 'standard' as const,
           businessContext: {
             projectId: 'ai-recommendations',
           },
@@ -264,11 +292,17 @@ describe('SmartOrchestrateMCPTool', () => {
     it('should handle external sources errors gracefully', async () => {
       // Mock external sources to throw error
       const mockCoordinator = tool['mcpCoordinator'];
-      vi.spyOn(mockCoordinator, 'gatherKnowledge').mockRejectedValue(new Error('External service unavailable'));
+      vi.spyOn(mockCoordinator, 'gatherKnowledge').mockRejectedValue(
+        new Error('External service unavailable')
+      );
 
       const input = {
         request: 'Build a data analytics platform',
         options: {
+          costPrevention: true,
+          skipPhases: [],
+          focusAreas: [],
+          qualityLevel: 'standard' as const,
           businessContext: {
             projectId: 'analytics-platform',
           },
@@ -294,6 +328,10 @@ describe('SmartOrchestrateMCPTool', () => {
       const input = {
         request: 'Implement a real-time chat system',
         options: {
+          costPrevention: true,
+          skipPhases: [],
+          focusAreas: [],
+          qualityLevel: 'standard' as const,
           businessContext: {
             projectId: 'chat-system',
           },
@@ -316,6 +354,10 @@ describe('SmartOrchestrateMCPTool', () => {
       const input = {
         request: 'Deploy a production-ready API',
         options: {
+          costPrevention: true,
+          skipPhases: [],
+          focusAreas: [],
+          qualityLevel: 'standard' as const,
           businessContext: {
             projectId: 'api-deployment',
           },
@@ -355,6 +397,10 @@ describe('SmartOrchestrateMCPTool', () => {
       const input = {
         request: 'Build a complex data pipeline',
         options: {
+          costPrevention: true,
+          skipPhases: [],
+          focusAreas: [],
+          qualityLevel: 'standard' as const,
           businessContext: {
             projectId: 'data-pipeline',
           },
@@ -376,6 +422,10 @@ describe('SmartOrchestrateMCPTool', () => {
       const invalidInput = {
         request: 'Short', // Too short
         options: {
+          costPrevention: true,
+          skipPhases: [],
+          focusAreas: [],
+          qualityLevel: 'standard' as const,
           businessContext: {
             projectId: '', // Empty project ID
           },
@@ -405,6 +455,10 @@ describe('SmartOrchestrateMCPTool', () => {
       const input = {
         request: 'Implement a comprehensive e-commerce platform',
         options: {
+          costPrevention: true,
+          skipPhases: [],
+          focusAreas: [],
+          qualityLevel: 'standard' as const,
           businessContext: {
             projectId: 'ecommerce-platform',
           },

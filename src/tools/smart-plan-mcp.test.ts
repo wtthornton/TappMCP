@@ -24,18 +24,19 @@ describe('SmartPlanMCPTool', () => {
       const input: SmartPlanInput = {
         projectId: 'test-dev-project',
         planType: 'development',
+        externalMCPs: [],
         scope: {
           features: ['user authentication', 'data management', 'reporting'],
           timeline: {
             duration: 8,
             startDate: '2025-01-01',
-            endDate: '2025-02-28'
+            endDate: '2025-02-28',
           },
           resources: {
             teamSize: 4,
             budget: 75000,
-            externalTools: ['AWS', 'Stripe', 'SendGrid']
-          }
+            externalTools: ['AWS', 'Stripe', 'SendGrid'],
+          },
         },
         qualityRequirements: {
           testCoverage: 90,
@@ -43,15 +44,15 @@ describe('SmartPlanMCPTool', () => {
           performanceTargets: {
             responseTime: 50,
             throughput: 2000,
-            availability: 99.9
-          }
+            availability: 99.9,
+          },
         },
         businessContext: {
           goals: ['increase efficiency', 'reduce costs'],
           targetUsers: ['developers', 'end users'],
           priority: 'high',
-          riskTolerance: 'low'
-        }
+          riskTolerance: 'low',
+        },
       };
 
       const result = await tool.execute(input);
@@ -74,7 +75,7 @@ describe('SmartPlanMCPTool', () => {
       const input: SmartPlanInput = {
         projectId: 'minimal-dev-project',
         planType: 'development',
-        techStack: []
+        externalMCPs: [],
       };
 
       const result = await tool.execute(input);
@@ -91,17 +92,19 @@ describe('SmartPlanMCPTool', () => {
       const input: SmartPlanInput = {
         projectId: 'test-project',
         planType: 'testing',
+        externalMCPs: [],
         scope: {
           features: ['unit tests', 'integration tests', 'e2e tests'],
           resources: {
             teamSize: 2,
-            budget: 25000
-          }
+            budget: 25000,
+            externalTools: [],
+          },
         },
         qualityRequirements: {
           testCoverage: 95,
-          securityLevel: 'medium'
-        }
+          securityLevel: 'medium',
+        },
       };
 
       const result = await tool.execute(input);
@@ -119,12 +122,15 @@ describe('SmartPlanMCPTool', () => {
       const input: SmartPlanInput = {
         projectId: 'deploy-project',
         planType: 'deployment',
+        externalMCPs: [],
         scope: {
+          features: ['deployment features'],
           resources: {
             teamSize: 3,
-            budget: 30000
-          }
-        }
+            budget: 30000,
+            externalTools: [],
+          },
+        },
       };
 
       const result = await tool.execute(input);
@@ -141,12 +147,15 @@ describe('SmartPlanMCPTool', () => {
       const input: SmartPlanInput = {
         projectId: 'maintenance-project',
         planType: 'maintenance',
+        externalMCPs: [],
         scope: {
+          features: ['maintenance features'],
           resources: {
             teamSize: 2,
-            budget: 15000
-          }
-        }
+            budget: 15000,
+            externalTools: [],
+          },
+        },
       };
 
       const result = await tool.execute(input);
@@ -163,12 +172,15 @@ describe('SmartPlanMCPTool', () => {
       const input: SmartPlanInput = {
         projectId: 'migration-project',
         planType: 'migration',
+        externalMCPs: [],
         scope: {
+          features: ['migration features'],
           resources: {
             teamSize: 5,
-            budget: 100000
-          }
-        }
+            budget: 100000,
+            externalTools: [],
+          },
+        },
       };
 
       const result = await tool.execute(input);
@@ -191,16 +203,16 @@ describe('SmartPlanMCPTool', () => {
             description: 'Payment processing service',
             integrationType: 'api',
             priority: 'high',
-            estimatedEffort: 5
+            estimatedEffort: 5,
           },
           {
             name: 'Database MCP',
             description: 'Database management service',
             integrationType: 'database',
             priority: 'medium',
-            estimatedEffort: 3
-          }
-        ]
+            estimatedEffort: 3,
+          },
+        ],
       };
 
       const result = await tool.execute(input);
@@ -208,7 +220,9 @@ describe('SmartPlanMCPTool', () => {
       expect(result.success).toBe(true);
       expect(result.data?.projectPlan.phases).toHaveLength(5); // 4 base phases + 1 integration phase
       // Find the external integration phase
-      const integrationPhase = result.data?.projectPlan.phases.find(phase => phase.name === 'External Integration');
+      const integrationPhase = result.data?.projectPlan.phases.find(
+        phase => phase.name === 'External Integration'
+      );
       expect(integrationPhase).toBeDefined();
       expect(integrationPhase?.tasks).toHaveLength(2);
       expect(integrationPhase?.tasks[0].name).toContain('Payment MCP');
@@ -221,22 +235,25 @@ describe('SmartPlanMCPTool', () => {
       const input: SmartPlanInput = {
         projectId: 'secure-project',
         planType: 'development',
+        externalMCPs: [],
         qualityRequirements: {
           testCoverage: 95,
           securityLevel: 'high',
           performanceTargets: {
             responseTime: 25,
             throughput: 5000,
-            availability: 99.99
-          }
-        }
+            availability: 99.99,
+          },
+        },
       };
 
       const result = await tool.execute(input);
 
       expect(result.success).toBe(true);
       expect(result.data?.projectPlan.quality.security.level).toBe('high');
-      expect(result.data?.projectPlan.quality.security.requirements).toContain('Penetration testing');
+      expect(result.data?.projectPlan.quality.security.requirements).toContain(
+        'Penetration testing'
+      );
       expect(result.data?.projectPlan.quality.security.requirements).toContain('Security audit');
       expect(result.data?.projectPlan.quality.security.tools).toContain('OWASP ZAP');
       expect(result.data?.projectPlan.quality.performance.targets.responseTime).toBe(25);
@@ -247,17 +264,20 @@ describe('SmartPlanMCPTool', () => {
       const input: SmartPlanInput = {
         projectId: 'medium-secure-project',
         planType: 'development',
+        externalMCPs: [],
         qualityRequirements: {
           testCoverage: 80,
-          securityLevel: 'medium'
-        }
+          securityLevel: 'medium',
+        },
       };
 
       const result = await tool.execute(input);
 
       expect(result.success).toBe(true);
       expect(result.data?.projectPlan.quality.security.level).toBe('medium');
-      expect(result.data?.projectPlan.quality.security.requirements).toContain('Regular security updates');
+      expect(result.data?.projectPlan.quality.security.requirements).toContain(
+        'Regular security updates'
+      );
       expect(result.data?.projectPlan.quality.security.tools).toContain('Snyk');
     });
 
@@ -265,17 +285,20 @@ describe('SmartPlanMCPTool', () => {
       const input: SmartPlanInput = {
         projectId: 'basic-project',
         planType: 'development',
+        externalMCPs: [],
         qualityRequirements: {
           testCoverage: 70,
-          securityLevel: 'low'
-        }
+          securityLevel: 'low',
+        },
       };
 
       const result = await tool.execute(input);
 
       expect(result.success).toBe(true);
       expect(result.data?.projectPlan.quality.security.level).toBe('low');
-      expect(result.data?.projectPlan.quality.security.requirements).toContain('Input validation and sanitization');
+      expect(result.data?.projectPlan.quality.security.requirements).toContain(
+        'Input validation and sanitization'
+      );
       expect(result.data?.projectPlan.quality.security.tools).toContain('ESLint security rules');
     });
   });
@@ -285,13 +308,15 @@ describe('SmartPlanMCPTool', () => {
       const input: SmartPlanInput = {
         projectId: 'resource-project',
         planType: 'development',
+        externalMCPs: [],
         scope: {
+          features: ['user management', 'payment processing', 'data storage'],
           resources: {
             teamSize: 6,
             budget: 120000,
-            externalTools: ['AWS', 'Stripe', 'MongoDB', 'Redis']
-          }
-        }
+            externalTools: ['AWS', 'Stripe', 'MongoDB', 'Redis'],
+          },
+        },
       };
 
       const result = await tool.execute(input);
@@ -307,12 +332,15 @@ describe('SmartPlanMCPTool', () => {
       const input: SmartPlanInput = {
         projectId: 'budget-project',
         planType: 'development',
+        externalMCPs: [],
         scope: {
+          features: ['basic functionality'],
           resources: {
             teamSize: 3,
-            budget: 50000
-          }
-        }
+            budget: 50000,
+            externalTools: [],
+          },
+        },
       };
 
       const result = await tool.execute(input);
@@ -320,7 +348,9 @@ describe('SmartPlanMCPTool', () => {
       expect(result.success).toBe(true);
       expect(result.data?.projectPlan.resources.budget.total).toBe(50000);
       expect(result.data?.projectPlan.resources.budget.breakdown).toHaveProperty('Team Costs');
-      expect(result.data?.projectPlan.resources.budget.breakdown).toHaveProperty('Tools & Licenses');
+      expect(result.data?.projectPlan.resources.budget.breakdown).toHaveProperty(
+        'Tools & Licenses'
+      );
       expect(result.data?.projectPlan.resources.budget.breakdown).toHaveProperty('Infrastructure');
       expect(result.data?.projectPlan.resources.budget.breakdown).toHaveProperty('Contingency');
     });
@@ -331,11 +361,15 @@ describe('SmartPlanMCPTool', () => {
       const input: SmartPlanInput = {
         projectId: 'roi-project',
         planType: 'development',
+        externalMCPs: [],
         scope: {
+          features: ['core features'],
           resources: {
-            budget: 100000
-          }
-        }
+            teamSize: 4,
+            budget: 100000,
+            externalTools: [],
+          },
+        },
       };
 
       const result = await tool.execute(input);
@@ -351,13 +385,29 @@ describe('SmartPlanMCPTool', () => {
       const developmentInput: SmartPlanInput = {
         projectId: 'dev-roi',
         planType: 'development',
-        scope: { resources: { budget: 100000 } }
+        externalMCPs: [],
+        scope: {
+          features: ['development features'],
+          resources: {
+            teamSize: 4,
+            budget: 100000,
+            externalTools: [],
+          },
+        },
       };
 
       const testingInput: SmartPlanInput = {
         projectId: 'test-roi',
         planType: 'testing',
-        scope: { resources: { budget: 100000 } }
+        externalMCPs: [],
+        scope: {
+          features: ['testing features'],
+          resources: {
+            teamSize: 3,
+            budget: 100000,
+            externalTools: [],
+          },
+        },
       };
 
       const devResult = await tool.execute(developmentInput);
@@ -365,7 +415,9 @@ describe('SmartPlanMCPTool', () => {
 
       expect(devResult.success).toBe(true);
       expect(testResult.success).toBe(true);
-      expect(devResult.data?.businessValue.roi).toBeGreaterThan(testResult.data?.businessValue.roi || 0);
+      expect(devResult.data?.businessValue.roi).toBeGreaterThan(
+        testResult.data?.businessValue.roi ?? 0
+      );
     });
   });
 
@@ -374,13 +426,15 @@ describe('SmartPlanMCPTool', () => {
       const input: SmartPlanInput = {
         projectId: 'timeline-project',
         planType: 'development',
+        externalMCPs: [],
         scope: {
+          features: ['timeline features'],
           timeline: {
             startDate: '2025-01-01',
             endDate: '2025-03-01',
-            duration: 8
-          }
-        }
+            duration: 8,
+          },
+        },
       };
 
       const result = await tool.execute(input);
@@ -395,7 +449,8 @@ describe('SmartPlanMCPTool', () => {
     it('should generate default timeline when not specified', async () => {
       const input: SmartPlanInput = {
         projectId: 'default-timeline',
-        planType: 'development'
+        planType: 'development',
+        externalMCPs: [],
       };
 
       const result = await tool.execute(input);
@@ -411,7 +466,8 @@ describe('SmartPlanMCPTool', () => {
     it('should generate risks for each phase', async () => {
       const input: SmartPlanInput = {
         projectId: 'risk-project',
-        planType: 'development'
+        planType: 'development',
+        externalMCPs: [],
       };
 
       const result = await tool.execute(input);
@@ -428,9 +484,11 @@ describe('SmartPlanMCPTool', () => {
       const input: SmartPlanInput = {
         projectId: 'long-project',
         planType: 'development',
+        externalMCPs: [],
         scope: {
-          timeline: { duration: 12 }
-        }
+          features: ['long-term features'],
+          timeline: { duration: 12 },
+        },
       };
 
       const result = await tool.execute(input);
@@ -446,12 +504,14 @@ describe('SmartPlanMCPTool', () => {
     it('should generate unique plan IDs', async () => {
       const input1: SmartPlanInput = {
         projectId: 'test-project-1',
-        planType: 'development'
+        planType: 'development',
+        externalMCPs: [],
       };
 
       const input2: SmartPlanInput = {
         projectId: 'test-project-2',
-        planType: 'testing'
+        planType: 'testing',
+        externalMCPs: [],
       };
 
       const result1 = await tool.execute(input1);
@@ -469,7 +529,8 @@ describe('SmartPlanMCPTool', () => {
     it('should clean project IDs in plan IDs', async () => {
       const input: SmartPlanInput = {
         projectId: 'Test Project with Special Characters!',
-        planType: 'development'
+        planType: 'development',
+        externalMCPs: [],
       };
 
       const result = await tool.execute(input);
@@ -486,7 +547,7 @@ describe('SmartPlanMCPTool', () => {
       const invalidInput = {
         projectId: '', // Invalid: empty string
         planType: 'invalid-type', // Invalid: not in enum
-        scope: 'not-an-object' // Invalid: should be object
+        scope: 'not-an-object', // Invalid: should be object
       } as any;
 
       const result = await tool.execute(invalidInput);
@@ -498,7 +559,7 @@ describe('SmartPlanMCPTool', () => {
     it('should handle missing required fields', async () => {
       const invalidInput = {
         // Missing projectId
-        planType: 'development'
+        planType: 'development',
       } as any;
 
       const result = await tool.execute(invalidInput);
@@ -518,12 +579,24 @@ describe('SmartPlanMCPTool', () => {
           resources: {
             teamSize: 8,
             budget: 200000,
-            externalTools: ['AWS', 'Stripe', 'MongoDB', 'Redis', 'Elasticsearch']
-          }
+            externalTools: ['AWS', 'Stripe', 'MongoDB', 'Redis', 'Elasticsearch'],
+          },
         },
         externalMCPs: [
-          { name: 'MCP1', description: 'Service 1', integrationType: 'api', priority: 'high', estimatedEffort: 5 },
-          { name: 'MCP2', description: 'Service 2', integrationType: 'database', priority: 'medium', estimatedEffort: 3 }
+          {
+            name: 'MCP1',
+            description: 'Service 1',
+            integrationType: 'api',
+            priority: 'high',
+            estimatedEffort: 5,
+          },
+          {
+            name: 'MCP2',
+            description: 'Service 2',
+            integrationType: 'database',
+            priority: 'medium',
+            estimatedEffort: 3,
+          },
         ],
         qualityRequirements: {
           testCoverage: 95,
@@ -531,15 +604,15 @@ describe('SmartPlanMCPTool', () => {
           performanceTargets: {
             responseTime: 25,
             throughput: 5000,
-            availability: 99.99
-          }
+            availability: 99.99,
+          },
         },
         businessContext: {
           goals: ['goal1', 'goal2'],
           targetUsers: ['user1', 'user2'],
           priority: 'high',
-          riskTolerance: 'low'
-        }
+          riskTolerance: 'low',
+        },
       };
 
       const startTime = performance.now();
@@ -556,22 +629,30 @@ describe('SmartPlanMCPTool', () => {
       const input: SmartPlanInput = {
         projectId: 'rec-project',
         planType: 'development',
+        externalMCPs: [],
         scope: {
           resources: {
-            budget: 10000 // Low budget
-          }
+            teamSize: 2,
+            budget: 10000, // Low budget
+            externalTools: [],
+          },
         },
         qualityRequirements: {
-          securityLevel: 'high'
-        }
+          testCoverage: 85,
+          securityLevel: 'high',
+        },
       };
 
       const result = await tool.execute(input);
 
       expect(result.success).toBe(true);
-      expect(result.data?.recommendations).toContain('Consider adding buffer time for unexpected delays');
+      expect(result.data?.recommendations).toContain(
+        'Consider adding buffer time for unexpected delays'
+      );
       expect(result.data?.recommendations).toContain('Implement regular risk assessment reviews');
-      expect(result.data?.recommendations).toContain('Engage security experts early in the process');
+      expect(result.data?.recommendations).toContain(
+        'Engage security experts early in the process'
+      );
     });
   });
 });

@@ -1,4 +1,9 @@
-import { MCPPrompt, MCPPromptConfig, MCPPromptContext, MCPPromptResult } from '../framework/mcp-prompt.js';
+import {
+  MCPPrompt,
+  MCPPromptConfig,
+  MCPPromptContext,
+  MCPPromptResult,
+} from '../framework/mcp-prompt.js';
 import { z } from 'zod';
 
 /**
@@ -12,8 +17,14 @@ export const ErrorAnalysisPromptSchema = z.object({
   language: z.string().optional().describe('Programming language'),
   framework: z.string().optional().describe('Framework or library being used'),
   environment: z.string().optional().describe('Runtime environment (Node.js, browser, etc.)'),
-  recentChanges: z.array(z.string()).optional().describe('Recent code changes that might be related'),
-  severity: z.enum(['low', 'medium', 'high', 'critical']).optional().describe('Error severity level')
+  recentChanges: z
+    .array(z.string())
+    .optional()
+    .describe('Recent code changes that might be related'),
+  severity: z
+    .enum(['low', 'medium', 'high', 'critical'])
+    .optional()
+    .describe('Error severity level'),
 });
 
 export type ErrorAnalysisPromptInput = z.infer<typeof ErrorAnalysisPromptSchema>;
@@ -84,14 +95,14 @@ Be specific and actionable in your recommendations.`,
     framework: z.string().optional(),
     environment: z.string().optional(),
     recentChanges: z.array(z.string()).optional(),
-    severity: z.enum(['low', 'medium', 'high', 'critical']).optional()
+    severity: z.enum(['low', 'medium', 'high', 'critical']).optional(),
   },
   contextSchema: ErrorAnalysisPromptSchema,
   cacheConfig: {
     enabled: true,
     ttl: 1800000, // 30 minutes
-    maxSize: 50
-  }
+    maxSize: 50,
+  },
 };
 
 /**
@@ -105,7 +116,10 @@ export class ErrorAnalysisPrompt extends MCPPrompt {
   /**
    * Analyze an error and provide debugging guidance
    */
-  async analyzeError(input: ErrorAnalysisPromptInput, context?: MCPPromptContext): Promise<MCPPromptResult<string>> {
+  async analyzeError(
+    input: ErrorAnalysisPromptInput,
+    context?: MCPPromptContext
+  ): Promise<MCPPromptResult<string>> {
     const startTime = performance.now();
 
     try {
@@ -113,16 +127,9 @@ export class ErrorAnalysisPrompt extends MCPPrompt {
       const validatedInput = ErrorAnalysisPromptSchema.parse(input);
 
       // Render the prompt template
-      const prompt = await this.render(validatedInput, context);
+      const prompt = await this.renderTemplate(validatedInput, context);
 
-      // Add error analysis specific metadata
-      const metadata = {
-        ...this.getBaseMetadata(),
-        variablesUsed: Object.keys(validatedInput),
-        errorType: validatedInput.errorType,
-        severity: validatedInput.severity || 'medium',
-        analysisType: 'error_debugging'
-      };
+      // Metadata will be handled by base class
 
       const executionTime = performance.now() - startTime;
 
@@ -131,21 +138,28 @@ export class ErrorAnalysisPrompt extends MCPPrompt {
         prompt,
         data: prompt,
         metadata: {
-          ...metadata,
-          executionTime
-        }
+          executionTime,
+          timestamp: new Date().toISOString(),
+          promptName: this.config.name,
+          version: this.config.version,
+          templateHash: '',
+          variablesUsed: Object.keys(validatedInput),
+        },
       };
-
     } catch (error) {
       const executionTime = performance.now() - startTime;
 
       return {
         success: false,
-        error: error.message,
+        error: error instanceof Error ? error.message : 'Unknown error',
         metadata: {
-          ...this.getBaseMetadata(),
-          executionTime
-        }
+          executionTime,
+          timestamp: new Date().toISOString(),
+          promptName: this.config.name,
+          version: this.config.version,
+          templateHash: '',
+          variablesUsed: [],
+        },
       };
     }
   }
@@ -166,14 +180,14 @@ export class ErrorAnalysisPrompt extends MCPPrompt {
         'promise-handling': 'Promise rejection or unhandled promise errors',
         'type-errors': 'TypeScript or JavaScript type-related errors',
         'import-export': 'Module import/export syntax or resolution issues',
-        'scope-issues': 'Variable scope or closure-related problems'
-      }
+        'scope-issues': 'Variable scope or closure-related problems',
+      },
     };
 
     const input: ErrorAnalysisPromptInput = {
       errorMessage,
-      context: `This appears to be a ${pattern} related error. ${patternContext.commonPatterns[pattern]}`,
-      severity: 'medium'
+      codeContext: `This appears to be a ${pattern} related error. ${patternContext.commonPatterns[pattern]}`,
+      severity: 'medium',
     };
 
     return this.analyzeError(input, context);
@@ -189,7 +203,11 @@ export class ErrorAnalysisPrompt extends MCPPrompt {
     const analysis = await this.analyzeError(input, context);
 
     if (!analysis.success) {
-      return analysis as MCPPromptResult<string[]>;
+      return {
+        success: false,
+        error: analysis.error || 'Analysis failed',
+        metadata: analysis.metadata,
+      };
     }
 
     // Extract debugging steps from the analysis
@@ -201,13 +219,13 @@ export class ErrorAnalysisPrompt extends MCPPrompt {
       '5. Check environment and dependencies',
       '6. Validate input data and parameters',
       '7. Review error handling logic',
-      '8. Test edge cases and boundary conditions'
+      '8. Test edge cases and boundary conditions',
     ];
 
     return {
       success: true,
       data: checklist,
-      metadata: analysis.metadata
+      metadata: analysis.metadata,
     };
   }
 
@@ -221,7 +239,11 @@ export class ErrorAnalysisPrompt extends MCPPrompt {
     const analysis = await this.analyzeError(input, context);
 
     if (!analysis.success) {
-      return analysis as MCPPromptResult<string[]>;
+      return {
+        success: false,
+        error: analysis.error || 'Analysis failed',
+        metadata: analysis.metadata,
+      };
     }
 
     const strategies = [
@@ -232,13 +254,13 @@ export class ErrorAnalysisPrompt extends MCPPrompt {
       'Implement logging and monitoring',
       'Use linting and static analysis tools',
       'Follow coding best practices',
-      'Regular code reviews and refactoring'
+      'Regular code reviews and refactoring',
     ];
 
     return {
       success: true,
       data: strategies,
-      metadata: analysis.metadata
+      metadata: analysis.metadata,
     };
   }
 }

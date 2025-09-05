@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { FileResource, FileResourceConfig, FileResourceResponse } from './file-resource.js';
+import { FileResource, FileResourceConfig } from './file-resource.js';
 import { promises as fs } from 'fs';
-import { join, resolve } from 'path';
+import { resolve } from 'path';
 import { createHash } from 'crypto';
 
 // Mock fs module
@@ -14,8 +14,8 @@ vi.mock('fs', () => ({
     mkdir: vi.fn(),
     chmod: vi.fn(),
     access: vi.fn(),
-    copyFile: vi.fn()
-  }
+    copyFile: vi.fn(),
+  },
 }));
 
 describe('FileResource', () => {
@@ -28,7 +28,7 @@ describe('FileResource', () => {
     fileResource = new FileResource({
       basePath: mockBasePath,
       maxFileSize: 1024,
-      allowedExtensions: ['.txt', '.json', '.md']
+      allowedExtensions: ['.txt', '.json', '.md'],
     });
     vi.clearAllMocks();
   });
@@ -47,7 +47,7 @@ describe('FileResource', () => {
       const customResource = new FileResource({
         basePath: '/custom/path',
         maxFileSize: 2048,
-        allowedExtensions: ['.ts', '.js']
+        allowedExtensions: ['.ts', '.js'],
       });
       expect(customResource).toBeDefined();
     });
@@ -72,7 +72,7 @@ describe('FileResource', () => {
       const mockStats = {
         size: mockData.length,
         mtime: new Date('2023-01-01'),
-        mode: 0o644
+        mode: 0o644,
       };
 
       vi.mocked(fs.readFile).mockResolvedValue(Buffer.from(mockData));
@@ -81,7 +81,9 @@ describe('FileResource', () => {
       const config: FileResourceConfig = {
         path: mockFilePath,
         mode: 'read',
-        encoding: 'utf8'
+        encoding: 'utf8',
+        createIfNotExists: false,
+        backup: false,
       };
 
       const result = await fileResource.executeFileOperation(config);
@@ -93,7 +95,7 @@ describe('FileResource', () => {
         size: mockData.length,
         lastModified: mockStats.mtime,
         hash: createHash('sha256').update(mockData).digest('hex'),
-        permissions: '644'
+        permissions: '644',
       });
     });
 
@@ -102,7 +104,8 @@ describe('FileResource', () => {
         path: mockFilePath,
         mode: 'read',
         encoding: 'utf8',
-        createIfNotExists: true
+        createIfNotExists: true,
+        backup: false,
       };
 
       vi.mocked(fs.readFile).mockRejectedValueOnce({ code: 'ENOENT' });
@@ -110,14 +113,14 @@ describe('FileResource', () => {
       vi.mocked(fs.stat).mockResolvedValue({
         size: 0,
         mtime: new Date(),
-        mode: 0o644
+        mode: 0o644,
       } as any);
 
       const result = await fileResource.executeFileOperation(config);
 
       expect(result.success).toBe(true);
       expect(result.data).toBe('');
-      expect(fs.writeFile).toHaveBeenCalledWith(mockFullPath, '', 'utf8');
+      expect(fs.writeFile).toHaveBeenCalledWith(mockFullPath, '', { encoding: 'utf8' });
     });
 
     it('should handle file read errors', async () => {
@@ -125,7 +128,10 @@ describe('FileResource', () => {
 
       const config: FileResourceConfig = {
         path: mockFilePath,
-        mode: 'read'
+        mode: 'read',
+        encoding: 'utf8',
+        createIfNotExists: false,
+        backup: false,
       };
 
       const result = await fileResource.executeFileOperation(config);
@@ -141,7 +147,7 @@ describe('FileResource', () => {
       const mockStats = {
         size: mockData.length,
         mtime: new Date(),
-        mode: 0o644
+        mode: 0o644,
       };
 
       vi.mocked(fs.mkdir).mockResolvedValue(undefined);
@@ -152,14 +158,16 @@ describe('FileResource', () => {
         path: mockFilePath,
         mode: 'write',
         data: mockData,
-        encoding: 'utf8'
+        encoding: 'utf8',
+        createIfNotExists: false,
+        backup: false,
       };
 
       const result = await fileResource.executeFileOperation(config);
 
       expect(result.success).toBe(true);
       expect(result.data).toBe(mockData);
-      expect(fs.writeFile).toHaveBeenCalledWith(mockFullPath, mockData, 'utf8');
+      expect(fs.writeFile).toHaveBeenCalledWith(mockFullPath, mockData, { encoding: 'utf8' });
     });
 
     it('should create backup when requested', async () => {
@@ -167,7 +175,7 @@ describe('FileResource', () => {
       const mockStats = {
         size: mockData.length,
         mtime: new Date(),
-        mode: 0o644
+        mode: 0o644,
       };
 
       vi.mocked(fs.mkdir).mockResolvedValue(undefined);
@@ -179,7 +187,9 @@ describe('FileResource', () => {
         path: mockFilePath,
         mode: 'write',
         data: mockData,
-        backup: true
+        encoding: 'utf8',
+        createIfNotExists: false,
+        backup: true,
       };
 
       await fileResource.executeFileOperation(config);
@@ -192,7 +202,7 @@ describe('FileResource', () => {
       const mockStats = {
         size: mockData.length,
         mtime: new Date(),
-        mode: 0o755
+        mode: 0o755,
       };
 
       vi.mocked(fs.mkdir).mockResolvedValue(undefined);
@@ -204,7 +214,10 @@ describe('FileResource', () => {
         path: mockFilePath,
         mode: 'write',
         data: mockData,
-        permissions: '755'
+        encoding: 'utf8',
+        createIfNotExists: false,
+        backup: false,
+        permissions: '755',
       };
 
       await fileResource.executeFileOperation(config);
@@ -219,7 +232,7 @@ describe('FileResource', () => {
       const mockStats = {
         size: mockData.length,
         mtime: new Date(),
-        mode: 0o644
+        mode: 0o644,
       };
 
       vi.mocked(fs.mkdir).mockResolvedValue(undefined);
@@ -231,14 +244,16 @@ describe('FileResource', () => {
         path: mockFilePath,
         mode: 'append',
         data: mockData,
-        encoding: 'utf8'
+        encoding: 'utf8',
+        createIfNotExists: false,
+        backup: false,
       };
 
       const result = await fileResource.executeFileOperation(config);
 
       expect(result.success).toBe(true);
       expect(result.data).toBe(mockData);
-      expect(fs.appendFile).toHaveBeenCalledWith(mockFullPath, mockData, 'utf8');
+      expect(fs.appendFile).toHaveBeenCalledWith(mockFullPath, mockData, { encoding: 'utf8' });
     });
   });
 
@@ -246,7 +261,10 @@ describe('FileResource', () => {
     it('should reject paths outside base directory', async () => {
       const config: FileResourceConfig = {
         path: '../../../etc/passwd',
-        mode: 'read'
+        mode: 'read',
+        encoding: 'utf8',
+        createIfNotExists: false,
+        backup: false,
       };
 
       const result = await fileResource.executeFileOperation(config);
@@ -258,7 +276,10 @@ describe('FileResource', () => {
     it('should reject disallowed file extensions', async () => {
       const config: FileResourceConfig = {
         path: 'test.exe',
-        mode: 'read'
+        mode: 'read',
+        encoding: 'utf8',
+        createIfNotExists: false,
+        backup: false,
       };
 
       const result = await fileResource.executeFileOperation(config);
@@ -272,7 +293,7 @@ describe('FileResource', () => {
       const mockStats = {
         size: mockData.length,
         mtime: new Date(),
-        mode: 0o644
+        mode: 0o644,
       };
 
       vi.mocked(fs.readFile).mockResolvedValue(Buffer.from(mockData));
@@ -280,7 +301,10 @@ describe('FileResource', () => {
 
       const config: FileResourceConfig = {
         path: 'test.json',
-        mode: 'read'
+        mode: 'read',
+        encoding: 'utf8',
+        createIfNotExists: false,
+        backup: false,
       };
 
       const result = await fileResource.executeFileOperation(config);
@@ -295,14 +319,17 @@ describe('FileResource', () => {
       const mockStats = {
         size: largeFileSize,
         mtime: new Date(),
-        mode: 0o644
+        mode: 0o644,
       };
 
       vi.mocked(fs.stat).mockResolvedValue(mockStats as any);
 
       const config: FileResourceConfig = {
         path: mockFilePath,
-        mode: 'read'
+        mode: 'read',
+        encoding: 'utf8',
+        createIfNotExists: false,
+        backup: false,
       };
 
       const result = await fileResource.executeFileOperation(config);
@@ -316,7 +343,7 @@ describe('FileResource', () => {
       const mockStats = {
         size: mockData.length,
         mtime: new Date(),
-        mode: 0o644
+        mode: 0o644,
       };
 
       vi.mocked(fs.readFile).mockResolvedValue(Buffer.from(mockData));
@@ -324,7 +351,10 @@ describe('FileResource', () => {
 
       const config: FileResourceConfig = {
         path: mockFilePath,
-        mode: 'read'
+        mode: 'read',
+        encoding: 'utf8',
+        createIfNotExists: false,
+        backup: false,
       };
 
       const result = await fileResource.executeFileOperation(config);
@@ -337,16 +367,19 @@ describe('FileResource', () => {
     it('should validate required fields', async () => {
       const invalidConfig = {} as FileResourceConfig;
 
-      const result = await fileResource.execute(invalidConfig);
+      const result = await fileResource.executeFileOperation(invalidConfig);
 
       expect(result.success).toBe(false);
-      expect(result.error).toContain('operation is not a function');
+      expect(result.error).toContain('Required');
     });
 
     it('should validate mode enum', async () => {
       const config = {
         path: mockFilePath,
-        mode: 'invalid' as any
+        mode: 'invalid' as any,
+        encoding: 'utf8',
+        createIfNotExists: false,
+        backup: false,
       };
 
       const result = await fileResource.executeFileOperation(config);
@@ -360,14 +393,14 @@ describe('FileResource', () => {
       const mockStats = {
         size: mockData.length,
         mtime: new Date(),
-        mode: 0o644
+        mode: 0o644,
       };
 
       vi.mocked(fs.readFile).mockResolvedValue(Buffer.from(mockData));
       vi.mocked(fs.stat).mockResolvedValue(mockStats as any);
 
       const config = {
-        path: mockFilePath
+        path: mockFilePath,
       } as FileResourceConfig;
 
       const result = await fileResource.executeFileOperation(config);
@@ -382,8 +415,8 @@ describe('FileResource', () => {
 
       const health = await fileResource.healthCheck();
 
-      expect(health.status).toBe('healthy');
-      expect(health.details.basePath).toBe(mockBasePath);
+      expect(health).toBe(true);
+      // Health check returns boolean
     });
 
     it('should return unhealthy status when base path is not accessible', async () => {
@@ -391,8 +424,8 @@ describe('FileResource', () => {
 
       const health = await fileResource.healthCheck();
 
-      expect(health.status).toBe('unhealthy');
-      expect(health.details.error).toBe('Permission denied');
+      expect(health).toBe(false);
+      // Health check returns boolean
     });
   });
 
@@ -408,7 +441,10 @@ describe('FileResource', () => {
 
       const config: FileResourceConfig = {
         path: mockFilePath,
-        mode: 'read'
+        mode: 'read',
+        encoding: 'utf8',
+        createIfNotExists: false,
+        backup: false,
       };
 
       const result = await fileResource.executeFileOperation(config);
@@ -422,7 +458,7 @@ describe('FileResource', () => {
       const mockStats = {
         size: mockData.length,
         mtime: new Date(),
-        mode: 0o644
+        mode: 0o644,
       };
 
       vi.mocked(fs.readFile).mockResolvedValue(Buffer.from(mockData));
@@ -430,7 +466,10 @@ describe('FileResource', () => {
 
       const config: FileResourceConfig = {
         path: mockFilePath,
-        mode: 'read'
+        mode: 'read',
+        encoding: 'utf8',
+        createIfNotExists: false,
+        backup: false,
       };
 
       const result = await fileResource.executeFileOperation(config);

@@ -1,7 +1,7 @@
-import { MCPResource, MCPResourceConfig, MCPResourceResult } from '../framework/mcp-resource.js';
+import { MCPResource, MCPResourceConfig } from '../framework/mcp-resource.js';
 import { z } from 'zod';
 import { promises as fs } from 'fs';
-import { join, resolve, dirname } from 'path';
+import { resolve, dirname } from 'path';
 import { createHash } from 'crypto';
 
 /**
@@ -14,7 +14,7 @@ export const FileResourceSchema = z.object({
   createIfNotExists: z.boolean().default(false),
   backup: z.boolean().default(false),
   permissions: z.string().optional(),
-  data: z.string().optional()
+  data: z.string().optional(),
 });
 
 export type FileResourceConfig = z.infer<typeof FileResourceSchema>;
@@ -25,14 +25,16 @@ export type FileResourceConfig = z.infer<typeof FileResourceSchema>;
 export const FileResourceResponseSchema = z.object({
   success: z.boolean(),
   data: z.string().optional(),
-  metadata: z.object({
-    path: z.string(),
-    size: z.number(),
-    lastModified: z.date(),
-    hash: z.string(),
-    permissions: z.string().optional()
-  }).optional(),
-  error: z.string().optional()
+  metadata: z
+    .object({
+      path: z.string(),
+      size: z.number(),
+      lastModified: z.date(),
+      hash: z.string(),
+      permissions: z.string().optional(),
+    })
+    .optional(),
+  error: z.string().optional(),
 });
 
 export type FileResourceResponse = z.infer<typeof FileResourceResponseSchema>;
@@ -45,27 +47,37 @@ export class FileResource extends MCPResource {
   private readonly basePath: string;
   private readonly maxFileSize: number;
   private readonly allowedExtensions: string[];
-  private readonly schema: z.ZodSchema<FileResourceConfig>;
+  private readonly schema: typeof FileResourceSchema;
 
-  constructor(config: {
-    basePath?: string;
-    maxFileSize?: number;
-    allowedExtensions?: string[];
-  } = {}) {
+  constructor(
+    config: {
+      basePath?: string;
+      maxFileSize?: number;
+      allowedExtensions?: string[];
+    } = {}
+  ) {
     const mcpConfig: MCPResourceConfig = {
       name: 'file-resource',
       type: 'file',
       version: '1.0.0',
       description: 'Secure file operations with validation and error handling',
       connectionConfig: {},
-      maxConnections: 1
+      maxConnections: 1,
     };
 
     super(mcpConfig);
 
     this.basePath = config.basePath || process.cwd();
     this.maxFileSize = config.maxFileSize || 10 * 1024 * 1024; // 10MB
-    this.allowedExtensions = config.allowedExtensions || ['.txt', '.json', '.md', '.ts', '.js', '.html', '.css'];
+    this.allowedExtensions = config.allowedExtensions || [
+      '.txt',
+      '.json',
+      '.md',
+      '.ts',
+      '.js',
+      '.html',
+      '.css',
+    ];
     this.schema = FileResourceSchema;
   }
 
@@ -78,9 +90,18 @@ export class FileResource extends MCPResource {
       await fs.mkdir(this.basePath, { recursive: true });
       this.logger.info('File resource initialized', { basePath: this.basePath });
     } catch (error) {
-      this.logger.error('Failed to initialize file resource', { error: error.message });
+      this.logger.error('Failed to initialize file resource', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       throw error;
     }
+  }
+
+  /**
+   * Internal initialization (required by base class)
+   */
+  protected async initializeInternal(): Promise<void> {
+    // File resource initialization is handled in initialize()
   }
 
   /**
@@ -123,22 +144,21 @@ export class FileResource extends MCPResource {
       this.logger.info('File operation completed', {
         operation: validatedConfig.mode,
         path: resolvedPath,
-        executionTime: `${executionTime}ms`
+        executionTime: `${executionTime}ms`,
       });
 
       return result;
-
     } catch (error) {
       const executionTime = Date.now() - startTime;
       this.logger.error('File operation failed', {
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
         path: config.path,
-        executionTime: `${executionTime}ms`
+        executionTime: `${executionTime}ms`,
       });
 
       return {
         success: false,
-        error: error.message
+        error: error instanceof Error ? error.message : String(error),
       };
     }
   }
@@ -148,7 +168,7 @@ export class FileResource extends MCPResource {
    */
   private async readFile(path: string, config: FileResourceConfig): Promise<FileResourceResponse> {
     try {
-      const data = await fs.readFile(path, config.encoding);
+      const data = await fs.readFile(path, { encoding: config.encoding as BufferEncoding });
       const stats = await fs.stat(path);
 
       return {
@@ -158,14 +178,14 @@ export class FileResource extends MCPResource {
           path,
           size: stats.size,
           lastModified: stats.mtime,
-          hash: this.calculateHash(data),
-          permissions: stats.mode.toString(8)
-        }
+          hash: this.calculateHash(Buffer.from(data)),
+          permissions: stats.mode.toString(8),
+        },
       };
     } catch (error) {
-      if (error.code === 'ENOENT' && config.createIfNotExists) {
+      if ((error as any).code === 'ENOENT' && config.createIfNotExists) {
         // Create empty file if it doesn't exist and createIfNotExists is true
-        await fs.writeFile(path, '', config.encoding);
+        await fs.writeFile(path, '', { encoding: config.encoding as BufferEncoding });
         return {
           success: true,
           data: '',
@@ -174,8 +194,8 @@ export class FileResource extends MCPResource {
             size: 0,
             lastModified: new Date(),
             hash: this.calculateHash(Buffer.from('')),
-            permissions: '644'
-          }
+            permissions: '644',
+          },
         };
       }
       throw error;
@@ -197,7 +217,7 @@ export class FileResource extends MCPResource {
 
       // Write file
       const data = config.data || '';
-      await fs.writeFile(path, data, config.encoding);
+      await fs.writeFile(path, data, { encoding: config.encoding as BufferEncoding });
 
       // Set permissions if specified
       if (config.permissions) {
@@ -208,14 +228,14 @@ export class FileResource extends MCPResource {
 
       return {
         success: true,
-        data: data,
+        data,
         metadata: {
           path,
           size: stats.size,
           lastModified: stats.mtime,
           hash: this.calculateHash(Buffer.from(data)),
-          permissions: stats.mode.toString(8)
-        }
+          permissions: stats.mode.toString(8),
+        },
       };
     } catch (error) {
       throw error;
@@ -225,27 +245,30 @@ export class FileResource extends MCPResource {
   /**
    * Append to file
    */
-  private async appendFile(path: string, config: FileResourceConfig): Promise<FileResourceResponse> {
+  private async appendFile(
+    path: string,
+    config: FileResourceConfig
+  ): Promise<FileResourceResponse> {
     try {
       // Ensure directory exists
       await fs.mkdir(dirname(path), { recursive: true });
 
       // Append to file
       const data = config.data || '';
-      await fs.appendFile(path, data, config.encoding);
+      await fs.appendFile(path, data, { encoding: config.encoding as BufferEncoding });
 
       const stats = await fs.stat(path);
 
       return {
         success: true,
-        data: data,
+        data,
         metadata: {
           path,
           size: stats.size,
           lastModified: stats.mtime,
           hash: this.calculateHash(await fs.readFile(path)),
-          permissions: stats.mode.toString(8)
-        }
+          permissions: stats.mode.toString(8),
+        },
       };
     } catch (error) {
       throw error;
@@ -300,7 +323,7 @@ export class FileResource extends MCPResource {
         throw new Error(`File size ${stats.size} exceeds maximum allowed size ${this.maxFileSize}`);
       }
     } catch (error) {
-      if (error.code !== 'ENOENT') {
+      if ((error as any).code !== 'ENOENT') {
         throw error;
       }
     }
@@ -315,8 +338,11 @@ export class FileResource extends MCPResource {
       await fs.copyFile(path, backupPath);
       this.logger.info('File backup created', { original: path, backup: backupPath });
     } catch (error) {
-      if (error.code !== 'ENOENT') {
-        this.logger.warn('Failed to create backup', { path, error: error.message });
+      if ((error as any).code !== 'ENOENT') {
+        this.logger.warn('Failed to create backup', {
+          path,
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
     }
   }
@@ -331,27 +357,17 @@ export class FileResource extends MCPResource {
   /**
    * Health check
    */
-  async healthCheck(): Promise<{ status: string; details: any }> {
+  async healthCheck(): Promise<boolean> {
     try {
       // Check if base directory is accessible
       await fs.access(this.basePath);
 
-      return {
-        status: 'healthy',
-        details: {
-          basePath: this.basePath,
-          maxFileSize: this.maxFileSize,
-          allowedExtensions: this.allowedExtensions
-        }
-      };
+      return true;
     } catch (error) {
-      return {
-        status: 'unhealthy',
-        details: {
-          error: error.message,
-          basePath: this.basePath
-        }
-      };
+      this.logger.error('File resource health check failed', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      return false;
     }
   }
 
@@ -366,7 +382,7 @@ export class FileResource extends MCPResource {
   /**
    * Close connection (required by base class)
    */
-  protected async closeConnection(connection: any): Promise<void> {
+  protected async closeConnection(_connection: any): Promise<void> {
     // File resource doesn't need to close connections
   }
 

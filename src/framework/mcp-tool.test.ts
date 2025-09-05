@@ -14,22 +14,18 @@ class TestMCPTool extends MCPTool<{ input: string }, { output: string }> {
     super(config);
   }
 
-  protected async executeInternal(input: { input: string }, context?: MCPToolContext): Promise<{ output: string }> {
+  protected async executeInternal(
+    input: { input: string },
+    _context?: MCPToolContext
+  ): Promise<{ output: string }> {
     return { output: `Processed: ${input.input}` };
   }
 }
 
 describe('MCPTool', () => {
   let testTool: TestMCPTool;
-  let mockLogger: any;
 
   beforeEach(() => {
-    mockLogger = {
-      info: vi.fn(),
-      error: vi.fn(),
-      warn: vi.fn()
-    };
-
     const config: MCPToolConfig = {
       name: 'test-tool',
       description: 'Test tool for unit testing',
@@ -37,7 +33,7 @@ describe('MCPTool', () => {
       inputSchema: z.object({ input: z.string() }),
       outputSchema: z.object({ output: z.string() }),
       timeout: 5000,
-      retries: 3
+      retries: 3,
     };
 
     testTool = new TestMCPTool(config);
@@ -87,7 +83,7 @@ describe('MCPTool', () => {
         userId: 'test-user',
         sessionId: 'test-session',
         businessContext: { project: 'test-project' },
-        role: 'developer'
+        role: 'developer',
       };
 
       const result = await testTool.execute(input, context);
@@ -97,7 +93,7 @@ describe('MCPTool', () => {
     });
 
     it('should fail with invalid input', async () => {
-      const invalidInput = { invalid: 'input' };
+      const invalidInput = { input: 123 } as any;
       const result = await testTool.execute(invalidInput);
 
       expect(result.success).toBe(false);
@@ -114,7 +110,7 @@ describe('MCPTool', () => {
             description: 'Tool that throws errors',
             version: '1.0.0',
             inputSchema: z.object({ input: z.string() }),
-            outputSchema: z.object({ output: z.string() })
+            outputSchema: z.object({ output: z.string() }),
           });
         }
 
@@ -169,7 +165,7 @@ describe('MCPToolFactory', () => {
         description: 'Tool for factory testing',
         version: '1.0.0',
         inputSchema: z.object({ input: z.string() }),
-        outputSchema: z.object({ output: z.string() })
+        outputSchema: z.object({ output: z.string() }),
       };
 
       const tool = new TestMCPTool(config);
@@ -191,7 +187,7 @@ describe('MCPToolFactory', () => {
         description: 'Tool 1',
         version: '1.0.0',
         inputSchema: z.object({ input: z.string() }),
-        outputSchema: z.object({ output: z.string() })
+        outputSchema: z.object({ output: z.string() }),
       });
 
       const tool2 = new TestMCPTool({
@@ -199,7 +195,7 @@ describe('MCPToolFactory', () => {
         description: 'Tool 2',
         version: '1.0.0',
         inputSchema: z.object({ input: z.string() }),
-        outputSchema: z.object({ output: z.string() })
+        outputSchema: z.object({ output: z.string() }),
       });
 
       MCPToolFactory.registerTool(tool1);
@@ -217,7 +213,7 @@ describe('MCPToolFactory', () => {
         description: 'Tool for name testing',
         version: '1.0.0',
         inputSchema: z.object({ input: z.string() }),
-        outputSchema: z.object({ output: z.string() })
+        outputSchema: z.object({ output: z.string() }),
       });
 
       MCPToolFactory.registerTool(tool);
@@ -232,7 +228,7 @@ describe('MCPToolFactory', () => {
         description: 'Tool for clear testing',
         version: '1.0.0',
         inputSchema: z.object({ input: z.string() }),
-        outputSchema: z.object({ output: z.string() })
+        outputSchema: z.object({ output: z.string() }),
       });
 
       MCPToolFactory.registerTool(tool);
@@ -240,16 +236,6 @@ describe('MCPToolFactory', () => {
 
       MCPToolFactory.clearTools();
       expect(MCPToolFactory.getAllTools()).toHaveLength(0);
-    });
-  });
-
-  describe('Logger Configuration', () => {
-    it('should set logger for factory', () => {
-      const mockLogger = { info: vi.fn(), error: vi.fn() };
-      MCPToolFactory.setLogger(mockLogger);
-
-      // Logger is set but not directly testable without implementation details
-      expect(true).toBe(true); // Placeholder test
     });
   });
 });
