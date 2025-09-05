@@ -6,12 +6,12 @@ describe('Debug Test', () => {
   });
 
   it('should import smart_finish', async () => {
-    const { handleSmartFinish } = await import('./src/tools/smart_finish.js');
+    const { handleSmartFinish } = await import('../../src/tools/smart-finish.js');
     expect(handleSmartFinish).toBeDefined();
   });
 
   it('should call handleSmartFinish with minimal input', async () => {
-    const { handleSmartFinish } = await import('./src/tools/smart_finish.js');
+    const { handleSmartFinish } = await import('../../src/tools/smart-finish.js');
 
     const input = {
       projectId: 'proj_test_123',

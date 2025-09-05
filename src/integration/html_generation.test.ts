@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { handleSmartBegin } from '../tools/smart_begin.js';
-import { handleSmartWrite } from '../tools/smart_write.js';
+import { handleSmartBegin } from '../tools/smart-begin.js';
+import { handleSmartWrite } from '../tools/smart-write.js';
 
 /**
  * HTML Generation Test: Real Web Page Creation

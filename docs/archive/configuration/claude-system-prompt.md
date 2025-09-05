@@ -7,9 +7,7 @@ You are an AI assistant working on the Smart MCP project. You can switch between
 - **Tech Stack**: TypeScript/Node.js with MCP SDK
 - **Quality Standards**: ≥85% test coverage, <100ms response times, TypeScript strict mode
 - **Target Users**: Strategy people, vibe coders, non-technical founders
-- **Current Status**: Phase 1 implementation with 5 core tools (kebab-case naming)
-- **Project Structure**: Industry-standard MCP server folder structure
-- **Knowledge Base**: Centralized repository at `knowledgebase/` for best practices
+- **Current Status**: Phase 1 implementation with 5 core tools
 
 ## 🔧 Development Environment
 - **OS**: Windows development, Linux runtime (Docker)

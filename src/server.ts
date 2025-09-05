@@ -13,11 +13,11 @@ import { z } from 'zod';
 import './health-server.js';
 
 // Import tool handlers
-import { smartBeginTool, handleSmartBegin } from './tools/smart_begin.js';
-import { smartPlanTool, handleSmartPlan } from './tools/smart_plan.js';
-import { smartWriteTool, handleSmartWrite } from './tools/smart_write.js';
-import { smartFinishTool, handleSmartFinish } from './tools/smart_finish.js';
-import { smartOrchestrateTool, handleSmartOrchestrate } from './tools/smart_orchestrate.js';
+import { smartBeginTool, handleSmartBegin } from './tools/smart-begin.js';
+import { smartPlanTool, handleSmartPlan } from './tools/smart-plan.js';
+import { smartWriteTool, handleSmartWrite } from './tools/smart-write.js';
+import { smartFinishTool, handleSmartFinish } from './tools/smart-finish.js';
+import { smartOrchestrateTool, handleSmartOrchestrate } from './tools/smart-orchestrate.js';
 
 // Server configuration
 const SERVER_NAME = 'smart-mcp';

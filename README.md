@@ -4,49 +4,52 @@ A Model Context Protocol (MCP) server implementation with AI-assisted developmen
 
 ## 🚀 Features
 
-- **Role-Based AI Development**: Switch between 5 specialized roles using natural language commands
+- **Role-Based AI Development**: Switch between 6 specialized roles using natural language commands
 - **Dual AI Tool Support**: Works seamlessly with both Cursor AI and Claude Code
-- **TypeScript/Node.js Foundation**: Modern MCP server implementation
+- **TypeScript/Node.js Foundation**: Modern MCP server implementation with strict type safety
 - **Comprehensive Documentation**: Detailed role definitions and setup guides
 - **Automated Setup**: Docker-based development environment with Linux runtime
+- **Quality-First Development**: Built-in quality gates, security scanning, and test coverage
+- **Schema-Locked I/O**: All tool calls use JSON Schemas for reliability
+- **Performance Optimized**: <100ms response times with comprehensive monitoring
 
 ## 🎭 Available Roles
 
 ### 1. AI-Augmented Developer (Default)
-- Code generation, refactoring, and debugging
-- Architecture decisions and system design
-- Performance optimization and security
-- Testing strategies and implementation
+- **Primary Focus**: Code generation, refactoring, and debugging
+- **Key Responsibilities**: Architecture decisions, system design, performance optimization
+- **Quality Standards**: TypeScript strict mode, ≥85% test coverage, <100ms response times
+- **AI Integration**: Cursor AI and Claude Code with role-specific prompts
 
 ### 2. Product Strategist
-- Product vision and roadmap definition
-- User story creation and acceptance criteria
-- Market research and competitive analysis
-- Stakeholder communication
+- **Primary Focus**: Product vision, roadmap definition, and business alignment
+- **Key Responsibilities**: User story creation, market research, stakeholder communication
+- **Quality Standards**: Business value validation, technical feasibility assessment
+- **AI Integration**: Strategic analysis and business impact evaluation
 
 ### 3. AI System Architect
-- System architecture design and component relationships
-- Architecture decision records (ADRs)
-- Technology stack decisions and trade-offs
-- Cross-cutting architecture and API design
+- **Primary Focus**: System architecture design and component relationships
+- **Key Responsibilities**: Architecture decision records (ADRs), technology stack decisions
+- **Quality Standards**: Schema-locked I/O, modular design, performance architecture
+- **AI Integration**: Architecture pattern recommendations and system design
 
 ### 4. AI Operations Engineer
-- CI/CD pipeline with AI integration
-- Security and compliance oversight
-- Performance monitoring and optimization
-- Production support and incident response
+- **Primary Focus**: DevOps, security, and production deployment
+- **Key Responsibilities**: CI/CD pipeline configuration, security compliance, monitoring
+- **Quality Standards**: Security-first operations, automated deployment, incident response
+- **AI Integration**: Infrastructure as code and operational automation
 
 ### 5. UX/Product Designer
-- User experience design and research
-- Design system creation and maintenance
-- Accessibility and usability optimization
-- AI-assisted prototyping and testing
+- **Primary Focus**: User experience design and research
+- **Key Responsibilities**: Design system creation, accessibility compliance, usability optimization
+- **Quality Standards**: WCAG 2.1 AA compliance, performance-aware design
+- **AI Integration**: Design system generation and user research analysis
 
 ### 6. AI Quality Assurance Engineer
-- AI-generated code quality validation
-- Automated testing strategy and implementation
-- Performance and security testing
-- Test automation and continuous quality monitoring
+- **Primary Focus**: Quality assurance and testing
+- **Key Responsibilities**: Test automation, quality validation, security testing
+- **Quality Standards**: ≥85% test coverage, comprehensive quality reporting
+- **AI Integration**: Test case generation and quality metrics analysis
 
 ## 🎯 Quick Start
 
@@ -105,24 +108,48 @@ Alternative commands: `switch to [role]`, `[role] mode`, `coding mode`, `strateg
 
 ```
 TappMCP/
-├── .cursorrules                    # Cursor AI configuration
-├── claude-config.json              # Claude Code configuration
-├── docs/configuration/             # Configuration files
-│   └── claude-system-prompt.md     # Claude Code system prompt
-├── docs/roles/                     # Role definitions
-│   ├── ai-augmented-developer.md
-│   ├── product-strategist.md
-│   ├── ai-system-architect.md
-│   ├── ai-operations-engineer.md
-│   ├── ux-product-designer.md
-│   └── ai-quality-assurance-engineer.md
-├── docs/setup/                     # Setup documentation
-├── docs/project/                   # Project documentation
 ├── src/                           # Source code
 │   ├── server.ts                  # MCP server implementation
-│   └── tools/                     # MCP tools
+│   ├── tools/                     # MCP Tools (kebab-case naming)
+│   │   ├── smart-begin.ts
+│   │   ├── smart-plan.ts
+│   │   ├── smart-write.ts
+│   │   ├── smart-finish.ts
+│   │   └── smart-orchestrate.ts
+│   ├── resources/                 # MCP Resources
+│   ├── prompts/                   # MCP Prompts
+│   ├── schemas/                   # Zod schemas for validation
+│   ├── types/                     # TypeScript type definitions
+│   ├── utils/                     # Utility functions
+│   └── config/                    # Server configuration
+├── tests/                         # All test files
+│   ├── unit/                      # Unit tests
+│   ├── integration/               # Integration tests
+│   ├── e2e/                       # End-to-end tests
+│   ├── reports/                   # Test reports
+│   └── fixtures/                  # Test data
+├── docs/                          # Documentation
+│   ├── configuration/             # Configuration files
+│   │   └── claude-system-prompt.md
+│   ├── roles/                     # Role definitions
+│   ├── rules/                     # Development rules
+│   └── [other documentation]
+├── config/                        # Configuration files
+│   ├── claude-config.json
+│   ├── mcp.config.json
+│   └── production.json
+├── scripts/                       # Build/deployment scripts
+├── temp/                          # Temporary files
+├── knowledgebase/                 # Project knowledge and research
+│   ├── README.md
+│   ├── mcp-server-folder-structure.md
+│   └── phase1-migration-summary.md
+├── dist/                          # Build output
 ├── Dockerfile                     # Linux runtime container
 ├── docker-compose.yml             # Development and production containers
+├── package.json
+├── tsconfig.json
+├── README.md
 └── project-guidelines.md          # Project standards and guidelines
 ```
 
@@ -141,7 +168,18 @@ TappMCP/
 npm install
 ```
 
-### Building
+### Development Workflow
+
+#### 1. Quality Check (MANDATORY)
+```bash
+# Run comprehensive quality check
+npm run early-check
+
+# Individual quality checks
+npm run qa:all
+```
+
+#### 2. Building
 ```bash
 # Local build
 npm run build
@@ -150,7 +188,20 @@ npm run build
 npm run docker:build
 ```
 
-### Running
+#### 3. Testing
+```bash
+# Run all tests
+npm run test
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run specific test suites
+npm run test:changed
+npm run test:real-world
+```
+
+#### 4. Running
 ```bash
 # Local development
 npm run dev
@@ -161,6 +212,21 @@ npm run docker:dev
 # Production
 npm start
 ```
+
+### Quality Standards
+- **TypeScript**: Strict mode with `strictNullChecks` and `exactOptionalPropertyTypes`
+- **Test Coverage**: ≥85% on changed files (both line and branch coverage)
+- **Performance**: <100ms response time for all tools
+- **Security**: Zero critical vulnerabilities, no secrets in repository
+- **Code Quality**: ESLint complexity ≤10, duplication ≤5%
+
+### Pre-commit Requirements
+All commits must pass:
+- TypeScript compilation (`tsc --noEmit`)
+- ESLint validation (`eslint src/**/*.ts`)
+- Code formatting (`prettier --check`)
+- Unit tests with coverage (`vitest run --coverage`)
+- Security scans (OSV-Scanner, Semgrep)
 
 ## 📚 Documentation
 

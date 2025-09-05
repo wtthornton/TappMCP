@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { handleSmartBegin } from '../tools/smart_begin';
-import { handleSmartPlan } from '../tools/smart_plan';
-import { handleSmartWrite } from '../tools/smart_write';
-import { handleSmartFinish } from '../tools/smart_finish';
-import { handleSmartOrchestrate } from '../tools/smart_orchestrate';
+import { handleSmartBegin } from '../tools/smart-begin';
+import { handleSmartPlan } from '../tools/smart-plan';
+import { handleSmartWrite } from '../tools/smart-write';
+import { handleSmartFinish } from '../tools/smart-finish';
+import { handleSmartOrchestrate } from '../tools/smart-orchestrate';
 import type {
   SmartBeginResponse,
   SmartPlanResponse,

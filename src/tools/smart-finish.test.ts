@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { handleSmartFinish, smartFinishTool } from './smart_finish';
+import { handleSmartFinish, smartFinishTool } from './smart-finish';
 import type { SmartFinishResponse } from '../types/tool-responses';
 
 describe('smart_finish tool', () => {

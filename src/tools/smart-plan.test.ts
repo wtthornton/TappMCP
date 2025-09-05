@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { handleSmartPlan, smartPlanTool } from './smart_plan';
+import { handleSmartPlan, smartPlanTool } from './smart-plan';
 import type { SmartPlanResponse } from '../types/tool-responses';
 
 describe('smart_plan tool', () => {

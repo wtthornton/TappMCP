@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional LLM vs MCP Comparison</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #2c3e50; margin-bottom: 30px; }
+        .winner { background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 30px; font-size: 1.5em; font-weight: bold; }
+        .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
+        .test-card { background: #f8f9fa; border-radius: 10px; padding: 20px; border-left: 5px solid #3498db; }
+        .test-card.mcp { border-left-color: #e74c3c; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .grade { font-size: 2em; font-weight: bold; padding: 10px 20px; border-radius: 10px; color: white; }
+        .grade.a { background: #27ae60; }
+        .grade.b { background: #f39c12; }
+        .grade.c { background: #e67e22; }
+        .grade.f { background: #e74c3c; }
+        .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
+        .metric { background: white; padding: 15px; border-radius: 8px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .metric-value { font-size: 1.5em; font-weight: bold; color: #2c3e50; }
+        .metric-label { color: #7f8c8d; font-size: 0.9em; }
+        .code-section { background: #2c3e50; color: #ecf0f1; padding: 20px; border-radius: 8px; margin: 20px 0; font-family: 'Courier New', monospace; overflow-x: auto; }
+        .breakdown { background: #ecf0f1; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .breakdown-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
+        .breakdown-item { background: white; padding: 15px; border-radius: 6px; text-align: center; }
+        .breakdown-score { font-size: 1.3em; font-weight: bold; color: #2c3e50; }
+        .breakdown-label { color: #7f8c8d; font-size: 0.9em; }
+        .links { background: #3498db; color: white; padding: 20px; border-radius: 10px; margin: 20px 0; }
+        .links a { color: #ffd700; text-decoration: none; margin-right: 20px; }
+        .links a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 Professional LLM vs MCP Comparison</h1>
+        
+        <div class="winner">
+            🏆 Winner: MCP (7 points difference)
+        </div>
+
+        <div class="comparison">
+            <div class="test-card">
+                <div class="card-header">
+                    <h2>🤖 Direct LLM</h2>
+                    <div class="grade b">B</div>
+                </div>
+                
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-value">71</div>
+                        <div class="metric-label">Total Score</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">2896ms</div>
+                        <div class="metric-label">Response Time</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">$0.000000</div>
+                        <div class="metric-label">Cost</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">❌</div>
+                        <div class="metric-label">Has Tests</div>
+                    </div>
+                </div>
+
+                <div class="code-section">
+                    <h3>Generated Code:</h3>
+                    <pre>/**
+ * Calculates the area of a circle given the radius
+ * @param radius - The radius of the circle
+ * @returns The area of the circle
+ */
+function calculateCircleArea(radius: number): number {
+    if (radius <= 0) {
+        throw new Error('Radius must be positive');
+    }
+    return Math.PI * radius * radius;
+}</pre>
+                </div>
+            </div>
+
+            <div class="test-card mcp">
+                <div class="card-header">
+                    <h2>🔧 MCP Processed</h2>
+                    <div class="grade b">B+</div>
+                </div>
+                
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-value">78</div>
+                        <div class="metric-label">Total Score</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">5ms</div>
+                        <div class="metric-label">Response Time</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">$0.000002</div>
+                        <div class="metric-label">Cost</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">✅</div>
+                        <div class="metric-label">Has Tests</div>
+                    </div>
+                </div>
+
+                <div class="code-section">
+                    <h3>Generated Code:</h3>
+                    <pre>export function createafunctionthatcalculatestheareaofacirclegiventheradius(input: string): { result: string; success: boolean; data?: any } {
+  // create a function that calculates the area of a circle given the radius
+  // Generated for developer role
+
+  try {
+    // Input validation
+    if (!input || typeof input !== 'string') {
+      return {
+        result: 'Error: Invalid input - string required',
+        success: false
+      };
+    }
+
+    if (input.trim().length === 0) {
+      return {
+        result: 'Error: Input cannot be empty',
+        success: false
+      };
+    }
+
+    // Process the input based on feature type
+    let processed: string;
+    let data: any = null;
+
+    if (input.toLowerCase().includes('feedback')) {
+      // Handle feedback processing
+      processed = `Feedback processed: ${input.trim()}`;
+      data = {
+        type: 'feedback',
+        content: input.trim(),
+        timestamp: new Date().toISOString(),
+        status: 'processed'
+      };
+    } else if (input.toLowerCase().includes('form')) {
+      // Handle form processing
+      processed = `Form data processed: ${input.trim()}`;
+      data = {
+        type: 'form',
+        fields: input.trim().split(' '),
+        timestamp: new Date().toISOString(),
+        status: 'validated'
+      };
+    } else {
+      // Generic processing
+      processed = `Processed: ${input.trim()}`;
+      data = {
+        type: 'generic',
+        content: input.trim(),
+        timestamp: new Date().toISOString(),
+        status: 'completed'
+      };
+    }
+
+    return {
+      result: processed,
+      success: true,
+      data
+    };
+  } catch (error) {
+    return {
+      result: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      success: false
+    };
+  }
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="breakdown">
+            <h2>📊 Detailed Score Breakdown</h2>
+            <div class="breakdown-grid">
+                <div class="breakdown-item">
+                    <div class="breakdown-score">100</div>
+                    <div class="breakdown-label">LLM Functionality</div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="breakdown-score">70</div>
+                    <div class="breakdown-label">MCP Functionality</div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="breakdown-score">0</div>
+                    <div class="breakdown-label">LLM Testing</div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="breakdown-score">100</div>
+                    <div class="breakdown-label">MCP Testing</div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="breakdown-score">42.08</div>
+                    <div class="breakdown-label">LLM Performance</div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="breakdown-score">99.9</div>
+                    <div class="breakdown-label">MCP Performance</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="links">
+            <h3>📁 Generated Files:</h3>
+            <a href="llm-generated-code.ts" target="_blank">📄 View LLM Generated Code</a>
+            <a href="mcp-generated-code.ts" target="_blank">📄 View MCP Generated Code</a>
+            <a href="../test-results-dashboard.html">🏠 Back to Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>

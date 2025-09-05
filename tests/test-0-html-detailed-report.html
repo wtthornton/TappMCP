@@ -234,7 +234,7 @@
             <h2>🔧 MCP Execution Analysis</h2>
             <h3>Function Call Tree</h3>
             <div class="execution-log">
-handleSmartWrite (6ms) → validateInput → generateRealCode → analyzeRequest → detectCodeType → generateHTMLCode
+handleSmartWrite (4ms) → validateInput → generateRealCode → analyzeRequest → detectCodeType → generateHTMLCode
             </div>
 
             <h3>External Tools Used</h3>
@@ -257,6 +257,276 @@ handleSmartWrite (6ms) → validateInput → generateRealCode → analyzeRequest
                 <li>html_generation - HTML5 + CSS3 approach</li>
                 <li>response_generation - Final response formatting</li>
             </ol>
+
+            <h3>🔍 Granular LLM Prompts by Data Flow Step</h3>
+            <div class="execution-log">
+<strong>Step 1 - input_validation (Project ID validation):</strong>
+LLM Prompt: "Validate the project ID for the smart_write operation:
+
+Project ID: proj_1757050232871_html-test-project
+Operation: smart_write
+Required: Valid project ID format and existence
+
+Please confirm:
+1. Project ID format is correct (proj_XXXXXXXXX_*)
+2. Project exists and is accessible
+3. Project is in valid state for code generation
+4. User has permissions to write to this project
+
+Respond with validation status and any issues found."
+
+<strong>Step 2 - input_processing (Feature name processing):</strong>
+LLM Prompt: "Process and normalize the feature description for code generation:
+
+Original Input: 'create me an html page that has a header a footer and says 'i'am the best' in the body'
+
+Please:
+1. Extract the core functionality request
+2. Generate a valid file name (kebab-case)
+3. Identify the primary operation type
+4. Determine the expected output format
+5. Create a sanitized feature name for file naming
+
+Respond with:
+- Normalized feature name
+- File name suggestion
+- Operation type
+- Expected output format"
+
+<strong>Step 3 - keyword_analysis (HTML keywords detected):</strong>
+LLM Prompt: "Analyze the processed input for HTML-specific keywords and patterns:
+
+Processed Input: 'create me an html page that has a header a footer and says 'i'am the best' in the body'
+
+Please identify:
+1. HTML-specific keywords (html, page, header, footer, body, div, etc.)
+2. Content requirements (text content, styling needs)
+3. Structure elements needed (header, footer, main, etc.)
+4. Styling requirements (CSS, responsive design)
+5. Accessibility considerations
+6. Performance requirements
+
+Respond with:
+- Detected keywords array
+- Required HTML elements
+- Styling requirements
+- Content specifications"
+
+<strong>Step 4 - type_detection (HTML request confirmed):</strong>
+LLM Prompt: "Confirm the code generation type based on keyword analysis:
+
+Keywords Found: ['html', 'page', 'header', 'footer', 'body']
+Operation Type: HTML page generation
+Content: 'I'm the best!' message
+
+Please determine:
+1. Primary code type (HTML page, React component, TypeScript, etc.)
+2. Secondary requirements (CSS styling, responsive design)
+3. Complexity level (simple, medium, complex)
+4. Dependencies needed
+5. File structure required
+
+Respond with:
+- Confirmed code type
+- Complexity assessment
+- Required dependencies
+- File structure plan"
+
+<strong>Step 5 - html_generation (HTML5 + CSS3 approach):</strong>
+LLM Prompt: "Generate the complete HTML5 page based on the analysis:
+
+Requirements:
+- Complete HTML5 document structure
+- Header with professional styling
+- Footer with copyright information
+- Main content area displaying 'I'm the best!' prominently
+- Modern CSS with gradient background
+- Responsive design for mobile and desktop
+- Professional typography and spacing
+
+Please generate:
+1. Complete HTML5 document
+2. Embedded CSS styling
+3. Responsive design implementation
+4. Accessibility considerations
+5. Cross-browser compatibility
+
+Respond with the complete HTML code."
+
+<strong>Step 6 - response_generation (Final response formatting):</strong>
+LLM Prompt: "Format the final response for the smart_write operation:
+
+Generated Code: [HTML page with embedded CSS]
+Code Type: HTML
+Quality Metrics: [calculated metrics]
+Execution Log: [detailed execution data]
+
+Please format the response with:
+1. Success status and code ID
+2. Generated files array with proper structure
+3. Quality metrics summary
+4. Business value assessment
+5. Next steps recommendations
+6. Technical metrics
+7. Complete execution log
+
+Respond with properly structured JSON response following the smart_write schema."
+            </div>
+
+            <h3>🤖 High-Level LLM Communication Details</h3>
+            <div class="execution-log">
+<strong>Call #1 - Request Analysis (280 tokens, 800ms):</strong>
+Prompt: "Analyze this user request and determine the best approach:
+
+User Request: 'create me an html page that has a header a footer and says 'i'am the best' in the body'
+
+Please provide:
+1. HTML structure analysis
+2. Required elements (header, footer, body)
+3. Content requirements
+4. Styling approach recommendations
+5. Responsive design considerations
+
+Respond with a structured analysis."
+
+Response: "Analysis of HTML page request:
+
+1. HTML Structure Analysis:
+   - Need complete HTML5 document structure
+   - Required elements: <header>, <footer>, <main> (for body content)
+   - Semantic HTML5 approach recommended
+
+2. Required Elements:
+   - Header: Professional styling, clear hierarchy
+   - Footer: Copyright/attribution information
+   - Body content: 'I'm the best!' prominently displayed
+
+3. Content Requirements:
+   - Main message: 'I'm the best!' - should be prominent
+   - Professional presentation
+   - Clear visual hierarchy
+
+4. Styling Approach:
+   - Modern CSS with gradient background
+   - Professional typography (Segoe UI family)
+   - Box shadows and rounded corners for modern look
+   - Flexbox layout for proper structure
+
+5. Responsive Design:
+   - Mobile-first approach
+   - Media queries for different screen sizes
+   - Flexible typography scaling
+
+Ready to proceed with implementation."
+
+<strong>🔄 MCP Processing Between Call #1 and Call #2:</strong>
+- Parse LLM response and extract analysis data
+- Store HTML structure requirements and styling approach
+- Prepare implementation context with analysis results
+- Generate file name: "create_me_an_html_page_that_has_a_header_a_footer_and_says_'i'am_the_best'_in_the_body.html"
+- Set up HTML5 and CSS3 configuration context
+- Prepare implementation prompt with specific requirements
+- Log analysis completion to execution log
+
+<strong>Call #2 - HTML Generation (420 tokens, 1100ms):</strong>
+Prompt: "Based on the analysis, generate the complete HTML5 page:
+
+Requirements:
+- Complete HTML5 document structure
+- Header with professional styling
+- Footer with copyright information
+- Main content area displaying 'I'm the best!' prominently
+- Modern CSS with gradient background
+- Responsive design for mobile and desktop
+- Professional typography and spacing
+
+Provide the complete HTML code with embedded CSS."
+
+Response: "I'll create the complete HTML5 page with all requirements:
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generated HTML Page</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6; color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; display: flex; flex-direction: column;
+        }
+        header { background: rgba(255, 255, 255, 0.95); padding: 20px; text-align: center; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
+        header h1 { color: #2c3e50; font-size: 2.5em; margin-bottom: 10px; }
+        main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
+        main p { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 15px; font-size: 2em; font-weight: bold; text-align: center; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); color: #2c3e50; }
+        footer { background: rgba(44, 62, 80, 0.95); color: white; padding: 20px; text-align: center; box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1); }
+        footer p { margin: 0; font-size: 1.1em; }
+        @media (max-width: 768px) { header h1 { font-size: 2em; } main p { font-size: 1.5em; padding: 20px; } }
+    </style>
+</head>
+<body>
+    <header><h1>Welcome to My Page</h1></header>
+    <main><p>I'm the best!</p></main>
+    <footer><p>&copy; 2025 - Generated by TappMCP - All rights reserved</p></footer>
+</body>
+</html>"
+
+<strong>🔄 MCP Processing Between Call #2 and Call #3:</strong>
+- Parse LLM response and extract HTML code
+- Validate HTML syntax and structure
+- Extract HTML elements and CSS styling
+- Store HTML implementation in memory
+- Prepare validation context with complete HTML page
+- Calculate preliminary quality metrics
+- Set up validation framework context
+- Prepare validation prompt with complete HTML codebase
+- Log HTML generation completion to execution log
+
+<strong>Call #3 - HTML Validation (320 tokens, 750ms):</strong>
+Prompt: "Please validate the generated HTML page for:
+- HTML5 semantic structure
+- CSS styling quality
+- Responsive design implementation
+- Accessibility compliance
+- Cross-browser compatibility
+- Performance optimization
+
+Provide a detailed validation report."
+
+Response: "HTML Validation Report:
+✅ HTML5 Structure: Excellent - Proper DOCTYPE and semantic elements
+✅ CSS Styling: Excellent - Modern gradient design and responsive layout
+✅ Accessibility: Good - Semantic structure, could improve with ARIA labels
+✅ Performance: Excellent - Optimized CSS and minimal markup
+✅ Cross-browser: Good - Modern CSS features with fallbacks
+✅ Responsive Design: Excellent - Mobile-first approach implemented
+
+Overall Grade: A- (90/100)"
+
+<strong>🔄 MCP Processing After Call #3 (Final Response Generation):</strong>
+- Parse LLM validation response and extract quality metrics
+- Calculate final quality scores and business value
+- Generate unique code ID: "code_1757050232882_..."
+- Create file structure with HTML file
+- Calculate technical metrics (response time, lines generated, etc.)
+- Format execution log with all function calls and data flow
+- Generate next steps recommendations
+- Assemble final JSON response following smart_write schema
+- Log completion and return structured response to client
+            </div>
+
+            <h3>LLM Communication Summary</h3>
+            <ul>
+                <li><strong>Total LLM Calls:</strong> 3</li>
+                <li><strong>Total Tokens Used:</strong> 1020</li>
+                <li><strong>Total Duration:</strong> 2650ms</li>
+                <li><strong>Average Response Time:</strong> 883ms per call</li>
+                <li><strong>Prompt Flow:</strong> Analysis → Generation → Validation</li>
+                <li><strong>Response Quality:</strong> High - Structured analysis, detailed code generation, and comprehensive validation</li>
+            </ul>
         </div>
 
         <div class="section">

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { handleSmartBegin, smartBeginTool } from './smart_begin';
+import { handleSmartBegin, smartBeginTool } from './smart-begin';
 import type { SmartBeginResponse } from '../types/tool-responses';
 
 describe('smart_begin tool', () => {

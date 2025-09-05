@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { handleSmartPlan } from './smart_plan_enhanced.js';
+import { handleSmartPlan } from './smart-plan-enhanced.js';
 
 describe('Smart Plan Enhanced Tool', () => {
   beforeEach(() => {

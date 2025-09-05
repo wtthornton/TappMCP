@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { handleSmartOrchestrate, smartOrchestrateTool } from './smart_orchestrate';
+import { handleSmartOrchestrate, smartOrchestrateTool } from './smart-orchestrate';
 import type { SmartOrchestrateResponse } from '../types/tool-responses';
 
 // Helper function to convert legacy test inputs to new format

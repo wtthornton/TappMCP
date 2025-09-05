@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { handleSmartBegin } from '../tools/smart_begin.js';
-import { handleSmartPlan } from '../tools/smart_plan.js';
-import { handleSmartWrite } from '../tools/smart_write.js';
+import { handleSmartBegin } from '../tools/smart-begin.js';
+import { handleSmartPlan } from '../tools/smart-plan.js';
+import { handleSmartWrite } from '../tools/smart-write.js';
 
 /**
  * Real-World Test: Customer Feedback App Workflow

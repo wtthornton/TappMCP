@@ -17,12 +17,29 @@ Smart MCP implements **6 specialized AI roles** for comprehensive development co
 3. **Run early quality check**: `npm run early-check` - MUST PASS
 4. **Follow process compliance**: Use the process compliance checklist
 5. **Validate environment**: Ensure all tools are installed and configured
+6. **Check dependencies**: Verify all packages are installed and up-to-date
+7. **Review project state**: Understand current implementation status
 
 **WARNING**: Failure to follow process compliance requirements will result in:
 - Test failures and quality issues
 - Process violations and project delays
 - Role compliance failure
 - Potential project failure
+
+### 🔧 **AI Tool Integration Requirements**
+
+**For Cursor AI**:
+- Ensure `.cursorrules` file is properly configured
+- Use natural language role switching commands
+- Leverage built-in TypeScript and ESLint integration
+- Utilize real-time error detection and fixing
+
+**For Claude Code**:
+- Load system prompt: `claude --system-prompt docs/configuration/claude-system-prompt.md`
+- Use role-specific context switching
+- Follow structured output patterns
+- Maintain conversation context across role switches
+- Reference knowledge base: `knowledgebase/` for best practices and patterns
 
 ### 1. AI-Augmented Developer (Default)
 - Code generation, refactoring, and debugging
@@ -165,3 +182,94 @@ PR merges are blocked on Security <C or Coverage <85%.
 - **Efficiency**: Faster dev loop with local blocking of bad commits.
 - **Reproducibility**: Frozen installs, parity runs.
 - **Scalability**: Knowledge packs and lessons improve MCP itself.
+
+---
+
+## 🚨 Troubleshooting Guide
+
+### Common Issues and Solutions
+
+#### 1. Early Quality Check Failures
+```bash
+# Check specific quality issues
+npm run qa:eslint      # ESLint issues
+npm run qa:typescript  # TypeScript errors
+npm run qa:format      # Formatting issues
+npm run qa:tests       # Test failures
+```
+
+#### 2. Test Coverage Issues
+- **Issue**: Coverage below 85% threshold
+- **Solution**: Add missing tests or fix broken tests
+- **Command**: `npm run test:coverage` to see detailed coverage report
+
+#### 3. TypeScript Compilation Errors
+- **Issue**: Type errors preventing build
+- **Solution**: Fix type issues or add proper type annotations
+- **Command**: `npm run type-check` to see specific errors
+
+#### 4. Performance Issues
+- **Issue**: Response times exceeding 100ms
+- **Solution**: Profile code and optimize bottlenecks
+- **Monitoring**: Check performance metrics in test output
+
+#### 5. Security Scan Failures
+- **Issue**: Critical vulnerabilities detected
+- **Solution**: Update dependencies or fix security issues
+- **Commands**:
+  - `npm run security:scan` - Check for secrets
+  - `npm run security:osv` - Check for vulnerabilities
+  - `npm run security:semgrep` - Static analysis
+
+### Emergency Procedures
+
+#### Quick Fix Workflow
+1. **Assess**: Run `npm run early-check` to identify issues
+2. **Fix**: Address critical issues first (TypeScript, ESLint, tests)
+3. **Validate**: Re-run quality checks
+4. **Commit**: Only commit when all checks pass
+
+#### Rollback Procedure
+```bash
+# If issues persist after commit
+git log --oneline -5  # Check recent commits
+git reset --hard HEAD~1  # Rollback last commit (if safe)
+npm run early-check  # Verify clean state
+```
+
+### Development Environment Issues
+
+#### Windows-Specific Issues
+- **Bash not found**: Install Git Bash or WSL
+- **Pre-commit hooks fail**: Use `git commit --no-verify` for emergency commits
+- **Path issues**: Ensure Node.js and Python are in system PATH
+
+#### Docker Issues
+- **Container won't start**: Check Docker Desktop is running
+- **Port conflicts**: Change ports in docker-compose.yml
+- **Build failures**: Clear Docker cache and rebuild
+
+### AI Tool Integration Issues
+
+#### Cursor AI Not Responding
+- Restart Cursor after configuration changes
+- Check `.cursorrules` file is in project root
+- Verify file is properly formatted
+
+#### Claude Code Issues
+- Ensure system prompt is loaded correctly
+- Check file paths are correct
+- Restart Claude Code session if needed
+
+### Performance Optimization
+
+#### Response Time Issues
+- Profile individual tools for bottlenecks
+- Check for unnecessary external API calls
+- Optimize data processing algorithms
+- Monitor memory usage and garbage collection
+
+#### Test Performance
+- Use `npm run test:changed` for faster feedback
+- Optimize test setup and teardown
+- Consider parallel test execution

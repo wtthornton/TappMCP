@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { handleSmartBegin } from '../tools/smart_begin';
-import { handleSmartWrite } from '../tools/smart_write';
-import { handleSmartFinish } from '../tools/smart_finish';
+import { handleSmartBegin } from '../tools/smart-begin';
+import { handleSmartWrite } from '../tools/smart-write';
+import { handleSmartFinish } from '../tools/smart-finish';
 import type {
   SmartBeginResponse,
   SmartWriteResponse,
