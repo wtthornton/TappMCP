@@ -92,6 +92,14 @@ export interface PlanGenerationInput {
     performance: 'basic' | 'standard' | 'high';
     accessibility: boolean;
   };
+  externalKnowledge?: Array<{
+    id: string;
+    source: string;
+    type: string;
+    title: string;
+    content: string;
+    relevanceScore: number;
+  }>;
 }
 
 export class PlanGenerator {
@@ -110,11 +118,23 @@ export class PlanGenerator {
     const startTime = Date.now();
 
     try {
-      // Step 1: Business Analysis
-      const businessRequirements = this.businessAnalyzer.analyzeRequirements(input.businessRequest);
-      const complexity = this.businessAnalyzer.assessComplexity(input.businessRequest);
-      const risks = this.businessAnalyzer.identifyRisks(input.businessRequest);
-      const userStories = this.businessAnalyzer.generateUserStories(businessRequirements);
+      // Step 1: Enhanced Business Analysis with External Knowledge
+      const businessRequirements = this.businessAnalyzer.analyzeRequirements(
+        input.businessRequest,
+        input.externalKnowledge?.filter(k => k.type === 'search' || k.type === 'trend')
+      );
+      const complexity = this.businessAnalyzer.assessComplexity(
+        input.businessRequest,
+        input.externalKnowledge?.filter(k => k.type === 'lesson' || k.type === 'pattern')
+      );
+      const risks = this.businessAnalyzer.identifyRisks(
+        input.businessRequest,
+        input.externalKnowledge?.filter(k => k.type === 'lesson' && k.content.includes('failure'))
+      );
+      const userStories = this.businessAnalyzer.generateUserStories(
+        businessRequirements,
+        input.externalKnowledge?.filter(k => k.type === 'example' || k.type === 'best-practice')
+      );
 
       // Step 2: Technical Planning
       const architecture = this.technicalPlanner.createArchitecture(businessRequirements);

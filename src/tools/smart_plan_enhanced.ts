@@ -3,6 +3,7 @@
 import { z } from 'zod';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { PlanGenerator, type PlanGenerationInput } from '../core/plan-generator.js';
+import { MCPCoordinator, type KnowledgeRequest, type ExternalKnowledge } from '../core/mcp-coordinator.js';
 
 // Enhanced input schema for Phase 2A requirements
 const SmartPlanInputSchema = z.object({
@@ -149,7 +150,9 @@ interface SmartPlanSuccessResponse {
     webSearchStatus: string;
     memoryStatus: string;
     integrationTime: number;
+    knowledgeCount: number;
   };
+  externalKnowledge: ExternalKnowledge[];
   deliverables: {
     successMetrics: string[];
     nextSteps: string[];
@@ -206,11 +209,51 @@ export async function handleSmartPlan(input: unknown): Promise<SmartPlanResponse
       qualityRequirements: validatedInput.qualityRequirements,
     };
 
-    // Initialize plan generator with business analysis capabilities
+    // Initialize plan generator and MCP coordinator
     const planGenerator = new PlanGenerator();
+    const mcpCoordinator = new MCPCoordinator();
 
-    // Generate comprehensive plan using business analysis
-    const comprehensivePlan = await planGenerator.generatePlan(planInput);
+    // Gather external knowledge if requested (Phase 2A requirement)
+    let externalKnowledge: ExternalKnowledge[] = [];
+    let integrationStartTime = Date.now();
+    
+    if (validatedInput.externalSources) {
+      const knowledgeRequest: KnowledgeRequest = {
+        projectId: validatedInput.projectId,
+        businessRequest: validatedInput.businessRequest,
+        domain: validatedInput.businessRequest.split(' ')[0] || 'general', // Simple domain extraction
+        priority: validatedInput.priority,
+        sources: validatedInput.externalSources,
+        maxResults: 10,
+      };
+
+      try {
+        externalKnowledge = await mcpCoordinator.gatherKnowledge(knowledgeRequest);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.warn('External knowledge gathering failed:', error);
+      }
+    }
+    
+    const integrationTime = Date.now() - integrationStartTime;
+
+    // Generate comprehensive plan using business analysis and external knowledge
+    const enhancedPlanInput = {
+      ...planInput,
+    };
+    
+    if (externalKnowledge.length > 0) {
+      enhancedPlanInput.externalKnowledge = externalKnowledge.slice(0, 5).map(k => ({
+        id: k.id,
+        source: k.source,
+        type: k.type,
+        title: k.title,
+        content: k.content,
+        relevanceScore: k.relevanceScore,
+      }));
+    }
+    
+    const comprehensivePlan = await planGenerator.generatePlan(enhancedPlanInput);
 
     // Validate plan quality
     const validation = planGenerator.validatePlan(comprehensivePlan);
@@ -262,13 +305,15 @@ export async function handleSmartPlan(input: unknown): Promise<SmartPlanResponse
         confidenceLevel: comprehensivePlan.effort.confidence,
       },
 
-      // External MCP Integration Status (Phase 2A requirement)
+      // External MCP Integration Results (Phase 2A requirement)
       externalIntegration: {
-        context7Status: validatedInput.externalSources?.useContext7 ? 'enabled' : 'disabled',
-        webSearchStatus: validatedInput.externalSources?.useWebSearch ? 'enabled' : 'disabled',
-        memoryStatus: validatedInput.externalSources?.useMemory ? 'enabled' : 'disabled',
-        integrationTime: 0, // Will be populated when MCP integrations are implemented
+        context7Status: validatedInput.externalSources?.useContext7 ? 'active' : 'disabled',
+        webSearchStatus: validatedInput.externalSources?.useWebSearch ? 'active' : 'disabled',
+        memoryStatus: validatedInput.externalSources?.useMemory ? 'active' : 'disabled',
+        integrationTime,
+        knowledgeCount: externalKnowledge.length,
       },
+      externalKnowledge,
 
       // Success Metrics and Next Steps
       deliverables: {

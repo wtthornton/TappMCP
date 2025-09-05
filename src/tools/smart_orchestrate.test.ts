@@ -7,7 +7,7 @@ describe('smart_orchestrate tool', () => {
     it('should have correct name and description', () => {
       expect(smartOrchestrateTool.name).toBe('smart_orchestrate');
       expect(smartOrchestrateTool.description).toContain(
-        'Orchestrate complete development workflow'
+        'Phase 2B: Orchestrate complete SDLC workflows'
       );
     });
 

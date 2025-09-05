@@ -51,6 +51,10 @@ export class StaticAnalyzer {
       const eslintResult = await this.runESLint();
       issues.push(...eslintResult);
 
+      // Run Semgrep for security and OWASP best practices
+      const semgrepResult = await this.runSemgrep();
+      issues.push(...semgrepResult);
+
       // Run TypeScript compiler for type checking
       const tscResult = await this.runTypeScriptCheck();
       issues.push(...tscResult);
@@ -116,6 +120,52 @@ export class StaticAnalyzer {
     } catch (error) {
       // ESLint analysis failed - re-throw to trigger error handling
       throw error;
+    }
+  }
+
+  /**
+   * Run Semgrep analysis for security and OWASP best practices
+   */
+  private async runSemgrep(): Promise<StaticIssue[]> {
+    try {
+      // Check if semgrep is available - if not, skip gracefully
+      let semgrepOutput: string;
+      try {
+        semgrepOutput = execSync('semgrep --config=auto --json src/', {
+          cwd: this.projectPath,
+          encoding: 'utf8',
+          stdio: 'pipe',
+          timeout: 45000, // 45 second timeout
+        });
+      } catch (_error) {
+        // Semgrep not available or scan failed - return empty results
+        // eslint-disable-next-line no-console
+        console.warn('Semgrep not available or scan failed, skipping Semgrep analysis');
+        return [];
+      }
+
+      const semgrepData = JSON.parse(semgrepOutput);
+      const issues: StaticIssue[] = [];
+
+      if (semgrepData.results && Array.isArray(semgrepData.results)) {
+        for (const result of semgrepData.results) {
+          issues.push({
+            id: `semgrep-${result.check_id}`,
+            severity: this.mapSemgrepSeverity(result.extra?.severity ?? 'INFO'),
+            file: result.path ?? 'unknown',
+            line: result.start?.line ?? 1,
+            column: result.start?.col ?? 1,
+            message: result.extra?.message ?? result.message ?? 'No message available',
+            rule: result.check_id ?? 'unknown',
+            fix: result.extra?.fix ?? 'Follow OWASP security guidelines',
+          });
+        }
+      }
+
+      return issues;
+    } catch (_error) {
+      // Semgrep scan failed - return empty result
+      return [];
     }
   }
 
@@ -405,6 +455,25 @@ export class StaticAnalyzer {
     }
 
     return complexity;
+  }
+
+  /**
+   * Map Semgrep severity to our severity levels
+   */
+  private mapSemgrepSeverity(severity: string): 'error' | 'warning' | 'info' {
+    switch (severity?.toUpperCase()) {
+      case 'ERROR':
+      case 'HIGH':
+        return 'error';
+      case 'WARNING':
+      case 'MEDIUM':
+        return 'warning';
+      case 'INFO':
+      case 'LOW':
+        return 'info';
+      default:
+        return 'info';
+    }
   }
 
   /**

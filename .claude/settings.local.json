@@ -15,7 +15,10 @@
       "Bash(curl:*)",
       "Bash(npm install:*)",
       "Bash(npm config:*)",
-      "Bash(npx @testsprite/testsprite-mcp@latest:*)"
+      "Bash(npx @testsprite/testsprite-mcp@latest:*)",
+      "Bash(pip install:*)",
+      "Bash(python -m pre_commit run:*)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []

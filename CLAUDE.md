@@ -112,6 +112,11 @@ npm run pre-commit:run
 npm run pre-commit:update
 ```
 
+**Pre-commit Configuration:**
+- Generated files (`dist/`, `node_modules/`, `coverage/`) are excluded from end-of-file-fixer hook
+- VS Code settings automatically add final newlines to prevent formatting issues
+- Hooks include: large file checks, YAML validation, trailing whitespace removal, ESLint, TypeScript checking, and unit tests
+
 ## Architecture Overview
 
 ### MCP Server Implementation
@@ -218,7 +223,7 @@ If MCP servers (Context7, TestSprite, Playwright, GitHub, FileSystem) aren't con
 2. **Install MCP packages globally:**
    ```bash
    npm install -g @modelcontextprotocol/server-filesystem@latest
-   npm install -g @modelcontextprotocol/server-github@latest  
+   npm install -g @modelcontextprotocol/server-github@latest
    npm install -g @testsprite/testsprite-mcp@latest
    npm install -g @playwright/mcp@latest
    ```

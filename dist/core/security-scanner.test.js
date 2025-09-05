@@ -183,5 +183,51 @@ vitest_1.vi.mock('path', () => ({
             (0, vitest_1.expect)(determineStatus({ critical: 0, high: 0, moderate: 0, low: 0 })).toBe('pass');
         });
     });
+    (0, vitest_1.describe)('checkFileContent', () => {
+        (0, vitest_1.it)('should detect hardcoded secrets', () => {
+            const scanner = new security_scanner_js_1.SecurityScanner('/test');
+            const checkFileContent = scanner.checkFileContent.bind(scanner);
+            const codeWithSecrets = `
+        const password = "mypassword123";
+        const api_key = "sk-12345";
+        const secret = "topsecret";
+        const token = "abc123";
+      `;
+            const result = checkFileContent('/test/file.ts', codeWithSecrets);
+            (0, vitest_1.expect)(result.length).toBeGreaterThan(0);
+            (0, vitest_1.expect)(result.some((v) => v.id === 'hardcoded-secret')).toBe(true);
+        });
+        (0, vitest_1.it)('should detect dangerous functions', () => {
+            const scanner = new security_scanner_js_1.SecurityScanner('/test');
+            const checkFileContent = scanner.checkFileContent.bind(scanner);
+            const dangerousCode = `
+        eval("alert('test')");
+        element.innerHTML = userInput;
+        document.write(content);
+      `;
+            const result = checkFileContent('/test/file.ts', dangerousCode);
+            (0, vitest_1.expect)(result.length).toBeGreaterThan(0);
+            (0, vitest_1.expect)(result.some((v) => v.id === 'dangerous-function')).toBe(true);
+        });
+        (0, vitest_1.it)('should return empty array for safe code', () => {
+            const scanner = new security_scanner_js_1.SecurityScanner('/test');
+            const checkFileContent = scanner.checkFileContent.bind(scanner);
+            const safeCode = `
+        const x = 1;
+        const y = 2;
+        console.log(x + y);
+      `;
+            const result = checkFileContent('/test/file.ts', safeCode);
+            (0, vitest_1.expect)(result).toEqual([]);
+        });
+    });
+    (0, vitest_1.describe)('findSourceFiles', () => {
+        (0, vitest_1.it)('should find source files', () => {
+            const scanner = new security_scanner_js_1.SecurityScanner('/test');
+            const findSourceFiles = scanner.findSourceFiles.bind(scanner);
+            const files = findSourceFiles();
+            (0, vitest_1.expect)(Array.isArray(files)).toBe(true);
+        });
+    });
 });
 //# sourceMappingURL=security-scanner.test.js.map

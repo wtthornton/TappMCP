@@ -171,8 +171,8 @@ describe('Smart Plan Enhanced Tool', () => {
         expect(integration).toHaveProperty('webSearchStatus');
         expect(integration).toHaveProperty('memoryStatus');
         expect(integration).toHaveProperty('integrationTime');
-        expect(integration.context7Status).toBe('enabled');
-        expect(integration.webSearchStatus).toBe('enabled');
+        expect(integration.context7Status).toBe('active');
+        expect(integration.webSearchStatus).toBe('active');
         expect(integration.memoryStatus).toBe('disabled');
       }
     });
@@ -372,7 +372,7 @@ describe('Smart Plan Enhanced Tool', () => {
       const result = await handleSmartPlan(input);
       const duration = Date.now() - startTime;
 
-      expect(duration).toBeLessThan(1000); // Even complex requests under 1 second
+      expect(duration).toBeLessThan(5000); // Complex requests with MCP integration under 5 seconds
 
       if ('success' in result && typeof result.success === 'boolean') {
         expect(result.success).toBe(true);

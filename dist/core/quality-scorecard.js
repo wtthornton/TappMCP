@@ -74,7 +74,7 @@ class QualityScorecardGenerator {
             quality: {
                 score: Math.round((coverageScore.score + complexityScore.score) / 2),
                 grade: this.calculateGrade(Math.round((coverageScore.score + complexityScore.score) / 2)),
-                status: coverageMetrics.line >= 85 && staticResult.metrics.complexity <= 10 ? 'pass' : 'warning',
+                status: coverageMetrics.line >= 85 && staticResult.metrics.complexity <= 10 ? 'pass' : 'fail',
             },
             production: {
                 securityScan: securityResult.summary.critical === 0 && securityResult.summary.high === 0,
@@ -170,12 +170,12 @@ class QualityScorecardGenerator {
         if (securityResult.summary.critical > 0 || staticResult.summary.error > 0) {
             return 'fail';
         }
-        // Warning if high severity issues or low coverage
+        // Fail if high severity issues or low coverage (changed from warning to fail)
         if (securityResult.summary.high > 0 ||
             staticResult.summary.warning > 5 ||
             coverage.line < 85 ||
             performance.responseTime > 300) {
-            return 'warning';
+            return 'fail';
         }
         return 'pass';
     }

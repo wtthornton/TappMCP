@@ -58,19 +58,29 @@ export type UserStory = z.infer<typeof UserStorySchema>;
 
 export class BusinessAnalyzer {
   /**
-   * Analyze business requirements from a business request
+   * Analyze business requirements from a business request with optional external knowledge
    */
-  analyzeRequirements(request: string): BusinessRequirements {
+  analyzeRequirements(
+    request: string,
+    externalKnowledge?: Array<{
+      id: string;
+      source: string;
+      type: string;
+      title: string;
+      content: string;
+      relevanceScore: number;
+    }>
+  ): BusinessRequirements {
     const startTime = Date.now();
 
-    // Extract primary goals using keyword analysis
-    const primaryGoals = this.extractGoals(request);
+    // Extract primary goals using keyword analysis and external knowledge
+    const primaryGoals = this.extractGoals(request, externalKnowledge);
 
-    // Identify target users from the request
-    const targetUsers = this.extractTargetUsers(request);
+    // Identify target users from the request and external trends
+    const targetUsers = this.extractTargetUsers(request, externalKnowledge);
 
-    // Define success criteria based on goals
-    const successCriteria = this.generateSuccessCriteria(primaryGoals);
+    // Define success criteria based on goals and external best practices
+    const successCriteria = this.generateSuccessCriteria(primaryGoals, externalKnowledge);
 
     // Identify constraints from the request
     const constraints = this.extractConstraints(request);
@@ -160,13 +170,32 @@ export class BusinessAnalyzer {
   }
 
   /**
-   * Assess project complexity
+   * Assess project complexity with optional external knowledge
    */
-  assessComplexity(request: string): ComplexityAssessment {
+  assessComplexity(
+    request: string,
+    externalKnowledge?: Array<{
+      id: string;
+      source: string;
+      type: string;
+      title: string;
+      content: string;
+      relevanceScore: number;
+    }>
+  ): ComplexityAssessment {
     const factors: string[] = [];
     let technicalScore = 0;
     let businessScore = 0;
     let integrationScore = 0;
+    
+    // Consider external knowledge for complexity assessment
+    if (externalKnowledge && externalKnowledge.length > 0) {
+      const hasPatterns = externalKnowledge.some(k => k.type === 'pattern');
+      if (hasPatterns) {
+        factors.push('External patterns available');
+        technicalScore += 1; // Slightly increase complexity when patterns are available
+      }
+    }
 
     // Technical complexity indicators
     const technicalPatterns = [
@@ -227,10 +256,39 @@ export class BusinessAnalyzer {
   }
 
   /**
-   * Identify risks from business request
+   * Identify risks from business request with optional external knowledge
    */
-  identifyRisks(request: string): Risk[] {
+  identifyRisks(
+    request: string,
+    externalKnowledge?: Array<{
+      id: string;
+      source: string;
+      type: string;
+      title: string;
+      content: string;
+      relevanceScore: number;
+    }>
+  ): Risk[] {
     const risks: Risk[] = [];
+    
+    // Add risks from external knowledge (lessons learned from failures)
+    if (externalKnowledge && externalKnowledge.length > 0) {
+      const failureLessons = externalKnowledge.filter(k => 
+        k.type === 'lesson' && k.content.includes('failure')
+      );
+      failureLessons.forEach(lesson => {
+        risks.push({
+          id: `external-${lesson.id}`,
+          name: 'External Lesson Risk',
+          description: `Risk identified from external knowledge: ${lesson.title}`,
+          category: 'business' as const,  // Use valid category
+          probability: 'medium' as const,
+          impact: 'medium' as const,
+          severity: 'medium' as const,    // Add required severity field
+          mitigation: ['Apply lessons learned from external knowledge'], // Array format
+        });
+      });
+    }
 
     // Define risk patterns
     const riskPatterns = [
@@ -357,10 +415,29 @@ export class BusinessAnalyzer {
   }
 
   /**
-   * Generate user stories from business requirements
+   * Generate user stories from business requirements with optional external knowledge
    */
-  generateUserStories(requirements: BusinessRequirements): UserStory[] {
+  generateUserStories(
+    requirements: BusinessRequirements,
+    externalKnowledge?: Array<{
+      id: string;
+      source: string;
+      type: string;
+      title: string;
+      content: string;
+      relevanceScore: number;
+    }>
+  ): UserStory[] {
     const stories: UserStory[] = [];
+    
+    // Enhance user stories with external knowledge (examples and best practices)
+    let externalExamples: string[] = [];
+    if (externalKnowledge && externalKnowledge.length > 0) {
+      externalExamples = externalKnowledge
+        .filter(k => k.type === 'example' || k.type === 'best-practice')
+        .map(k => k.title)
+        .slice(0, 3);
+    }
 
     // Generate stories from primary goals
     requirements.primaryGoals.forEach((goal, index) => {
@@ -375,6 +452,7 @@ export class BusinessAnalyzer {
           `System implements ${goal}`,
           'Solution meets performance requirements',
           'User experience is intuitive',
+          ...(externalExamples.length > 0 ? [`Consider external examples: ${externalExamples[0]}`] : []),
         ],
         priority: index === 0 ? 'high' : 'medium',
         estimatedEffort: this.estimateStoryEffort(goal),
@@ -404,8 +482,20 @@ export class BusinessAnalyzer {
   }
 
   // Private helper methods
-  private extractGoals(request: string): string[] {
+  private extractGoals(
+    request: string,
+    externalKnowledge?: Array<{ content: string; type: string }>
+  ): string[] {
     const goals: string[] = [];
+    
+    // Add goals from external knowledge if available
+    if (externalKnowledge && externalKnowledge.length > 0) {
+      const trendGoals = externalKnowledge
+        .filter(k => k.type === 'trend')
+        .map(k => `Leverage trend: ${k.content.split(' ')[0]}`)
+        .slice(0, 1);
+      goals.push(...trendGoals);
+    }
 
     // Primary goal extraction patterns
     const goalPatterns = [
@@ -452,8 +542,21 @@ export class BusinessAnalyzer {
     return uniqueGoals.slice(0, 5); // Limit to 5 goals
   }
 
-  private extractTargetUsers(request: string): string[] {
+  private extractTargetUsers(
+    request: string,
+    externalKnowledge?: Array<{ content: string; type: string }>
+  ): string[] {
     const users: string[] = [];
+    
+    // Add users from external knowledge if available
+    if (externalKnowledge && externalKnowledge.length > 0) {
+      const trendUsers = externalKnowledge
+        .filter(k => k.type === 'trend' && k.content.includes('user'))
+        .map(() => 'trend-aware users')
+        .slice(0, 1);
+      users.push(...trendUsers);
+    }
+    
     const userPatterns = [
       /(?:users?|customers?|clients?|stakeholders?)\s+(?:are|include|such as)?\s*([^.!?]+)/gi,
       /(?:for|targeting|serving)\s+([^.!?]*(?:users?|customers?|clients?)[^.!?]*)/gi,
@@ -477,8 +580,22 @@ export class BusinessAnalyzer {
     return users.slice(0, 3);
   }
 
-  private generateSuccessCriteria(goals: string[]): string[] {
-    return goals.map(goal => `Successfully ${goal.toLowerCase()}`);
+  private generateSuccessCriteria(
+    goals: string[],
+    externalKnowledge?: Array<{ content: string; type: string }>
+  ): string[] {
+    const criteria = goals.map(goal => `Successfully ${goal.toLowerCase()}`);
+    
+    // Add criteria from external best practices
+    if (externalKnowledge && externalKnowledge.length > 0) {
+      const bestPracticeCriteria = externalKnowledge
+        .filter(k => k.type === 'best-practice')
+        .map(k => `Apply best practice: ${k.content.split(' ').slice(0, 5).join(' ')}...`)
+        .slice(0, 1);
+      criteria.push(...bestPracticeCriteria);
+    }
+    
+    return criteria;
   }
 
   private extractConstraints(request: string): string[] {

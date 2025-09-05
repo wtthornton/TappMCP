@@ -34,6 +34,34 @@ export declare class SecurityScanner {
      */
     private runNpmAudit;
     /**
+     * Run OSV-Scanner for comprehensive vulnerability detection
+     */
+    private runOSVScanner;
+    /**
+     * Execute OSV scanner command
+     */
+    private executeOSVScan;
+    /**
+     * Parse OSV scanner results
+     */
+    private parseOSVResults;
+    /**
+     * Process individual OSV result
+     */
+    private processOSVResult;
+    /**
+     * Process OSV package vulnerabilities
+     */
+    private processOSVPackage;
+    /**
+     * Create vulnerability from OSV data
+     */
+    private createOSVVulnerability;
+    /**
+     * Extract fix information from OSV vulnerability
+     */
+    private extractOSVFix;
+    /**
      * Run retire.js scan for known vulnerable libraries
      */
     private runRetireScan;
@@ -50,6 +78,14 @@ export declare class SecurityScanner {
      */
     private checkFileContent;
     /**
+     * Process vulnerabilities data to extract vulnerability information
+     */
+    private processVulnerabilities;
+    /**
+     * Process vulnerability 'via' array to extract CVE information
+     */
+    private processVulnerabilityVia;
+    /**
      * Map npm audit severity to our severity levels
      */
     private mapNpmSeverity;
@@ -57,6 +93,10 @@ export declare class SecurityScanner {
      * Map retire.js severity to our severity levels
      */
     private mapRetireSeverity;
+    /**
+     * Map OSV-Scanner severity score to our severity levels
+     */
+    private mapOSVSeverity;
     /**
      * Calculate vulnerability summary
      */

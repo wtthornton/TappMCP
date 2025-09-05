@@ -175,63 +175,90 @@ export interface SmartPlanResponse {
 
 export interface SmartOrchestrateResponse {
   success: boolean;
-  data?: {
-    projectId: string;
-    workflowType: string;
-    orchestration: {
-      workflow: {
-        phases: Array<{
-          name: string;
-          duration: number;
-          qualityChecks: string[];
-          dependencies: string[];
-        }>;
-        integrations: Array<{
-          name: string;
-          type: string;
-          priority: number;
-          phase: string;
-          configuration: Record<string, unknown>;
-        }>;
-        qualityGates: Array<{
-          name: string;
-          description: string;
-          phase: string;
-          threshold: number;
-          current: number;
-          status: string;
-        }>;
-      };
-      automation: {
-        triggers: Array<{
-          event: string;
-          phase: string;
-          action: string;
-        }>;
-        workflows: string[];
-        monitoring: {
-          metrics: string[];
-          alerts: string[];
-        };
-      };
-      businessValue: {
-        estimatedROI: number;
-        timeToMarket: number;
-        costPrevention: number;
-        qualityImprovement: number;
-        userSatisfaction: number;
-      };
+  orchestrationId?: string;
+  workflow?: {
+    workflowId: string;
+    success: boolean;
+    phases: Array<{
+      phase: string;
+      role: string;
+      success: boolean;
+      deliverables: string[];
+      qualityMetrics: Record<string, number>;
+      duration: number;
+      issues?: string[];
+    }>;
+    businessValue: {
+      costPrevention: number;
+      timeToMarket: number;
+      qualityImprovement: number;
+      riskMitigation: number;
+      strategicAlignment: number;
+      businessScore: number;
     };
-    successMetrics: string[];
-    nextSteps: string[];
+    roleTransitions: Array<{
+      fromRole: string;
+      toRole: string;
+      timestamp: string;
+      transitionId: string;
+    }>;
     technicalMetrics: {
-      responseTime: number;
-      orchestrationTime: number;
-      phasesOrchestrated: number;
-      integrationsConfigured: number;
-      qualityGatesConfigured: number;
+      totalExecutionTime: number;
+      roleTransitionTime: number;
+      contextPreservationAccuracy: number;
+      phaseSuccessRate: number;
+      businessAlignmentScore: number;
+      performanceScore: number;
     };
+    errors?: string[];
   };
+  businessContext?: {
+    projectId: string;
+    businessGoals: string[];
+    requirements: string[];
+    stakeholders: string[];
+    constraints: Record<string, unknown>;
+    success: {
+      metrics: string[];
+      criteria: string[];
+    };
+    timestamp: string;
+    version: number;
+  };
+  businessValue?: {
+    costPrevention: number;
+    timesSaved: number;
+    qualityImprovement: number;
+    riskMitigation: number;
+    strategicAlignment: number;
+    userSatisfaction: number;
+  };
+  technicalMetrics?: {
+    responseTime: number;
+    orchestrationTime: number;
+    roleTransitionTime: number;
+    contextPreservationAccuracy: number;
+    businessAlignmentScore: number;
+  };
+  nextSteps?: Array<{
+    step: string;
+    role: string;
+    estimatedTime: string;
+    priority: 'high' | 'medium' | 'low';
+  }>;
+  externalIntegration?: {
+    context7Status: string;
+    webSearchStatus: string;
+    memoryStatus: string;
+    integrationTime: number;
+  };
+  externalKnowledge?: Array<{
+    source: string;
+    type: string;
+    relevance: number;
+    summary: string;
+  }>;
+  data?: any; // For backward compatibility
   error?: string;
   timestamp: string;
 }

@@ -24,6 +24,9 @@ class SecurityScanner {
             hasErrors = true;
         }
         vulnerabilities.push(...npmAuditResult);
+        // Run OSV-Scanner for additional vulnerability detection
+        const osvResult = await this.runOSVScanner();
+        vulnerabilities.push(...osvResult);
         // Run retire.js for known vulnerable libraries
         const retireResult = await this.runRetireScan();
         if (retireResult.length === 0 && this.hasRetireError) {
@@ -57,24 +60,7 @@ class SecurityScanner {
             const auditData = JSON.parse(auditOutput);
             const vulnerabilities = [];
             if (auditData.vulnerabilities) {
-                for (const [packageName, vuln] of Object.entries(auditData.vulnerabilities)) {
-                    const vulnData = vuln;
-                    if (vulnData.via && Array.isArray(vulnData.via)) {
-                        for (const via of vulnData.via) {
-                            if (typeof via === 'object' && via.cve) {
-                                vulnerabilities.push({
-                                    id: via.cve,
-                                    severity: this.mapNpmSeverity(vulnData.severity),
-                                    package: packageName,
-                                    version: vulnData.range ?? 'unknown',
-                                    description: vulnData.title ?? 'No description available',
-                                    cve: via.cve,
-                                    fix: vulnData.fixAvailable ? 'Update available' : 'No fix available',
-                                });
-                            }
-                        }
-                    }
-                }
+                this.processVulnerabilities(auditData.vulnerabilities, vulnerabilities);
             }
             return vulnerabilities;
         }
@@ -83,6 +69,105 @@ class SecurityScanner {
             this.hasNpmAuditError = true;
             return [];
         }
+    }
+    /**
+     * Run OSV-Scanner for comprehensive vulnerability detection
+     */
+    async runOSVScanner() {
+        try {
+            const osvOutput = await this.executeOSVScan();
+            if (!osvOutput)
+                return [];
+            const osvData = JSON.parse(osvOutput);
+            return this.parseOSVResults(osvData);
+        }
+        catch (_error) {
+            // OSV scan failed - return empty result
+            return [];
+        }
+    }
+    /**
+     * Execute OSV scanner command
+     */
+    async executeOSVScan() {
+        try {
+            return (0, child_process_1.execSync)('osv-scanner --json .', {
+                cwd: this.projectPath,
+                encoding: 'utf8',
+                stdio: 'pipe',
+                timeout: 30000, // 30 second timeout
+            });
+        }
+        catch (_error) {
+            // OSV-Scanner not available or scan failed - return empty results
+            // eslint-disable-next-line no-console
+            console.warn('OSV-Scanner not available or scan failed, skipping OSV scan');
+            return null;
+        }
+    }
+    /**
+     * Parse OSV scanner results
+     */
+    parseOSVResults(osvData) {
+        const vulnerabilities = [];
+        if (osvData.results && Array.isArray(osvData.results)) {
+            for (const result of osvData.results) {
+                this.processOSVResult(result, vulnerabilities);
+            }
+        }
+        return vulnerabilities;
+    }
+    /**
+     * Process individual OSV result
+     */
+    processOSVResult(result, vulnerabilities) {
+        if (result.packages && Array.isArray(result.packages)) {
+            for (const pkg of result.packages) {
+                this.processOSVPackage(pkg, vulnerabilities);
+            }
+        }
+    }
+    /**
+     * Process OSV package vulnerabilities
+     */
+    processOSVPackage(pkg, vulnerabilities) {
+        if (pkg.vulnerabilities && Array.isArray(pkg.vulnerabilities)) {
+            for (const vuln of pkg.vulnerabilities) {
+                vulnerabilities.push(this.createOSVVulnerability(pkg, vuln));
+            }
+        }
+    }
+    /**
+     * Create vulnerability from OSV data
+     */
+    createOSVVulnerability(pkg, vuln) {
+        const fixInfo = this.extractOSVFix(vuln);
+        const dbSpecific = vuln.database_specific;
+        const pkgInfo = pkg.package;
+        const aliases = vuln.aliases;
+        const cveAlias = aliases?.find((alias) => alias.startsWith('CVE-'));
+        const vulnerability = {
+            id: vuln.id ?? 'unknown-osv',
+            severity: this.mapOSVSeverity(dbSpecific?.severity_score ?? 5.0),
+            package: pkgInfo?.name ?? pkg.name ?? 'unknown',
+            version: pkgInfo?.version ?? pkg.version ?? 'unknown',
+            description: vuln.summary ?? vuln.details ?? 'No description available',
+            fix: fixInfo,
+        };
+        if (cveAlias) {
+            vulnerability.cve = cveAlias;
+        }
+        return vulnerability;
+    }
+    /**
+     * Extract fix information from OSV vulnerability
+     */
+    extractOSVFix(vuln) {
+        const affected = vuln.affected;
+        const ranges = affected?.[0]?.ranges;
+        const events = ranges?.[0]?.events;
+        const fixedVersion = events?.find((e) => e.fixed)?.fixed;
+        return fixedVersion ? `Upgrade to version ${fixedVersion} or later` : 'No fix available';
     }
     /**
      * Run retire.js scan for known vulnerable libraries
@@ -231,6 +316,35 @@ class SecurityScanner {
         return vulnerabilities;
     }
     /**
+     * Process vulnerabilities data to extract vulnerability information
+     */
+    processVulnerabilities(vulnerabilityData, vulnerabilities) {
+        for (const [packageName, vuln] of Object.entries(vulnerabilityData)) {
+            const vulnData = vuln;
+            if (vulnData.via && Array.isArray(vulnData.via)) {
+                this.processVulnerabilityVia(packageName, vulnData, vulnerabilities);
+            }
+        }
+    }
+    /**
+     * Process vulnerability 'via' array to extract CVE information
+     */
+    processVulnerabilityVia(packageName, vulnData, vulnerabilities) {
+        for (const via of vulnData.via) {
+            if (typeof via === 'object' && via.cve) {
+                vulnerabilities.push({
+                    id: via.cve,
+                    severity: this.mapNpmSeverity(vulnData.severity),
+                    package: packageName,
+                    version: vulnData.range ?? 'unknown',
+                    description: vulnData.title ?? 'No description available',
+                    cve: via.cve,
+                    fix: vulnData.fixAvailable ? 'Update available' : 'No fix available',
+                });
+            }
+        }
+    }
+    /**
      * Map npm audit severity to our severity levels
      */
     mapNpmSeverity(severity) {
@@ -262,6 +376,18 @@ class SecurityScanner {
             default:
                 return 'moderate';
         }
+    }
+    /**
+     * Map OSV-Scanner severity score to our severity levels
+     */
+    mapOSVSeverity(score) {
+        if (score >= 9.0)
+            return 'critical';
+        if (score >= 7.0)
+            return 'high';
+        if (score >= 4.0)
+            return 'moderate';
+        return 'low';
     }
     /**
      * Calculate vulnerability summary

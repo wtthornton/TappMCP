@@ -50,6 +50,10 @@ export class SecurityScanner {
     }
     vulnerabilities.push(...npmAuditResult);
 
+    // Run OSV-Scanner for additional vulnerability detection
+    const osvResult = await this.runOSVScanner();
+    vulnerabilities.push(...osvResult);
+
     // Run retire.js for known vulnerable libraries
     const retireResult = await this.runRetireScan();
     if (retireResult.length === 0 && this.hasRetireError) {
@@ -98,6 +102,123 @@ export class SecurityScanner {
       this.hasNpmAuditError = true;
       return [];
     }
+  }
+
+  /**
+   * Run OSV-Scanner for comprehensive vulnerability detection
+   */
+  private async runOSVScanner(): Promise<Vulnerability[]> {
+    try {
+      const osvOutput = await this.executeOSVScan();
+      if (!osvOutput) return [];
+
+      const osvData = JSON.parse(osvOutput);
+      return this.parseOSVResults(osvData);
+    } catch (_error) {
+      // OSV scan failed - return empty result
+      return [];
+    }
+  }
+
+  /**
+   * Execute OSV scanner command
+   */
+  private async executeOSVScan(): Promise<string | null> {
+    try {
+      return execSync('osv-scanner --json .', {
+        cwd: this.projectPath,
+        encoding: 'utf8',
+        stdio: 'pipe',
+        timeout: 30000, // 30 second timeout
+      });
+    } catch (_error) {
+      // OSV-Scanner not available or scan failed - return empty results
+      // eslint-disable-next-line no-console
+      console.warn('OSV-Scanner not available or scan failed, skipping OSV scan');
+      return null;
+    }
+  }
+
+  /**
+   * Parse OSV scanner results
+   */
+  private parseOSVResults(osvData: Record<string, unknown>): Vulnerability[] {
+    const vulnerabilities: Vulnerability[] = [];
+
+    if (osvData.results && Array.isArray(osvData.results)) {
+      for (const result of osvData.results) {
+        this.processOSVResult(result, vulnerabilities);
+      }
+    }
+
+    return vulnerabilities;
+  }
+
+  /**
+   * Process individual OSV result
+   */
+  private processOSVResult(
+    result: Record<string, unknown>,
+    vulnerabilities: Vulnerability[]
+  ): void {
+    if (result.packages && Array.isArray(result.packages)) {
+      for (const pkg of result.packages) {
+        this.processOSVPackage(pkg, vulnerabilities);
+      }
+    }
+  }
+
+  /**
+   * Process OSV package vulnerabilities
+   */
+  private processOSVPackage(pkg: Record<string, unknown>, vulnerabilities: Vulnerability[]): void {
+    if (pkg.vulnerabilities && Array.isArray(pkg.vulnerabilities)) {
+      for (const vuln of pkg.vulnerabilities) {
+        vulnerabilities.push(this.createOSVVulnerability(pkg, vuln));
+      }
+    }
+  }
+
+  /**
+   * Create vulnerability from OSV data
+   */
+  private createOSVVulnerability(
+    pkg: Record<string, unknown>,
+    vuln: Record<string, unknown>
+  ): Vulnerability {
+    const fixInfo = this.extractOSVFix(vuln);
+    const dbSpecific = vuln.database_specific as Record<string, unknown> | undefined;
+    const pkgInfo = pkg.package as Record<string, unknown> | undefined;
+    const aliases = vuln.aliases as string[] | undefined;
+
+    const cveAlias = aliases?.find((alias: string) => alias.startsWith('CVE-'));
+    const vulnerability: Vulnerability = {
+      id: (vuln.id as string) ?? 'unknown-osv',
+      severity: this.mapOSVSeverity((dbSpecific?.severity_score as number) ?? 5.0),
+      package: (pkgInfo?.name as string) ?? (pkg.name as string) ?? 'unknown',
+      version: (pkgInfo?.version as string) ?? (pkg.version as string) ?? 'unknown',
+      description:
+        (vuln.summary as string) ?? (vuln.details as string) ?? 'No description available',
+      fix: fixInfo,
+    };
+
+    if (cveAlias) {
+      vulnerability.cve = cveAlias;
+    }
+
+    return vulnerability;
+  }
+
+  /**
+   * Extract fix information from OSV vulnerability
+   */
+  private extractOSVFix(vuln: Record<string, unknown>): string {
+    const affected = vuln.affected as Record<string, unknown>[] | undefined;
+    const ranges = affected?.[0]?.ranges as Record<string, unknown>[] | undefined;
+    const events = ranges?.[0]?.events as { fixed?: string }[] | undefined;
+    const fixedVersion = events?.find((e: { fixed?: string }) => e.fixed)?.fixed;
+
+    return fixedVersion ? `Upgrade to version ${fixedVersion} or later` : 'No fix available';
   }
 
   /**
@@ -332,6 +453,16 @@ export class SecurityScanner {
       default:
         return 'moderate';
     }
+  }
+
+  /**
+   * Map OSV-Scanner severity score to our severity levels
+   */
+  private mapOSVSeverity(score: number): 'critical' | 'high' | 'moderate' | 'low' {
+    if (score >= 9.0) return 'critical';
+    if (score >= 7.0) return 'high';
+    if (score >= 4.0) return 'moderate';
+    return 'low';
   }
 
   /**

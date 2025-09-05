@@ -20,6 +20,9 @@ class StaticAnalyzer {
             // Run ESLint for code quality and style issues
             const eslintResult = await this.runESLint();
             issues.push(...eslintResult);
+            // Run Semgrep for security and OWASP best practices
+            const semgrepResult = await this.runSemgrep();
+            issues.push(...semgrepResult);
             // Run TypeScript compiler for type checking
             const tscResult = await this.runTypeScriptCheck();
             issues.push(...tscResult);
@@ -80,6 +83,50 @@ class StaticAnalyzer {
         catch (error) {
             // ESLint analysis failed - re-throw to trigger error handling
             throw error;
+        }
+    }
+    /**
+     * Run Semgrep analysis for security and OWASP best practices
+     */
+    async runSemgrep() {
+        try {
+            // Check if semgrep is available - if not, skip gracefully
+            let semgrepOutput;
+            try {
+                semgrepOutput = (0, child_process_1.execSync)('semgrep --config=auto --json src/', {
+                    cwd: this.projectPath,
+                    encoding: 'utf8',
+                    stdio: 'pipe',
+                    timeout: 45000, // 45 second timeout
+                });
+            }
+            catch (_error) {
+                // Semgrep not available or scan failed - return empty results
+                // eslint-disable-next-line no-console
+                console.warn('Semgrep not available or scan failed, skipping Semgrep analysis');
+                return [];
+            }
+            const semgrepData = JSON.parse(semgrepOutput);
+            const issues = [];
+            if (semgrepData.results && Array.isArray(semgrepData.results)) {
+                for (const result of semgrepData.results) {
+                    issues.push({
+                        id: `semgrep-${result.check_id}`,
+                        severity: this.mapSemgrepSeverity(result.extra?.severity ?? 'INFO'),
+                        file: result.path ?? 'unknown',
+                        line: result.start?.line ?? 1,
+                        column: result.start?.col ?? 1,
+                        message: result.extra?.message ?? result.message ?? 'No message available',
+                        rule: result.check_id ?? 'unknown',
+                        fix: result.extra?.fix ?? 'Follow OWASP security guidelines',
+                    });
+                }
+            }
+            return issues;
+        }
+        catch (_error) {
+            // Semgrep scan failed - return empty result
+            return [];
         }
     }
     /**
@@ -331,30 +378,65 @@ class StaticAnalyzer {
             if (!trimmedLine || trimmedLine.startsWith('//') || trimmedLine.startsWith('*')) {
                 continue;
             }
-            // Count control flow statements
-            if (trimmedLine.includes('if ') || trimmedLine.includes('if('))
-                complexity++;
-            if (trimmedLine.includes('else '))
-                complexity++;
-            if (trimmedLine.includes('while ') || trimmedLine.includes('while('))
-                complexity++;
-            if (trimmedLine.includes('for ') || trimmedLine.includes('for('))
-                complexity++;
-            if (trimmedLine.includes('switch ') || trimmedLine.includes('switch('))
-                complexity++;
-            if (trimmedLine.includes('case '))
-                complexity++;
-            if (trimmedLine.includes('catch '))
-                complexity++;
-            // Count logical operators (but not in string literals)
-            if (trimmedLine.includes('&&') && !trimmedLine.includes('"') && !trimmedLine.includes("'"))
-                complexity++;
-            if (trimmedLine.includes('||') && !trimmedLine.includes('"') && !trimmedLine.includes("'"))
-                complexity++;
-            if (trimmedLine.includes('?') && !trimmedLine.includes('"') && !trimmedLine.includes("'"))
-                complexity++;
+            complexity += this.countControlFlowStatements(trimmedLine);
+            complexity += this.countLogicalOperators(trimmedLine);
         }
         return complexity;
+    }
+    /**
+     * Map Semgrep severity to our severity levels
+     */
+    mapSemgrepSeverity(severity) {
+        switch (severity?.toUpperCase()) {
+            case 'ERROR':
+            case 'HIGH':
+                return 'error';
+            case 'WARNING':
+            case 'MEDIUM':
+                return 'warning';
+            case 'INFO':
+            case 'LOW':
+                return 'info';
+            default:
+                return 'info';
+        }
+    }
+    /**
+     * Count control flow statements in a line
+     */
+    countControlFlowStatements(line) {
+        let count = 0;
+        const controlFlowPatterns = [
+            ['if ', 'if('],
+            ['else '],
+            ['while ', 'while('],
+            ['for ', 'for('],
+            ['switch ', 'switch('],
+            ['case '],
+            ['catch '],
+        ];
+        for (const patterns of controlFlowPatterns) {
+            if (patterns.some(pattern => line.includes(pattern))) {
+                count++;
+            }
+        }
+        return count;
+    }
+    /**
+     * Count logical operators in a line (excluding string literals)
+     */
+    countLogicalOperators(line) {
+        if (line.includes('"') || line.includes("'")) {
+            return 0; // Skip lines with string literals
+        }
+        let count = 0;
+        const operators = ['&&', '||', '?'];
+        for (const operator of operators) {
+            if (line.includes(operator)) {
+                count++;
+            }
+        }
+        return count;
     }
     /**
      * Detect duplicate lines

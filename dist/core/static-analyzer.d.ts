@@ -37,6 +37,10 @@ export declare class StaticAnalyzer {
      */
     private runESLint;
     /**
+     * Run Semgrep analysis for security and OWASP best practices
+     */
+    private runSemgrep;
+    /**
      * Run TypeScript compiler check
      */
     private runTypeScriptCheck;
@@ -64,6 +68,18 @@ export declare class StaticAnalyzer {
      * Calculate file complexity
      */
     private calculateFileComplexity;
+    /**
+     * Map Semgrep severity to our severity levels
+     */
+    private mapSemgrepSeverity;
+    /**
+     * Count control flow statements in a line
+     */
+    private countControlFlowStatements;
+    /**
+     * Count logical operators in a line (excluding string literals)
+     */
+    private countLogicalOperators;
     /**
      * Detect duplicate lines
      */

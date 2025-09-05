@@ -13,6 +13,7 @@ const smart_begin_js_1 = require("./tools/smart_begin.js");
 const smart_plan_js_1 = require("./tools/smart_plan.js");
 const smart_write_js_1 = require("./tools/smart_write.js");
 const smart_finish_js_1 = require("./tools/smart_finish.js");
+const smart_orchestrate_js_1 = require("./tools/smart_orchestrate.js");
 // Server configuration
 const SERVER_NAME = 'smart-mcp';
 const SERVER_VERSION = '0.1.0';
@@ -22,6 +23,7 @@ const TOOLS = {
     smart_plan: { tool: smart_plan_js_1.smartPlanTool, handler: smart_plan_js_1.handleSmartPlan },
     smart_write: { tool: smart_write_js_1.smartWriteTool, handler: smart_write_js_1.handleSmartWrite },
     smart_finish: { tool: smart_finish_js_1.smartFinishTool, handler: smart_finish_js_1.handleSmartFinish },
+    smart_orchestrate: { tool: smart_orchestrate_js_1.smartOrchestrateTool, handler: smart_orchestrate_js_1.handleSmartOrchestrate },
 };
 // Input validation schema
 const ToolInputSchema = zod_1.z.object({

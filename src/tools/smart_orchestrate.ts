@@ -2,562 +2,517 @@
 
 import { z } from 'zod';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { OrchestrationEngine } from '../core/orchestration-engine.js';
+import { BusinessContextBroker } from '../core/business-context-broker.js';
+import { MCPCoordinator } from '../core/mcp-coordinator.js';
+import type { BusinessContext, BusinessValueMetrics } from '../core/business-context-broker.js';
+import type { 
+  Workflow, 
+  WorkflowPhase as EngineWorkflowPhase, 
+  WorkflowResult 
+} from '../core/orchestration-engine.js';
 
-// Type definitions
-interface Integration {
-  name: string;
-  type: string;
-  priority: number;
-  phase: string;
-  configuration: Record<string, unknown>;
-}
+// Type definitions for legacy compatibility (not used in Phase 2B)
 
-interface QualityGate {
-  name: string;
-  description: string;
-  phase: string;
-  threshold: number;
-  current: number;
-  status: 'pass' | 'fail' | 'warning';
-}
-
-interface WorkflowPhase {
-  name: string;
-  description: string;
-  order: number;
-  tools: string[];
-  dependencies: string[];
-  qualityChecks: string[];
-  deliverables: string[];
-}
-
-interface AutomationTrigger {
-  event: string;
-  condition: string;
-  action: string;
-  phase: string;
-}
-
-// Input schema for smart_orchestrate tool
+// Enhanced input schema for Phase 2B smart_orchestrate tool
 const SmartOrchestrateInputSchema = z.object({
-  projectId: z.string().min(1, 'Project ID is required'),
-  workflowType: z
-    .enum(['full-development', 'feature-development', 'bug-fix', 'maintenance', 'migration'])
-    .default('full-development'),
-  orchestrationScope: z
-    .object({
-      includePlanning: z.boolean().default(true),
-      includeDevelopment: z.boolean().default(true),
-      includeTesting: z.boolean().default(true),
-      includeDeployment: z.boolean().default(true),
-      includeMonitoring: z.boolean().default(true),
-    })
-    .optional(),
-  externalIntegrations: z
-    .array(
-      z.object({
-        name: z.string(),
-        type: z.enum(['mcp', 'api', 'database', 'service', 'tool']),
-        priority: z.enum(['high', 'medium', 'low']).default('medium'),
-        configuration: z.record(z.unknown()).optional(),
-      })
-    )
-    .optional()
-    .default([]),
-  qualityGates: z
-    .object({
-      testCoverage: z.number().min(0).max(100).default(85),
-      securityScore: z.number().min(0).max(100).default(90),
-      performanceScore: z.number().min(0).max(100).default(85),
-      maintainabilityScore: z.number().min(0).max(100).default(80),
-    })
-    .optional(),
-  businessRequirements: z
-    .object({
-      costPrevention: z.number().min(0).default(25000),
-      timeSaved: z.number().min(0).default(8),
-      userSatisfaction: z.number().min(0).max(100).default(95),
-      roiTarget: z.number().min(0).default(300),
-    })
-    .optional(),
-  monitoringConfig: z
-    .object({
-      enableMetrics: z.boolean().default(true),
-      enableAlerts: z.boolean().default(true),
-      enableLogging: z.boolean().default(true),
-      enableTracing: z.boolean().default(true),
-    })
-    .optional(),
+  request: z.string().min(10, 'Orchestration request must be at least 10 characters'),
+  options: z.object({
+    skipPhases: z.array(z.string()).optional().default([]),
+    focusAreas: z.array(z.string()).optional().default([]),
+    timeEstimate: z.number().optional(),
+    costPrevention: z.boolean().default(true),
+    qualityLevel: z.enum(['basic', 'standard', 'high']).default('standard'),
+    businessContext: z.object({
+      projectId: z.string().min(1, 'Project ID is required'),
+      businessGoals: z.array(z.string()).default([]),
+      requirements: z.array(z.string()).default([]),
+      stakeholders: z.array(z.string()).default([]),
+      constraints: z.record(z.unknown()).default({}),
+      marketContext: z.object({
+        industry: z.string().optional(),
+        targetMarket: z.string().optional(),
+        competitors: z.array(z.string()).optional().default([]),
+      }).optional(),
+      success: z.object({
+        metrics: z.array(z.string()).default([]),
+        criteria: z.array(z.string()).default([]),
+      }).default({ metrics: [], criteria: [] }),
+    }),
+  }),
+  workflow: z.enum(['sdlc', 'project', 'quality', 'custom']).default('sdlc'),
+  externalSources: z.object({
+    useContext7: z.boolean().default(true),
+    useWebSearch: z.boolean().default(true),
+    useMemory: z.boolean().default(true),
+  }).optional().default({ useContext7: true, useWebSearch: true, useMemory: true }),
 });
 
 // Tool definition
 export const smartOrchestrateTool: Tool = {
   name: 'smart_orchestrate',
   description:
-    'Orchestrate complete development workflow with intelligent automation and quality assurance',
+    'Phase 2B: Orchestrate complete SDLC workflows with automatic role switching, business context management, and comprehensive business value validation',
   inputSchema: {
     type: 'object',
     properties: {
-      projectId: {
+      request: {
         type: 'string',
-        description: 'Project ID from smart_begin tool for context preservation',
-        minLength: 1,
+        description: 'Complete business request for orchestration (e.g., "Build a user management system with authentication")',
+        minLength: 10,
       },
-      workflowType: {
-        type: 'string',
-        enum: ['full-development', 'feature-development', 'bug-fix', 'maintenance', 'migration'],
-        description: 'Type of workflow to orchestrate',
-        default: 'full-development',
-      },
-      orchestrationScope: {
+      options: {
         type: 'object',
         properties: {
-          includePlanning: { type: 'boolean', default: true },
-          includeDevelopment: { type: 'boolean', default: true },
-          includeTesting: { type: 'boolean', default: true },
-          includeDeployment: { type: 'boolean', default: true },
-          includeMonitoring: { type: 'boolean', default: true },
-        },
-        description: 'Scope of orchestration workflow',
-      },
-      externalIntegrations: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            name: { type: 'string' },
-            type: { type: 'string', enum: ['mcp', 'api', 'database', 'service', 'tool'] },
-            priority: { type: 'string', enum: ['high', 'medium', 'low'], default: 'medium' },
-            configuration: { type: 'object' },
+          skipPhases: {
+            type: 'array',
+            items: { type: 'string' },
+            description: 'Workflow phases to skip',
+            default: [],
           },
-          required: ['name', 'type'],
+          focusAreas: {
+            type: 'array',
+            items: { type: 'string' },
+            description: 'Areas to focus on during orchestration',
+            default: [],
+          },
+          timeEstimate: {
+            type: 'number',
+            description: 'Estimated time for completion in hours',
+          },
+          costPrevention: {
+            type: 'boolean',
+            description: 'Enable cost prevention calculation',
+            default: true,
+          },
+          qualityLevel: {
+            type: 'string',
+            enum: ['basic', 'standard', 'high'],
+            description: 'Quality level for orchestration',
+            default: 'standard',
+          },
+          businessContext: {
+            type: 'object',
+            properties: {
+              projectId: { type: 'string', minLength: 1 },
+              businessGoals: { type: 'array', items: { type: 'string' }, default: [] },
+              requirements: { type: 'array', items: { type: 'string' }, default: [] },
+              stakeholders: { type: 'array', items: { type: 'string' }, default: [] },
+              constraints: { type: 'object', default: {} },
+              marketContext: {
+                type: 'object',
+                properties: {
+                  industry: { type: 'string' },
+                  targetMarket: { type: 'string' },
+                  competitors: { type: 'array', items: { type: 'string' }, default: [] },
+                },
+              },
+              success: {
+                type: 'object',
+                properties: {
+                  metrics: { type: 'array', items: { type: 'string' }, default: [] },
+                  criteria: { type: 'array', items: { type: 'string' }, default: [] },
+                },
+                default: { metrics: [], criteria: [] },
+              },
+            },
+            required: ['projectId'],
+            description: 'Business context for orchestration',
+          },
         },
-        description: 'External integrations to orchestrate',
-        default: [],
+        required: ['businessContext'],
+        description: 'Orchestration options and business context',
       },
-      qualityGates: {
+      workflow: {
+        type: 'string',
+        enum: ['sdlc', 'project', 'quality', 'custom'],
+        description: 'Type of workflow to orchestrate',
+        default: 'sdlc',
+      },
+      externalSources: {
         type: 'object',
         properties: {
-          testCoverage: { type: 'number', minimum: 0, maximum: 100, default: 85 },
-          securityScore: { type: 'number', minimum: 0, maximum: 100, default: 90 },
-          performanceScore: { type: 'number', minimum: 0, maximum: 100, default: 85 },
-          maintainabilityScore: { type: 'number', minimum: 0, maximum: 100, default: 80 },
+          useContext7: { type: 'boolean', default: true },
+          useWebSearch: { type: 'boolean', default: true },
+          useMemory: { type: 'boolean', default: true },
         },
-        description: 'Quality gates for orchestration',
-      },
-      businessRequirements: {
-        type: 'object',
-        properties: {
-          costPrevention: { type: 'number', minimum: 0, default: 25000 },
-          timeSaved: { type: 'number', minimum: 0, default: 8 },
-          userSatisfaction: { type: 'number', minimum: 0, maximum: 100, default: 95 },
-          roiTarget: { type: 'number', minimum: 0, default: 300 },
-        },
-        description: 'Business requirements for orchestration',
-      },
-      monitoringConfig: {
-        type: 'object',
-        properties: {
-          enableMetrics: { type: 'boolean', default: true },
-          enableAlerts: { type: 'boolean', default: true },
-          enableLogging: { type: 'boolean', default: true },
-          enableTracing: { type: 'boolean', default: true },
-        },
-        description: 'Monitoring configuration',
+        description: 'External knowledge sources to integrate',
+        default: { useContext7: true, useWebSearch: true, useMemory: true },
       },
     },
-    required: ['projectId'],
+    required: ['request', 'options'],
   },
 };
 
-function generateWorkflowPhases(
+/**
+ * Generate enhanced workflow phases for Phase 2B with role integration
+ */
+function generateEnhancedWorkflowPhases(
   _workflowType: string,
-  orchestrationScope: {
-    includePlanning?: boolean;
-    includeDevelopment?: boolean;
-    includeTesting?: boolean;
-    includeDeployment?: boolean;
-    includeMonitoring?: boolean;
-  }
-): Array<{
-  name: string;
-  description: string;
-  order: number;
-  tools: string[];
-  dependencies: string[];
-  qualityChecks: string[];
-  deliverables: string[];
-}> {
-  const phases = [];
-  let order = 1;
+  request: string,
+  options: { skipPhases?: string[]; focusAreas?: string[]; qualityLevel?: string }
+): EngineWorkflowPhase[] {
+  const phases: EngineWorkflowPhase[] = [];
+  const skipPhases = options.skipPhases ?? [];
 
-  // Set default values if not provided
-  const scope = {
-    includePlanning: true,
-    includeDevelopment: true,
-    includeTesting: true,
-    includeDeployment: true,
-    includeMonitoring: true,
-    ...orchestrationScope,
-  };
-
-  if (scope.includePlanning) {
+  // Strategic Planning Phase
+  if (!skipPhases.includes('planning')) {
     phases.push({
-      name: 'Planning Phase',
-      description: 'Project planning and requirements gathering',
-      order: order++,
-      tools: ['smart_begin', 'smart_plan'],
+      name: 'Strategic Planning',
+      description: `Analyze business requirements and create strategic plan for: ${request}`,
+      role: 'product-strategist',
+      tools: ['smart_plan', 'smart_begin'],
+      tasks: [
+        {
+          id: 'task_planning_1',
+          name: 'Business Analysis',
+          description: 'Analyze business requirements and market context',
+          role: 'product-strategist',
+          phase: 'planning',
+          dependencies: [],
+          deliverables: ['business-analysis', 'requirements-doc'],
+          estimatedTime: 45,
+        }
+      ],
       dependencies: [],
-      qualityChecks: ['requirements-completeness', 'architecture-review'],
-      deliverables: ['project-plan', 'requirements-doc', 'architecture-doc'],
+      status: 'pending',
     });
   }
 
-  if (scope.includeDevelopment) {
+  // Development Phase
+  if (!skipPhases.includes('development')) {
     phases.push({
-      name: 'Development Phase',
-      description: 'Feature development and implementation',
-      order: order++,
-      tools: ['smart_write', 'smart_plan'],
-      dependencies: ['Planning Phase'],
-      qualityChecks: ['code-quality', 'test-coverage', 'security-scan'],
-      deliverables: ['source-code', 'unit-tests', 'integration-tests'],
+      name: 'Development',
+      description: 'Implement the solution with best practices and quality standards',
+      role: 'developer',
+      tools: ['smart_write', 'smart_begin'],
+      tasks: [
+        {
+          id: 'task_dev_1',
+          name: 'Implementation',
+          description: 'Develop the core functionality and features',
+          role: 'developer',
+          phase: 'development',
+          dependencies: ['task_planning_1'],
+          deliverables: ['source-code', 'unit-tests'],
+          estimatedTime: 90,
+        }
+      ],
+      dependencies: ['Strategic Planning'],
+      status: 'pending',
     });
   }
 
-  if (scope.includeTesting) {
+  // Quality Assurance Phase
+  if (!skipPhases.includes('testing') && options.qualityLevel !== 'basic') {
     phases.push({
-      name: 'Testing Phase',
-      description: 'Comprehensive testing and quality assurance',
-      order: order++,
+      name: 'Quality Assurance',
+      description: 'Comprehensive testing and quality validation',
+      role: 'qa-engineer',
       tools: ['smart_finish', 'smart_write'],
-      dependencies: ['Development Phase'],
-      qualityChecks: ['test-execution', 'performance-test', 'security-test'],
-      deliverables: ['test-results', 'quality-report', 'bug-reports'],
+      tasks: [
+        {
+          id: 'task_qa_1',
+          name: 'Quality Validation',
+          description: 'Execute comprehensive testing and quality checks',
+          role: 'qa-engineer',
+          phase: 'testing',
+          dependencies: ['task_dev_1'],
+          deliverables: ['test-results', 'quality-report'],
+          estimatedTime: 60,
+        }
+      ],
+      dependencies: ['Development'],
+      status: 'pending',
     });
   }
 
-  if (scope.includeDeployment) {
+  // Deployment & Operations Phase
+  if (!skipPhases.includes('deployment')) {
     phases.push({
-      name: 'Deployment Phase',
-      description: 'Production deployment and configuration',
-      order: order++,
-      tools: ['smart_finish', 'smart_plan'],
-      dependencies: ['Testing Phase'],
-      qualityChecks: ['deployment-readiness', 'environment-validation'],
-      deliverables: ['production-deployment', 'deployment-scripts', 'config-files'],
-    });
-  }
-
-  if (scope.includeMonitoring) {
-    phases.push({
-      name: 'Monitoring Phase',
-      description: 'Production monitoring and maintenance',
-      order: order++,
-      tools: ['smart_orchestrate'],
-      dependencies: ['Deployment Phase'],
-      qualityChecks: ['system-health', 'performance-metrics', 'error-rates'],
-      deliverables: ['monitoring-dashboard', 'alert-config', 'maintenance-plan'],
+      name: 'Deployment & Operations',
+      description: 'Deploy solution and set up monitoring',
+      role: 'operations-engineer',
+      tools: ['smart_finish', 'smart_orchestrate'],
+      tasks: [
+        {
+          id: 'task_ops_1',
+          name: 'Production Deployment',
+          description: 'Deploy to production and configure monitoring',
+          role: 'operations-engineer',
+          phase: 'deployment',
+          dependencies: ['task_qa_1'],
+          deliverables: ['deployment-config', 'monitoring-setup'],
+          estimatedTime: 45,
+        }
+      ],
+      dependencies: ['Quality Assurance'],
+      status: 'pending',
     });
   }
 
   return phases;
 }
 
-function generateIntegrations(externalIntegrations: unknown[]): Integration[] {
-  const integrations: Integration[] = [];
-
-  (
-    externalIntegrations as Array<{
-      name: string;
-      type: string;
-      priority: number;
-      configuration?: Record<string, unknown>;
-    }>
-  ).forEach((integration, index) => {
-    const phase = `Phase ${(index % 5) + 1}`;
-
-    integrations.push({
-      name: integration.name,
-      type: integration.type,
-      priority: integration.priority,
-      phase,
-      configuration: integration.configuration ?? {},
-    });
-  });
-
-  return integrations;
-}
-
-function generateQualityGatesList(
-  qualityGates: { testCoverage?: number; securityScore?: number; performanceScore?: number },
-  phases: WorkflowPhase[]
-): QualityGate[] {
-  const gates: QualityGate[] = [];
-
-  phases.forEach((phase: WorkflowPhase) => {
-    // Check for test coverage related quality checks
-    if (
-      phase.qualityChecks.some(
-        check =>
-          check.includes('test-coverage') ||
-          check.includes('test-execution') ||
-          check.includes('code-quality')
-      )
-    ) {
-      gates.push({
-        name: 'Test Coverage',
-        description: 'Code test coverage requirement',
-        phase: phase.name,
-        threshold: qualityGates?.testCoverage ?? 85,
-        current: Math.min(95, 80 + Math.random() * 15),
-        status: 'pass',
-      });
-    }
-
-    // Check for security related quality checks
-    if (
-      phase.qualityChecks.some(
-        check =>
-          check.includes('security-scan') ||
-          check.includes('security-test') ||
-          check.includes('security')
-      )
-    ) {
-      gates.push({
-        name: 'Security Score',
-        description: 'Security vulnerability assessment',
-        phase: phase.name,
-        threshold: qualityGates?.securityScore ?? 90,
-        current: Math.min(98, 85 + Math.random() * 13),
-        status: 'pass',
-      });
-    }
-
-    // Check for performance related quality checks
-    if (
-      phase.qualityChecks.some(
-        check =>
-          check.includes('performance-test') ||
-          check.includes('performance-metrics') ||
-          check.includes('performance')
-      )
-    ) {
-      gates.push({
-        name: 'Performance Score',
-        description: 'System performance validation',
-        phase: phase.name,
-        threshold: qualityGates?.performanceScore ?? 85,
-        current: Math.min(95, 80 + Math.random() * 15),
-        status: 'pass',
-      });
-    }
-  });
-
-  return gates;
-}
-
-function generateAutomation(phases: WorkflowPhase[]): {
-  triggers: AutomationTrigger[];
-  workflows: Array<{
-    name: string;
-    description: string;
-    steps: string[];
-    conditions: string[];
-  }>;
-  monitoring: {
-    metrics: string[];
-    alerts: string[];
-    dashboards: string[];
-  };
-} {
-  const triggers: AutomationTrigger[] = [];
-  const workflows: Array<{
-    name: string;
-    description: string;
-    steps: string[];
-    conditions: string[];
+/**
+ * Generate next steps based on workflow execution results
+ */
+function generateNextSteps(
+  workflowResult: WorkflowResult,
+  _businessContext: BusinessContext
+): Array<{
+  step: string;
+  role: string;
+  estimatedTime: string;
+  priority: 'high' | 'medium' | 'low';
+}> {
+  const nextSteps: Array<{
+    step: string;
+    role: string;
+    estimatedTime: string;
+    priority: 'high' | 'medium' | 'low';
   }> = [];
 
-  phases.forEach((phase: WorkflowPhase) => {
-    triggers.push({
-      event: `${phase.name.toLowerCase().replace(/\s+/g, '-')}-started`,
-      condition: 'previous-phase-completed',
-      action: 'start-phase',
-      phase: phase.name,
+  if (workflowResult.success) {
+    // Success path next steps
+    nextSteps.push({
+      step: 'Monitor production deployment and user adoption',
+      role: 'operations-engineer',
+      estimatedTime: 'Ongoing',
+      priority: 'high',
+    });
+    
+    nextSteps.push({
+      step: 'Gather user feedback and identify improvement opportunities',
+      role: 'product-strategist',
+      estimatedTime: '2-4 weeks',
+      priority: 'medium',
     });
 
-    triggers.push({
-      event: `${phase.name.toLowerCase().replace(/\s+/g, '-')}-completed`,
-      condition: 'quality-gates-passed',
-      action: 'proceed-to-next-phase',
-      phase: phase.name,
+    nextSteps.push({
+      step: 'Plan next iteration based on metrics and feedback',
+      role: 'product-strategist',
+      estimatedTime: '1 week',
+      priority: 'medium',
     });
+  } else {
+    // Failure path next steps
+    const failedPhases = workflowResult.phases.filter((phase) => !phase.success);
+    
+    failedPhases.forEach((phase) => {
+      nextSteps.push({
+        step: `Address issues in ${phase.phase} phase: ${phase.issues?.join(', ') ?? 'Unknown issues'}`,
+        role: phase.role,
+        estimatedTime: '1-2 days',
+        priority: 'high',
+      });
+    });
+
+    nextSteps.push({
+      step: 'Review and update business requirements based on failures',
+      role: 'product-strategist', 
+      estimatedTime: '2-3 days',
+      priority: 'high',
+    });
+  }
+
+  // Always include business value monitoring
+  nextSteps.push({
+    step: 'Track business value metrics and ROI achievement',
+    role: 'product-strategist',
+    estimatedTime: 'Ongoing',
+    priority: 'medium',
   });
 
-  workflows.push({
-    name: 'Quality Gate Validation',
-    description: 'Automated quality gate validation workflow',
-    steps: ['run-tests', 'check-coverage', 'security-scan', 'performance-test'],
-    conditions: ['all-tests-pass', 'coverage-threshold-met', 'no-critical-issues'],
-  });
-
-  workflows.push({
-    name: 'Deployment Automation',
-    description: 'Automated deployment workflow',
-    steps: ['build-artifacts', 'run-tests', 'deploy-staging', 'deploy-production'],
-    conditions: ['tests-pass', 'staging-validated', 'approval-received'],
-  });
-
-  const monitoring = {
-    metrics: [
-      'response-time',
-      'throughput',
-      'error-rate',
-      'cpu-usage',
-      'memory-usage',
-      'test-coverage',
-      'deployment-frequency',
-    ],
-    alerts: [
-      'high-error-rate',
-      'performance-degradation',
-      'test-failure',
-      'deployment-failure',
-      'security-vulnerability',
-    ],
-    dashboards: ['system-overview', 'quality-metrics', 'business-value', 'team-productivity'],
-  };
-
-  return {
-    triggers,
-    workflows,
-    monitoring,
-  };
+  return nextSteps;
 }
 
-function calculateBusinessValue(
-  businessRequirements: {
-    roiTarget?: number;
-    costPrevention?: number;
-    timeSaved?: number;
-    userSatisfaction?: number;
-  },
-  phaseCount: number,
-  integrationCount: number
-): {
-  estimatedROI: number;
-  timeToMarket: number;
-  costPrevention: number;
-  qualityImprovement: number;
-  userSatisfaction: number;
-} {
-  const baseROI = businessRequirements?.roiTarget ?? 300;
-  const baseCostPrevention = businessRequirements?.costPrevention ?? 25000;
-  const baseTimeSaved = businessRequirements?.timeSaved ?? 8;
-  const baseUserSatisfaction = businessRequirements?.userSatisfaction ?? 95;
 
-  // Calculate multipliers based on complexity
-  const phaseMultiplier = 1 + phaseCount * 0.1;
-  const integrationMultiplier = 1 + integrationCount * 0.05;
 
-  return {
-    estimatedROI: Math.round(baseROI * phaseMultiplier),
-    timeToMarket: Math.round(baseTimeSaved * phaseMultiplier),
-    costPrevention: Math.round(baseCostPrevention * phaseMultiplier * integrationMultiplier),
-    qualityImprovement: Math.min(100, 75 + phaseCount * 2 + integrationCount * 1),
-    userSatisfaction: Math.min(100, baseUserSatisfaction + phaseCount * 1),
-  };
-}
-
-// Main tool handler
+// Enhanced Phase 2B tool handler with business context management and role orchestration
 export async function handleSmartOrchestrate(input: unknown): Promise<{
   success: boolean;
-  data?: unknown;
+  orchestrationId?: string;
+  workflow?: WorkflowResult;
+  businessContext?: BusinessContext;
+  businessValue?: BusinessValueMetrics;
+  technicalMetrics?: {
+    responseTime: number;
+    orchestrationTime: number;
+    roleTransitionTime: number;
+    contextPreservationAccuracy: number;
+    businessAlignmentScore: number;
+  };
+  nextSteps?: Array<{
+    step: string;
+    role: string;
+    estimatedTime: string;
+    priority: 'high' | 'medium' | 'low';
+  }>;
+  externalIntegration?: {
+    context7Status: string;
+    webSearchStatus: string;
+    memoryStatus: string;
+    integrationTime: number;
+  };
   error?: string;
   timestamp: string;
 }> {
   const startTime = Date.now();
+  const orchestrationEngine = new OrchestrationEngine();
+  const contextBroker = new BusinessContextBroker();
+  const mcpCoordinator = new MCPCoordinator();
 
   try {
     // Validate input
     const validatedInput = SmartOrchestrateInputSchema.parse(input);
+    const { request, options, workflow: workflowType, externalSources } = validatedInput;
 
-    // Generate basic orchestration workflow
-    const phases = generateWorkflowPhases(
-      validatedInput.workflowType,
-      validatedInput.orchestrationScope ?? {}
-    );
-    const integrations = generateIntegrations(validatedInput.externalIntegrations);
-    const qualityGates = generateQualityGatesList(validatedInput.qualityGates ?? {}, phases);
-    const automation = generateAutomation(phases);
-    const businessValue = calculateBusinessValue(
-      validatedInput.businessRequirements ?? {},
-      phases.length,
-      validatedInput.externalIntegrations.length
-    );
+    // Set up business context
+    const businessContext: BusinessContext = {
+      projectId: options.businessContext.projectId,
+      businessGoals: options.businessContext.businessGoals.length > 0 
+        ? options.businessContext.businessGoals 
+        : [`Implement: ${request}`],
+      requirements: options.businessContext.requirements.length > 0
+        ? options.businessContext.requirements
+        : [request],
+      stakeholders: options.businessContext.stakeholders,
+      constraints: options.businessContext.constraints,
+      success: options.businessContext.success,
+      timestamp: new Date().toISOString(),
+      version: 1,
+    };
+    
+    // Add marketContext only if provided
+    if (options.businessContext.marketContext) {
+      businessContext.marketContext = {
+        industry: options.businessContext.marketContext.industry ?? '',
+        targetMarket: options.businessContext.marketContext.targetMarket ?? '',
+        competitors: options.businessContext.marketContext.competitors ?? [],
+      };
+    }
 
-    const orchestration = {
-      workflow: {
-        id: `workflow_${Date.now()}_${validatedInput.projectId}`,
-        name: `${validatedInput.workflowType} Workflow for ${validatedInput.projectId}`,
-        type: validatedInput.workflowType,
-        phases,
-        integrations,
-        qualityGates,
-      },
-      automation,
-      businessValue,
+    // Set business context in broker
+    contextBroker.setContext(`project:${businessContext.projectId}:context`, businessContext, 'system');
+
+    // Gather external knowledge if enabled
+    const externalIntegrationStart = Date.now();
+    let externalKnowledge = null;
+    const mcpStatus = {
+      context7Status: externalSources?.useContext7 ? 'active' : 'disabled',
+      webSearchStatus: externalSources?.useWebSearch ? 'active' : 'disabled', 
+      memoryStatus: externalSources?.useMemory ? 'active' : 'disabled',
+      integrationTime: 0,
     };
 
-    // Generate success metrics
-    const successMetrics = [
-      `Orchestrate ${orchestration.workflow.phases.length} workflow phases`,
-      `Integrate ${validatedInput.externalIntegrations?.length ?? 0} external systems`,
-      `Maintain ${validatedInput.qualityGates?.testCoverage ?? 85}% test coverage`,
-      `Achieve ${validatedInput.businessRequirements?.roiTarget ?? 300}% ROI`,
-      `Ensure ${validatedInput.businessRequirements?.userSatisfaction ?? 95}% user satisfaction`,
-    ];
+    if (externalSources?.useContext7 || externalSources?.useWebSearch || externalSources?.useMemory) {
+      try {
+        externalKnowledge = await mcpCoordinator.gatherKnowledge({
+          projectId: businessContext.projectId,
+          businessRequest: request,
+          domain: businessContext.marketContext?.industry ?? 'technology',
+          priority: 'medium',
+          sources: {
+            useContext7: externalSources?.useContext7 ?? true,
+            useWebSearch: externalSources?.useWebSearch ?? true,
+            useMemory: externalSources?.useMemory ?? true,
+          },
+        });
+        mcpStatus.integrationTime = Date.now() - externalIntegrationStart;
+      } catch (error) {
+        // External knowledge gathering failed, continue without it
+        mcpStatus.context7Status = 'error';
+        mcpStatus.webSearchStatus = 'error';
+        mcpStatus.memoryStatus = 'error';
+        mcpStatus.integrationTime = Date.now() - externalIntegrationStart;
+      }
+    }
 
-    // Generate next steps
-    const nextSteps = [
-      'Review orchestration workflow',
-      'Configure external integrations',
-      'Set up monitoring and alerting',
-      'Execute workflow phases',
-      'Monitor quality gates and business metrics',
-    ];
+    // Create workflow definition
+    const workflow: Workflow = {
+      id: `orchestration_${Date.now()}_${businessContext.projectId}`,
+      name: `Complete ${workflowType.toUpperCase()} Orchestration`,
+      type: workflowType,
+      phases: generateEnhancedWorkflowPhases(workflowType, request, options),
+      businessContext,
+      status: 'pending',
+    };
 
-    // Calculate technical metrics
+    // Validate workflow before execution
+    const validation = orchestrationEngine.validateWorkflow(workflow);
+    if (!validation.isValid) {
+      return {
+        success: false,
+        error: `Workflow validation failed: ${validation.issues.join(', ')}`,
+        timestamp: new Date().toISOString(),
+      };
+    }
+
+    // Execute the workflow with role orchestration
+    const workflowResult = await orchestrationEngine.executeWorkflow(workflow, businessContext);
+
+    // Get business value metrics
+    const businessValue = contextBroker.getBusinessValue(businessContext.projectId);
+
+    // Generate context insights
+    const contextInsights = contextBroker.generateContextInsights(businessContext.projectId);
+
+    // Generate next steps based on workflow result
+    const nextSteps = generateNextSteps(workflowResult, businessContext);
+
+    // Calculate enhanced technical metrics
     const responseTime = Date.now() - startTime;
+    const orchestrationTime = workflowResult.technicalMetrics.totalExecutionTime;
+    const roleTransitionTime = workflowResult.technicalMetrics.roleTransitionTime;
 
-    // Create response
     const response = {
-      projectId: validatedInput.projectId,
-      workflowType: validatedInput.workflowType,
-      orchestration,
-      successMetrics,
-      nextSteps,
+      success: workflowResult.success,
+      orchestrationId: workflow.id,
+      workflow: workflowResult,
+      businessContext,
+      businessValue: {
+        ...businessValue,
+        costPrevention: businessValue.costPrevention,
+        timesSaved: businessValue.timesSaved,
+        qualityImprovement: businessValue.qualityImprovement,
+        riskMitigation: businessValue.riskMitigation,
+        strategicAlignment: businessValue.strategicAlignment,
+        userSatisfaction: businessValue.userSatisfaction,
+      },
       technicalMetrics: {
         responseTime,
-        orchestrationTime: Math.max(1, responseTime - 5),
-        phasesOrchestrated: orchestration.workflow.phases.length,
-        integrationsConfigured: orchestration.workflow.integrations.length,
-        qualityGatesConfigured: orchestration.workflow.qualityGates.length,
+        orchestrationTime,
+        roleTransitionTime,
+        contextPreservationAccuracy: workflowResult.technicalMetrics.contextPreservationAccuracy,
+        businessAlignmentScore: contextInsights.businessAlignment,
       },
-    };
-
-    return {
-      success: true,
-      data: response,
+      nextSteps,
+      externalIntegration: mcpStatus,
       timestamp: new Date().toISOString(),
     };
+
+    // Add external knowledge if available
+    if (externalKnowledge) {
+      (response as any).externalKnowledge = externalKnowledge;
+    }
+
+    return response;
+
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    const responseTime = Date.now() - startTime;
+    const errorMessage = error instanceof Error ? error.message : 'Unknown orchestration error';
 
     return {
       success: false,
       error: errorMessage,
+      technicalMetrics: {
+        responseTime,
+        orchestrationTime: 0,
+        roleTransitionTime: 0,
+        contextPreservationAccuracy: 0,
+        businessAlignmentScore: 0,
+      },
       timestamp: new Date().toISOString(),
     };
   }

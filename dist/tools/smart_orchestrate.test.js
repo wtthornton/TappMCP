@@ -6,7 +6,7 @@ const smart_orchestrate_1 = require("./smart_orchestrate");
     (0, vitest_1.describe)('tool definition', () => {
         (0, vitest_1.it)('should have correct name and description', () => {
             (0, vitest_1.expect)(smart_orchestrate_1.smartOrchestrateTool.name).toBe('smart_orchestrate');
-            (0, vitest_1.expect)(smart_orchestrate_1.smartOrchestrateTool.description).toContain('Orchestrate complete development workflow');
+            (0, vitest_1.expect)(smart_orchestrate_1.smartOrchestrateTool.description).toContain('Phase 2B: Orchestrate complete SDLC workflows');
         });
         (0, vitest_1.it)('should have proper input schema', () => {
             (0, vitest_1.expect)(smart_orchestrate_1.smartOrchestrateTool.inputSchema).toBeDefined();
