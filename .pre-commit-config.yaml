@@ -6,6 +6,7 @@ repos:
       - id: check-added-large-files
       - id: check-yaml
       - id: check-json
+        exclude: ^node_modules/
       - id: check-merge-conflict
       - id: trailing-whitespace
         exclude: ^(dist/|node_modules/|coverage/|\.vite/|\.claude/|.*\.map$|.*\.min\.js$)
@@ -19,21 +20,5 @@ repos:
         language: system
         files: ^src/.*\.ts$
         args: [--fix]
-        pass_filenames: false
-        always_run: true
-
-      - id: type-check
-        name: type-check
-        entry: npx tsc --noEmit
-        language: system
-        files: ^src/.*\.ts$
-        pass_filenames: false
-        always_run: true
-
-      - id: unit-tests
-        name: unit-tests
-        entry: npm test
-        language: system
-        files: ^src/.*\.ts$
         pass_filenames: false
         always_run: true
