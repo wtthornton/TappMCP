@@ -54,14 +54,14 @@ describe('FileResource', () => {
 
     it('should initialize successfully', async () => {
       vi.mocked(fs.mkdir).mockResolvedValue(undefined);
-      
+
       await expect(fileResource.initialize()).resolves.not.toThrow();
       expect(fs.mkdir).toHaveBeenCalledWith(mockBasePath, { recursive: true });
     });
 
     it('should handle initialization errors', async () => {
       vi.mocked(fs.mkdir).mockRejectedValue(new Error('Permission denied'));
-      
+
       await expect(fileResource.initialize()).rejects.toThrow('Permission denied');
     });
   });

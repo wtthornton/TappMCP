@@ -64,19 +64,24 @@ interface RateLimiter {
  * MCP API Resource
  * Provides HTTP API operations with rate limiting, retries, and authentication
  */
-export class ApiResource extends MCPResource<ApiResourceConfig, ApiResourceResponse> {
+export class ApiResource extends MCPResource {
   private rateLimiters: Map<string, RateLimiter> = new Map();
   private requestQueue: Array<() => Promise<void>> = [];
   private isProcessingQueue = false;
+  private readonly schema: z.ZodSchema<ApiResourceConfig>;
 
   constructor() {
-    super({
+    const mcpConfig: MCPResourceConfig = {
       name: 'api-resource',
+      type: 'api',
       version: '1.0.0',
       description: 'HTTP API operations with rate limiting, retries, and authentication',
-      schema: ApiResourceSchema,
-      responseSchema: ApiResourceResponseSchema
-    });
+      connectionConfig: {},
+      maxConnections: 100
+    };
+
+    super(mcpConfig);
+    this.schema = ApiResourceSchema;
   }
 
   /**
@@ -91,11 +96,11 @@ export class ApiResource extends MCPResource<ApiResourceConfig, ApiResourceRespo
    */
   async execute(config: ApiResourceConfig): Promise<ApiResourceResponse> {
     const startTime = Date.now();
-    
+
     try {
       // Validate configuration
       const validatedConfig = this.schema.parse(config);
-      
+
       // Check rate limiting
       if (validatedConfig.rateLimit) {
         await this.checkRateLimit(validatedConfig.url, validatedConfig.rateLimit);
@@ -103,7 +108,7 @@ export class ApiResource extends MCPResource<ApiResourceConfig, ApiResourceRespo
 
       // Execute request with retries
       const result = await this.executeWithRetries(validatedConfig, startTime);
-      
+
       // Log performance metrics
       const executionTime = Date.now() - startTime;
       this.logger.info('API request completed', {
@@ -138,7 +143,7 @@ export class ApiResource extends MCPResource<ApiResourceConfig, ApiResourceRespo
    */
   private async executeWithRetries(config: ApiResourceConfig, startTime: number): Promise<ApiResourceResponse> {
     let lastError: Error | null = null;
-    
+
     for (let attempt = 0; attempt <= config.retries; attempt++) {
       try {
         const result = await this.makeRequest(config);
@@ -147,7 +152,7 @@ export class ApiResource extends MCPResource<ApiResourceConfig, ApiResourceRespo
         return result;
       } catch (error) {
         lastError = error as Error;
-        
+
         if (attempt < config.retries) {
           this.logger.warn('API request failed, retrying', {
             attempt: attempt + 1,
@@ -155,12 +160,12 @@ export class ApiResource extends MCPResource<ApiResourceConfig, ApiResourceRespo
             error: error.message,
             delay: config.retryDelay
           });
-          
+
           await this.delay(config.retryDelay * Math.pow(2, attempt)); // Exponential backoff
         }
       }
     }
-    
+
     throw lastError || new Error('Request failed after all retries');
   }
 
@@ -170,21 +175,21 @@ export class ApiResource extends MCPResource<ApiResourceConfig, ApiResourceRespo
   private async makeRequest(config: ApiResourceConfig): Promise<ApiResourceResponse> {
     // Build URL with query parameters
     const url = this.buildUrl(config.url, config.params);
-    
+
     // Prepare headers
     const headers = this.prepareHeaders(config);
-    
+
     // Prepare request options
     const requestOptions: any = {
       method: config.method,
       headers,
       timeout: config.timeout
     };
-    
+
     // Add body for non-GET requests
     if (config.body && config.method !== 'GET') {
-      requestOptions.body = typeof config.body === 'string' 
-        ? config.body 
+      requestOptions.body = typeof config.body === 'string'
+        ? config.body
         : JSON.stringify(config.body);
     }
 
@@ -223,12 +228,12 @@ export class ApiResource extends MCPResource<ApiResourceConfig, ApiResourceRespo
     if (!params || Object.keys(params).length === 0) {
       return baseUrl;
     }
-    
+
     const url = new URL(baseUrl);
     Object.entries(params).forEach(([key, value]) => {
       url.searchParams.append(key, value);
     });
-    
+
     return url.toString();
   }
 
@@ -278,9 +283,9 @@ export class ApiResource extends MCPResource<ApiResourceConfig, ApiResourceRespo
   private async checkRateLimit(url: string, rateLimit: { requests: number; window: number }): Promise<void> {
     const key = this.getRateLimitKey(url);
     const now = Date.now();
-    
+
     let limiter = this.rateLimiters.get(key);
-    
+
     if (!limiter) {
       limiter = {
         requests: rateLimit.requests,
@@ -290,13 +295,13 @@ export class ApiResource extends MCPResource<ApiResourceConfig, ApiResourceRespo
       };
       this.rateLimiters.set(key, limiter);
     }
-    
+
     // Reset window if expired
     if (now - limiter.windowStart >= limiter.window) {
       limiter.requestsUsed = 0;
       limiter.windowStart = now;
     }
-    
+
     // Check if rate limit exceeded
     if (limiter.requestsUsed >= limiter.requests) {
       const waitTime = limiter.window - (now - limiter.windowStart);
@@ -306,11 +311,11 @@ export class ApiResource extends MCPResource<ApiResourceConfig, ApiResourceRespo
         requestsUsed: limiter.requestsUsed,
         limit: limiter.requests
       });
-      
+
       await this.delay(waitTime);
       return this.checkRateLimit(url, rateLimit);
     }
-    
+
     // Increment request count
     limiter.requestsUsed++;
   }
@@ -345,9 +350,9 @@ export class ApiResource extends MCPResource<ApiResourceConfig, ApiResourceRespo
         url: 'https://httpbin.org/status/200',
         timeout: 5000
       };
-      
+
       const result = await this.execute(testConfig);
-      
+
       return {
         status: result.success ? 'healthy' : 'unhealthy',
         details: {
@@ -368,13 +373,34 @@ export class ApiResource extends MCPResource<ApiResourceConfig, ApiResourceRespo
   }
 
   /**
+   * Create a new connection (not applicable for API resource)
+   */
+  protected async createConnection(): Promise<any> {
+    return { id: 'api-connection', type: 'api' };
+  }
+
+  /**
+   * Close a connection (not applicable for API resource)
+   */
+  protected async closeConnection(connection: any): Promise<void> {
+    // API resource doesn't need to close connections
+  }
+
+  /**
+   * Get connection ID
+   */
+  protected getConnectionId(connection: any): string {
+    return connection?.id || 'api-connection';
+  }
+
+  /**
    * Cleanup resources
    */
   async cleanup(): Promise<void> {
     this.rateLimiters.clear();
     this.requestQueue = [];
     this.isProcessingQueue = false;
-    
+
     this.logger.info('API resource cleanup completed');
   }
 }

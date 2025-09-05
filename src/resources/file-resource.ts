@@ -88,15 +88,15 @@ export class FileResource extends MCPResource {
    */
   async executeFileOperation(config: FileResourceConfig): Promise<FileResourceResponse> {
     const startTime = Date.now();
-    
+
     try {
       // Validate configuration
       const validatedConfig = this.schema.parse(config);
-      
+
       // Resolve and validate file path
       const resolvedPath = this.resolvePath(validatedConfig.path);
       this.validatePath(resolvedPath);
-      
+
       // Check file size if reading
       if (validatedConfig.mode === 'read') {
         await this.validateFileSize(resolvedPath);
@@ -150,7 +150,7 @@ export class FileResource extends MCPResource {
     try {
       const data = await fs.readFile(path, config.encoding);
       const stats = await fs.stat(path);
-      
+
       return {
         success: true,
         data: data.toString(),
@@ -205,7 +205,7 @@ export class FileResource extends MCPResource {
       }
 
       const stats = await fs.stat(path);
-      
+
       return {
         success: true,
         data: data,
@@ -235,7 +235,7 @@ export class FileResource extends MCPResource {
       await fs.appendFile(path, data, config.encoding);
 
       const stats = await fs.stat(path);
-      
+
       return {
         success: true,
         data: data,
@@ -260,22 +260,22 @@ export class FileResource extends MCPResource {
     if (filePath.startsWith('/') || filePath.includes(':')) {
       throw new Error('Absolute paths are not allowed');
     }
-    
+
     // Handle path traversal attempts
     if (filePath.includes('..') || filePath.includes('~')) {
       throw new Error('Path traversal is not allowed');
     }
-    
+
     const resolved = resolve(this.basePath, filePath);
-    
+
     // Ensure the resolved path is within the base path (security check)
     const normalizedBasePath = resolve(this.basePath);
     const normalizedResolved = resolve(resolved);
-    
+
     if (!normalizedResolved.startsWith(normalizedBasePath)) {
       throw new Error('File path is outside allowed directory');
     }
-    
+
     return normalizedResolved;
   }
 
@@ -335,7 +335,7 @@ export class FileResource extends MCPResource {
     try {
       // Check if base directory is accessible
       await fs.access(this.basePath);
-      
+
       return {
         status: 'healthy',
         details: {

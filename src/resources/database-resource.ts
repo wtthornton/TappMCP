@@ -59,24 +59,28 @@ interface ConnectionPoolConfig {
  * MCP Database Resource
  * Provides database operations with connection pooling and transaction support
  */
-export class DatabaseResource extends MCPResource<DatabaseResourceConfig, DatabaseResourceResponse> {
+export class DatabaseResource extends MCPResource {
   private connectionPool: any[] = [];
   private poolConfig: ConnectionPoolConfig;
   private isInitialized = false;
   private activeConnections = 0;
   private maxConnections: number;
+  private readonly schema: z.ZodSchema<DatabaseResourceConfig>;
 
   constructor(config: {
     connectionString?: string;
     poolConfig?: Partial<ConnectionPoolConfig>;
   } = {}) {
-    super({
+    const mcpConfig: MCPResourceConfig = {
       name: 'database-resource',
+      type: 'database',
       version: '1.0.0',
       description: 'Database operations with connection pooling and transaction support',
-      schema: DatabaseResourceSchema,
-      responseSchema: DatabaseResourceResponseSchema
-    });
+      connectionConfig: {},
+      maxConnections: config.poolConfig?.max || 10
+    };
+
+    super(mcpConfig);
 
     this.poolConfig = {
       min: 2,
@@ -91,6 +95,7 @@ export class DatabaseResource extends MCPResource<DatabaseResourceConfig, Databa
     };
 
     this.maxConnections = this.poolConfig.max;
+    this.schema = DatabaseResourceSchema;
   }
 
   /**
@@ -101,7 +106,7 @@ export class DatabaseResource extends MCPResource<DatabaseResourceConfig, Databa
       // Initialize connection pool
       await this.initializeConnectionPool();
       this.isInitialized = true;
-      
+
       this.logger.info('Database resource initialized', {
         poolSize: this.connectionPool.length,
         maxConnections: this.maxConnections
@@ -117,7 +122,7 @@ export class DatabaseResource extends MCPResource<DatabaseResourceConfig, Databa
    */
   async execute(config: DatabaseResourceConfig): Promise<DatabaseResourceResponse> {
     const startTime = Date.now();
-    
+
     if (!this.isInitialized) {
       return {
         success: false,
@@ -128,13 +133,13 @@ export class DatabaseResource extends MCPResource<DatabaseResourceConfig, Databa
     try {
       // Validate configuration
       const validatedConfig = this.schema.parse(config);
-      
+
       // Get connection from pool
       const connection = await this.getConnection();
-      
+
       try {
         let result: DatabaseResourceResponse;
-        
+
         switch (validatedConfig.operation) {
           case 'query':
             result = await this.executeQuery(connection, validatedConfig);
@@ -157,7 +162,7 @@ export class DatabaseResource extends MCPResource<DatabaseResourceConfig, Databa
 
         // Add execution time
         result.executionTime = Date.now() - startTime;
-        
+
         // Log performance metrics
         this.logger.info('Database operation completed', {
           operation: validatedConfig.operation,
@@ -196,7 +201,7 @@ export class DatabaseResource extends MCPResource<DatabaseResourceConfig, Databa
   private async executeQuery(connection: any, config: DatabaseResourceConfig): Promise<DatabaseResourceResponse> {
     const query = this.buildSelectQuery(config);
     const results = await this.runQuery(connection, query);
-    
+
     return {
       success: true,
       data: results,
@@ -215,7 +220,7 @@ export class DatabaseResource extends MCPResource<DatabaseResourceConfig, Databa
 
     const query = this.buildInsertQuery(config);
     const result = await this.runQuery(connection, query);
-    
+
     return {
       success: true,
       affectedRows: 1,
@@ -234,7 +239,7 @@ export class DatabaseResource extends MCPResource<DatabaseResourceConfig, Databa
 
     const query = this.buildUpdateQuery(config);
     const result = await this.runQuery(connection, query);
-    
+
     return {
       success: true,
       affectedRows: result.affectedRows,
@@ -252,7 +257,7 @@ export class DatabaseResource extends MCPResource<DatabaseResourceConfig, Databa
 
     const query = this.buildDeleteQuery(config);
     const result = await this.runQuery(connection, query);
-    
+
     return {
       success: true,
       affectedRows: result.affectedRows,
@@ -271,12 +276,12 @@ export class DatabaseResource extends MCPResource<DatabaseResourceConfig, Databa
     try {
       // Begin transaction
       await this.runQuery(connection, 'BEGIN TRANSACTION');
-      
+
       const results: any[] = [];
-      
+
       for (const operation of config.transaction) {
         let result: any;
-        
+
         switch (operation.operation) {
           case 'query':
             result = await this.executeQuery(connection, operation);
@@ -293,19 +298,19 @@ export class DatabaseResource extends MCPResource<DatabaseResourceConfig, Databa
           default:
             throw new Error(`Unsupported transaction operation: ${operation.operation}`);
         }
-        
+
         results.push(result);
       }
-      
+
       // Commit transaction
       await this.runQuery(connection, 'COMMIT');
-      
+
       return {
         success: true,
         data: results,
         count: results.length
       };
-      
+
     } catch (error) {
       // Rollback transaction on error
       try {
@@ -322,26 +327,26 @@ export class DatabaseResource extends MCPResource<DatabaseResourceConfig, Databa
    */
   private buildSelectQuery(config: DatabaseResourceConfig): string {
     let query = `SELECT * FROM ${config.table}`;
-    
+
     if (config.where) {
       const whereClause = Object.entries(config.where)
         .map(([key, value]) => `${key} = '${value}'`)
         .join(' AND ');
       query += ` WHERE ${whereClause}`;
     }
-    
+
     if (config.orderBy) {
       query += ` ORDER BY ${config.orderBy} ${config.orderDirection}`;
     }
-    
+
     if (config.limit) {
       query += ` LIMIT ${config.limit}`;
     }
-    
+
     if (config.offset) {
       query += ` OFFSET ${config.offset}`;
     }
-    
+
     return query;
   }
 
@@ -351,10 +356,10 @@ export class DatabaseResource extends MCPResource<DatabaseResourceConfig, Databa
   private buildInsertQuery(config: DatabaseResourceConfig): string {
     const columns = Object.keys(config.data!);
     const values = Object.values(config.data!);
-    
+
     const columnsStr = columns.join(', ');
     const valuesStr = values.map(v => `'${v}'`).join(', ');
-    
+
     return `INSERT INTO ${config.table} (${columnsStr}) VALUES (${valuesStr})`;
   }
 
@@ -365,11 +370,11 @@ export class DatabaseResource extends MCPResource<DatabaseResourceConfig, Databa
     const setClause = Object.entries(config.data!)
       .map(([key, value]) => `${key} = '${value}'`)
       .join(', ');
-    
+
     const whereClause = Object.entries(config.where!)
-      .map(([key, value]) => `${key} = '${value}'`)
+      .map(([key, value]) => `${key} = ${value}`)
       .join(' AND ');
-    
+
     return `UPDATE ${config.table} SET ${setClause} WHERE ${whereClause}`;
   }
 
@@ -380,7 +385,7 @@ export class DatabaseResource extends MCPResource<DatabaseResourceConfig, Databa
     const whereClause = Object.entries(config.where!)
       .map(([key, value]) => `${key} = '${value}'`)
       .join(' AND ');
-    
+
     return `DELETE FROM ${config.table} WHERE ${whereClause}`;
   }
 
@@ -419,17 +424,6 @@ export class DatabaseResource extends MCPResource<DatabaseResourceConfig, Databa
     }
   }
 
-  /**
-   * Create new database connection
-   */
-  private async createConnection(): Promise<any> {
-    // Mock connection creation
-    return {
-      id: Math.random().toString(36).substr(2, 9),
-      connected: true,
-      createdAt: new Date()
-    };
-  }
 
   /**
    * Get connection from pool
@@ -475,7 +469,7 @@ export class DatabaseResource extends MCPResource<DatabaseResourceConfig, Databa
     try {
       const connection = await this.getConnection();
       this.returnConnection(connection);
-      
+
       return {
         status: 'healthy',
         details: {
@@ -498,6 +492,32 @@ export class DatabaseResource extends MCPResource<DatabaseResourceConfig, Databa
   }
 
   /**
+   * Create a new database connection
+   */
+  protected async createConnection(): Promise<any> {
+    // Mock connection creation
+    return {
+      id: Math.random().toString(36).substr(2, 9),
+      connected: true,
+      createdAt: new Date()
+    };
+  }
+
+  /**
+   * Close a database connection
+   */
+  protected async closeConnection(connection: any): Promise<void> {
+    connection.connected = false;
+  }
+
+  /**
+   * Get connection ID
+   */
+  protected getConnectionId(connection: any): string {
+    return connection.id;
+  }
+
+  /**
    * Cleanup resources
    */
   async cleanup(): Promise<void> {
@@ -508,11 +528,11 @@ export class DatabaseResource extends MCPResource<DatabaseResourceConfig, Databa
         connection.connected = false;
       }
     }
-    
+
     this.connectionPool = [];
     this.activeConnections = 0;
     this.isInitialized = false;
-    
+
     this.logger.info('Database resource cleanup completed');
   }
 }

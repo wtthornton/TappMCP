@@ -9,6 +9,7 @@ docs/templates/
 ├── task-lists/           # Task list templates
 ├── roadmaps/            # Roadmap templates
 ├── guides/              # Guide templates
+├── coordination/        # Master coordination templates
 └── README.md           # This file
 ```
 
@@ -55,6 +56,23 @@ docs/templates/
 ### **role-switching-guide.md**
 - **Purpose**: Guidelines for switching between AI roles
 - **Usage**: Reference for proper role switching procedures
+
+## 🔄 **Coordination Templates**
+
+### **master-task-coordination-template.md**
+- **Purpose**: Master template for coordinating multiple role-specific task lists
+- **Usage**: Central coordination document for complex multi-role projects
+- **Sections**: Role coordination matrix, task flow, status tracking, current focus
+- **Format**: Master view with detailed progress tracking and role coordination
+
+### **Usage Example**:
+```markdown
+# Phase 2 Master Task Coordination
+**Project**: Smart MCP Server - Phase 2 MCP Framework Implementation
+**Phase**: 2 - Advanced MCP Framework Implementation
+**Duration**: 3 weeks
+**Status**: IN PROGRESS
+```
 
 ## 📝 **Other Templates**
 
@@ -109,6 +127,12 @@ docs/templates/
 - **Structure**: Logical flow from overview to detailed procedures
 - **Examples**: Include practical examples and use cases
 - **Maintenance**: Regular updates to reflect current practices
+
+### **Coordination Standards**
+- **Structure**: Master overview → Role coordination → Task flow → Status tracking
+- **Progress Tracking**: Detailed status with completion dates and metrics
+- **Role Coordination**: Clear matrix showing how roles work together
+- **Navigation**: Quick links to all role-specific task lists
 
 ## 🔄 **Template Maintenance**
 
