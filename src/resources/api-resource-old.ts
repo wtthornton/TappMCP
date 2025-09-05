@@ -51,19 +51,35 @@ export const ApiResourceResponseSchema = z.object({
 export type ApiResourceResponse = z.infer<typeof ApiResourceResponseSchema>;
 
 /**
- * API Resource for HTTP operations
+ * Rate Limiter Configuration
+ */
+interface RateLimiter {
+  requests: number;
+  window: number;
+  requestsUsed: number;
+  windowStart: number;
+}
+
+/**
+ * MCP API Resource
+ * Provides HTTP API operations with rate limiting, retries, and authentication
  */
 export class ApiResource extends MCPResource {
+  private rateLimiters: Map<string, RateLimiter> = new Map();
+  private requestQueue: Array<() => Promise<void>> = [];
+  private isProcessingQueue = false;
   private readonly schema: z.ZodSchema<ApiResourceConfig>;
-  private rateLimitStore: Map<string, { count: number; resetTime: number }> = new Map();
 
   constructor() {
-    const mcpConfig = {
+    const mcpConfig: MCPResourceConfig = {
       name: 'api-resource',
-      type: 'resource' as const,
+      type: 'api',
       version: '1.0.0',
-      description: 'HTTP API operations with rate limiting and retries'
+      description: 'HTTP API operations with rate limiting, retries, and authentication',
+      connectionConfig: {},
+      maxConnections: 100
     };
+
     super(mcpConfig);
     this.schema = ApiResourceSchema;
   }
@@ -71,9 +87,7 @@ export class ApiResource extends MCPResource {
   /**
    * Initialize the API resource
    */
-  protected async initializeInternal(): Promise<void> {
-    // Initialize rate limiting store
-    this.rateLimitStore = new Map();
+  async initialize(): Promise<void> {
     this.logger.info('API resource initialized');
   }
 
@@ -156,116 +170,82 @@ export class ApiResource extends MCPResource {
   }
 
   /**
-   * Make HTTP request (mock implementation for fast testing)
+   * Make HTTP request
    */
   private async makeRequest(config: ApiResourceConfig): Promise<ApiResourceResponse> {
-    // Simulate network delay
-    await this.delay(10 + Math.random() * 20);
-
     // Build URL with query parameters
     const url = this.buildUrl(config.url, config.params);
 
     // Prepare headers
     const headers = this.prepareHeaders(config);
 
-    // Simulate different responses based on URL and method
-    const response = this.simulateResponse(config, url, headers);
-
-    return response;
-  }
-
-  /**
-   * Simulate HTTP response based on configuration
-   */
-  private simulateResponse(config: ApiResourceConfig, url: string, headers: Record<string, string>): ApiResourceResponse {
-    // Simulate different scenarios based on URL patterns
-    if (url.includes('/slow')) {
-      // Simulate timeout
-      throw new Error('Request timeout');
-    }
-
-    if (url.includes('/nonexistent')) {
-      // Simulate 404 error
-      throw new Error('HTTP 404: Not Found');
-    }
-
-    if (url.includes('/error')) {
-      // Simulate network error
-      throw new Error('Network error');
-    }
-
-    if (url.includes('/invalid-json')) {
-      // Simulate JSON parsing error
-      throw new Error('Invalid JSON');
-    }
-
-    if (url.includes('/retry')) {
-      // Simulate retry scenario
-      if (Math.random() < 0.7) {
-        throw new Error('Network error');
-      }
-    }
-
-    if (url.includes('/max-retries')) {
-      // Always fail for max retries test
-      throw new Error('Persistent network error');
-    }
-
-    // Determine status code based on method
-    let status = 200;
-    let statusText = 'OK';
-
-    if (config.method === 'POST') {
-      status = 201;
-      statusText = 'Created';
-    } else if (config.method === 'DELETE') {
-      status = 204;
-      statusText = 'No Content';
-    }
-
-    // Simulate rate limiting
-    const rateLimitInfo = {
-      remaining: 5,
-      resetTime: Date.now() + 3600000,
-      limit: 10
+    // Prepare request options
+    const requestOptions: RequestInit = {
+      method: config.method,
+      headers,
+      signal: AbortSignal.timeout(config.timeout)
     };
+
+    // Add body for non-GET requests
+    if (config.body && config.method !== 'GET') {
+      requestOptions.body = typeof config.body === 'string'
+        ? config.body
+        : JSON.stringify(config.body);
+    }
+
+    // Call fetch (will be mocked in tests)
+    const response = await fetch(url, requestOptions);
+    
+    // Parse response headers
+    const responseHeaders: Record<string, string> = {};
+    response.headers.forEach((value, key) => {
+      responseHeaders[key] = value;
+    });
+
+    // Extract rate limit info
+    const rateLimitInfo = this.extractRateLimitInfo(responseHeaders);
+
+    // Parse response body
+    let data: any;
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        throw new Error('Invalid JSON');
+      }
+    } else {
+      data = await response.text();
+    }
+
+    // Check for HTTP errors
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
 
     return {
       success: true,
-      data: { message: 'Success', timestamp: new Date().toISOString() },
-      status,
-      statusText,
-      headers: {
-        'content-type': 'application/json',
-        'x-ratelimit-remaining': '5',
-        'x-ratelimit-reset': String(Date.now() + 3600000),
-        'x-ratelimit-limit': '10'
-      },
+      data,
+      status: response.status,
+      statusText: response.statusText,
+      headers: responseHeaders,
       rateLimitInfo
     };
   }
 
   /**
-   * Check rate limiting
+   * Extract rate limit information from response headers
    */
-  private async checkRateLimit(url: string, rateLimit: { requests: number; window: number }): Promise<void> {
-    const key = new URL(url).hostname;
-    const now = Date.now();
-    const windowStart = now - rateLimit.window;
+  private extractRateLimitInfo(headers: Record<string, string>): any {
+    const remaining = parseInt(headers['x-ratelimit-remaining'] || '100');
+    const resetTime = parseInt(headers['x-ratelimit-reset'] || String(Date.now() + 3600000));
+    const limit = parseInt(headers['x-ratelimit-limit'] || '100');
 
-    const current = this.rateLimitStore.get(key) || { count: 0, resetTime: now + rateLimit.window };
-
-    if (current.resetTime < now) {
-      current.count = 0;
-      current.resetTime = now + rateLimit.window;
-    }
-
-    if (current.count >= rateLimit.requests) {
-      throw new Error('Rate limit exceeded');
-    }
-
-    current.count++;
-    this.rateLimitStore.set(key, current);
+    return {
+      remaining,
+      resetTime,
+      limit
+    };
   }
 
   /**
@@ -313,6 +293,11 @@ export class ApiResource extends MCPResource {
             headers[config.auth.apiKeyHeader] = config.auth.apiKey;
           }
           break;
+        case 'oauth2':
+          if (config.auth.token) {
+            headers['Authorization'] = `Bearer ${config.auth.token}`;
+          }
+          break;
       }
     }
 
@@ -320,7 +305,62 @@ export class ApiResource extends MCPResource {
   }
 
   /**
-   * Delay utility
+   * Check rate limiting
+   */
+  private async checkRateLimit(url: string, rateLimit: { requests: number; window: number }): Promise<void> {
+    const key = this.getRateLimitKey(url);
+    const now = Date.now();
+
+    let limiter = this.rateLimiters.get(key);
+
+    if (!limiter) {
+      limiter = {
+        requests: rateLimit.requests,
+        window: rateLimit.window,
+        requestsUsed: 0,
+        windowStart: now
+      };
+      this.rateLimiters.set(key, limiter);
+    }
+
+    // Reset window if expired
+    if (now - limiter.windowStart >= limiter.window) {
+      limiter.requestsUsed = 0;
+      limiter.windowStart = now;
+    }
+
+    // Check if rate limit exceeded
+    if (limiter.requestsUsed >= limiter.requests) {
+      const waitTime = limiter.window - (now - limiter.windowStart);
+      this.logger.warn('Rate limit exceeded, waiting', {
+        url,
+        waitTime: `${waitTime}ms`,
+        requestsUsed: limiter.requestsUsed,
+        limit: limiter.requests
+      });
+
+      await this.delay(waitTime);
+      return this.checkRateLimit(url, rateLimit);
+    }
+
+    // Increment request count
+    limiter.requestsUsed++;
+  }
+
+  /**
+   * Get rate limit key for URL
+   */
+  private getRateLimitKey(url: string): string {
+    try {
+      const urlObj = new URL(url);
+      return `${urlObj.protocol}//${urlObj.host}`;
+    } catch {
+      return url;
+    }
+  }
+
+  /**
+   * Delay execution
    */
   private delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -331,49 +371,63 @@ export class ApiResource extends MCPResource {
    */
   async healthCheck(): Promise<{ status: string; details: any }> {
     try {
+      // Test with a simple request
       const testConfig: ApiResourceConfig = {
         method: 'GET',
-        url: 'https://httpbin.org/status/200'
+        url: 'https://httpbin.org/status/200',
+        timeout: 5000
       };
 
       const result = await this.execute(testConfig);
+
       return {
         status: result.success ? 'healthy' : 'unhealthy',
         details: {
-          lastCheck: new Date().toISOString(),
-          responseTime: result.executionTime,
-          status: result.status
+          lastTest: new Date().toISOString(),
+          testResult: result,
+          rateLimiters: this.rateLimiters.size
         }
       };
     } catch (error) {
       return {
         status: 'unhealthy',
         details: {
-          lastCheck: new Date().toISOString(),
-          error: error.message
+          error: error.message,
+          rateLimiters: this.rateLimiters.size
         }
       };
     }
   }
 
   /**
+   * Create a new connection (not applicable for API resource)
+   */
+  protected async createConnection(): Promise<any> {
+    return { id: 'api-connection', type: 'api' };
+  }
+
+  /**
+   * Close a connection (not applicable for API resource)
+   */
+  protected async closeConnection(connection: any): Promise<void> {
+    // API resource doesn't need to close connections
+  }
+
+  /**
+   * Get connection ID
+   */
+  protected getConnectionId(connection: any): string {
+    return connection?.id || 'api-connection';
+  }
+
+  /**
    * Cleanup resources
    */
   async cleanup(): Promise<void> {
-    this.rateLimitStore.clear();
+    this.rateLimiters.clear();
+    this.requestQueue = [];
+    this.isProcessingQueue = false;
+
     this.logger.info('API resource cleanup completed');
-  }
-
-  // Required by MCPResource base class
-  protected async createConnection(): Promise<any> {
-    return { id: 'api-connection', type: 'http' };
-  }
-
-  protected async closeConnection(connection: any): Promise<void> {
-    // No persistent connection to close
-  }
-
-  protected getConnectionId(connection: any): string {
-    return connection?.id || 'api-connection';
   }
 }
