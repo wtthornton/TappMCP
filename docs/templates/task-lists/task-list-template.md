@@ -9,6 +9,19 @@
 
 [Brief description of the phase objectives and focus areas]
 
+## 🔄 **Master Coordination Reference**
+
+**IMPORTANT**: This task list is part of a larger coordinated effort. Always reference:
+- **Master Coordination**: `docs/implementation/phase-2-mcp-framework/MASTER-TASK-COORDINATION.md`
+- **Project Roadmap**: `docs/implementation/SmartMCPServer_roadmap.md`
+- **Role Switching**: Use natural language commands to switch between roles
+
+### **Coordination Protocol**
+1. **Check Master Coordination** before starting any task
+2. **Update Master Status** when completing tasks
+3. **Coordinate with Other Roles** for dependencies
+4. **Follow Role-Specific Focus** while maintaining project alignment
+
 ## 📊 **Status Tracking Guidelines**
 
 ### **Task Status Values**
