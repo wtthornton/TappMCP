@@ -1,6 +1,6 @@
 /**
  * MCP Framework
- * 
+ *
  * Advanced Model Context Protocol Framework implementation
  * Provides standardized patterns for tools, resources, and prompts
  */

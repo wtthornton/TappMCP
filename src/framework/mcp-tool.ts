@@ -1,6 +1,6 @@
 /**
  * MCP Tool Base Class
- * 
+ *
  * Provides the foundation for all MCP tools with standardized patterns for:
  * - Input validation using Zod schemas
  * - Output generation with business context
@@ -57,19 +57,19 @@ export abstract class MCPTool<TInput = any, TOutput = any> {
   async execute(input: TInput, context?: MCPToolContext): Promise<MCPToolResult<TOutput>> {
     const startTime = performance.now();
     const requestId = context?.requestId || this.generateRequestId();
-    
+
     try {
       // Validate input
       const validatedInput = await this.validateInput(input);
-      
+
       // Execute tool logic
       const result = await this.executeInternal(validatedInput, context);
-      
+
       // Validate output
       const validatedOutput = await this.validateOutput(result);
-      
+
       const executionTime = performance.now() - startTime;
-      
+
       // Log successful execution
       this.logger.info('Tool execution successful', {
         toolName: this.config.name,
@@ -77,7 +77,7 @@ export abstract class MCPTool<TInput = any, TOutput = any> {
         executionTime,
         timestamp: new Date().toISOString()
       });
-      
+
       return {
         success: true,
         data: validatedOutput,
@@ -88,11 +88,11 @@ export abstract class MCPTool<TInput = any, TOutput = any> {
           version: this.config.version
         }
       };
-      
+
     } catch (error) {
       const executionTime = performance.now() - startTime;
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      
+
       // Log error
       this.logger.error('Tool execution failed', {
         toolName: this.config.name,
@@ -101,7 +101,7 @@ export abstract class MCPTool<TInput = any, TOutput = any> {
         executionTime,
         timestamp: new Date().toISOString()
       });
-      
+
       return {
         success: false,
         error: errorMessage,
@@ -196,7 +196,7 @@ export abstract class MCPTool<TInput = any, TOutput = any> {
 
 /**
  * MCP Tool Factory
- * 
+ *
  * Creates and manages MCP tool instances
  */
 export class MCPToolFactory {

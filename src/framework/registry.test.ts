@@ -1,6 +1,6 @@
 /**
  * MCP Registry Tests
- * 
+ *
  * Comprehensive test suite for MCP Registry system
  */
 
@@ -173,7 +173,7 @@ describe('MCPRegistry', () => {
     it('should discover components when enabled', async () => {
       await registry.initialize();
       await registry.discoverComponents();
-      
+
       // Discovery is enabled but implementation is placeholder
       expect(true).toBe(true);
     });
@@ -186,7 +186,7 @@ describe('MCPRegistry', () => {
 
       await noDiscoveryRegistry.initialize();
       await noDiscoveryRegistry.discoverComponents();
-      
+
       expect(true).toBe(true);
     });
   });
@@ -248,10 +248,10 @@ describe('MCPRegistry', () => {
   describe('Health Monitoring', () => {
     it('should start health monitoring when enabled', async () => {
       await registry.initialize();
-      
+
       // Wait for health check interval
       await new Promise(resolve => setTimeout(resolve, 1100));
-      
+
       // Should have logged health check
       expect(mockLogger.info).toHaveBeenCalledWith(
         'Health monitoring check',
@@ -271,7 +271,7 @@ describe('MCPRegistry', () => {
   describe('Registry Cleanup', () => {
     it('should cleanup successfully', async () => {
       await registry.initialize();
-      
+
       const tool = new TestMCPTool();
       const resource = new TestMCPResource();
       const prompt = new TestMCPPrompt();

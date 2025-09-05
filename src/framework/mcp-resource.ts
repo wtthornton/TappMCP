@@ -1,6 +1,6 @@
 /**
  * MCP Resource Base Class
- * 
+ *
  * Provides the foundation for all MCP resources with standardized patterns for:
  * - Resource lifecycle management
  * - Connection pooling and management
@@ -74,7 +74,7 @@ export abstract class MCPResource<TConnection = any, TData = any> {
     try {
       await this.initializeInternal();
       this.isInitialized = true;
-      
+
       this.logger.info('Resource initialized successfully', {
         resourceName: this.config.name,
         type: this.config.type,
@@ -279,7 +279,7 @@ export abstract class MCPResource<TConnection = any, TData = any> {
       const connection = await this.getConnection();
       const isHealthy = await this.testConnection(connection);
       await this.returnConnection(connection);
-      
+
       return isHealthy;
     } catch (error) {
       this.logger.error('Health check failed', {
@@ -341,7 +341,7 @@ export abstract class MCPResource<TConnection = any, TData = any> {
 
 /**
  * MCP Resource Factory
- * 
+ *
  * Creates and manages MCP resource instances
  */
 export class MCPResourceFactory {

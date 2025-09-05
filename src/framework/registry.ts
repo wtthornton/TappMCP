@@ -1,6 +1,6 @@
 /**
  * MCP Registry System
- * 
+ *
  * Centralized registry for managing MCP tools, resources, and prompts
  * Provides discovery, dependency injection, and lifecycle management
  */
@@ -233,15 +233,15 @@ export class MCPRegistry {
       prompts.map(prompt => prompt.healthCheck())
     );
 
-    const healthyTools = toolHealthChecks.filter(result => 
+    const healthyTools = toolHealthChecks.filter(result =>
       result.status === 'fulfilled' && result.value
     ).length;
 
-    const healthyResources = resourceHealthChecks.filter(result => 
+    const healthyResources = resourceHealthChecks.filter(result =>
       result.status === 'fulfilled' && result.value
     ).length;
 
-    const healthyPrompts = promptHealthChecks.filter(result => 
+    const healthyPrompts = promptHealthChecks.filter(result =>
       result.status === 'fulfilled' && result.value
     ).length;
 
@@ -289,7 +289,7 @@ export class MCPRegistry {
     this.healthCheckInterval = setInterval(async () => {
       try {
         const stats = await this.getStats();
-        
+
         this.logger.info('Health monitoring check', {
           stats,
           timestamp: new Date().toISOString()

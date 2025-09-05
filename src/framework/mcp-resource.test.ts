@@ -1,6 +1,6 @@
 /**
  * MCP Resource Tests
- * 
+ *
  * Comprehensive test suite for MCP Resource base class and factory
  */
 
@@ -119,7 +119,7 @@ describe('MCPResource', () => {
     it('should get and return connection', async () => {
       const connection = await testResource.getConnection();
       expect(connection).toMatch(/^connection_/);
-      
+
       await testResource.returnConnection(connection);
       expect(true).toBe(true); // No error on return
     });
@@ -346,7 +346,7 @@ describe('MCPResourceFactory', () => {
     it('should set logger for factory', () => {
       const mockLogger = { info: vi.fn(), error: vi.fn() };
       MCPResourceFactory.setLogger(mockLogger);
-      
+
       // Logger is set but not directly testable without implementation details
       expect(true).toBe(true); // Placeholder test
     });

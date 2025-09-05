@@ -1,6 +1,6 @@
 /**
  * MCP Prompt Base Class
- * 
+ *
  * Provides the foundation for all MCP prompts with standardized patterns for:
  * - Template management and rendering
  * - Context management and memory
@@ -184,7 +184,7 @@ export abstract class MCPPrompt<TVariables = any, TOutput = any> {
     context?: MCPPromptContext
   ): Promise<string> {
     const templateKey = this.generateTemplateKey(variables, context);
-    
+
     // Check cache first
     if (this.config.cacheConfig?.enabled && this.templateCache.has(templateKey)) {
       return this.templateCache.get(templateKey)!;
@@ -206,7 +206,7 @@ export abstract class MCPPrompt<TVariables = any, TOutput = any> {
           renderedTemplate = renderedTemplate.replace(new RegExp(placeholder, 'g'), String(value));
         }
       }
-      
+
       // Also replace businessContext variables
       if (context.businessContext) {
         for (const [key, value] of Object.entries(context.businessContext)) {
@@ -221,7 +221,7 @@ export abstract class MCPPrompt<TVariables = any, TOutput = any> {
     // Cache the rendered template
     if (this.config.cacheConfig?.enabled) {
       this.templateCache.set(templateKey, renderedTemplate);
-      
+
       // Cleanup cache if it exceeds max size
       if (this.templateCache.size > (this.config.cacheConfig.maxSize || 100)) {
         const firstKey = this.templateCache.keys().next().value;
@@ -369,7 +369,7 @@ export abstract class MCPPrompt<TVariables = any, TOutput = any> {
 
 /**
  * MCP Prompt Factory
- * 
+ *
  * Creates and manages MCP prompt instances
  */
 export class MCPPromptFactory {

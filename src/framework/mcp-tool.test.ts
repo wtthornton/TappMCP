@@ -1,6 +1,6 @@
 /**
  * MCP Tool Tests
- * 
+ *
  * Comprehensive test suite for MCP Tool base class and factory
  */
 
@@ -142,11 +142,11 @@ describe('MCPTool', () => {
     it('should execute within acceptable time limits', async () => {
       const input = { input: 'test input' };
       const startTime = Date.now();
-      
+
       const result = await testTool.execute(input);
-      
+
       const executionTime = Date.now() - startTime;
-      
+
       expect(result.success).toBe(true);
       expect(executionTime).toBeLessThan(100); // Should be much faster than 100ms
     });
@@ -247,7 +247,7 @@ describe('MCPToolFactory', () => {
     it('should set logger for factory', () => {
       const mockLogger = { info: vi.fn(), error: vi.fn() };
       MCPToolFactory.setLogger(mockLogger);
-      
+
       // Logger is set but not directly testable without implementation details
       expect(true).toBe(true); // Placeholder test
     });

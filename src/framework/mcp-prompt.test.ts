@@ -1,6 +1,6 @@
 /**
  * MCP Prompt Tests
- * 
+ *
  * Comprehensive test suite for MCP Prompt base class and factory
  */
 
@@ -169,7 +169,7 @@ describe('MCPPrompt', () => {
   describe('Caching', () => {
     it('should cache generated prompts', async () => {
       const variables = { name: 'John', task: 'write tests' };
-      
+
       // First generation
       const result1 = await testPrompt.generate(variables);
       expect(result1.success).toBe(true);
@@ -209,11 +209,11 @@ describe('MCPPrompt', () => {
     it('should generate prompts within acceptable time limits', async () => {
       const variables = { name: 'John', task: 'write tests' };
       const startTime = Date.now();
-      
+
       const result = await testPrompt.generate(variables);
-      
+
       const executionTime = Date.now() - startTime;
-      
+
       expect(result.success).toBe(true);
       expect(executionTime).toBeLessThan(100); // Should be much faster than 100ms
     });
@@ -347,7 +347,7 @@ describe('MCPPromptFactory', () => {
     it('should set logger for factory', () => {
       const mockLogger = { info: vi.fn(), error: vi.fn() };
       MCPPromptFactory.setLogger(mockLogger);
-      
+
       // Logger is set but not directly testable without implementation details
       expect(true).toBe(true); // Placeholder test
     });
