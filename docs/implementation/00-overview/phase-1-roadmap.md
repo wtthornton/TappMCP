@@ -24,6 +24,7 @@
 - **Deliverable**: Working MCP server with smart_begin tool (standalone)
 - **Success**: <200ms response time, ≥70% test coverage
 - **Target Users**: Vibe Coders
+- **📋 Detailed Tasks**: See `docs/implementation/01-phase-1a/tasks/` for role-specific task lists
 
 ### **Phase 1A-1B Integration (Week 3): Integration Testing**
 - **Scope**: Integration testing between smart_begin and smart_write tools
@@ -36,6 +37,7 @@
 - **Deliverable**: smart_begin + smart_write tools working together
 - **Success**: Code generation <200ms, TypeScript strict compliance, seamless integration
 - **Target Users**: Vibe Coders
+- **📋 Detailed Tasks**: See `docs/implementation/02-phase-1b/tasks/` for role-specific task lists
 
 ### **Phase 1B-1C Integration (Week 6): Integration Testing**
 - **Scope**: Integration testing between 2-tool system and smart_finish tool
@@ -48,6 +50,7 @@
 - **Deliverable**: smart_finish tool added to integrated system
 - **Success**: Quality validation <200ms, comprehensive scorecard generation
 - **Target Users**: Vibe Coders
+- **📋 Detailed Tasks**: See `docs/implementation/03-phase-1c/tasks/` for role-specific task lists
 
 ### **Phase 1C-2A Integration (Week 9): Integration Testing**
 - **Scope**: Integration testing between 3-tool system and smart_plan tool with external MCPs
@@ -60,6 +63,7 @@
 - **Deliverable**: smart_plan tool with real external MCP integration
 - **Success**: Plan generation <300ms, external API integration <500ms
 - **Target Users**: Vibe Coders + Strategy People
+- **📋 Detailed Tasks**: See `docs/implementation/04-phase-2a/tasks/` for role-specific task lists
 
 ### **Phase 2A-2B Integration (Week 12): Integration Testing**
 - **Scope**: Integration testing between 4-tool system and smart_orchestrate tool
@@ -69,6 +73,7 @@
 
 ### **Phase 2B (Weeks 13-14): Complete 5-Tool MVP**
 - **Scope**: Complete workflow orchestration with business context management
+- **📋 Detailed Tasks**: See `docs/implementation/05-phase-2b/tasks/` for role-specific task lists
 - **Deliverable**: smart_orchestrate tool with full system integration
 - **Success**: Orchestration <500ms, context preservation ≥98%
 - **Target Users**: Vibe Coders + Strategy People + Non-technical Founders

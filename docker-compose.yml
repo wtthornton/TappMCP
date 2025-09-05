@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   smart-mcp:
-    build: 
+    build:
       context: .
       target: production
     ports:
@@ -35,7 +35,7 @@ services:
 
   # Development service
   smart-mcp-dev:
-    build: 
+    build:
       context: .
       target: builder
     ports:

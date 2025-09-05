@@ -10,10 +10,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 3. **Review Role Requirements**: Check role-specific documentation and guidelines
 4. **Validate Environment**: Ensure all tools are installed and configured
 5. **Follow TDD Approach**: Write tests BEFORE implementing features
+6. **TypeScript Strict Mode**: Always use explicit types, especially in callbacks - NO IMPLICIT ANY
 
 **Process Violations Will Result In:**
 - Test failures and quality issues
-- Role compliance failure  
+- Role compliance failure
 - Potential project failure
 
 ## Essential Commands
@@ -126,6 +127,7 @@ This is a Model Context Protocol (MCP) server built with TypeScript and Node.js.
 - All tools use JSON Schema validation via Zod
 - Comprehensive error handling with structured responses
 - Test-Driven Development (TDD) approach
+- TypeScript strict mode enabled - explicit typing required for all parameters
 - Schema-locked I/O for all tool interactions
 
 ### Quality Standards
@@ -140,8 +142,17 @@ This is a Model Context Protocol (MCP) server built with TypeScript and Node.js.
 **TypeScript Configuration:**
 - Strict null checks enabled
 - Exact optional property types
-- No implicit any
+- No implicit any - ALL parameters must be explicitly typed
 - No unused locals or parameters
+
+**CRITICAL: TypeScript Callback Typing:**
+```typescript
+// ✅ CORRECT - explicit typing required
+expect(results.some((item: { id: string }) => item.id === 'test')).toBe(true)
+
+// ❌ WRONG - will fail in strict mode
+expect(results.some(item => item.id === 'test')).toBe(true)
+```
 
 ### Role-Based Development
 
@@ -197,6 +208,33 @@ The project implements 6 specialized AI roles. When working on this codebase:
 - Process compliance checklist: `docs/implementation/06-supporting-docs/process-compliance-checklist.md`
 - Role switching guide: `docs/implementation/06-supporting-docs/role-switching-guide.md`
 - Lessons from failures: `docs/lessons/project/phase-1c-role-compliance-failure.md`
+
+### MCP Server Troubleshooting
+
+If MCP servers (Context7, TestSprite, Playwright, GitHub, FileSystem) aren't connecting:
+
+**Quick Fixes:**
+1. **Restart Cursor completely** - MCP connections initialize at startup
+2. **Install MCP packages globally:**
+   ```bash
+   npm install -g @modelcontextprotocol/server-filesystem@latest
+   npm install -g @modelcontextprotocol/server-github@latest  
+   npm install -g @testsprite/testsprite-mcp@latest
+   npm install -g @playwright/mcp@latest
+   ```
+3. **Check MCP status** - Go to Cursor Settings > MCP to verify connection status
+4. **Verify tokens** - Ensure GitHub token and API keys are valid
+
+**Common Issues:**
+- MCP packages not globally installed
+- Windows path issues with filesystem server
+- Network connectivity for remote servers (Context7)
+- Invalid or expired API tokens
+- Cursor needs restart after MCP configuration changes
+
+**Verification:**
+- Test GitHub token: `curl -H "Authorization: token YOUR_TOKEN" https://api.github.com/user`
+- Test Context7: Server responds at https://mcp.context7.com/mcp (requires MCP protocol)
 
 ### Training Resources
 

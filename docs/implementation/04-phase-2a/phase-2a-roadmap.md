@@ -10,6 +10,12 @@
 ### **Primary Goal**
 Implement the `smart_plan` tool that analyzes business requests, creates development plans, and integrates with external MCP services for enhanced planning capabilities.
 
+### **📋 Detailed Task Lists**
+For specific implementation tasks by role:
+- **Developer Tasks**: `docs/implementation/04-phase-2a/tasks/developer-tasks.md`
+- **Operations Tasks**: `docs/implementation/04-phase-2a/tasks/operations-engineer-tasks.md`
+- **QA Tasks**: `docs/implementation/04-phase-2a/tasks/qa-engineer-tasks.md`
+
 ### **Success Criteria**
 - **Technical Metrics (Priority 1)**:
   - Plan generation completes in <300ms

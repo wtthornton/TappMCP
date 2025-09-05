@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "Bash(cat:*)",
+      "Bash(npx vitest run:*)",
+      "Bash(npm test)",
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "Bash(git commit:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm test:*)",
+      "Read(//c/Users/tappt/.cursor/**)",
+      "Bash(npx @modelcontextprotocol/server-filesystem@latest:*)",
+      "Bash(curl:*)",
+      "Bash(npm install:*)",
+      "Bash(npm config:*)",
+      "Bash(npx @testsprite/testsprite-mcp@latest:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
