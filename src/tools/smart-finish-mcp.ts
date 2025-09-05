@@ -2,9 +2,10 @@
 
 import { z } from 'zod';
 import { MCPTool, MCPToolConfig, MCPToolContext, MCPToolResult } from '../framework/mcp-tool.js';
-import { SecurityScanner } from '../core/security-scanner.js';
-import { StaticAnalyzer } from '../core/static-analyzer.js';
-import { QualityScorecardGenerator } from '../core/quality-scorecard.js';
+// TODO: Import these when implemented
+// import { SecurityScanner } from '../core/security-scanner.js';
+// import { StaticAnalyzer } from '../core/static-analyzer.js';
+// import { QualityScorecardGenerator } from '../core/quality-scorecard.js';
 
 // Input schema for smart_finish tool
 const SmartFinishInputSchema = z.object({
@@ -139,9 +140,9 @@ export type SmartFinishOutput = z.infer<typeof SmartFinishOutputSchema>;
  * performance monitoring, and standardized patterns.
  */
 export class SmartFinishMCPTool extends MCPTool<SmartFinishInput, SmartFinishOutput> {
-  private _securityScanner?: SecurityScanner; // TODO: Implement security scanning
-  private _staticAnalyzer?: StaticAnalyzer; // TODO: Implement static analysis
-  private _qualityScorecardGenerator?: QualityScorecardGenerator; // TODO: Implement quality scorecard
+  // TODO: Implement security scanning
+  // TODO: Implement static analysis
+  // TODO: Implement quality scorecard
 
   constructor() {
     super(config);
@@ -216,10 +217,9 @@ export class SmartFinishMCPTool extends MCPTool<SmartFinishInput, SmartFinishOut
    * Initialize security and analysis tools
    */
   private async initializeScanners(): Promise<void> {
-    const projectPath = process.cwd();
-    // this._securityScanner = new SecurityScanner(projectPath); // TODO: Implement
-    // this._staticAnalyzer = new StaticAnalyzer(projectPath); // TODO: Implement
-    // this._qualityScorecardGenerator = new QualityScorecardGenerator(); // TODO: Implement
+    // TODO: Implement security scanner initialization
+    // TODO: Implement static analyzer initialization
+    // TODO: Implement quality scorecard generator initialization
   }
 
   /**

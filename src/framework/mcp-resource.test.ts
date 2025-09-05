@@ -37,6 +37,15 @@ class TestMCPResource extends MCPResource<string, any> {
   protected async testConnection(connection: string): Promise<boolean> {
     return connection.startsWith('connection_');
   }
+
+  // Public methods for testing protected functionality
+  async testGetConnection(): Promise<string> {
+    return this.getConnection();
+  }
+
+  async testReturnConnection(connection: string): Promise<void> {
+    return this.returnConnection(connection);
+  }
 }
 
 describe('MCPResource', () => {
@@ -111,10 +120,10 @@ describe('MCPResource', () => {
     });
 
     it('should get and return connection', async () => {
-      const connection = await testResource.getConnection();
+      const connection = await testResource.testGetConnection();
       expect(connection).toMatch(/^connection_/);
 
-      await testResource.returnConnection(connection);
+      await testResource.testReturnConnection(connection);
       expect(true).toBe(true); // No error on return
     });
 

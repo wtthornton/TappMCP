@@ -575,7 +575,7 @@ export class DatabaseResource extends MCPResource {
   /**
    * Return connection to pool
    */
-  private async returnConnection(connection: any): Promise<void> {
+  async returnConnection(connection: any): Promise<void> {
     if (connection?.connected) {
       this.connectionPool.push(connection);
     } else {
