@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../index.html">All files</a> / <a href="index.html">src/brokers</a> memory-broker.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">46.77% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>268/573</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">52.63% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>10/19</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">50% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>9/18</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">46.77% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>268/573</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -1211,7 +1211,7 @@
 &nbsp;
 /**
  * Memory Broker for MCP Integration
- * 
+ *
  * Provides integration with memory services for:
  * - Lessons learned storage and retrieval
  * - Pattern recognition and matching
@@ -1306,10 +1306,10 @@ export class MemoryBroker {
       enableFallback: config.<span class="branch-0 cbranch-no" title="branch not covered" >enableFallback ?? true,</span>
       enablePersistence: config.<span class="branch-0 cbranch-no" title="branch not covered" >enablePersistence ?? false,</span>
     };
-    
+
     // For now, simulate service availability based on environment
     this.isAvailable = process.env.NODE_ENV !== 'test';
-    
+
     // Initialize some sample data for demonstration
     this.initializeSampleData();
   }
@@ -1319,7 +1319,7 @@ export class MemoryBroker {
    */
   async getLessonsLearned(domain: string, problem: string): Promise&lt;Lesson[]&gt; {
     const startTime = Date.now();
-    
+
     try {
       if (!this.<span class="branch-0 cbranch-no" title="branch not covered" >isAvailable || process.env.NODE_ENV === 'test') {</span>
         return this.getFallbackLessons(domain, problem);
@@ -1385,7 +1385,7 @@ export class MemoryBroker {
    */
   async getPatterns(problem: string, context: string): Promise&lt;Pattern[]&gt; {
     const startTime = Date.now();
-    
+
     try {
       if (!this.<span class="branch-0 cbranch-no" title="branch not covered" >isAvailable || process.env.NODE_ENV === 'test') {</span>
         return this.getFallbackPatterns(problem, context);
@@ -1440,7 +1440,7 @@ export class MemoryBroker {
    */
   async getInsights(projectType: string, requirements: string): Promise&lt;Insight[]&gt; {
     const startTime = Date.now();
-    
+
     try {
       if (!this.<span class="branch-0 cbranch-no" title="branch not covered" >isAvailable || process.env.NODE_ENV === 'test') {</span>
         return this.getFallbackInsights(projectType, requirements);
@@ -1798,4 +1798,3 @@ export class MemoryBroker {
         <script src="../../block-navigation.js"></script>
     </body>
 </html>
-    

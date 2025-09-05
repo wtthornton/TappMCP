@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../index.html">All files</a> / <a href="index.html">src/brokers</a> websearch-broker.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">44.27% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>178/402</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">46.66% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>7/15</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">46.15% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>6/13</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">44.27% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>178/402</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -869,7 +869,7 @@
 &nbsp;
 /**
  * Web Search Broker for MCP Integration
- * 
+ *
  * Provides integration with web search services for:
  * - Market research and competitive analysis
  * - Current trends and technology insights
@@ -954,7 +954,7 @@ export class WebSearchBroker {
       enableFallback: config.<span class="branch-0 cbranch-no" title="branch not covered" >enableFallback ?? true,</span>
       maxResults: config.<span class="branch-0 cbranch-no" title="branch not covered" >maxResults ?? 10,</span>
     };
-    
+
     // For now, simulate service availability based on environment
     this.isAvailable = process.env.NODE_ENV !== 'test';
   }
@@ -965,7 +965,7 @@ export class WebSearchBroker {
   async searchRelevantInfo(query: string, maxResults?: number): Promise&lt;SearchResult[]&gt; {
     const startTime = Date.now();
     const resultLimit = <span class="branch-0 cbranch-no" title="branch not covered" >maxResults ?? this.config.maxResults;</span>
-    
+
     try {
       if (!this.<span class="branch-0 cbranch-no" title="branch not covered" >isAvailable || process.env.NODE_ENV === 'test') {</span>
         return this.getFallbackSearchResults(query, resultLimit);
@@ -1000,7 +1000,7 @@ export class WebSearchBroker {
    */
   async getCurrentTrends(topic: string): Promise&lt;Trend[]&gt; {
     const startTime = Date.now();
-    
+
     try {
       if (!this.<span class="branch-0 cbranch-no" title="branch not covered" >isAvailable || process.env.NODE_ENV === 'test') {</span>
         return this.getFallbackTrends(topic);
@@ -1285,4 +1285,3 @@ export class WebSearchBroker {
         <script src="../../block-navigation.js"></script>
     </body>
 </html>
-    

@@ -12,7 +12,7 @@ describe('Debug Test', () => {
 
   it('should call handleSmartFinish with minimal input', async () => {
     const { handleSmartFinish } = await import('./src/tools/smart_finish.js');
-    
+
     const input = {
       projectId: 'proj_test_123',
       codeIds: ['code_123', 'code_456'],

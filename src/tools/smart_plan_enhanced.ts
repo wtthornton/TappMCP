@@ -3,7 +3,11 @@
 import { z } from 'zod';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { PlanGenerator, type PlanGenerationInput } from '../core/plan-generator.js';
-import { MCPCoordinator, type KnowledgeRequest, type ExternalKnowledge } from '../core/mcp-coordinator.js';
+import {
+  MCPCoordinator,
+  type KnowledgeRequest,
+  type ExternalKnowledge,
+} from '../core/mcp-coordinator.js';
 
 // Enhanced input schema for Phase 2A requirements
 const SmartPlanInputSchema = z.object({
@@ -215,8 +219,8 @@ export async function handleSmartPlan(input: unknown): Promise<SmartPlanResponse
 
     // Gather external knowledge if requested (Phase 2A requirement)
     let externalKnowledge: ExternalKnowledge[] = [];
-    let integrationStartTime = Date.now();
-    
+    const integrationStartTime = Date.now();
+
     if (validatedInput.externalSources) {
       const knowledgeRequest: KnowledgeRequest = {
         projectId: validatedInput.projectId,
@@ -234,14 +238,14 @@ export async function handleSmartPlan(input: unknown): Promise<SmartPlanResponse
         console.warn('External knowledge gathering failed:', error);
       }
     }
-    
+
     const integrationTime = Date.now() - integrationStartTime;
 
     // Generate comprehensive plan using business analysis and external knowledge
     const enhancedPlanInput = {
       ...planInput,
     };
-    
+
     if (externalKnowledge.length > 0) {
       enhancedPlanInput.externalKnowledge = externalKnowledge.slice(0, 5).map(k => ({
         id: k.id,
@@ -252,7 +256,7 @@ export async function handleSmartPlan(input: unknown): Promise<SmartPlanResponse
         relevanceScore: k.relevanceScore,
       }));
     }
-    
+
     const comprehensivePlan = await planGenerator.generatePlan(enhancedPlanInput);
 
     // Validate plan quality

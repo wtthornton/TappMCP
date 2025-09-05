@@ -2,7 +2,7 @@
 
 /**
  * Web Search Broker for MCP Integration
- * 
+ *
  * Provides integration with web search services for:
  * - Market research and competitive analysis
  * - Current trends and technology insights
@@ -87,7 +87,7 @@ export class WebSearchBroker {
       enableFallback: config.enableFallback ?? true,
       maxResults: config.maxResults ?? 10,
     };
-    
+
     // For now, simulate service availability based on environment
     this.isAvailable = process.env.NODE_ENV !== 'test';
   }
@@ -98,7 +98,7 @@ export class WebSearchBroker {
   async searchRelevantInfo(query: string, maxResults?: number): Promise<SearchResult[]> {
     const startTime = Date.now();
     const resultLimit = maxResults ?? this.config.maxResults;
-    
+
     try {
       if (!this.isAvailable || process.env.NODE_ENV === 'test') {
         return this.getFallbackSearchResults(query, resultLimit);
@@ -106,16 +106,16 @@ export class WebSearchBroker {
 
       // Simulate Web Search API call
       await this.simulateAPICall();
-      
+
       const results: SearchResult[] = Array.from({ length: Math.min(resultLimit, 5) }, (_, i) => ({
         id: `search-${query.replace(/\s+/g, '-')}-${i + 1}`,
         title: `${query} - Result ${i + 1}`,
         url: `https://example-${i + 1}.com/article/${query.replace(/\s+/g, '-')}`,
         snippet: `Comprehensive information about ${query}. This search result provides detailed insights and analysis relevant to your research on ${query}.`,
-        publishedDate: new Date(Date.now() - (i * 24 * 60 * 60 * 1000)), // Recent dates
+        publishedDate: new Date(Date.now() - i * 24 * 60 * 60 * 1000), // Recent dates
         source: `Source ${i + 1}`,
-        relevanceScore: 0.95 - (i * 0.05), // Decreasing relevance
-        trustScore: 0.85 + (Math.random() * 0.1), // Random trust score
+        relevanceScore: 0.95 - i * 0.05, // Decreasing relevance
+        trustScore: 0.85 + Math.random() * 0.1, // Random trust score
       }));
 
       this.validateResponseTime(startTime, 'searchRelevantInfo');
@@ -124,7 +124,9 @@ export class WebSearchBroker {
       if (this.config.enableFallback) {
         return this.getFallbackSearchResults(query, resultLimit);
       }
-      throw new Error(`Web search failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Web search failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -133,7 +135,7 @@ export class WebSearchBroker {
    */
   async getCurrentTrends(topic: string): Promise<Trend[]> {
     const startTime = Date.now();
-    
+
     try {
       if (!this.isAvailable || process.env.NODE_ENV === 'test') {
         return this.getFallbackTrends(topic);
@@ -141,7 +143,7 @@ export class WebSearchBroker {
 
       // Simulate Web Search API call
       await this.simulateAPICall();
-      
+
       const trends: Trend[] = [
         {
           id: `trend-${topic}-1`,
@@ -184,7 +186,9 @@ export class WebSearchBroker {
       if (this.config.enableFallback) {
         return this.getFallbackTrends(topic);
       }
-      throw new Error(`Trends retrieval failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Trends retrieval failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -193,7 +197,7 @@ export class WebSearchBroker {
    */
   async validateTechnicalAssumptions(assumption: string): Promise<ValidationResult> {
     const startTime = Date.now();
-    
+
     try {
       if (!this.isAvailable || process.env.NODE_ENV === 'test') {
         return this.getFallbackValidation(assumption);
@@ -201,15 +205,15 @@ export class WebSearchBroker {
 
       // Simulate Web Search API call
       await this.simulateAPICall();
-      
+
       // Simulate search for supporting/contradicting evidence
       const sources = await this.searchRelevantInfo(`validate "${assumption}"`, 3);
-      
+
       const result: ValidationResult = {
         id: `validation-${assumption.slice(0, 20).replace(/\s+/g, '-')}`,
         assumption,
         isValid: Math.random() > 0.3, // 70% chance of being valid
-        confidence: 0.75 + (Math.random() * 0.2), // 75-95% confidence
+        confidence: 0.75 + Math.random() * 0.2, // 75-95% confidence
         sources,
         supportingEvidence: [
           `Recent studies support aspects of: ${assumption}`,
@@ -229,7 +233,9 @@ export class WebSearchBroker {
       if (this.config.enableFallback) {
         return this.getFallbackValidation(assumption);
       }
-      throw new Error(`Assumption validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Assumption validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -238,7 +244,7 @@ export class WebSearchBroker {
    */
   async getMarketAnalysis(domain: string): Promise<MarketAnalysis> {
     const startTime = Date.now();
-    
+
     try {
       if (!this.isAvailable || process.env.NODE_ENV === 'test') {
         return this.getFallbackMarketAnalysis(domain);
@@ -246,7 +252,7 @@ export class WebSearchBroker {
 
       // Simulate Web Search API call
       await this.simulateAPICall();
-      
+
       const analysis: MarketAnalysis = {
         id: `market-${domain.replace(/\s+/g, '-')}`,
         domain,
@@ -300,7 +306,9 @@ export class WebSearchBroker {
       if (this.config.enableFallback) {
         return this.getFallbackMarketAnalysis(domain);
       }
-      throw new Error(`Market analysis failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Market analysis failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -320,7 +328,7 @@ export class WebSearchBroker {
    * Simulate API call with configurable delay
    */
   private async simulateAPICall(delay = 200): Promise<void> {
-    await new Promise((resolve) => setTimeout(resolve, delay));
+    await new Promise(resolve => setTimeout(resolve, delay));
   }
 
   /**
@@ -329,7 +337,9 @@ export class WebSearchBroker {
   private validateResponseTime(startTime: number, operation: string): void {
     const duration = Date.now() - startTime;
     if (duration > this.config.timeout) {
-      console.warn(`WebSearch ${operation} took ${duration}ms, exceeding ${this.config.timeout}ms limit`);
+      console.warn(
+        `WebSearch ${operation} took ${duration}ms, exceeding ${this.config.timeout}ms limit`
+      );
     }
   }
 
@@ -342,7 +352,7 @@ export class WebSearchBroker {
       url: `https://fallback-example.com/${query.replace(/\s+/g, '-')}`,
       snippet: `Basic information about ${query}. Web search service unavailable.`,
       source: 'Fallback Source',
-      relevanceScore: 0.5 - (i * 0.1),
+      relevanceScore: 0.5 - i * 0.1,
       trustScore: 0.6,
     }));
   }

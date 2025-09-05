@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../index.html">All files</a> / <a href="index.html">src/brokers</a> context7-broker.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">53% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>203/383</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">44.44% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>8/18</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">61.53% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>8/13</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">53% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>203/383</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -831,7 +831,7 @@
 &nbsp;
 /**
  * Context7 Broker for MCP Integration
- * 
+ *
  * Provides integration with Context7 service for:
  * - Documentation retrieval
  * - Code examples
@@ -905,7 +905,7 @@ export class Context7Broker {
       maxRetries: config.maxRetries ?? 2,
       enableFallback: config.<span class="branch-0 cbranch-no" title="branch not covered" >enableFallback ?? true,</span>
     };
-    
+
     // For now, simulate service availability based on environment
     this.isAvailable = process.env.NODE_ENV !== 'test';
   }
@@ -915,7 +915,7 @@ export class Context7Broker {
    */
   async getDocumentation(topic: string, version?: string): Promise&lt;Documentation[]&gt; {
     const startTime = Date.now();
-    
+
     try {
       if (!this.<span class="branch-0 cbranch-no" title="branch not covered" >isAvailable || process.env.NODE_ENV === 'test') {</span>
         return this.getFallbackDocumentation(topic, version);
@@ -960,7 +960,7 @@ export class Context7Broker {
    */
   async getCodeExamples(technology: string, pattern: string): Promise&lt;CodeExample[]&gt; {
     const startTime = Date.now();
-    
+
     try {
       if (!this.<span class="branch-0 cbranch-no" title="branch not covered" >isAvailable || process.env.NODE_ENV === 'test') {</span>
         return this.getFallbackCodeExamples(technology, pattern);
@@ -1007,7 +1007,7 @@ export class Context7Broker {
    */
   async getBestPractices(domain: string): Promise&lt;BestPractice[]&gt; {
     const startTime = Date.now();
-    
+
     try {
       if (!this.<span class="branch-0 cbranch-no" title="branch not covered" >isAvailable || process.env.NODE_ENV === 'test') {</span>
         return this.getFallbackBestPractices(domain);
@@ -1228,4 +1228,3 @@ export class Context7Broker {
         <script src="../../block-navigation.js"></script>
     </body>
 </html>
-    

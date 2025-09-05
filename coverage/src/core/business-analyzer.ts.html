@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../index.html">All files</a> / <a href="index.html">src/core</a> business-analyzer.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">95.54% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>665/696</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">89.77% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>79/88</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>13/13</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">95.54% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>665/696</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -1644,7 +1644,7 @@ export class BusinessAnalyzer {
     let technicalScore = 0;
     let businessScore = 0;
     let integrationScore = 0;
-    
+
     // Consider external knowledge for complexity assessment
     if (externalKnowledge &amp;&amp; externalKnowledge.length &gt; 0) {
       const hasPatterns = externalKnowledge.some(k =&gt; k.type === 'pattern');
@@ -1727,7 +1727,7 @@ export class BusinessAnalyzer {
     }&gt;
   ): Risk[] {
     const risks: Risk[] = [];
-    
+
     // Add risks from external knowledge (lessons learned from failures)
     if (externalKnowledge &amp;&amp; externalKnowledge.length &gt; 0) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
 <span class="cstat-no" title="statement not covered" >      const failureLessons = externalKnowledge.filter(k =&gt; </span>
@@ -1886,7 +1886,7 @@ export class BusinessAnalyzer {
     }&gt;
   ): UserStory[] {
     const stories: UserStory[] = [];
-    
+
     // Enhance user stories with external knowledge (examples and best practices)
     let externalExamples: string[] = [];
     if (externalKnowledge &amp;&amp; externalKnowledge.length &gt; 0) {
@@ -1944,7 +1944,7 @@ export class BusinessAnalyzer {
     externalKnowledge?: Array&lt;{ content: string; type: string }&gt;
   ): string[] {
     const goals: string[] = [];
-    
+
     // Add goals from external knowledge if available
     if (externalKnowledge &amp;&amp; externalKnowledge.length &gt; 0) {
       const trendGoals = externalKnowledge
@@ -2004,7 +2004,7 @@ export class BusinessAnalyzer {
     externalKnowledge?: Array&lt;{ content: string; type: string }&gt;
   ): string[] {
     const users: string[] = [];
-    
+
     // Add users from external knowledge if available
     if (externalKnowledge &amp;&amp; externalKnowledge.length &gt; 0) {
       const trendUsers = externalKnowledge
@@ -2013,7 +2013,7 @@ export class BusinessAnalyzer {
         .slice(0, 1);
       users.push(...trendUsers);
     }
-    
+
     const userPatterns = [
       /(?:users?|customers?|clients?|stakeholders?)\s+(?:are|include|such as)?\s*([^.!?]+)/gi,
       /(?:for|targeting|serving)\s+([^.!?]*(?:users?|customers?|clients?)[^.!?]*)/gi,
@@ -2042,7 +2042,7 @@ export class BusinessAnalyzer {
     externalKnowledge?: Array&lt;{ content: string; type: string }&gt;
   ): string[] {
     const criteria = goals.map(goal =&gt; `Successfully ${goal.toLowerCase()}`);
-    
+
     // Add criteria from external best practices
     if (externalKnowledge &amp;&amp; externalKnowledge.length &gt; 0) {
       const bestPracticeCriteria = externalKnowledge
@@ -2051,7 +2051,7 @@ export class BusinessAnalyzer {
         .slice(0, 1);
       criteria.push(...bestPracticeCriteria);
     }
-    
+
     return criteria;
   }
 &nbsp;
@@ -2170,4 +2170,3 @@ export class BusinessAnalyzer {
         <script src="../../block-navigation.js"></script>
     </body>
 </html>
-    

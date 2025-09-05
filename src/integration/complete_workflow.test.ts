@@ -185,30 +185,34 @@ async function validateProject(projectId: string, codeIds: string[]) {
 // Helper function to orchestrate workflow
 async function orchestrateWorkflow(projectId: string) {
   const orchestrationInput = {
-    projectId,
-    workflowType: 'full-development',
-    orchestrationScope: {
-      includePlanning: true,
-      includeDevelopment: true,
-      includeTesting: true,
-      includeDeployment: true,
-      includeMonitoring: true,
+    request:
+      'Complete full-stack enterprise application development with comprehensive CI/CD pipeline',
+    options: {
+      businessContext: {
+        projectId,
+        businessGoals: [
+          'Reduce operational costs',
+          'Improve development velocity',
+          'Ensure high availability',
+        ],
+        requirements: [
+          'Microservices architecture',
+          'Container orchestration',
+          'Automated testing',
+        ],
+        stakeholders: ['development-team', 'operations', 'product-manager'],
+        constraints: { budget: 100000, timeline: '6 months' },
+        success: {
+          metrics: ['deployment frequency', 'lead time', 'system availability'],
+          criteria: ['95% uptime', 'sub-200ms response time'],
+        },
+      },
     },
-    externalIntegrations: [
-      { name: 'GitHub', type: 'tool', priority: 'high' },
-      { name: 'Docker', type: 'tool', priority: 'medium' },
-      { name: 'Docker', type: 'service', priority: 'high' },
-    ],
-    qualityGates: {
-      testCoverage: 90,
-      securityScore: 95,
-      performanceScore: 85,
-    },
-    businessRequirements: {
-      roiTarget: 300,
-      costPrevention: 25000,
-      timeSaved: 8,
-      userSatisfaction: 95,
+    workflow: 'sdlc',
+    externalSources: {
+      useContext7: false,
+      useWebSearch: false,
+      useMemory: false,
     },
   };
 
@@ -318,18 +322,28 @@ describe('Complete 5-Tool Workflow Integration', () => {
 
     // Orchestrate
     const orchestrationInput = {
-      projectId,
-      workflowType: 'full-development',
-      orchestrationScope: {
-        includePlanning: true,
-        includeDevelopment: true,
-        includeTesting: true,
+      request: 'Complete comprehensive workflow with planning, development, and testing phases',
+      options: {
+        businessContext: {
+          projectId,
+          businessGoals: [
+            'Maintain context consistency across all tools',
+            'Ensure data flow integrity',
+          ],
+          requirements: ['Planning phase', 'Development phase', 'Testing phase'],
+          stakeholders: ['development-team', 'qa-team'],
+          constraints: { budget: 30000, timeline: '12 weeks', userSatisfaction: 98 },
+          success: {
+            metrics: ['ROI target: 300%', 'User satisfaction: 98%'],
+            criteria: ['All phases complete successfully'],
+          },
+        },
       },
-      businessRequirements: {
-        roiTarget: 300,
-        costPrevention: 30000,
-        timeSaved: 12,
-        userSatisfaction: 98,
+      workflow: 'sdlc',
+      externalSources: {
+        useContext7: false,
+        useWebSearch: false,
+        useMemory: false,
       },
     };
 
@@ -398,11 +412,22 @@ describe('Complete 5-Tool Workflow Integration', () => {
 
       // Orchestrate
       const orchestrationInput = {
-        projectId,
-        workflowType,
-        orchestrationScope: {
-          includePlanning: true,
-          includeDevelopment: true,
+        request: `Complete ${workflowType} workflow with comprehensive planning and development`,
+        options: {
+          businessContext: {
+            projectId,
+            businessGoals: [`Complete ${workflowType} workflow successfully`],
+            requirements: ['Planning phase', 'Development phase'],
+            stakeholders: ['development-team'],
+            constraints: {},
+            success: { metrics: ['project completion'], criteria: ['tests pass'] },
+          },
+        },
+        workflow: workflowType === 'full-development' ? 'sdlc' : 'project',
+        externalSources: {
+          useContext7: false,
+          useWebSearch: false,
+          useMemory: false,
         },
       };
 
@@ -410,7 +435,8 @@ describe('Complete 5-Tool Workflow Integration', () => {
         orchestrationInput
       )) as SmartOrchestrateResponse;
 
-      expect(orchestrationResult.data?.workflowType).toBe(validType);
+      const expectedWorkflowType = workflowType === 'full-development' ? 'sdlc' : 'project';
+      expect(orchestrationResult.data?.workflowType).toBe(expectedWorkflowType);
     }
   });
 
@@ -470,23 +496,25 @@ describe('Complete 5-Tool Workflow Integration', () => {
 
     // Orchestrate with quality focus
     const orchestrationInput = {
-      projectId,
-      workflowType: 'full-development',
-      orchestrationScope: {
-        includePlanning: true,
-        includeDevelopment: true,
-        includeTesting: true,
-        includeDeployment: true,
+      request: 'Complete comprehensive quality validation workflow with full SDLC coverage',
+      options: {
+        businessContext: {
+          projectId,
+          businessGoals: ['Achieve high quality standards', 'Ensure comprehensive validation'],
+          requirements: ['Planning', 'Development', 'Testing', 'Deployment'],
+          stakeholders: ['development-team', 'qa-team', 'operations'],
+          constraints: { budget: 25000, timeline: '8 weeks' },
+          success: {
+            metrics: ['ROI target: 300%', 'User satisfaction: 95%'],
+            criteria: ['All quality gates pass'],
+          },
+        },
       },
-      externalIntegrations: [
-        { name: 'GitHub', type: 'tool', priority: 'high' },
-        { name: 'Docker', type: 'tool', priority: 'medium' },
-      ],
-      businessRequirements: {
-        roiTarget: 300,
-        costPrevention: 25000,
-        timeSaved: 8,
-        userSatisfaction: 95,
+      workflow: 'sdlc',
+      externalSources: {
+        useContext7: false,
+        useWebSearch: false,
+        useMemory: false,
       },
     };
 

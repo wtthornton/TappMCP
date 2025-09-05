@@ -2,20 +2,39 @@
 
 /**
  * MCP Coordinator for External Service Integration
- * 
+ *
  * Orchestrates and coordinates multiple MCP (Model Context Protocol) services
  * including Context7, Web Search, and Memory brokers for comprehensive
  * external knowledge integration in the Smart Plan tool.
  */
 
-import { Context7Broker, type Documentation, type CodeExample, type BestPractice } from '../brokers/context7-broker.js';
-import { WebSearchBroker, type SearchResult, type Trend, type ValidationResult, type MarketAnalysis } from '../brokers/websearch-broker.js';
+import {
+  Context7Broker,
+  type Documentation,
+  type CodeExample,
+  type BestPractice,
+} from '../brokers/context7-broker.js';
+import {
+  WebSearchBroker,
+  type SearchResult,
+  type Trend,
+  type ValidationResult,
+  type MarketAnalysis,
+} from '../brokers/websearch-broker.js';
 import { MemoryBroker, type Lesson, type Pattern, type Insight } from '../brokers/memory-broker.js';
 
 export interface ExternalKnowledge {
   id: string;
   source: 'context7' | 'websearch' | 'memory';
-  type: 'documentation' | 'example' | 'best-practice' | 'search' | 'trend' | 'lesson' | 'pattern' | 'insight';
+  type:
+    | 'documentation'
+    | 'example'
+    | 'best-practice'
+    | 'search'
+    | 'trend'
+    | 'lesson'
+    | 'pattern'
+    | 'insight';
   title: string;
   content: string;
   relevanceScore: number;
@@ -148,7 +167,9 @@ export class MCPCoordinator {
       if (this.config.enableFallbacks) {
         return this.getFallbackKnowledge(request);
       }
-      throw new Error(`External knowledge gathering failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `External knowledge gathering failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -156,14 +177,17 @@ export class MCPCoordinator {
    * Validate business assumptions using external sources
    */
   async validateAssumptions(assumptions: string[], domain: string): Promise<ValidationResult[]> {
-    const validationPromises = assumptions.map(assumption => 
+    const validationPromises = assumptions.map(assumption =>
       this.webSearch.validateTechnicalAssumptions(`${assumption} in ${domain}`)
     );
 
     try {
       const results = await Promise.allSettled(validationPromises);
       return results
-        .filter((result): result is PromiseFulfilledResult<ValidationResult> => result.status === 'fulfilled')
+        .filter(
+          (result): result is PromiseFulfilledResult<ValidationResult> =>
+            result.status === 'fulfilled'
+        )
         .map(result => result.value);
     } catch (error) {
       console.error('Assumption validation failed:', error);
@@ -174,7 +198,10 @@ export class MCPCoordinator {
   /**
    * Get market intelligence for business planning
    */
-  async getMarketIntelligence(domain: string, businessRequest: string): Promise<{
+  async getMarketIntelligence(
+    domain: string,
+    businessRequest: string
+  ): Promise<{
     analysis: MarketAnalysis | null;
     trends: Trend[];
     insights: Insight[];
@@ -209,7 +236,7 @@ export class MCPCoordinator {
    */
   async getServiceHealth(): Promise<ServiceHealth[]> {
     const services = ['context7', 'websearch', 'memory'] as const;
-    const healthChecks = services.map(async (service) => {
+    const healthChecks = services.map(async service => {
       const startTime = Date.now();
       let isAvailable = false;
 
@@ -286,7 +313,8 @@ export class MCPCoordinator {
       const topics = this.extractTopics(request.businessRequest, request.domain);
 
       // Gather documentation
-      for (const topic of topics.slice(0, 2)) { // Limit to 2 topics for performance
+      for (const topic of topics.slice(0, 2)) {
+        // Limit to 2 topics for performance
         const docs = await this.context7.getDocumentation(topic);
         knowledge.push(...docs.map(doc => this.transformDocumentation(doc)));
 
@@ -341,7 +369,8 @@ export class MCPCoordinator {
       const problems = this.extractProblems(request.businessRequest);
 
       // Get lessons learned
-      for (const problem of problems.slice(0, 2)) { // Limit for performance
+      for (const problem of problems.slice(0, 2)) {
+        // Limit for performance
         const lessons = await this.memory.getLessonsLearned(request.domain, problem);
         knowledge.push(...lessons.map(lesson => this.transformLesson(lesson)));
 
@@ -365,9 +394,16 @@ export class MCPCoordinator {
    */
   private extractTopics(businessRequest: string, domain: string): string[] {
     // Simple extraction - in a real implementation, this could use NLP
-    const commonTech = ['API', 'database', 'authentication', 'security', 'performance', 'monitoring'];
+    const commonTech = [
+      'API',
+      'database',
+      'authentication',
+      'security',
+      'performance',
+      'monitoring',
+    ];
     const topics = [domain];
-    
+
     const requestLower = businessRequest.toLowerCase();
     for (const tech of commonTech) {
       if (requestLower.includes(tech.toLowerCase())) {
@@ -385,7 +421,7 @@ export class MCPCoordinator {
     // Simple extraction - in a real implementation, this could use NLP
     const commonProblems = ['scalability', 'performance', 'security', 'integration', 'deployment'];
     const problems: string[] = [];
-    
+
     const requestLower = businessRequest.toLowerCase();
     for (const problem of commonProblems) {
       if (requestLower.includes(problem)) {
@@ -566,7 +602,8 @@ export class MCPCoordinator {
    */
   private updatePerformanceMetrics(totalTime: number, resultCount: number): void {
     // Log performance metrics for monitoring
-    if (totalTime > 8000) { // 8 second warning threshold
+    if (totalTime > 8000) {
+      // 8 second warning threshold
       console.warn(`MCP knowledge gathering took ${totalTime}ms for ${resultCount} results`);
     }
   }

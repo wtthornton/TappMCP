@@ -2,7 +2,7 @@
 
 /**
  * Context7 Broker for MCP Integration
- * 
+ *
  * Provides integration with Context7 service for:
  * - Documentation retrieval
  * - Code examples
@@ -76,7 +76,7 @@ export class Context7Broker {
       maxRetries: config.maxRetries ?? 2,
       enableFallback: config.enableFallback ?? true,
     };
-    
+
     // For now, simulate service availability based on environment
     this.isAvailable = process.env.NODE_ENV !== 'test';
   }
@@ -86,7 +86,7 @@ export class Context7Broker {
    */
   async getDocumentation(topic: string, version?: string): Promise<Documentation[]> {
     const startTime = Date.now();
-    
+
     try {
       if (!this.isAvailable || process.env.NODE_ENV === 'test') {
         return this.getFallbackDocumentation(topic, version);
@@ -94,7 +94,7 @@ export class Context7Broker {
 
       // Simulate Context7 API call
       await this.simulateAPICall();
-      
+
       const docs: Documentation[] = [
         {
           id: `doc-${topic}-${Date.now()}`,
@@ -122,7 +122,9 @@ export class Context7Broker {
       if (this.config.enableFallback) {
         return this.getFallbackDocumentation(topic, version);
       }
-      throw new Error(`Context7 documentation retrieval failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Context7 documentation retrieval failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -131,7 +133,7 @@ export class Context7Broker {
    */
   async getCodeExamples(technology: string, pattern: string): Promise<CodeExample[]> {
     const startTime = Date.now();
-    
+
     try {
       if (!this.isAvailable || process.env.NODE_ENV === 'test') {
         return this.getFallbackCodeExamples(technology, pattern);
@@ -139,7 +141,7 @@ export class Context7Broker {
 
       // Simulate Context7 API call
       await this.simulateAPICall();
-      
+
       const examples: CodeExample[] = [
         {
           id: `example-${technology}-${pattern}-${Date.now()}`,
@@ -169,7 +171,9 @@ export class Context7Broker {
       if (this.config.enableFallback) {
         return this.getFallbackCodeExamples(technology, pattern);
       }
-      throw new Error(`Context7 code examples retrieval failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Context7 code examples retrieval failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -178,7 +182,7 @@ export class Context7Broker {
    */
   async getBestPractices(domain: string): Promise<BestPractice[]> {
     const startTime = Date.now();
-    
+
     try {
       if (!this.isAvailable || process.env.NODE_ENV === 'test') {
         return this.getFallbackBestPractices(domain);
@@ -186,7 +190,7 @@ export class Context7Broker {
 
       // Simulate Context7 API call
       await this.simulateAPICall();
-      
+
       const practices: BestPractice[] = [
         {
           id: `bp-${domain}-security-${Date.now()}`,
@@ -204,7 +208,11 @@ export class Context7Broker {
           description: `Performance optimization strategies for ${domain} including caching, lazy loading, and resource optimization.`,
           category: 'performance',
           priority: 'medium',
-          applicableScenarios: ['high-traffic applications', 'mobile optimization', 'resource constraints'],
+          applicableScenarios: [
+            'high-traffic applications',
+            'mobile optimization',
+            'resource constraints',
+          ],
           benefits: ['Faster load times', 'Better user experience', 'Reduced server costs'],
           relevanceScore: 0.87,
         },
@@ -226,7 +234,9 @@ export class Context7Broker {
       if (this.config.enableFallback) {
         return this.getFallbackBestPractices(domain);
       }
-      throw new Error(`Context7 best practices retrieval failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Context7 best practices retrieval failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -235,7 +245,7 @@ export class Context7Broker {
    */
   async getTroubleshootingGuides(problem: string): Promise<TroubleshootingGuide[]> {
     const startTime = Date.now();
-    
+
     try {
       if (!this.isAvailable || process.env.NODE_ENV === 'test') {
         return this.getFallbackTroubleshootingGuides(problem);
@@ -243,7 +253,7 @@ export class Context7Broker {
 
       // Simulate Context7 API call
       await this.simulateAPICall();
-      
+
       const guides: TroubleshootingGuide[] = [
         {
           id: `guide-${problem.replace(/\s+/g, '-')}-${Date.now()}`,
@@ -284,7 +294,9 @@ export class Context7Broker {
       if (this.config.enableFallback) {
         return this.getFallbackTroubleshootingGuides(problem);
       }
-      throw new Error(`Context7 troubleshooting guides retrieval failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Context7 troubleshooting guides retrieval failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -304,7 +316,7 @@ export class Context7Broker {
    * Simulate API call with configurable delay
    */
   private async simulateAPICall(delay = 150): Promise<void> {
-    await new Promise((resolve) => setTimeout(resolve, delay));
+    await new Promise(resolve => setTimeout(resolve, delay));
   }
 
   /**
@@ -313,7 +325,9 @@ export class Context7Broker {
   private validateResponseTime(startTime: number, operation: string): void {
     const duration = Date.now() - startTime;
     if (duration > this.config.timeout) {
-      console.warn(`Context7 ${operation} took ${duration}ms, exceeding ${this.config.timeout}ms limit`);
+      console.warn(
+        `Context7 ${operation} took ${duration}ms, exceeding ${this.config.timeout}ms limit`
+      );
     }
   }
 

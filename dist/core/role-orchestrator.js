@@ -106,13 +106,13 @@ class RoleOrchestrator {
     initializeTransitionRules() {
         this.transitionRules.push(
         // Strategic planning to development
-        { fromRole: 'product-strategist', toRole: 'developer', trigger: 'requirements-complete', condition: 'business-requirements-validated', priority: 1 }, { fromRole: 'product-strategist', toRole: 'ux-designer', trigger: 'user-experience-needed', condition: 'user-interface-required', priority: 2 }, 
+        { fromRole: 'product-strategist', toRole: 'developer', trigger: 'requirements-complete', condition: 'business-requirements-validated', priority: 1 }, { fromRole: 'product-strategist', toRole: 'ux-designer', trigger: 'user-experience-needed', condition: 'user-interface-required', priority: 2 },
         // Development transitions
-        { fromRole: 'developer', toRole: 'qa-engineer', trigger: 'code-complete', condition: 'development-phase-complete', priority: 1 }, { fromRole: 'developer', toRole: 'ux-designer', trigger: 'ui-development', condition: 'frontend-development-needed', priority: 2 }, { fromRole: 'developer', toRole: 'operations-engineer', trigger: 'deployment-prep', condition: 'deployment-ready', priority: 3 }, 
+        { fromRole: 'developer', toRole: 'qa-engineer', trigger: 'code-complete', condition: 'development-phase-complete', priority: 1 }, { fromRole: 'developer', toRole: 'ux-designer', trigger: 'ui-development', condition: 'frontend-development-needed', priority: 2 }, { fromRole: 'developer', toRole: 'operations-engineer', trigger: 'deployment-prep', condition: 'deployment-ready', priority: 3 },
         // QA transitions
-        { fromRole: 'qa-engineer', toRole: 'operations-engineer', trigger: 'tests-passed', condition: 'quality-gates-passed', priority: 1 }, { fromRole: 'qa-engineer', toRole: 'developer', trigger: 'defects-found', condition: 'quality-issues-detected', priority: 2 }, { fromRole: 'qa-engineer', toRole: 'product-strategist', trigger: 'requirements-issues', condition: 'business-requirements-unclear', priority: 3 }, 
+        { fromRole: 'qa-engineer', toRole: 'operations-engineer', trigger: 'tests-passed', condition: 'quality-gates-passed', priority: 1 }, { fromRole: 'qa-engineer', toRole: 'developer', trigger: 'defects-found', condition: 'quality-issues-detected', priority: 2 }, { fromRole: 'qa-engineer', toRole: 'product-strategist', trigger: 'requirements-issues', condition: 'business-requirements-unclear', priority: 3 },
         // UX Designer transitions
-        { fromRole: 'ux-designer', toRole: 'developer', trigger: 'design-complete', condition: 'ui-designs-approved', priority: 1 }, { fromRole: 'ux-designer', toRole: 'qa-engineer', trigger: 'design-validation', condition: 'usability-testing-needed', priority: 2 }, 
+        { fromRole: 'ux-designer', toRole: 'developer', trigger: 'design-complete', condition: 'ui-designs-approved', priority: 1 }, { fromRole: 'ux-designer', toRole: 'qa-engineer', trigger: 'design-validation', condition: 'usability-testing-needed', priority: 2 },
         // Operations transitions
         { fromRole: 'operations-engineer', toRole: 'qa-engineer', trigger: 'deployment-issues', condition: 'production-issues-detected', priority: 1 }, { fromRole: 'operations-engineer', toRole: 'product-strategist', trigger: 'monitoring-insights', condition: 'business-optimization-opportunities', priority: 2 });
     }

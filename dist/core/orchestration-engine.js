@@ -230,7 +230,7 @@ class OrchestrationEngine {
         });
         const estimatedImprovements = {
             timeReduction: improvements.length * 5, // 5% per improvement
-            qualityIncrease: improvements.length * 3, // 3% per improvement  
+            qualityIncrease: improvements.length * 3, // 3% per improvement
             costReduction: improvements.length * 2, // 2% per improvement
         };
         return {

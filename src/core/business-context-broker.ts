@@ -2,7 +2,7 @@
 
 /**
  * Business Context Broker for Smart Orchestrate Tool
- * 
+ *
  * Manages business context preservation across role transitions and workflow phases.
  * Ensures all development activities remain aligned with business goals.
  */
@@ -63,7 +63,12 @@ export class BusinessContextBroker {
   /**
    * Set business context with role and metadata information
    */
-  setContext(key: string, value: BusinessContext, role?: string, metadata?: Partial<ContextMetadata>): void {
+  setContext(
+    key: string,
+    value: BusinessContext,
+    role?: string,
+    metadata?: Partial<ContextMetadata>
+  ): void {
     // Update context version
     const existingContext = this.contextStore.get(key);
     const updatedContext: BusinessContext = {
@@ -110,8 +115,8 @@ export class BusinessContextBroker {
    * Preserve context during role transitions
    */
   preserveContext(transition: RoleTransition): void {
-    const projectId = transition.context.projectId;
-    
+    const { projectId } = transition.context;
+
     // Store transition in role history
     const history = this.roleHistory.get(projectId) ?? [];
     history.push(transition);
@@ -120,7 +125,7 @@ export class BusinessContextBroker {
     // Update context with preserved data
     const contextKey = `project:${projectId}:context`;
     const existingContext = this.getContext(contextKey);
-    
+
     if (existingContext) {
       const preservedContext: BusinessContext = {
         ...existingContext,
@@ -169,12 +174,12 @@ export class BusinessContextBroker {
     const requirementCount = context.requirements.length;
 
     return {
-      costPrevention: Math.min(50000, 5000 + (businessGoalCount * 2000) + (roleTransitionCount * 1000)),
-      timesSaved: Math.min(20, 2 + (businessGoalCount * 0.5) + (roleTransitionCount * 0.3)),
-      qualityImprovement: Math.min(100, 70 + (businessGoalCount * 2) + (roleTransitionCount * 1)),
-      riskMitigation: Math.min(100, 60 + (requirementCount * 3) + (roleTransitionCount * 2)),
-      strategicAlignment: Math.min(100, 80 + (businessGoalCount * 1.5)),
-      userSatisfaction: Math.min(100, 85 + (businessGoalCount * 1) + (roleTransitionCount * 0.5)),
+      costPrevention: Math.min(50000, 5000 + businessGoalCount * 2000 + roleTransitionCount * 1000),
+      timesSaved: Math.min(20, 2 + businessGoalCount * 0.5 + roleTransitionCount * 0.3),
+      qualityImprovement: Math.min(100, 70 + businessGoalCount * 2 + roleTransitionCount * 1),
+      riskMitigation: Math.min(100, 60 + requirementCount * 3 + roleTransitionCount * 2),
+      strategicAlignment: Math.min(100, 80 + businessGoalCount * 1.5),
+      userSatisfaction: Math.min(100, 85 + businessGoalCount * 1 + roleTransitionCount * 0.5),
     };
   }
 
@@ -194,7 +199,7 @@ export class BusinessContextBroker {
       }
     });
 
-    keysToRemove.forEach((key) => {
+    keysToRemove.forEach(key => {
       this.contextStore.delete(key);
       this.contextMetadata.delete(key);
     });
@@ -241,7 +246,7 @@ export class BusinessContextBroker {
       recommendations.push('Define project requirements');
     }
 
-    if (!context.success || !context.success.metrics || context.success.metrics.length === 0) {
+    if (!context.success?.metrics || context.success.metrics.length === 0) {
       issues.push('No success metrics defined');
       recommendations.push('Define measurable success metrics');
     }
@@ -249,7 +254,7 @@ export class BusinessContextBroker {
     // Check context freshness
     const contextAge = Date.now() - new Date(context.timestamp).getTime();
     const maxAge = 24 * 60 * 60 * 1000; // 24 hours
-    
+
     if (contextAge > maxAge) {
       issues.push('Context is stale (older than 24 hours)');
       recommendations.push('Refresh context with current business information');
@@ -284,34 +289,42 @@ export class BusinessContextBroker {
     }
 
     // Calculate business alignment score
-    const businessAlignment = Math.min(100, 
-      (context.businessGoals.length * 15) +
-      (context.requirements.length * 10) +
-      (context.success.metrics.length * 20) +
-      (context.stakeholders.length * 5)
+    const businessAlignment = Math.min(
+      100,
+      context.businessGoals.length * 15 +
+        context.requirements.length * 10 +
+        context.success.metrics.length * 20 +
+        context.stakeholders.length * 5
     );
 
     // Calculate context richness
-    const contextRichness = Math.min(100,
+    const contextRichness = Math.min(
+      100,
       (context.businessGoals.length > 0 ? 25 : 0) +
-      (context.requirements.length > 0 ? 25 : 0) +
-      (context.stakeholders.length > 0 ? 15 : 0) +
-      (context.marketContext ? 20 : 0) +
-      (context.success.metrics.length > 0 ? 15 : 0)
+        (context.requirements.length > 0 ? 25 : 0) +
+        (context.stakeholders.length > 0 ? 15 : 0) +
+        (context.marketContext ? 20 : 0) +
+        (context.success.metrics.length > 0 ? 15 : 0)
     );
 
     // Calculate role transition efficiency
-    const avgTransitionTime = history.length > 1 
-      ? history.slice(1).reduce((acc, transition, index) => {
-          const prevTime = new Date(history[index].timestamp).getTime();
-          const currTime = new Date(transition.timestamp).getTime();
-          return acc + (currTime - prevTime);
-        }, 0) / (history.length - 1)
-      : 0;
+    const avgTransitionTime =
+      history.length > 1
+        ? history.slice(1).reduce((acc, transition, index) => {
+            const prevTime = new Date(history[index].timestamp).getTime();
+            const currTime = new Date(transition.timestamp).getTime();
+            return acc + (currTime - prevTime);
+          }, 0) /
+          (history.length - 1)
+        : 0;
 
-    const roleTransitionEfficiency = Math.max(0, Math.min(100, 
-      100 - (avgTransitionTime / (5 * 60 * 1000)) * 10 // Penalty for transitions > 5 minutes
-    ));
+    const roleTransitionEfficiency = Math.max(
+      0,
+      Math.min(
+        100,
+        100 - (avgTransitionTime / (5 * 60 * 1000)) * 10 // Penalty for transitions > 5 minutes
+      )
+    );
 
     const recommendations: string[] = [];
 

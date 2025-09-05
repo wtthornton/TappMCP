@@ -15,41 +15,41 @@
         }
     </style>
 </head>
-    
+
 <body>
 <div class='wrapper'>
     <div class='pad1'>
         <h1><a href="../../index.html">All files</a> / <a href="index.html">src/core</a> mcp-coordinator.ts</h1>
         <div class='clearfix'>
-            
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">76.76% </span>
                 <span class="quiet">Statements</span>
                 <span class='fraction'>456/594</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">85.41% </span>
                 <span class="quiet">Branches</span>
                 <span class='fraction'>41/48</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">78.26% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>18/23</span>
             </div>
-        
-            
+
+
             <div class='fl pad1y space-right2'>
                 <span class="strong">76.76% </span>
                 <span class="quiet">Lines</span>
                 <span class='fraction'>456/594</span>
             </div>
-        
-            
+
+
         </div>
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
@@ -1253,7 +1253,7 @@
 &nbsp;
 /**
  * MCP Coordinator for External Service Integration
- * 
+ *
  * Orchestrates and coordinates multiple MCP (Model Context Protocol) services
  * including Context7, Web Search, and Memory brokers for comprehensive
  * external knowledge integration in the Smart Plan tool.
@@ -1618,7 +1618,7 @@ export class MCPCoordinator {
     // Simple extraction - in a real implementation, this could use NLP
     const commonTech = ['API', 'database', 'authentication', 'security', 'performance', 'monitoring'];
     const topics = [domain];
-    
+
     const requestLower = businessRequest.toLowerCase();
     for (const tech of commonTech) {
       if (requestLower.includes(tech.toLowerCase())) {
@@ -1636,7 +1636,7 @@ export class MCPCoordinator {
     // Simple extraction - in a real implementation, this could use NLP
     const commonProblems = ['scalability', 'performance', 'security', 'integration', 'deployment'];
     const problems: string[] = [];
-    
+
     const requestLower = businessRequest.toLowerCase();
     for (const problem of commonProblems) {
       if (requestLower.includes(problem)) {
@@ -1861,4 +1861,3 @@ export class MCPCoordinator {
         <script src="../../block-navigation.js"></script>
     </body>
 </html>
-    

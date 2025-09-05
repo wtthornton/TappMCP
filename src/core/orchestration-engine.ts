@@ -2,13 +2,17 @@
 
 /**
  * Orchestration Engine for Smart Orchestrate Tool
- * 
- * Main engine that coordinates workflow execution, role switching, 
+ *
+ * Main engine that coordinates workflow execution, role switching,
  * and business context management for complete SDLC orchestration.
  */
 
-import { BusinessContextBroker, type BusinessContext, type RoleTransition } from './business-context-broker.js';
-import { RoleOrchestrator, type OrchestrationPlan, type WorkflowTask } from './role-orchestrator.js';
+import {
+  BusinessContextBroker,
+  type BusinessContext,
+  type RoleTransition,
+} from './business-context-broker.js';
+import { RoleOrchestrator, type WorkflowTask } from './role-orchestrator.js';
 
 export interface Workflow {
   id: string;
@@ -108,7 +112,7 @@ export class OrchestrationEngine {
   async executeWorkflow(workflow: Workflow, context: BusinessContext): Promise<WorkflowResult> {
     const startTime = Date.now();
     const workflowId = workflow.id;
-    
+
     try {
       // Initialize workflow
       workflow.status = 'running';
@@ -143,13 +147,13 @@ export class OrchestrationEngine {
 
       // Execute workflow phases
       let currentRole = 'product-strategist'; // Start with strategic planning
-      
+
       for (const phase of workflow.phases) {
-        const phaseStartTime = Date.now();
-        
+        // Execute phase tasks
+
         // Determine if role switch is needed
         const nextRole = this.roleOrchestrator.determineNextRole(context, phase.description);
-        
+
         if (nextRole !== currentRole) {
           // Perform role transition
           const transition = await this.switchRole(currentRole, nextRole, context);
@@ -160,7 +164,7 @@ export class OrchestrationEngine {
         // Execute phase
         const phaseResult = await this.executePhase(phase, currentRole, context);
         result.phases.push(phaseResult);
-        
+
         // Update workflow status
         if (!phaseResult.success) {
           result.success = false;
@@ -174,7 +178,11 @@ export class OrchestrationEngine {
 
       // Calculate final metrics and business value
       const executionTime = Date.now() - startTime;
-      result.businessValue = this.calculateBusinessValue(context, result.phases, result.roleTransitions);
+      result.businessValue = this.calculateBusinessValue(
+        context,
+        result.phases,
+        result.roleTransitions
+      );
       result.technicalMetrics = this.calculateTechnicalMetrics(result, executionTime);
 
       // Update workflow status
@@ -182,11 +190,10 @@ export class OrchestrationEngine {
       this.workflowResults.set(workflowId, result);
 
       return result;
-
     } catch (error) {
       workflow.status = 'failed';
       const executionTime = Date.now() - startTime;
-      
+
       return {
         workflowId,
         success: false,
@@ -216,12 +223,16 @@ export class OrchestrationEngine {
   /**
    * Switch roles with context preservation
    */
-  async switchRole(fromRole: string, toRole: string, context: BusinessContext): Promise<RoleTransition> {
+  async switchRole(
+    fromRole: string,
+    toRole: string,
+    context: BusinessContext
+  ): Promise<RoleTransition> {
     const transition = await this.roleOrchestrator.switchRole(fromRole, toRole, context);
-    
+
     // Preserve context through the broker
     this.contextBroker.preserveContext(transition);
-    
+
     return transition;
   }
 
@@ -271,7 +282,7 @@ export class OrchestrationEngine {
     for (let i = 0; i < workflow.phases.length - 1; i++) {
       const currentRole = workflow.phases[i].role;
       const nextRole = workflow.phases[i + 1].role;
-      
+
       if (currentRole !== nextRole) {
         const transition = this.roleOrchestrator.validateRoleTransition({
           fromRole: currentRole,
@@ -283,7 +294,9 @@ export class OrchestrationEngine {
         });
 
         if (!transition.isValid) {
-          issues.push(`Invalid role transition from ${currentRole} to ${nextRole}: ${transition.issues.join(', ')}`);
+          issues.push(
+            `Invalid role transition from ${currentRole} to ${nextRole}: ${transition.issues.join(', ')}`
+          );
           score -= 15;
           recommendations.push(...transition.recommendations);
         }
@@ -292,7 +305,9 @@ export class OrchestrationEngine {
 
     // Validate business context
     if (workflow.businessContext) {
-      const contextValidation = this.contextBroker.validateContext(workflow.businessContext.projectId);
+      const contextValidation = this.contextBroker.validateContext(
+        workflow.businessContext.projectId
+      );
       if (!contextValidation.isValid) {
         issues.push('Business context validation failed');
         score -= 10;
@@ -314,11 +329,13 @@ export class OrchestrationEngine {
   optimizeWorkflow(workflow: Workflow): OptimizedWorkflow {
     const optimized: Workflow = JSON.parse(JSON.stringify(workflow)); // Deep clone
     const improvements: string[] = [];
-    
+
     // Optimize phase ordering
     const reorderedPhases = this.optimizePhaseOrder(optimized.phases);
-    if (reorderedPhases.length !== optimized.phases.length || 
-        !reorderedPhases.every((phase, index) => phase.name === optimized.phases[index].name)) {
+    if (
+      reorderedPhases.length !== optimized.phases.length ||
+      !reorderedPhases.every((phase, index) => phase.name === optimized.phases[index].name)
+    ) {
       optimized.phases = reorderedPhases;
       improvements.push('Reordered phases for optimal workflow');
     }
@@ -333,10 +350,12 @@ export class OrchestrationEngine {
     }
 
     // Optimize tool usage
-    optimized.phases.forEach((phase) => {
+    optimized.phases.forEach(phase => {
       const optimizedTools = this.optimizeToolUsage(phase.tools, phase.role);
-      if (optimizedTools.length !== phase.tools.length ||
-          !optimizedTools.every((tool, index) => tool === phase.tools[index])) {
+      if (
+        optimizedTools.length !== phase.tools.length ||
+        !optimizedTools.every((tool, index) => tool === phase.tools[index])
+      ) {
         phase.tools = optimizedTools;
         improvements.push(`Optimized tool usage for ${phase.name} phase`);
       }
@@ -344,7 +363,7 @@ export class OrchestrationEngine {
 
     const estimatedImprovements = {
       timeReduction: improvements.length * 5, // 5% per improvement
-      qualityIncrease: improvements.length * 3, // 3% per improvement  
+      qualityIncrease: improvements.length * 3, // 3% per improvement
       costReduction: improvements.length * 2, // 2% per improvement
     };
 
@@ -374,21 +393,25 @@ export class OrchestrationEngine {
    * Private helper methods
    */
 
-  private async executePhase(phase: WorkflowPhase, role: string, context: BusinessContext): Promise<WorkflowPhaseResult> {
+  private async executePhase(
+    phase: WorkflowPhase,
+    role: string,
+    context: BusinessContext
+  ): Promise<WorkflowPhaseResult> {
     const startTime = Date.now();
-    
+
     try {
       phase.status = 'running';
       phase.startTime = new Date().toISOString();
-      
+
       // Simulate phase execution
-      await new Promise((resolve) => setTimeout(resolve, 100 + Math.random() * 200)); // 100-300ms
+      await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200)); // 100-300ms
 
       // Generate deliverables based on phase type
-      const deliverables = this.generatePhaseDeliverables(phase.name, role);
-      
+      const deliverables = this.generatePhaseDeliverables(phase.name);
+
       // Calculate quality metrics
-      const qualityMetrics = this.calculatePhaseQualityMetrics(phase, role, context);
+      const qualityMetrics = this.calculatePhaseQualityMetrics(phase, context, role);
 
       const duration = Date.now() - startTime;
 
@@ -400,10 +423,9 @@ export class OrchestrationEngine {
         qualityMetrics,
         duration,
       };
-
     } catch (error) {
       const duration = Date.now() - startTime;
-      
+
       return {
         phase: phase.name,
         role,
@@ -416,9 +438,9 @@ export class OrchestrationEngine {
     }
   }
 
-  private generatePhaseDeliverables(phaseName: string, role: string): string[] {
+  private generatePhaseDeliverables(phaseName: string): string[] {
     const deliverables: string[] = [];
-    
+
     switch (phaseName.toLowerCase()) {
       case 'planning':
         deliverables.push('project-requirements', 'strategic-plan', 'business-analysis');
@@ -442,15 +464,27 @@ export class OrchestrationEngine {
     return deliverables;
   }
 
-  private calculatePhaseQualityMetrics(phase: WorkflowPhase, role: string, context: BusinessContext): Record<string, number> {
+  private calculatePhaseQualityMetrics(
+    phase: WorkflowPhase,
+    context: BusinessContext,
+    role: string
+  ): Record<string, number> {
     const roleCapabilities = this.roleOrchestrator.getRoleCapabilities(role);
     const metrics: Record<string, number> = {};
 
     if (roleCapabilities) {
-      roleCapabilities.qualityGates.forEach((gate) => {
-        // Simulate quality metrics based on business context richness
+      roleCapabilities.qualityGates.forEach(gate => {
+        // Simulate quality metrics based on business context richness and phase complexity
         const contextScore = context.businessGoals.length * 10 + context.requirements.length * 5;
-        metrics[gate] = Math.min(100, 70 + Math.random() * 25 + (contextScore > 50 ? 5 : 0));
+        const phaseComplexityScore =
+          phase.tools.length * 5 + (phase.description.length > 100 ? 10 : 0);
+        metrics[gate] = Math.min(
+          100,
+          70 +
+            Math.random() * 25 +
+            (contextScore > 50 ? 5 : 0) +
+            (phaseComplexityScore > 20 ? 5 : 0)
+        );
       });
     }
 
@@ -463,13 +497,16 @@ export class OrchestrationEngine {
     transitions: RoleTransition[]
   ): BusinessValueResult {
     const baseValue = this.contextBroker.getBusinessValue(context.projectId);
-    
+
     // Enhance based on phase success
-    const successRate = phases.filter((phase) => phase.success).length / Math.max(phases.length, 1);
-    const transitionEfficiency = transitions.length > 0 ? 
-      transitions.reduce((acc, transition) => 
-        acc + (Number(transition.preservedData.transitionTime) || 100), 0
-      ) / transitions.length : 100;
+    const successRate = phases.filter(phase => phase.success).length / Math.max(phases.length, 1);
+    const transitionEfficiency =
+      transitions.length > 0
+        ? transitions.reduce(
+            (acc, transition) => acc + (Number(transition.preservedData.transitionTime) || 100),
+            0
+          ) / transitions.length
+        : 100;
 
     return {
       costPrevention: Math.round(baseValue.costPrevention * successRate),
@@ -477,19 +514,28 @@ export class OrchestrationEngine {
       qualityImprovement: Math.round(baseValue.qualityImprovement * successRate),
       riskMitigation: Math.round(baseValue.riskMitigation * successRate),
       strategicAlignment: Math.round(baseValue.strategicAlignment * successRate),
-      businessScore: Math.round((baseValue.strategicAlignment + 
-        (transitionEfficiency < 200 ? 10 : 0) + // Bonus for fast transitions
-        (successRate > 0.9 ? 5 : 0)) * successRate), // Bonus for high success rate
+      businessScore: Math.round(
+        (baseValue.strategicAlignment +
+          (transitionEfficiency < 200 ? 10 : 0) + // Bonus for fast transitions
+          (successRate > 0.9 ? 5 : 0)) *
+          successRate
+      ), // Bonus for high success rate
     };
   }
 
-  private calculateTechnicalMetrics(result: WorkflowResult, executionTime: number): OrchestrationMetrics {
-    const totalTransitionTime = result.roleTransitions.reduce((acc, transition) => 
-      acc + (Number(transition.preservedData.transitionTime) || 0), 0
+  private calculateTechnicalMetrics(
+    result: WorkflowResult,
+    executionTime: number
+  ): OrchestrationMetrics {
+    const totalTransitionTime = result.roleTransitions.reduce(
+      (acc, transition) => acc + (Number(transition.preservedData.transitionTime) || 0),
+      0
     );
 
-    const phaseSuccessRate = result.phases.length > 0 ?
-      result.phases.filter((phase) => phase.success).length / result.phases.length : 0;
+    const phaseSuccessRate =
+      result.phases.length > 0
+        ? result.phases.filter(phase => phase.success).length / result.phases.length
+        : 0;
 
     return {
       totalExecutionTime: executionTime,
@@ -504,12 +550,12 @@ export class OrchestrationEngine {
   private optimizePhaseOrder(phases: WorkflowPhase[]): WorkflowPhase[] {
     // Simple optimization: ensure planning comes first, testing after development
     const optimized = [...phases];
-    
+
     optimized.sort((a, b) => {
       const order = ['planning', 'design', 'development', 'testing', 'deployment', 'monitoring'];
-      const aIndex = order.findIndex((phase) => a.name.toLowerCase().includes(phase));
-      const bIndex = order.findIndex((phase) => b.name.toLowerCase().includes(phase));
-      
+      const aIndex = order.findIndex(phase => a.name.toLowerCase().includes(phase));
+      const bIndex = order.findIndex(phase => b.name.toLowerCase().includes(phase));
+
       return aIndex - bIndex;
     });
 
@@ -521,16 +567,24 @@ export class OrchestrationEngine {
     const optimizedRoles: string[] = [];
     let currentRole = '';
 
-    phases.forEach((phase) => {
+    phases.forEach(phase => {
       const suggestedRole = this.roleOrchestrator.determineNextRole(
-        { projectId: 'optimization', businessGoals: [], requirements: [], stakeholders: [], 
-          constraints: {}, success: { metrics: [], criteria: [] }, timestamp: '', version: 1 },
+        {
+          projectId: 'optimization',
+          businessGoals: [],
+          requirements: [],
+          stakeholders: [],
+          constraints: {},
+          success: { metrics: [], criteria: [] },
+          timestamp: '',
+          version: 1,
+        },
         phase.description
       );
 
       // Keep current role if it's capable, reduce transitions
       const currentCapabilities = this.roleOrchestrator.getRoleCapabilities(currentRole);
-      if (currentCapabilities && currentCapabilities.phases.some((p) => phase.name.toLowerCase().includes(p))) {
+      if (currentCapabilities?.phases.some(p => phase.name.toLowerCase().includes(p))) {
         optimizedRoles.push(currentRole);
       } else {
         optimizedRoles.push(suggestedRole);
@@ -546,10 +600,10 @@ export class OrchestrationEngine {
     if (!roleCapabilities) return tools;
 
     // Filter tools to only those supported by the role
-    const optimizedTools = tools.filter((tool) => roleCapabilities.tools.includes(tool));
-    
+    const optimizedTools = tools.filter(tool => roleCapabilities.tools.includes(tool));
+
     // Add recommended tools for the role if missing
-    roleCapabilities.tools.forEach((recommendedTool) => {
+    roleCapabilities.tools.forEach(recommendedTool => {
       if (!optimizedTools.includes(recommendedTool)) {
         optimizedTools.push(recommendedTool);
       }

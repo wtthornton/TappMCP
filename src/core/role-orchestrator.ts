@@ -2,7 +2,7 @@
 
 /**
  * Role Orchestrator for Smart Orchestrate Tool
- * 
+ *
  * Manages automatic role switching and role-based workflow orchestration.
  * Ensures specialized expertise is applied at the right workflow phases.
  */
@@ -69,12 +69,17 @@ export class RoleOrchestrator {
       {
         name: 'product-strategist',
         description: 'Strategic planning and business analysis expert',
-        expertise: ['business analysis', 'strategic planning', 'market research', 'requirements gathering'],
+        expertise: [
+          'business analysis',
+          'strategic planning',
+          'market research',
+          'requirements gathering',
+        ],
         tools: ['smart_plan', 'smart_begin'],
         phases: ['planning', 'analysis', 'strategy'],
         responsibilities: [
           'Define business requirements',
-          'Conduct market analysis', 
+          'Conduct market analysis',
           'Create strategic roadmaps',
           'Validate business value',
         ],
@@ -134,11 +139,16 @@ export class RoleOrchestrator {
           'Set up monitoring systems',
           'Manage infrastructure',
         ],
-        qualityGates: ['security-compliance', 'deployment-readiness', 'monitoring-coverage', 'scalability'],
+        qualityGates: [
+          'security-compliance',
+          'deployment-readiness',
+          'monitoring-coverage',
+          'scalability',
+        ],
       },
     ];
 
-    roles.forEach((role) => {
+    roles.forEach(role => {
       this.roleCapabilities.set(role.name, role);
     });
   }
@@ -149,33 +159,105 @@ export class RoleOrchestrator {
   private initializeTransitionRules(): void {
     this.transitionRules.push(
       // Strategic planning to development
-      { fromRole: 'product-strategist', toRole: 'developer', trigger: 'requirements-complete', condition: 'business-requirements-validated', priority: 1 },
-      { fromRole: 'product-strategist', toRole: 'ux-designer', trigger: 'user-experience-needed', condition: 'user-interface-required', priority: 2 },
-      
+      {
+        fromRole: 'product-strategist',
+        toRole: 'developer',
+        trigger: 'requirements-complete',
+        condition: 'business-requirements-validated',
+        priority: 1,
+      },
+      {
+        fromRole: 'product-strategist',
+        toRole: 'ux-designer',
+        trigger: 'user-experience-needed',
+        condition: 'user-interface-required',
+        priority: 2,
+      },
+
       // Development transitions
-      { fromRole: 'developer', toRole: 'qa-engineer', trigger: 'code-complete', condition: 'development-phase-complete', priority: 1 },
-      { fromRole: 'developer', toRole: 'ux-designer', trigger: 'ui-development', condition: 'frontend-development-needed', priority: 2 },
-      { fromRole: 'developer', toRole: 'operations-engineer', trigger: 'deployment-prep', condition: 'deployment-ready', priority: 3 },
+      {
+        fromRole: 'developer',
+        toRole: 'qa-engineer',
+        trigger: 'code-complete',
+        condition: 'development-phase-complete',
+        priority: 1,
+      },
+      {
+        fromRole: 'developer',
+        toRole: 'ux-designer',
+        trigger: 'ui-development',
+        condition: 'frontend-development-needed',
+        priority: 2,
+      },
+      {
+        fromRole: 'developer',
+        toRole: 'operations-engineer',
+        trigger: 'deployment-prep',
+        condition: 'deployment-ready',
+        priority: 3,
+      },
 
       // QA transitions
-      { fromRole: 'qa-engineer', toRole: 'operations-engineer', trigger: 'tests-passed', condition: 'quality-gates-passed', priority: 1 },
-      { fromRole: 'qa-engineer', toRole: 'developer', trigger: 'defects-found', condition: 'quality-issues-detected', priority: 2 },
-      { fromRole: 'qa-engineer', toRole: 'product-strategist', trigger: 'requirements-issues', condition: 'business-requirements-unclear', priority: 3 },
+      {
+        fromRole: 'qa-engineer',
+        toRole: 'operations-engineer',
+        trigger: 'tests-passed',
+        condition: 'quality-gates-passed',
+        priority: 1,
+      },
+      {
+        fromRole: 'qa-engineer',
+        toRole: 'developer',
+        trigger: 'defects-found',
+        condition: 'quality-issues-detected',
+        priority: 2,
+      },
+      {
+        fromRole: 'qa-engineer',
+        toRole: 'product-strategist',
+        trigger: 'requirements-issues',
+        condition: 'business-requirements-unclear',
+        priority: 3,
+      },
 
       // UX Designer transitions
-      { fromRole: 'ux-designer', toRole: 'developer', trigger: 'design-complete', condition: 'ui-designs-approved', priority: 1 },
-      { fromRole: 'ux-designer', toRole: 'qa-engineer', trigger: 'design-validation', condition: 'usability-testing-needed', priority: 2 },
+      {
+        fromRole: 'ux-designer',
+        toRole: 'developer',
+        trigger: 'design-complete',
+        condition: 'ui-designs-approved',
+        priority: 1,
+      },
+      {
+        fromRole: 'ux-designer',
+        toRole: 'qa-engineer',
+        trigger: 'design-validation',
+        condition: 'usability-testing-needed',
+        priority: 2,
+      },
 
       // Operations transitions
-      { fromRole: 'operations-engineer', toRole: 'qa-engineer', trigger: 'deployment-issues', condition: 'production-issues-detected', priority: 1 },
-      { fromRole: 'operations-engineer', toRole: 'product-strategist', trigger: 'monitoring-insights', condition: 'business-optimization-opportunities', priority: 2 },
+      {
+        fromRole: 'operations-engineer',
+        toRole: 'qa-engineer',
+        trigger: 'deployment-issues',
+        condition: 'production-issues-detected',
+        priority: 1,
+      },
+      {
+        fromRole: 'operations-engineer',
+        toRole: 'product-strategist',
+        trigger: 'monitoring-insights',
+        condition: 'business-optimization-opportunities',
+        priority: 2,
+      }
     );
   }
 
   /**
    * Determine the next role based on context and current task
    */
-  determineNextRole(context: BusinessContext, task: string): string {
+  determineNextRole(_context: BusinessContext, task: string): string {
     const currentPhase = this.inferPhaseFromTask(task);
     const taskRequirements = this.analyzeTaskRequirements(task);
 
@@ -191,18 +273,21 @@ export class RoleOrchestrator {
       }
 
       // Expertise matching
-      taskRequirements.forEach((requirement) => {
-        if (capabilities.expertise.some((expertise) => 
-          expertise.toLowerCase().includes(requirement.toLowerCase()) ||
-          requirement.toLowerCase().includes(expertise.toLowerCase())
-        )) {
+      taskRequirements.forEach(requirement => {
+        if (
+          capabilities.expertise.some(
+            expertise =>
+              expertise.toLowerCase().includes(requirement.toLowerCase()) ||
+              requirement.toLowerCase().includes(expertise.toLowerCase())
+          )
+        ) {
           score += 20;
         }
       });
 
       // Transition rule matching
-      const validTransition = this.transitionRules.find((rule) => 
-        rule.fromRole === this.activeRole && rule.toRole === roleName
+      const validTransition = this.transitionRules.find(
+        rule => rule.fromRole === this.activeRole && rule.toRole === roleName
       );
       if (validTransition) {
         score += validTransition.priority * 10;
@@ -213,16 +298,20 @@ export class RoleOrchestrator {
 
     // Sort by score and return the best match
     candidateRoles.sort((a, b) => b.score - a.score);
-    
-    return candidateRoles.length > 0 && candidateRoles[0].score > 20 
-      ? candidateRoles[0].role 
+
+    return candidateRoles.length > 0 && candidateRoles[0].score > 20
+      ? candidateRoles[0].role
       : this.activeRole; // Keep current role if no good match
   }
 
   /**
    * Switch to a new role with context preservation
    */
-  async switchRole(fromRole: string, toRole: string, context: BusinessContext): Promise<RoleTransition> {
+  async switchRole(
+    fromRole: string,
+    toRole: string,
+    context: BusinessContext
+  ): Promise<RoleTransition> {
     const startTime = Date.now();
 
     // Validate role transition
@@ -251,7 +340,7 @@ export class RoleOrchestrator {
     this.transitionHistory.push(transition);
 
     // Simulate role switching time (should be <100ms per Phase 2B requirements)
-    await new Promise((resolve) => setTimeout(resolve, Math.random() * 50)); // 0-50ms
+    await new Promise(resolve => setTimeout(resolve, Math.random() * 50)); // 0-50ms
 
     return transition;
   }
@@ -303,9 +392,9 @@ export class RoleOrchestrator {
     }
 
     // Check for rapid role switching (might indicate confusion)
-    const recentTransitions = this.transitionHistory
-      .filter((t) => Date.now() - new Date(t.timestamp).getTime() < 60000) // Last minute
-      .length;
+    const recentTransitions = this.transitionHistory.filter(
+      t => Date.now() - new Date(t.timestamp).getTime() < 60000
+    ).length; // Last minute
 
     if (recentTransitions > 3) {
       issues.push('Rapid role switching detected (>3 transitions in 1 minute)');
@@ -323,7 +412,7 @@ export class RoleOrchestrator {
    * Generate an orchestration plan for a workflow
    */
   generateOrchestrationPlan(
-    workflowType: string, 
+    workflowType: string,
     businessContext: BusinessContext,
     requirements: string[]
   ): OrchestrationPlan {
@@ -362,23 +451,39 @@ export class RoleOrchestrator {
 
   private inferPhaseFromTask(task: string): string {
     const taskLower = task.toLowerCase();
-    
-    if (taskLower.includes('plan') || taskLower.includes('strategy') || taskLower.includes('requirement')) {
+
+    if (
+      taskLower.includes('plan') ||
+      taskLower.includes('strategy') ||
+      taskLower.includes('requirement')
+    ) {
       return 'planning';
     }
     if (taskLower.includes('design') || taskLower.includes('ui') || taskLower.includes('ux')) {
       return 'design';
     }
-    if (taskLower.includes('develop') || taskLower.includes('code') || taskLower.includes('implement')) {
+    if (
+      taskLower.includes('develop') ||
+      taskLower.includes('code') ||
+      taskLower.includes('implement')
+    ) {
       return 'development';
     }
-    if (taskLower.includes('test') || taskLower.includes('quality') || taskLower.includes('validate')) {
+    if (
+      taskLower.includes('test') ||
+      taskLower.includes('quality') ||
+      taskLower.includes('validate')
+    ) {
       return 'testing';
     }
-    if (taskLower.includes('deploy') || taskLower.includes('security') || taskLower.includes('monitor')) {
+    if (
+      taskLower.includes('deploy') ||
+      taskLower.includes('security') ||
+      taskLower.includes('monitor')
+    ) {
       return 'operations';
     }
-    
+
     return 'development'; // Default phase
   }
 
@@ -392,7 +497,8 @@ export class RoleOrchestrator {
     if (taskLower.includes('performance')) requirements.push('performance');
     if (taskLower.includes('test')) requirements.push('testing');
     if (taskLower.includes('design')) requirements.push('design');
-    if (taskLower.includes('code') || taskLower.includes('develop')) requirements.push('development');
+    if (taskLower.includes('code') || taskLower.includes('develop'))
+      requirements.push('development');
     if (taskLower.includes('deploy')) requirements.push('deployment');
     if (taskLower.includes('quality')) requirements.push('quality assurance');
 
@@ -400,29 +506,30 @@ export class RoleOrchestrator {
   }
 
   private findTransitionRule(fromRole: string, toRole: string): RoleTransitionRule | null {
-    return this.transitionRules.find((rule) => 
-      rule.fromRole === fromRole && rule.toRole === toRole
-    ) ?? null;
+    return (
+      this.transitionRules.find(rule => rule.fromRole === fromRole && rule.toRole === toRole) ??
+      null
+    );
   }
 
-  private determinePhases(workflowType: string, requirements: string[]): string[] {
+  private determinePhases(_workflowType: string, requirements: string[]): string[] {
     const basePhases = ['planning', 'development', 'testing', 'deployment'];
-    
+
     // Add specialized phases based on requirements
-    if (requirements.some((req) => req.includes('design') || req.includes('ui'))) {
+    if (requirements.some(req => req.includes('design') || req.includes('ui'))) {
       basePhases.splice(1, 0, 'design');
     }
-    if (requirements.some((req) => req.includes('security'))) {
+    if (requirements.some(req => req.includes('security'))) {
       basePhases.splice(-1, 0, 'security');
     }
 
     return basePhases;
   }
 
-  private planRoleSequence(phases: string[], requirements: string[]): string[] {
+  private planRoleSequence(phases: string[], _requirements: string[]): string[] {
     const sequence: string[] = [];
 
-    phases.forEach((phase) => {
+    phases.forEach(phase => {
       switch (phase) {
         case 'planning':
           sequence.push('product-strategist');
@@ -449,9 +556,9 @@ export class RoleOrchestrator {
   }
 
   private generateTasks(
-    phases: string[], 
-    roleSequence: string[], 
-    context: BusinessContext
+    phases: string[],
+    roleSequence: string[],
+    _context: BusinessContext
   ): WorkflowTask[] {
     const tasks: WorkflowTask[] = [];
     let taskId = 1;
@@ -461,14 +568,15 @@ export class RoleOrchestrator {
       const roleCapabilities = this.getRoleCapabilities(role);
 
       if (roleCapabilities) {
-        roleCapabilities.responsibilities.forEach((responsibility, respIndex) => {
+        roleCapabilities.responsibilities.forEach(responsibility => {
           tasks.push({
             id: `task_${taskId++}`,
             name: `${phase}: ${responsibility}`,
             description: `Execute ${responsibility} in ${phase} phase`,
             role,
             phase,
-            dependencies: index > 0 ? [`task_${taskId - roleCapabilities.responsibilities.length - 1}`] : [],
+            dependencies:
+              index > 0 ? [`task_${taskId - roleCapabilities.responsibilities.length - 1}`] : [],
             deliverables: [`${responsibility.toLowerCase().replace(/\s+/g, '-')}-deliverable`],
             estimatedTime: 30 + Math.random() * 60, // 30-90 minutes
           });
@@ -485,7 +593,7 @@ export class RoleOrchestrator {
     for (let i = 0; i < roleSequence.length - 1; i++) {
       const fromRole = roleSequence[i];
       const toRole = roleSequence[i + 1];
-      
+
       transitions.push({
         fromRole,
         toRole,

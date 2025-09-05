@@ -2,7 +2,7 @@
 
 /**
  * Memory Broker for MCP Integration
- * 
+ *
  * Provides integration with memory services for:
  * - Lessons learned storage and retrieval
  * - Pattern recognition and matching
@@ -97,10 +97,10 @@ export class MemoryBroker {
       enableFallback: config.enableFallback ?? true,
       enablePersistence: config.enablePersistence ?? false,
     };
-    
+
     // For now, simulate service availability based on environment
     this.isAvailable = process.env.NODE_ENV !== 'test';
-    
+
     // Initialize some sample data for demonstration
     this.initializeSampleData();
   }
@@ -110,7 +110,7 @@ export class MemoryBroker {
    */
   async getLessonsLearned(domain: string, problem: string): Promise<Lesson[]> {
     const startTime = Date.now();
-    
+
     try {
       if (!this.isAvailable || process.env.NODE_ENV === 'test') {
         return this.getFallbackLessons(domain, problem);
@@ -118,7 +118,7 @@ export class MemoryBroker {
 
       // Simulate Memory API call
       await this.simulateAPICall();
-      
+
       const lessons: Lesson[] = [
         {
           id: `lesson-${domain}-${problem.replace(/\s+/g, '-')}-1`,
@@ -129,7 +129,7 @@ export class MemoryBroker {
           solution: `Effective solution approach for ${problem}: Start with requirements analysis, implement incrementally, test thoroughly, and monitor performance.`,
           outcome: 'success',
           tags: [domain.toLowerCase(), problem.toLowerCase(), 'success', 'best-practice'],
-          dateAdded: new Date(Date.now() - (30 * 24 * 60 * 60 * 1000)), // 30 days ago
+          dateAdded: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
           applicability: 0.85,
           confidence: 0.9,
         },
@@ -142,7 +142,7 @@ export class MemoryBroker {
           solution: `Avoid these pitfalls: rushing implementation, insufficient testing, ignoring edge cases, and poor error handling.`,
           outcome: 'failure',
           tags: [domain.toLowerCase(), problem.toLowerCase(), 'pitfall', 'avoid'],
-          dateAdded: new Date(Date.now() - (60 * 24 * 60 * 60 * 1000)), // 60 days ago
+          dateAdded: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000), // 60 days ago
           applicability: 0.75,
           confidence: 0.8,
         },
@@ -155,7 +155,7 @@ export class MemoryBroker {
           solution: `Performance optimizations: implement caching, optimize database queries, use async processing, and monitor bottlenecks.`,
           outcome: 'success',
           tags: [domain.toLowerCase(), problem.toLowerCase(), 'performance', 'optimization'],
-          dateAdded: new Date(Date.now() - (15 * 24 * 60 * 60 * 1000)), // 15 days ago
+          dateAdded: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000), // 15 days ago
           applicability: 0.8,
           confidence: 0.85,
         },
@@ -167,7 +167,9 @@ export class MemoryBroker {
       if (this.config.enableFallback) {
         return this.getFallbackLessons(domain, problem);
       }
-      throw new Error(`Lessons learned retrieval failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Lessons learned retrieval failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -176,7 +178,7 @@ export class MemoryBroker {
    */
   async getPatterns(problem: string, context: string): Promise<Pattern[]> {
     const startTime = Date.now();
-    
+
     try {
       if (!this.isAvailable || process.env.NODE_ENV === 'test') {
         return this.getFallbackPatterns(problem, context);
@@ -184,7 +186,7 @@ export class MemoryBroker {
 
       // Simulate Memory API call
       await this.simulateAPICall();
-      
+
       const patterns: Pattern[] = [
         {
           id: `pattern-${problem.replace(/\s+/g, '-')}-1`,
@@ -194,11 +196,15 @@ export class MemoryBroker {
           context,
           solution: `Implement a resolver that handles ${problem} through systematic analysis, staged implementation, and validation`,
           consequences: ['Improved reliability', 'Reduced complexity', 'Better maintainability'],
-          applicableScenarios: [`${context} projects`, 'enterprise applications', 'high-reliability systems'],
+          applicableScenarios: [
+            `${context} projects`,
+            'enterprise applications',
+            'high-reliability systems',
+          ],
           relatedPatterns: ['Error Handling Pattern', 'Validation Pattern', 'Monitoring Pattern'],
           usageCount: 15,
           successRate: 0.87,
-          lastUsed: new Date(Date.now() - (7 * 24 * 60 * 60 * 1000)), // 7 days ago
+          lastUsed: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
         },
         {
           id: `pattern-${problem.replace(/\s+/g, '-')}-2`,
@@ -208,11 +214,15 @@ export class MemoryBroker {
           context,
           solution: `Implement preventive measures including early detection, validation gates, and monitoring systems`,
           consequences: ['Reduced incidents', 'Better user experience', 'Lower maintenance costs'],
-          applicableScenarios: [`${context} development`, 'quality-focused projects', 'production systems'],
+          applicableScenarios: [
+            `${context} development`,
+            'quality-focused projects',
+            'production systems',
+          ],
           relatedPatterns: ['Validation Pattern', 'Monitoring Pattern', 'Circuit Breaker Pattern'],
           usageCount: 23,
           successRate: 0.92,
-          lastUsed: new Date(Date.now() - (3 * 24 * 60 * 60 * 1000)), // 3 days ago
+          lastUsed: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
         },
       ];
 
@@ -222,7 +232,9 @@ export class MemoryBroker {
       if (this.config.enableFallback) {
         return this.getFallbackPatterns(problem, context);
       }
-      throw new Error(`Patterns retrieval failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Patterns retrieval failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -231,7 +243,7 @@ export class MemoryBroker {
    */
   async getInsights(projectType: string, requirements: string): Promise<Insight[]> {
     const startTime = Date.now();
-    
+
     try {
       if (!this.isAvailable || process.env.NODE_ENV === 'test') {
         return this.getFallbackInsights(projectType, requirements);
@@ -239,7 +251,7 @@ export class MemoryBroker {
 
       // Simulate Memory API call
       await this.simulateAPICall();
-      
+
       const insights: Insight[] = [
         {
           id: `insight-${projectType}-technical`,
@@ -303,7 +315,9 @@ export class MemoryBroker {
       if (this.config.enableFallback) {
         return this.getFallbackInsights(projectType, requirements);
       }
-      throw new Error(`Insights retrieval failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Insights retrieval failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -312,7 +326,7 @@ export class MemoryBroker {
    */
   async getHistoricalData(metric: string, timeframe: string): Promise<HistoricalData> {
     const startTime = Date.now();
-    
+
     try {
       if (!this.isAvailable || process.env.NODE_ENV === 'test') {
         return this.getFallbackHistoricalData(metric, timeframe);
@@ -320,12 +334,14 @@ export class MemoryBroker {
 
       // Simulate Memory API call
       await this.simulateAPICall();
-      
+
       // Generate sample historical data
       const dataPoints = this.generateSampleDataPoints(metric, timeframe);
       const average = dataPoints.reduce((sum, point) => sum + point.value, 0) / dataPoints.length;
-      const variance = dataPoints.reduce((sum, point) => sum + Math.pow(point.value - average, 2), 0) / dataPoints.length;
-      
+      const variance =
+        dataPoints.reduce((sum, point) => sum + Math.pow(point.value - average, 2), 0) /
+        dataPoints.length;
+
       const data: HistoricalData = {
         id: `historical-${metric.replace(/\s+/g, '-')}-${timeframe}`,
         metric,
@@ -343,7 +359,9 @@ export class MemoryBroker {
       if (this.config.enableFallback) {
         return this.getFallbackHistoricalData(metric, timeframe);
       }
-      throw new Error(`Historical data retrieval failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Historical data retrieval failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -381,7 +399,7 @@ export class MemoryBroker {
    * Simulate API call with configurable delay
    */
   private async simulateAPICall(delay = 100): Promise<void> {
-    await new Promise((resolve) => setTimeout(resolve, delay));
+    await new Promise(resolve => setTimeout(resolve, delay));
   }
 
   /**
@@ -390,7 +408,9 @@ export class MemoryBroker {
   private validateResponseTime(startTime: number, operation: string): void {
     const duration = Date.now() - startTime;
     if (duration > this.config.timeout) {
-      console.warn(`Memory ${operation} took ${duration}ms, exceeding ${this.config.timeout}ms limit`);
+      console.warn(
+        `Memory ${operation} took ${duration}ms, exceeding ${this.config.timeout}ms limit`
+      );
     }
   }
 
@@ -409,7 +429,7 @@ export class MemoryBroker {
         solution: 'Implement sliding window rate limiting with Redis backend',
         outcome: 'success' as const,
         tags: ['api', 'rate-limiting', 'redis', 'performance'],
-        dateAdded: new Date(Date.now() - (90 * 24 * 60 * 60 * 1000)),
+        dateAdded: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000),
         applicability: 0.9,
         confidence: 0.95,
       },
@@ -423,13 +443,16 @@ export class MemoryBroker {
   /**
    * Generate sample data points for historical data
    */
-  private generateSampleDataPoints(metric: string, timeframe: string): Array<{ date: Date; value: number; context: string }> {
+  private generateSampleDataPoints(
+    metric: string,
+    timeframe: string
+  ): Array<{ date: Date; value: number; context: string }> {
     const points = [];
     const baseValue = 50 + Math.random() * 50; // Base value between 50-100
     const days = timeframe.includes('month') ? 30 : timeframe.includes('week') ? 7 : 365;
 
     for (let i = 0; i < Math.min(days, 20); i++) {
-      const date = new Date(Date.now() - (i * 24 * 60 * 60 * 1000));
+      const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
       const value = baseValue + (Math.random() - 0.5) * 20; // Variation of ±10
       points.push({
         date,
@@ -444,7 +467,9 @@ export class MemoryBroker {
   /**
    * Determine trend from data points
    */
-  private determineTrend(dataPoints: Array<{ value: number }>): 'increasing' | 'decreasing' | 'stable' | 'volatile' {
+  private determineTrend(
+    dataPoints: Array<{ value: number }>
+  ): 'increasing' | 'decreasing' | 'stable' | 'volatile' {
     if (dataPoints.length < 2) return 'stable';
 
     const firstHalf = dataPoints.slice(0, Math.floor(dataPoints.length / 2));
@@ -463,7 +488,10 @@ export class MemoryBroker {
   /**
    * Generate predictions based on historical data
    */
-  private generatePredictions(dataPoints: Array<{ value: number }>, average: number): Array<{ date: Date; predictedValue: number; confidence: number }> {
+  private generatePredictions(
+    dataPoints: Array<{ value: number }>,
+    average: number
+  ): Array<{ date: Date; predictedValue: number; confidence: number }> {
     const predictions = [];
     const trend = this.determineTrend(dataPoints);
     let trendMultiplier = 0;
@@ -480,9 +508,9 @@ export class MemoryBroker {
     }
 
     for (let i = 1; i <= 5; i++) {
-      const futureDate = new Date(Date.now() + (i * 7 * 24 * 60 * 60 * 1000)); // Weekly predictions
+      const futureDate = new Date(Date.now() + i * 7 * 24 * 60 * 60 * 1000); // Weekly predictions
       const predictedValue = average * Math.pow(trendMultiplier, i);
-      const confidence = Math.max(0.5, 0.9 - (i * 0.1)); // Decreasing confidence over time
+      const confidence = Math.max(0.5, 0.9 - i * 0.1); // Decreasing confidence over time
 
       predictions.push({
         date: futureDate,
@@ -553,7 +581,7 @@ export class MemoryBroker {
 
   private getFallbackHistoricalData(metric: string, timeframe: string): HistoricalData {
     const samplePoints = [
-      { date: new Date(Date.now() - (7 * 24 * 60 * 60 * 1000)), value: 50, context: 'Sample data' },
+      { date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), value: 50, context: 'Sample data' },
       { date: new Date(), value: 55, context: 'Sample data' },
     ];
 
@@ -566,7 +594,11 @@ export class MemoryBroker {
       average: 52.5,
       variance: 12.5,
       predictions: [
-        { date: new Date(Date.now() + (7 * 24 * 60 * 60 * 1000)), predictedValue: 55, confidence: 0.5 },
+        {
+          date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+          predictedValue: 55,
+          confidence: 0.5,
+        },
       ],
     };
   }
