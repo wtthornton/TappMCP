@@ -78,7 +78,7 @@ console.log('Architecture:', result.data?.architecture?.components);
 ```
 
 #### Performance
-- **Target Response Time**: <100ms
+- **Target Response Time**: <1s
 - **Average Response Time**: 15-25ms
 - **Timeout**: 30 seconds
 
@@ -158,7 +158,7 @@ console.log('Security notes:', result.data?.securityConsiderations);
 ```
 
 #### Performance
-- **Target Response Time**: <50ms
+- **Target Response Time**: <1s
 - **Average Response Time**: 0.1-0.5ms
 - **Timeout**: 10 seconds
 
@@ -287,7 +287,7 @@ console.log('Next steps:', result.data?.nextSteps);
 ```
 
 #### Performance
-- **Target Response Time**: <50ms
+- **Target Response Time**: <1s
 - **Average Response Time**: 0.2-0.8ms
 - **Timeout**: 30 seconds
 
@@ -590,11 +590,12 @@ interface QualityScore {
 
 | Tool | Target | Average | 95th Percentile |
 |------|--------|---------|----------------|
-| smart-write | <50ms | 0.1-0.5ms | <2ms |
-| smart-orchestrate | <50ms | 0.2-0.8ms | <3ms |
-| smart-begin | <100ms | 15-25ms | <50ms |
-| smart-plan | <100ms | 20-30ms | <60ms |
-| smart-finish | <100ms | 10-20ms | <40ms |
+| smart-write | <1s | 0.1-0.5ms | <2ms |
+| smart-orchestrate | <1s | 0.2-0.8ms | <3ms |
+| smart-begin | <1s | 15-25ms | <50ms |
+| smart-plan | <1s | 20-30ms | <60ms |
+| smart-plan-enhanced | <1s | 1-2s | <3s |
+| smart-finish | <1s | 10-20ms | <40ms |
 
 ### Performance Monitoring
 

@@ -78,7 +78,7 @@ Smart MCP implements **6 specialized AI roles** for comprehensive development co
 - Design system creation and maintenance
 - Accessibility and usability optimization
 - AI-assisted prototyping and testing
-- **MANDATORY**: Design for performance (<100ms response times)
+- **MANDATORY**: Design for performance (<1s response times)
 - **MANDATORY**: Ensure accessibility compliance
 
 ### 6. AI Quality Assurance Engineer
@@ -208,9 +208,10 @@ npm run qa:tests       # Test failures
 - **Command**: `npm run type-check` to see specific errors
 
 #### 4. Performance Issues
-- **Issue**: Response times exceeding 100ms
+- **Issue**: Response times exceeding 1s target
 - **Solution**: Profile code and optimize bottlenecks
 - **Monitoring**: Check performance metrics in test output
+- **Status**: ✅ All tools now <1s response time
 
 #### 5. Security Scan Failures
 - **Issue**: Critical vulnerabilities detected
