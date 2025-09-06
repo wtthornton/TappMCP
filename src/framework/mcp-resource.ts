@@ -16,7 +16,7 @@ export interface MCPResourceConfig {
   type: 'file' | 'database' | 'api' | 'memory' | 'cache';
   description: string;
   version: string;
-  connectionConfig: Record<string, any>;
+  connectionConfig: Record<string, unknown>;
   maxConnections?: number;
   timeout?: number;
   retries?: number;
@@ -24,11 +24,11 @@ export interface MCPResourceConfig {
     authentication?: boolean;
     authorization?: boolean;
     encryption?: boolean;
-    accessControl?: Record<string, any>;
+    accessControl?: Record<string, unknown>;
   };
 }
 
-export interface MCPResourceResult<T = any> {
+export interface MCPResourceResult<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
@@ -45,21 +45,21 @@ export interface MCPResourceContext {
   requestId: string;
   userId?: string;
   sessionId?: string;
-  businessContext?: Record<string, any>;
+  businessContext?: Record<string, unknown>;
   role?: string;
   permissions?: string[];
 }
 
-export abstract class MCPResource<TConnection = any, TData = any> {
+export abstract class MCPResource<TConnection = unknown, TData = unknown> {
   protected config: MCPResourceConfig;
-  protected logger: any;
+  protected logger: Console;
   protected connections: Map<string, TConnection> = new Map();
   protected connectionPool: TConnection[] = [];
   protected isInitialized: boolean = false;
 
-  constructor(config: MCPResourceConfig, logger?: any) {
+  constructor(config: MCPResourceConfig, logger?: Console) {
     this.config = config;
-    this.logger = logger || console;
+    this.logger = logger ?? console;
   }
 
   /**
@@ -99,11 +99,12 @@ export abstract class MCPResource<TConnection = any, TData = any> {
 
     // Try to get from pool first
     if (this.connectionPool.length > 0) {
-      return this.connectionPool.pop()!;
+      const connection = this.connectionPool.pop();
+      if (connection) return connection;
     }
 
     // Create new connection if pool is empty and under limit
-    if (this.connections.size < (this.config.maxConnections || 10)) {
+    if (this.connections.size < (this.config.maxConnections ?? 10)) {
       return await this.createConnection();
     }
 
@@ -115,7 +116,7 @@ export abstract class MCPResource<TConnection = any, TData = any> {
    * Return a connection to the pool
    */
   async returnConnection(connection: TConnection): Promise<void> {
-    if (this.connectionPool.length < (this.config.maxConnections || 10)) {
+    if (this.connectionPool.length < (this.config.maxConnections ?? 10)) {
       this.connectionPool.push(connection);
     } else {
       await this.closeConnection(connection);
@@ -130,7 +131,7 @@ export abstract class MCPResource<TConnection = any, TData = any> {
     context?: MCPResourceContext
   ): Promise<MCPResourceResult<TResult>> {
     const startTime = performance.now();
-    const requestId = context?.requestId || this.generateRequestId();
+    const requestId = context?.requestId ?? this.generateRequestId();
     let connection: TConnection | undefined;
 
     try {
@@ -213,12 +214,13 @@ export abstract class MCPResource<TConnection = any, TData = any> {
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
         reject(new Error('Connection timeout - no available connections'));
-      }, this.config.timeout || 30000);
+      }, this.config.timeout ?? 30000);
 
       const checkConnection = () => {
         if (this.connectionPool.length > 0) {
           clearTimeout(timeout);
-          resolve(this.connectionPool.pop()!);
+          const connection = this.connectionPool.pop();
+          if (connection) resolve(connection);
         } else {
           setTimeout(checkConnection, 100);
         }

@@ -51,7 +51,7 @@ export class ResourceLifecycleManager {
   private metrics: Map<string, ResourceMetrics> = new Map();
   private cleanupConfig: CleanupConfig;
   private monitoringConfig: MonitoringConfig;
-  private logger: any;
+  private logger: Console;
   private cleanupInterval?: NodeJS.Timeout;
   private monitoringInterval?: NodeJS.Timeout;
   private isRunning: boolean = false;
@@ -72,11 +72,11 @@ export class ResourceLifecycleManager {
         responseTime: 1000, // 1 second
       },
     },
-    logger?: any
+    logger?: Console
   ) {
     this.cleanupConfig = cleanupConfig;
     this.monitoringConfig = monitoringConfig;
-    this.logger = logger || console;
+    this.logger = logger ?? console;
   }
 
   /**
@@ -149,12 +149,12 @@ export class ResourceLifecycleManager {
     // Clear intervals
     if (this.cleanupInterval) {
       clearInterval(this.cleanupInterval);
-      this.cleanupInterval = undefined as any;
+      this.cleanupInterval = undefined;
     }
 
     if (this.monitoringInterval) {
       clearInterval(this.monitoringInterval);
-      this.monitoringInterval = undefined as any;
+      this.monitoringInterval = undefined;
     }
 
     this.logger.info('Resource lifecycle management stopped', {

@@ -14,7 +14,7 @@ export interface MCPRegistryConfig {
   enableDependencyInjection?: boolean;
   enableHealthMonitoring?: boolean;
   healthCheckInterval?: number;
-  logger?: any;
+  logger?: Console;
 }
 
 export interface MCPRegistryStats {
@@ -39,7 +39,7 @@ export interface MCPRegistryStats {
 
 export class MCPRegistry {
   private config: MCPRegistryConfig;
-  private logger: any;
+  private logger: Console;
   private healthCheckInterval?: NodeJS.Timeout;
   private isInitialized: boolean = false;
 
@@ -51,7 +51,7 @@ export class MCPRegistry {
       healthCheckInterval: 30000, // 30 seconds
       ...config,
     };
-    this.logger = this.config.logger || console;
+    this.logger = this.config.logger ?? console;
   }
 
   /**
@@ -326,7 +326,7 @@ export class MCPRegistry {
   stopHealthMonitoring(): void {
     if (this.healthCheckInterval) {
       clearInterval(this.healthCheckInterval);
-      this.healthCheckInterval = undefined as any;
+      this.healthCheckInterval = undefined;
     }
   }
 

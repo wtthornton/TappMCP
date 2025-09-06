@@ -16,7 +16,7 @@ import { handleSmartWrite } from '../tools/smart-write.js';
 
 describe('HTML Generation Test: Real Web Page Creation', () => {
   let projectId: string;
-  let generatedCode: any;
+  let generatedCode: unknown;
   let testResults: {
     projectInitialization: boolean;
     htmlGeneration: boolean;
@@ -82,7 +82,7 @@ describe('HTML Generation Test: Real Web Page Creation', () => {
     testResults.projectInitialization = beginResult.success;
 
     if (beginResult.success && beginResult.data) {
-      const data = beginResult.data as any;
+      const data = beginResult.data as { projectId: string; projectStructure: { folders: unknown[] }; qualityGates: unknown[]; businessValue: { costPrevention: number } };
       projectId = data.projectId;
 
       console.log(`✅ Project initialized: ${data.projectId}`);
@@ -121,11 +121,11 @@ describe('HTML Generation Test: Real Web Page Creation', () => {
     testResults.htmlGeneration = writeResult.success;
 
     if (writeResult.success && writeResult.data) {
-      const data = writeResult.data as any;
+      const data = writeResult.data as { generatedCode: unknown; technicalMetrics: { linesGenerated: number; responseTime: number }; thoughtProcess?: { step1_analysis: { decision: string; reasoning: string }; step2_detection: { confidence: number }; step3_generation: { chosenApproach: string }; step4_validation: { requirementsCheck: string[] } } };
       generatedCode = data.generatedCode;
 
       console.log(`✅ HTML page generated successfully`);
-      console.log(`   - Files Created: ${data.generatedCode.files.length}`);
+      console.log(`   - Files Created: ${(data.generatedCode as { files: unknown[] }).files.length}`);
       console.log(`   - Lines Generated: ${data.technicalMetrics.linesGenerated}`);
       console.log(`   - Response Time: ${data.technicalMetrics.responseTime}ms`);
 
@@ -152,14 +152,17 @@ describe('HTML Generation Test: Real Web Page Creation', () => {
     console.log('\n🧪 Testing: HTML Code Analysis');
 
     expect(generatedCode).toBeDefined();
-    expect(generatedCode.files).toBeDefined();
-    expect(generatedCode.files.length).toBeGreaterThan(0);
+    const codeData = generatedCode as { files: unknown[] };
+    expect(codeData.files).toBeDefined();
+    expect(codeData.files.length).toBeGreaterThan(0);
 
     // Find the HTML file
-    const htmlFile = generatedCode.files.find(
-      (file: any) =>
-        file.path.endsWith('.html') || file.type === 'html' || file.content.includes('<html')
-    );
+    const htmlFile = codeData.files.find(
+      (file: unknown) => {
+        const fileObj = file as { path: string; type: string; content: string };
+        return fileObj.path.endsWith('.html') || fileObj.type === 'html' || fileObj.content.includes('<html');
+      }
+    ) as { path: string; content: string } | undefined;
 
     if (htmlFile) {
       console.log(`📄 Found HTML file: ${htmlFile.path}`);

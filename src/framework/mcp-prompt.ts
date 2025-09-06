@@ -27,7 +27,7 @@ export interface MCPPromptConfig {
   };
 }
 
-export interface MCPPromptResult<T = any> {
+export interface MCPPromptResult<T = unknown> {
   success: boolean;
   prompt?: string;
   data?: T;
@@ -46,24 +46,24 @@ export interface MCPPromptContext {
   requestId: string;
   userId?: string;
   sessionId?: string;
-  businessContext?: Record<string, any>;
+  businessContext?: Record<string, unknown>;
   role?: string;
   conversationHistory?: Array<{
     role: 'user' | 'assistant' | 'system';
     content: string;
     timestamp: string;
   }>;
-  memory?: Record<string, any>;
+  memory?: Record<string, unknown>;
 }
 
-export abstract class MCPPrompt<TVariables = any, TOutput = any> {
+export abstract class MCPPrompt<TVariables = unknown, TOutput = unknown> {
   protected config: MCPPromptConfig;
-  protected logger: any;
+  protected logger: Console;
   protected templateCache: Map<string, string> = new Map();
 
-  constructor(config: MCPPromptConfig, logger?: any) {
+  constructor(config: MCPPromptConfig, logger?: Console) {
     this.config = config;
-    this.logger = logger || console;
+    this.logger = logger ?? console;
   }
 
   /**
@@ -74,7 +74,7 @@ export abstract class MCPPrompt<TVariables = any, TOutput = any> {
     context?: MCPPromptContext
   ): Promise<MCPPromptResult<TOutput>> {
     const startTime = performance.now();
-    const requestId = context?.requestId || this.generateRequestId();
+    const requestId = context?.requestId ?? this.generateRequestId();
 
     try {
       // Validate variables
@@ -191,7 +191,8 @@ export abstract class MCPPrompt<TVariables = any, TOutput = any> {
 
     // Check cache first
     if (this.config.cacheConfig?.enabled && this.templateCache.has(templateKey)) {
-      return this.templateCache.get(templateKey)!;
+      const cached = this.templateCache.get(templateKey);
+      if (cached) return cached;
     }
 
     try {
@@ -201,7 +202,7 @@ export abstract class MCPPrompt<TVariables = any, TOutput = any> {
       // Prepare template data
       const templateData = {
         ...variables,
-        context: context || {},
+        context: context ?? {},
       };
 
       // Render template
@@ -212,7 +213,7 @@ export abstract class MCPPrompt<TVariables = any, TOutput = any> {
         this.templateCache.set(templateKey, renderedTemplate);
 
         // Cleanup cache if it exceeds max size
-        if (this.templateCache.size > (this.config.cacheConfig.maxSize || 100)) {
+        if (this.templateCache.size > (this.config.cacheConfig.maxSize ?? 100)) {
           const firstKey = this.templateCache.keys().next().value;
           if (firstKey !== undefined) {
             this.templateCache.delete(firstKey);
@@ -320,7 +321,7 @@ export abstract class MCPPrompt<TVariables = any, TOutput = any> {
    * Create test variables for health check
    */
   protected createTestVariables(): TVariables {
-    const testVariables: any = {};
+    const testVariables: Record<string, unknown> = {};
     for (const [key, schema] of Object.entries(this.config.variables)) {
       // Create minimal test value based on schema type
       if (schema instanceof z.ZodString) {
@@ -353,7 +354,7 @@ export abstract class MCPPrompt<TVariables = any, TOutput = any> {
   getCacheStats(): { size: number; maxSize: number } {
     return {
       size: this.templateCache.size,
-      maxSize: this.config.cacheConfig?.maxSize || 100,
+      maxSize: this.config.cacheConfig?.maxSize ?? 100,
     };
   }
 
@@ -373,7 +374,7 @@ export abstract class MCPPrompt<TVariables = any, TOutput = any> {
 export class MCPPromptFactory {
   private static prompts = new Map<string, MCPPrompt>();
 
-  static setLogger(_logger: any): void {
+  static setLogger(_logger: Console): void {
     // Logger functionality not yet implemented
   }
 

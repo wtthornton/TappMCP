@@ -22,7 +22,7 @@ export interface MCPToolConfig {
   retries?: number;
 }
 
-export interface MCPToolResult<T = any> {
+export interface MCPToolResult<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
@@ -38,17 +38,17 @@ export interface MCPToolContext {
   requestId: string;
   userId?: string;
   sessionId?: string;
-  businessContext?: Record<string, any>;
+  businessContext?: Record<string, unknown>;
   role?: string;
 }
 
-export abstract class MCPTool<TInput = any, TOutput = any> {
+export abstract class MCPTool<TInput = unknown, TOutput = unknown> {
   protected config: MCPToolConfig;
-  protected logger: any;
+  protected logger: Console;
 
-  constructor(config: MCPToolConfig, logger?: any) {
+  constructor(config: MCPToolConfig, logger?: Console) {
     this.config = config;
-    this.logger = logger || console;
+    this.logger = logger ?? console;
   }
 
   /**
@@ -56,7 +56,7 @@ export abstract class MCPTool<TInput = any, TOutput = any> {
    */
   async execute(input: TInput, context?: MCPToolContext): Promise<MCPToolResult<TOutput>> {
     const startTime = performance.now();
-    const requestId = context?.requestId || this.generateRequestId();
+    const requestId = context?.requestId ?? this.generateRequestId();
 
     try {
       // Validate input
