@@ -24,11 +24,13 @@ import { z } from 'zod';
 const CustomAnalysisInput = z.object({
   projectPath: z.string().min(1),
   analysisType: z.enum(['security', 'performance', 'quality', 'dependencies']),
-  options: z.object({
-    includeTests: z.boolean().default(true),
-    outputFormat: z.enum(['json', 'markdown', 'html']).default('json'),
-    severity: z.enum(['low', 'medium', 'high', 'critical']).default('medium')
-  }).optional()
+  options: z
+    .object({
+      includeTests: z.boolean().default(true),
+      outputFormat: z.enum(['json', 'markdown', 'html']).default('json'),
+      severity: z.enum(['low', 'medium', 'high', 'critical']).default('medium'),
+    })
+    .optional(),
 });
 
 const CustomAnalysisOutput = z.object({
@@ -37,19 +39,21 @@ const CustomAnalysisOutput = z.object({
   analysisType: z.string(),
   results: z.object({
     summary: z.string(),
-    issues: z.array(z.object({
-      type: z.string(),
-      severity: z.string(),
-      description: z.string(),
-      file: z.string().optional(),
-      line: z.number().optional(),
-      suggestion: z.string().optional()
-    })),
+    issues: z.array(
+      z.object({
+        type: z.string(),
+        severity: z.string(),
+        description: z.string(),
+        file: z.string().optional(),
+        line: z.number().optional(),
+        suggestion: z.string().optional(),
+      })
+    ),
     metrics: z.record(z.number()),
-    score: z.number().min(0).max(100)
+    score: z.number().min(0).max(100),
   }),
   recommendations: z.array(z.string()),
-  executionTime: z.number()
+  executionTime: z.number(),
 });
 
 /**
@@ -69,7 +73,7 @@ class CustomCodeAnalysisTool extends MCPTool<
       name: 'custom_code_analysis',
       description: 'Analyze code projects for security, performance, quality, or dependency issues',
       inputSchema: CustomAnalysisInput,
-      outputSchema: CustomAnalysisOutput
+      outputSchema: CustomAnalysisOutput,
     });
 
     this.fileResource = new FileResource();
@@ -94,7 +98,7 @@ class CustomCodeAnalysisTool extends MCPTool<
       analysisType: input.analysisType,
       results: analysisResult,
       recommendations: this.generateRecommendations(analysisResult, input.analysisType),
-      executionTime
+      executionTime,
     };
   }
 
@@ -129,7 +133,7 @@ class CustomCodeAnalysisTool extends MCPTool<
           severity: 'high',
           description: 'Potential hardcoded secret or password found',
           file: file.path,
-          suggestion: 'Use environment variables for sensitive data'
+          suggestion: 'Use environment variables for sensitive data',
         });
       }
 
@@ -140,12 +144,12 @@ class CustomCodeAnalysisTool extends MCPTool<
           severity: 'critical',
           description: 'Potential SQL injection vulnerability',
           file: file.path,
-          suggestion: 'Use parameterized queries or ORM'
+          suggestion: 'Use parameterized queries or ORM',
         });
       }
     }
 
-    const score = Math.max(0, 100 - (issues.length * 10));
+    const score = Math.max(0, 100 - issues.length * 10);
 
     return {
       summary: `Security analysis found ${issues.length} potential issues`,
@@ -154,9 +158,9 @@ class CustomCodeAnalysisTool extends MCPTool<
         totalFiles: files.length,
         issuesFound: issues.length,
         criticalIssues: issues.filter(i => i.severity === 'critical').length,
-        highIssues: issues.filter(i => i.severity === 'high').length
+        highIssues: issues.filter(i => i.severity === 'high').length,
       },
-      score
+      score,
     };
   }
 
@@ -175,7 +179,7 @@ class CustomCodeAnalysisTool extends MCPTool<
           severity: 'medium',
           description: 'Potential performance issue with async operations in loops',
           file: file.path,
-          suggestion: 'Consider using Promise.all() for parallel execution'
+          suggestion: 'Consider using Promise.all() for parallel execution',
         });
       }
 
@@ -186,12 +190,12 @@ class CustomCodeAnalysisTool extends MCPTool<
           severity: 'high',
           description: 'Synchronous file operations can block the event loop',
           file: file.path,
-          suggestion: 'Use async file operations'
+          suggestion: 'Use async file operations',
         });
       }
     }
 
-    const score = Math.max(0, 100 - (issues.length * 15));
+    const score = Math.max(0, 100 - issues.length * 15);
 
     return {
       summary: `Performance analysis found ${issues.length} potential issues`,
@@ -199,9 +203,9 @@ class CustomCodeAnalysisTool extends MCPTool<
       metrics: {
         totalFiles: files.length,
         performanceIssues: issues.length,
-        blockingOperations: issues.filter(i => i.type === 'blocking-io').length
+        blockingOperations: issues.filter(i => i.type === 'blocking-io').length,
       },
-      score
+      score,
     };
   }
 
@@ -243,7 +247,7 @@ class CustomCodeAnalysisTool extends MCPTool<
               description: `Function is ${functionLength} lines long, consider breaking it down`,
               file: file.path,
               line: index + 1,
-              suggestion: 'Break large functions into smaller, focused functions'
+              suggestion: 'Break large functions into smaller, focused functions',
             });
           }
         }
@@ -251,7 +255,7 @@ class CustomCodeAnalysisTool extends MCPTool<
     }
 
     const avgLinesPerFunction = totalFunctions > 0 ? totalLines / totalFunctions : 0;
-    const score = Math.max(0, 100 - (issues.length * 5) - Math.max(0, avgLinesPerFunction - 20));
+    const score = Math.max(0, 100 - issues.length * 5 - Math.max(0, avgLinesPerFunction - 20));
 
     return {
       summary: `Quality analysis of ${files.length} files with ${totalLines} total lines`,
@@ -261,9 +265,9 @@ class CustomCodeAnalysisTool extends MCPTool<
         totalLines,
         totalFunctions,
         avgLinesPerFunction: Math.round(avgLinesPerFunction),
-        qualityIssues: issues.length
+        qualityIssues: issues.length,
       },
-      score
+      score,
     };
   }
 
@@ -274,8 +278,8 @@ class CustomCodeAnalysisTool extends MCPTool<
       const pkg = JSON.parse(packageJson);
 
       const dependencies = {
-        ...pkg.dependencies || {},
-        ...pkg.devDependencies || {}
+        ...(pkg.dependencies || {}),
+        ...(pkg.devDependencies || {}),
       };
 
       const issues: any[] = [];
@@ -287,7 +291,7 @@ class CustomCodeAnalysisTool extends MCPTool<
             type: 'outdated-dependency',
             severity: 'low',
             description: 'Consider using lodash-es for better tree shaking',
-            suggestion: 'Replace lodash with lodash-es'
+            suggestion: 'Replace lodash with lodash-es',
           });
         }
 
@@ -296,12 +300,12 @@ class CustomCodeAnalysisTool extends MCPTool<
             type: 'heavy-dependency',
             severity: 'medium',
             description: 'Moment.js is heavy and has maintenance concerns',
-            suggestion: 'Consider using date-fns or dayjs instead'
+            suggestion: 'Consider using date-fns or dayjs instead',
           });
         }
       });
 
-      const score = Math.max(0, 100 - (issues.length * 8));
+      const score = Math.max(0, 100 - issues.length * 8);
 
       return {
         summary: `Dependency analysis of ${Object.keys(dependencies).length} packages`,
@@ -310,21 +314,23 @@ class CustomCodeAnalysisTool extends MCPTool<
           totalDependencies: Object.keys(dependencies).length,
           productionDeps: Object.keys(pkg.dependencies || {}).length,
           devDeps: Object.keys(pkg.devDependencies || {}).length,
-          issuesFound: issues.length
+          issuesFound: issues.length,
         },
-        score
+        score,
       };
     } catch (error) {
       return {
         summary: 'Could not analyze dependencies - package.json not found or invalid',
-        issues: [{
-          type: 'missing-package-json',
-          severity: 'high',
-          description: 'package.json file not found or invalid',
-          suggestion: 'Ensure package.json exists and is valid JSON'
-        }],
+        issues: [
+          {
+            type: 'missing-package-json',
+            severity: 'high',
+            description: 'package.json file not found or invalid',
+            suggestion: 'Ensure package.json exists and is valid JSON',
+          },
+        ],
         metrics: { totalDependencies: 0 },
-        score: 0
+        score: 0,
       };
     }
   }
@@ -399,7 +405,6 @@ async function demonstrateResourceManagement() {
     // Check if file exists
     const exists = await fileResource.exists('package.json');
     console.log(`📦 package.json exists: ${exists}`);
-
   } catch (error) {
     console.error('❌ File resource error:', error);
   }
@@ -412,7 +417,7 @@ async function demonstrateResourceManagement() {
     // Connect to a public API for testing
     await apiResource.connect('https://jsonplaceholder.typicode.com', {
       timeout: 5000,
-      retries: 2
+      retries: 2,
     });
 
     // GET request
@@ -423,10 +428,9 @@ async function demonstrateResourceManagement() {
     const newPost = await apiResource.post('/posts', {
       title: 'Smart MCP Example',
       body: 'This is a test post created by Smart MCP',
-      userId: 1
+      userId: 1,
     });
     console.log(`✅ Created post with ID: ${newPost.id}`);
-
   } catch (error) {
     console.error('❌ API resource error:', error);
   }
@@ -441,7 +445,6 @@ async function demonstrateResourceManagement() {
     console.log('  await dbResource.connect("postgresql://localhost/mydb")');
     console.log('  const users = await dbResource.query("SELECT * FROM users LIMIT 5")');
     console.log('  console.log(`Found ${users.length} users`)');
-
   } catch (error) {
     console.log('ℹ️ Database connection not available in this example');
   }
@@ -467,8 +470,8 @@ async function demonstratePromptTemplates() {
       'Implement proper error handling',
       'Add input validation with Zod',
       'Include comprehensive JSDoc comments',
-      'Follow REST conventions'
-    ]
+      'Follow REST conventions',
+    ],
   });
 
   console.log('🤖 Generated API Development Prompt:');
@@ -486,8 +489,8 @@ async function demonstratePromptTemplates() {
       'Implement proper TypeScript interfaces',
       'Add accessibility attributes',
       'Support dark/light theme',
-      'Include loading and error states'
-    ]
+      'Include loading and error states',
+    ],
   });
 
   console.log('\n🎨 Generated Component Development Prompt:');
@@ -531,8 +534,8 @@ async function demonstrateRegistry() {
         options: {
           includeTests: true,
           outputFormat: 'json',
-          severity: 'medium'
-        }
+          severity: 'medium',
+        },
       });
 
       if (result.success && result.data) {
@@ -584,7 +587,6 @@ export async function runFrameworkExamples(): Promise<void> {
     console.log('• Prompt templates ensure consistent AI interactions');
     console.log('• Registry enables dynamic tool discovery and management');
     console.log('• All components include comprehensive TypeScript support');
-
   } catch (error) {
     console.error('\n❌ Framework examples failed:', error);
     throw error;

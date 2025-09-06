@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-"use strict";
 /**
  * Web Search Broker for MCP Integration
  *
@@ -9,12 +8,10 @@
  * - Real-time information gathering
  * - Technical assumption validation
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.WebSearchBroker = void 0;
 /**
  * Web Search Broker for market research and trend analysis
  */
-class WebSearchBroker {
+export class WebSearchBroker {
     config;
     isAvailable = false;
     constructor(config = {}) {
@@ -313,5 +310,4 @@ class WebSearchBroker {
         };
     }
 }
-exports.WebSearchBroker = WebSearchBroker;
 //# sourceMappingURL=websearch-broker.js.map

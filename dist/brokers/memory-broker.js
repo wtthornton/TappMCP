@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-"use strict";
 /**
  * Memory Broker for MCP Integration
  *
@@ -9,12 +8,10 @@
  * - Project insights and historical data
  * - Decision context preservation
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.MemoryBroker = void 0;
 /**
  * Memory Broker for organizational learning and pattern recognition
  */
-class MemoryBroker {
+export class MemoryBroker {
     config;
     isAvailable = false;
     inMemoryStorage = new Map();
@@ -470,5 +467,4 @@ class MemoryBroker {
         };
     }
 }
-exports.MemoryBroker = MemoryBroker;
 //# sourceMappingURL=memory-broker.js.map

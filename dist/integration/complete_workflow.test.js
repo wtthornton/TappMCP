@@ -1,11 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const vitest_1 = require("vitest");
-const smart_begin_1 = require("../tools/smart_begin");
-const smart_plan_1 = require("../tools/smart_plan");
-const smart_write_1 = require("../tools/smart_write");
-const smart_finish_1 = require("../tools/smart_finish");
-const smart_orchestrate_1 = require("../tools/smart_orchestrate");
+import { describe, it, expect } from 'vitest';
+import { handleSmartBegin } from '../tools/smart-begin';
+import { handleSmartPlan } from '../tools/smart-plan';
+import { handleSmartWrite } from '../tools/smart-write';
+import { handleSmartFinish } from '../tools/smart-finish';
+import { handleSmartOrchestrate } from '../tools/smart-orchestrate';
 // Helper function to create project input
 function createProjectInput(projectName) {
     return {
@@ -80,9 +78,9 @@ async function generateCodeModules(projectId) {
             securityLevel: 'high',
         },
     };
-    const authCodeResult = (await (0, smart_write_1.handleSmartWrite)(authCodeInput));
-    (0, vitest_1.expect)(authCodeResult.success).toBe(true);
-    (0, vitest_1.expect)(authCodeResult.data?.codeId).toBeDefined();
+    const authCodeResult = (await handleSmartWrite(authCodeInput));
+    expect(authCodeResult.success).toBe(true);
+    expect(authCodeResult.data?.codeId).toBeDefined();
     codeResults.push(authCodeResult);
     codeIds.push(authCodeResult.data.codeId);
     // Generate dashboard code
@@ -103,9 +101,9 @@ async function generateCodeModules(projectId) {
             securityLevel: 'medium',
         },
     };
-    const dashboardCodeResult = (await (0, smart_write_1.handleSmartWrite)(dashboardCodeInput));
-    (0, vitest_1.expect)(dashboardCodeResult.success).toBe(true);
-    (0, vitest_1.expect)(dashboardCodeResult.data?.codeId).toBeDefined();
+    const dashboardCodeResult = (await handleSmartWrite(dashboardCodeInput));
+    expect(dashboardCodeResult.success).toBe(true);
+    expect(dashboardCodeResult.data?.codeId).toBeDefined();
     codeResults.push(dashboardCodeResult);
     codeIds.push(dashboardCodeResult.data.codeId);
     // Generate test code
@@ -126,9 +124,9 @@ async function generateCodeModules(projectId) {
             securityLevel: 'high',
         },
     };
-    const testCodeResult = (await (0, smart_write_1.handleSmartWrite)(testCodeInput));
-    (0, vitest_1.expect)(testCodeResult.success).toBe(true);
-    (0, vitest_1.expect)(testCodeResult.data?.codeId).toBeDefined();
+    const testCodeResult = (await handleSmartWrite(testCodeInput));
+    expect(testCodeResult.success).toBe(true);
+    expect(testCodeResult.data?.codeId).toBeDefined();
     codeResults.push(testCodeResult);
     codeIds.push(testCodeResult.data.codeId);
     return { codeResults, codeIds };
@@ -156,11 +154,11 @@ async function validateProject(projectId, codeIds) {
             deploymentReady: true,
         },
     };
-    const validationResult = (await (0, smart_finish_1.handleSmartFinish)(validationInput));
-    (0, vitest_1.expect)(validationResult.success).toBe(true);
-    (0, vitest_1.expect)(validationResult.data?.qualityScorecard).toBeDefined();
-    (0, vitest_1.expect)(validationResult.data?.recommendations).toBeDefined();
-    (0, vitest_1.expect)(validationResult.data?.nextSteps).toBeDefined();
+    const validationResult = (await handleSmartFinish(validationInput));
+    expect(validationResult.success).toBe(true);
+    expect(validationResult.data?.qualityScorecard).toBeDefined();
+    expect(validationResult.data?.recommendations).toBeDefined();
+    expect(validationResult.data?.nextSteps).toBeDefined();
     return validationResult;
 }
 // Helper function to orchestrate workflow
@@ -195,30 +193,30 @@ async function orchestrateWorkflow(projectId) {
             useMemory: false,
         },
     };
-    const orchestrationResult = (await (0, smart_orchestrate_1.handleSmartOrchestrate)(orchestrationInput));
+    const orchestrationResult = (await handleSmartOrchestrate(orchestrationInput));
     if (!orchestrationResult.success) {
         console.log('Orchestration error:', orchestrationResult.error);
     }
-    (0, vitest_1.expect)(orchestrationResult.success).toBe(true);
-    (0, vitest_1.expect)(orchestrationResult.data?.orchestration).toBeDefined();
-    (0, vitest_1.expect)(orchestrationResult.data?.orchestration.workflow).toBeDefined();
-    (0, vitest_1.expect)(orchestrationResult.data?.orchestration.automation).toBeDefined();
-    (0, vitest_1.expect)(orchestrationResult.data?.orchestration.businessValue).toBeDefined();
+    expect(orchestrationResult.success).toBe(true);
+    expect(orchestrationResult.data?.orchestration).toBeDefined();
+    expect(orchestrationResult.data?.orchestration.workflow).toBeDefined();
+    expect(orchestrationResult.data?.orchestration.automation).toBeDefined();
+    expect(orchestrationResult.data?.orchestration.businessValue).toBeDefined();
     return orchestrationResult;
 }
-(0, vitest_1.describe)('Complete 5-Tool Workflow Integration', () => {
-    (0, vitest_1.it)('should complete full end-to-end workflow', async () => {
+describe('Complete 5-Tool Workflow Integration', () => {
+    it('should complete full end-to-end workflow', async () => {
         // Step 1: Initialize project with smart_begin
         const projectInput = createProjectInput('complete-workflow-test');
-        const projectResult = (await (0, smart_begin_1.handleSmartBegin)(projectInput));
-        (0, vitest_1.expect)(projectResult.success).toBe(true);
-        (0, vitest_1.expect)(projectResult.data?.projectId).toBeDefined();
+        const projectResult = (await handleSmartBegin(projectInput));
+        expect(projectResult.success).toBe(true);
+        expect(projectResult.data?.projectId).toBeDefined();
         const { projectId } = projectResult.data;
         // Step 2: Create project plan with smart_plan
         const planInput = createPlanInput(projectId);
-        const planResult = (await (0, smart_plan_1.handleSmartPlan)(planInput));
-        (0, vitest_1.expect)(planResult.success).toBe(true);
-        (0, vitest_1.expect)(planResult.data?.projectPlan).toBeDefined();
+        const planResult = (await handleSmartPlan(planInput));
+        expect(planResult.success).toBe(true);
+        expect(planResult.data?.projectPlan).toBeDefined();
         // Step 3: Generate multiple code modules with smart_write
         const { codeResults, codeIds } = await generateCodeModules(projectId);
         // Step 4: Validate project completion with smart_finish
@@ -226,16 +224,16 @@ async function orchestrateWorkflow(projectId) {
         // Step 5: Orchestrate complete workflow with smart_orchestrate
         const orchestrationResult = await orchestrateWorkflow(projectId);
         // Verify data consistency across all tools
-        (0, vitest_1.expect)(projectResult.data?.projectId).toBe(projectId);
-        (0, vitest_1.expect)(planResult.data?.projectId).toBe(projectId);
-        (0, vitest_1.expect)(codeResults[0].data?.generatedCode).toBeDefined();
-        (0, vitest_1.expect)(codeResults[1].data?.generatedCode).toBeDefined();
-        (0, vitest_1.expect)(codeResults[2].data?.generatedCode).toBeDefined();
-        (0, vitest_1.expect)(validationResult.data?.projectId).toBe(projectId);
-        (0, vitest_1.expect)(validationResult.data?.codeIds).toEqual(codeIds);
-        (0, vitest_1.expect)(orchestrationResult.data?.projectId).toBe(projectId);
+        expect(projectResult.data?.projectId).toBe(projectId);
+        expect(planResult.data?.projectId).toBe(projectId);
+        expect(codeResults[0].data?.generatedCode).toBeDefined();
+        expect(codeResults[1].data?.generatedCode).toBeDefined();
+        expect(codeResults[2].data?.generatedCode).toBeDefined();
+        expect(validationResult.data?.projectId).toBe(projectId);
+        expect(validationResult.data?.codeIds).toEqual(codeIds);
+        expect(orchestrationResult.data?.projectId).toBe(projectId);
     });
-    (0, vitest_1.it)('should maintain context and data flow across all tools', async () => {
+    it('should maintain context and data flow across all tools', async () => {
         // Initialize project
         const projectInput = {
             projectName: 'context-flow-test',
@@ -245,14 +243,14 @@ async function orchestrateWorkflow(projectId) {
                 targetUsers: 'enterprise',
             },
         };
-        const projectResult = (await (0, smart_begin_1.handleSmartBegin)(projectInput));
+        const projectResult = (await handleSmartBegin(projectInput));
         const { projectId } = projectResult.data;
         // Create plan
         const planInput = {
             projectId,
             planType: 'development',
         };
-        const planResult = (await (0, smart_plan_1.handleSmartPlan)(planInput));
+        const planResult = (await handleSmartPlan(planInput));
         // Generate code
         const codeInput = {
             projectId,
@@ -265,7 +263,7 @@ async function orchestrateWorkflow(projectId) {
                 priority: 'high',
             },
         };
-        const codeResult = (await (0, smart_write_1.handleSmartWrite)(codeInput));
+        const codeResult = (await handleSmartWrite(codeInput));
         const { codeId } = codeResult.data;
         // Validate
         const validationInput = {
@@ -277,7 +275,7 @@ async function orchestrateWorkflow(projectId) {
                 userSatisfaction: 98,
             },
         };
-        const validationResult = (await (0, smart_finish_1.handleSmartFinish)(validationInput));
+        const validationResult = (await handleSmartFinish(validationInput));
         // Orchestrate
         const orchestrationInput = {
             request: 'Complete comprehensive workflow with planning, development, and testing phases',
@@ -304,15 +302,15 @@ async function orchestrateWorkflow(projectId) {
                 useMemory: false,
             },
         };
-        const orchestrationResult = (await (0, smart_orchestrate_1.handleSmartOrchestrate)(orchestrationInput));
+        const orchestrationResult = (await handleSmartOrchestrate(orchestrationInput));
         // Verify business value consistency
-        (0, vitest_1.expect)(projectResult.data?.businessValue).toBeDefined();
-        (0, vitest_1.expect)(planResult.data?.businessValue).toBeDefined();
-        (0, vitest_1.expect)(codeResult.data?.businessValue).toBeDefined();
-        (0, vitest_1.expect)(validationResult.data?.businessValue).toBeDefined();
-        (0, vitest_1.expect)(orchestrationResult.data?.orchestration.businessValue).toBeDefined();
+        expect(projectResult.data?.businessValue).toBeDefined();
+        expect(planResult.data?.businessValue).toBeDefined();
+        expect(codeResult.data?.businessValue).toBeDefined();
+        expect(validationResult.data?.businessValue).toBeDefined();
+        expect(orchestrationResult.data?.orchestration.businessValue).toBeDefined();
     });
-    (0, vitest_1.it)('should handle different workflow types', async () => {
+    it('should handle different workflow types', async () => {
         const workflowTypeMappings = [
             { testType: 'development', validType: 'full-development' },
             { testType: 'deployment', validType: 'migration' },
@@ -326,14 +324,14 @@ async function orchestrateWorkflow(projectId) {
                 projectName: `workflow-${workflowType}`,
                 projectType: 'web-app',
             };
-            const projectResult = (await (0, smart_begin_1.handleSmartBegin)(projectInput));
+            const projectResult = (await handleSmartBegin(projectInput));
             const { projectId } = projectResult.data;
             // Create plan
             const planInput = {
                 projectId,
                 planType: workflowType,
             };
-            await (0, smart_plan_1.handleSmartPlan)(planInput);
+            await handleSmartPlan(planInput);
             // Generate code
             const codeInput = {
                 projectId,
@@ -346,14 +344,14 @@ async function orchestrateWorkflow(projectId) {
                     priority: 'medium',
                 },
             };
-            const codeResult = (await (0, smart_write_1.handleSmartWrite)(codeInput));
+            const codeResult = (await handleSmartWrite(codeInput));
             const { codeId } = codeResult.data;
             // Validate
             const validationInput = {
                 projectId,
                 codeIds: [codeId],
             };
-            await (0, smart_finish_1.handleSmartFinish)(validationInput);
+            await handleSmartFinish(validationInput);
             // Orchestrate
             const orchestrationInput = {
                 request: `Complete ${workflowType} workflow with comprehensive planning and development`,
@@ -374,18 +372,18 @@ async function orchestrateWorkflow(projectId) {
                     useMemory: false,
                 },
             };
-            const orchestrationResult = (await (0, smart_orchestrate_1.handleSmartOrchestrate)(orchestrationInput));
+            const orchestrationResult = (await handleSmartOrchestrate(orchestrationInput));
             const expectedWorkflowType = workflowType === 'full-development' ? 'sdlc' : 'project';
-            (0, vitest_1.expect)(orchestrationResult.data?.workflowType).toBe(expectedWorkflowType);
+            expect(orchestrationResult.data?.workflowType).toBe(expectedWorkflowType);
         }
     });
-    (0, vitest_1.it)('should provide comprehensive quality validation', async () => {
+    it('should provide comprehensive quality validation', async () => {
         // Initialize project
         const projectInput = {
             projectName: 'quality-validation-test',
             projectType: 'web-app',
         };
-        const projectResult = (await (0, smart_begin_1.handleSmartBegin)(projectInput));
+        const projectResult = (await handleSmartBegin(projectInput));
         const { projectId } = projectResult.data;
         // Generate multiple code modules
         const codeResults = [];
@@ -402,7 +400,7 @@ async function orchestrateWorkflow(projectId) {
                     priority: 'medium',
                 },
             };
-            const codeResult = (await (0, smart_write_1.handleSmartWrite)(codeInput));
+            const codeResult = (await handleSmartWrite(codeInput));
             codeResults.push(codeResult);
             codeIds.push(codeResult.data.codeId);
         }
@@ -417,14 +415,14 @@ async function orchestrateWorkflow(projectId) {
                 maintainabilityScore: 95,
             },
         };
-        const validationResult = (await (0, smart_finish_1.handleSmartFinish)(validationInput));
-        (0, vitest_1.expect)(validationResult.success).toBe(true);
-        (0, vitest_1.expect)(validationResult.data?.qualityScorecard.overall.score).toBeGreaterThan(0);
-        (0, vitest_1.expect)(validationResult.data?.qualityScorecard.overall.status).toMatch(/pass|fail/);
-        (0, vitest_1.expect)(validationResult.data?.qualityScorecard.overall.grade).toMatch(/A|B|C|D|F/);
-        (0, vitest_1.expect)(validationResult.data?.qualityScorecard.quality).toBeDefined();
-        (0, vitest_1.expect)(validationResult.data?.qualityScorecard.business).toBeDefined();
-        (0, vitest_1.expect)(validationResult.data?.qualityScorecard.production).toBeDefined();
+        const validationResult = (await handleSmartFinish(validationInput));
+        expect(validationResult.success).toBe(true);
+        expect(validationResult.data?.qualityScorecard.overall.score).toBeGreaterThan(0);
+        expect(validationResult.data?.qualityScorecard.overall.status).toMatch(/pass|fail/);
+        expect(validationResult.data?.qualityScorecard.overall.grade).toMatch(/A|B|C|D|F/);
+        expect(validationResult.data?.qualityScorecard.quality).toBeDefined();
+        expect(validationResult.data?.qualityScorecard.business).toBeDefined();
+        expect(validationResult.data?.qualityScorecard.production).toBeDefined();
         // Orchestrate with quality focus
         const orchestrationInput = {
             request: 'Complete comprehensive quality validation workflow with full SDLC coverage',
@@ -448,12 +446,12 @@ async function orchestrateWorkflow(projectId) {
                 useMemory: false,
             },
         };
-        const orchestrationResult = (await (0, smart_orchestrate_1.handleSmartOrchestrate)(orchestrationInput));
-        (0, vitest_1.expect)(orchestrationResult.data?.orchestration.workflow.phases.length).toBeGreaterThan(0);
-        (0, vitest_1.expect)(orchestrationResult.data?.orchestration.workflow.integrations.length).toBeGreaterThan(0);
-        (0, vitest_1.expect)(orchestrationResult.data?.orchestration.workflow.qualityGates.length).toBeGreaterThan(0);
-        (0, vitest_1.expect)(orchestrationResult.data?.orchestration.automation).toBeDefined();
-        (0, vitest_1.expect)(orchestrationResult.data?.orchestration.businessValue).toBeDefined();
+        const orchestrationResult = (await handleSmartOrchestrate(orchestrationInput));
+        expect(orchestrationResult.data?.orchestration.workflow.phases.length).toBeGreaterThan(0);
+        expect(orchestrationResult.data?.orchestration.workflow.integrations.length).toBeGreaterThan(0);
+        expect(orchestrationResult.data?.orchestration.workflow.qualityGates.length).toBeGreaterThan(0);
+        expect(orchestrationResult.data?.orchestration.automation).toBeDefined();
+        expect(orchestrationResult.data?.orchestration.businessValue).toBeDefined();
     });
 });
 //# sourceMappingURL=complete_workflow.test.js.map

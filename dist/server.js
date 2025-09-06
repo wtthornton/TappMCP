@@ -1,46 +1,43 @@
 #!/usr/bin/env node
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.SmartMCPServer = void 0;
-const index_js_1 = require("@modelcontextprotocol/sdk/server/index.js");
-const stdio_js_1 = require("@modelcontextprotocol/sdk/server/stdio.js");
-const types_js_1 = require("@modelcontextprotocol/sdk/types.js");
-const zod_1 = require("zod");
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { CallToolRequestSchema, ListToolsRequestSchema, } from '@modelcontextprotocol/sdk/types.js';
+import { z } from 'zod';
 // Import health server for Docker health checks
-require("./health-server.js");
+import './health-server.js';
 // Import tool handlers
-const smart_begin_js_1 = require("./tools/smart_begin.js");
-const smart_plan_js_1 = require("./tools/smart_plan.js");
-const smart_write_js_1 = require("./tools/smart_write.js");
-const smart_finish_js_1 = require("./tools/smart_finish.js");
-const smart_orchestrate_js_1 = require("./tools/smart_orchestrate.js");
+import { smartBeginTool, handleSmartBegin } from './tools/smart-begin.js';
+import { smartPlanTool, handleSmartPlan } from './tools/smart-plan.js';
+import { smartWriteTool, handleSmartWrite } from './tools/smart-write.js';
+import { smartFinishTool, handleSmartFinish } from './tools/smart-finish.js';
+import { smartOrchestrateTool, handleSmartOrchestrate } from './tools/smart-orchestrate.js';
 // Server configuration
 const SERVER_NAME = 'smart-mcp';
 const SERVER_VERSION = '0.1.0';
 // Tool registry
 const TOOLS = {
-    smart_begin: { tool: smart_begin_js_1.smartBeginTool, handler: smart_begin_js_1.handleSmartBegin },
-    smart_plan: { tool: smart_plan_js_1.smartPlanTool, handler: smart_plan_js_1.handleSmartPlan },
-    smart_write: { tool: smart_write_js_1.smartWriteTool, handler: smart_write_js_1.handleSmartWrite },
-    smart_finish: { tool: smart_finish_js_1.smartFinishTool, handler: smart_finish_js_1.handleSmartFinish },
-    smart_orchestrate: { tool: smart_orchestrate_js_1.smartOrchestrateTool, handler: smart_orchestrate_js_1.handleSmartOrchestrate },
+    smart_begin: { tool: smartBeginTool, handler: handleSmartBegin },
+    smart_plan: { tool: smartPlanTool, handler: handleSmartPlan },
+    smart_write: { tool: smartWriteTool, handler: handleSmartWrite },
+    smart_finish: { tool: smartFinishTool, handler: handleSmartFinish },
+    smart_orchestrate: { tool: smartOrchestrateTool, handler: handleSmartOrchestrate },
 };
 // Input validation schema
-const ToolInputSchema = zod_1.z.object({
-    name: zod_1.z.string().min(1, 'Tool name is required'),
-    arguments: zod_1.z.record(zod_1.z.any()).optional().default({}),
+const ToolInputSchema = z.object({
+    name: z.string().min(1, 'Tool name is required'),
+    arguments: z.record(z.any()).optional().default({}),
 });
 // Response schema
-const ToolResponseSchema = zod_1.z.object({
-    success: zod_1.z.boolean(),
-    data: zod_1.z.any().optional(),
-    error: zod_1.z.string().optional(),
-    timestamp: zod_1.z.string(),
+const ToolResponseSchema = z.object({
+    success: z.boolean(),
+    data: z.any().optional(),
+    error: z.string().optional(),
+    timestamp: z.string(),
 });
 class SmartMCPServer {
     server;
     constructor() {
-        this.server = new index_js_1.Server({
+        this.server = new Server({
             name: SERVER_NAME,
             version: SERVER_VERSION,
             capabilities: {
@@ -51,7 +48,7 @@ class SmartMCPServer {
     }
     setupHandlers() {
         // List tools handler
-        this.server.setRequestHandler(types_js_1.ListToolsRequestSchema, async () => {
+        this.server.setRequestHandler(ListToolsRequestSchema, async () => {
             try {
                 const tools = Object.values(TOOLS).map(({ tool }) => tool);
                 return {
@@ -63,7 +60,7 @@ class SmartMCPServer {
             }
         });
         // Call tool handler
-        this.server.setRequestHandler(types_js_1.CallToolRequestSchema, async (request) => {
+        this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
             try {
                 // Validate input
                 const validatedInput = ToolInputSchema.parse({
@@ -80,7 +77,7 @@ class SmartMCPServer {
                 // Validate tool arguments against schema
                 if (tool.inputSchema) {
                     try {
-                        const schema = zod_1.z.object(tool.inputSchema.properties);
+                        const schema = z.object(tool.inputSchema.properties);
                         schema.parse(args);
                     }
                     catch (validationError) {
@@ -125,7 +122,7 @@ class SmartMCPServer {
     }
     async start() {
         try {
-            const transport = new stdio_js_1.StdioServerTransport();
+            const transport = new StdioServerTransport();
             await this.server.connect(transport);
             // eslint-disable-next-line no-console
             console.error(`${SERVER_NAME} v${SERVER_VERSION} started successfully`);
@@ -137,9 +134,8 @@ class SmartMCPServer {
         }
     }
 }
-exports.SmartMCPServer = SmartMCPServer;
 // Start server if this file is run directly
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
     const server = new SmartMCPServer();
     server.start().catch(error => {
         // eslint-disable-next-line no-console
@@ -147,4 +143,5 @@ if (require.main === module) {
         process.exit(1);
     });
 }
+export { SmartMCPServer };
 //# sourceMappingURL=server.js.map

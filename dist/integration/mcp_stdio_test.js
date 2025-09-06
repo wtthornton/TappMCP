@@ -1,10 +1,8 @@
 #!/usr/bin/env node
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const vitest_1 = require("vitest");
-const child_process_1 = require("child_process");
-const fs_1 = require("fs");
-const path_1 = require("path");
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { spawn } from 'child_process';
+import { writeFileSync } from 'fs';
+import { join } from 'path';
 /**
  * MCP Stdio Test: Real Web Page Creation
  *
@@ -22,13 +20,16 @@ class MCPClient {
     async connect() {
         return new Promise((resolve, reject) => {
             // Connect to the MCP server via stdio
-            this.process = (0, child_process_1.spawn)('node', ['dist/server.js'], {
+            this.process = spawn('node', ['dist/server.js'], {
                 stdio: ['pipe', 'pipe', 'pipe'],
-                cwd: process.cwd()
+                cwd: process.cwd(),
             });
             this.process.stdout.on('data', (data) => {
                 try {
-                    const lines = data.toString().split('\n').filter(line => line.trim());
+                    const lines = data
+                        .toString()
+                        .split('\n')
+                        .filter(line => line.trim());
                     for (const line of lines) {
                         const message = JSON.parse(line);
                         this.handleMessage(message);
@@ -57,16 +58,18 @@ class MCPClient {
                     params: {
                         protocolVersion: '2024-11-05',
                         capabilities: {
-                            tools: {}
+                            tools: {},
                         },
                         clientInfo: {
                             name: 'test-client',
-                            version: '1.0.0'
-                        }
-                    }
-                }).then(() => {
+                            version: '1.0.0',
+                        },
+                    },
+                })
+                    .then(() => {
                     resolve();
-                }).catch(reject);
+                })
+                    .catch(reject);
             }, 1000);
         });
     }
@@ -87,7 +90,7 @@ class MCPClient {
             const id = this.messageId++;
             message.id = id;
             this.pendingRequests.set(id, { resolve, reject });
-            this.process.stdin.write(JSON.stringify(message) + '\n');
+            this.process.stdin.write(`${JSON.stringify(message)}\n`);
             // Timeout after 30 seconds
             setTimeout(() => {
                 if (this.pendingRequests.has(id)) {
@@ -105,8 +108,8 @@ class MCPClient {
             method: 'tools/call',
             params: {
                 name: toolName,
-                arguments: arguments_
-            }
+                arguments: arguments_,
+            },
         });
         console.log(`✅ MCP Response:`, JSON.stringify(result, null, 2));
         return result;
@@ -118,12 +121,12 @@ class MCPClient {
         }
     }
 }
-(0, vitest_1.describe)('MCP Stdio HTML Generation Test', () => {
+describe('MCP Stdio HTML Generation Test', () => {
     let mcpClient;
     let projectId;
     let generatedCode;
     let testResults;
-    (0, vitest_1.beforeAll)(async () => {
+    beforeAll(async () => {
         testResults = {
             mcpConnection: false,
             projectInitialization: false,
@@ -137,7 +140,7 @@ class MCPClient {
         };
         mcpClient = new MCPClient();
     });
-    (0, vitest_1.afterAll)(async () => {
+    afterAll(async () => {
         if (mcpClient) {
             await mcpClient.disconnect();
         }
@@ -157,7 +160,7 @@ class MCPClient {
         console.log(`\nOverall Score: ${score}% (${passCount}/${totalCount} tests passed)`);
         console.log('Grade:', score >= 90 ? 'A' : score >= 80 ? 'B' : score >= 70 ? 'C' : score >= 60 ? 'D' : 'F');
     });
-    (0, vitest_1.it)('should connect to MCP server via stdio', async () => {
+    it('should connect to MCP server via stdio', async () => {
         console.log('\n🧪 Testing: MCP Stdio Connection');
         try {
             await mcpClient.connect();
@@ -168,19 +171,19 @@ class MCPClient {
             console.log('❌ MCP Server connection failed:', error);
             testResults.mcpConnection = false;
         }
-        (0, vitest_1.expect)(testResults.mcpConnection).toBe(true);
+        expect(testResults.mcpConnection).toBe(true);
     });
-    (0, vitest_1.it)('should initialize project via MCP stdio', async () => {
+    it('should initialize project via MCP stdio', async () => {
         console.log('\n🧪 Testing: MCP Project Initialization');
         const beginResult = await mcpClient.callTool('smart_begin', {
             projectName: 'HTML Page Generator',
             description: 'Simple HTML page with header, footer, and body content',
             techStack: ['html', 'css', 'javascript'],
             targetUsers: ['non-technical-founder'],
-            businessGoals: ['create simple web page', 'learn HTML basics', 'build portfolio']
+            businessGoals: ['create simple web page', 'learn HTML basics', 'build portfolio'],
         });
-        (0, vitest_1.expect)(beginResult.success).toBe(true);
-        (0, vitest_1.expect)(beginResult.data).toBeDefined();
+        expect(beginResult.success).toBe(true);
+        expect(beginResult.data).toBeDefined();
         testResults.projectInitialization = beginResult.success;
         if (beginResult.success && beginResult.data) {
             const data = beginResult.data;
@@ -191,11 +194,11 @@ class MCPClient {
             console.log(`   - Cost Prevention: $${data.businessValue?.costPrevention?.toLocaleString() || 'N/A'}`);
         }
     });
-    (0, vitest_1.it)('should generate HTML page via MCP stdio', async () => {
+    it('should generate HTML page via MCP stdio', async () => {
         console.log('\n🧪 Testing: MCP HTML Page Generation');
-        (0, vitest_1.expect)(projectId).toBeDefined();
+        expect(projectId).toBeDefined();
         const writeResult = await mcpClient.callTool('smart_write', {
-            projectId: projectId,
+            projectId,
             featureDescription: 'Create me an HTML page that has a header, a footer, and says "I\'m the best" in the body',
             targetRole: 'developer',
             codeType: 'component',
@@ -203,16 +206,16 @@ class MCPClient {
             businessContext: {
                 goals: ['create simple web page', 'learn HTML basics'],
                 targetUsers: ['non-technical-founder'],
-                priority: 'high'
+                priority: 'high',
             },
             qualityRequirements: {
                 testCoverage: 80,
                 complexity: 3,
-                securityLevel: 'medium'
-            }
+                securityLevel: 'medium',
+            },
         });
-        (0, vitest_1.expect)(writeResult.success).toBe(true);
-        (0, vitest_1.expect)(writeResult.data).toBeDefined();
+        expect(writeResult.success).toBe(true);
+        expect(writeResult.data).toBeDefined();
         testResults.htmlGeneration = writeResult.success;
         if (writeResult.success && writeResult.data) {
             const data = writeResult.data;
@@ -232,21 +235,25 @@ class MCPClient {
             }
         }
     });
-    (0, vitest_1.it)('should analyze generated HTML code from MCP', async () => {
+    it('should analyze generated HTML code from MCP', async () => {
         console.log('\n🧪 Testing: MCP Generated HTML Analysis');
-        (0, vitest_1.expect)(generatedCode).toBeDefined();
-        (0, vitest_1.expect)(generatedCode.files).toBeDefined();
-        (0, vitest_1.expect)(generatedCode.files.length).toBeGreaterThan(0);
+        expect(generatedCode).toBeDefined();
+        expect(generatedCode.files).toBeDefined();
+        expect(generatedCode.files.length).toBeGreaterThan(0);
         // Find the HTML file
         const htmlFile = generatedCode.files.find((file) => file.path.endsWith('.html') || file.type === 'html' || file.content.includes('<html'));
         if (htmlFile) {
             console.log(`📄 Found HTML file: ${htmlFile.path}`);
             console.log(`📊 File size: ${htmlFile.content.length} characters`);
             // Analyze HTML structure
-            const hasHeader = htmlFile.content.includes('<header') || htmlFile.content.includes('<h1') || htmlFile.content.includes('header');
+            const hasHeader = htmlFile.content.includes('<header') ||
+                htmlFile.content.includes('<h1') ||
+                htmlFile.content.includes('header');
             const hasFooter = htmlFile.content.includes('<footer') || htmlFile.content.includes('footer');
             const hasBody = htmlFile.content.includes('<body') || htmlFile.content.includes('body');
-            const hasContent = htmlFile.content.includes("I'm the best") || htmlFile.content.includes("i'm the best") || htmlFile.content.includes("I am the best");
+            const hasContent = htmlFile.content.includes("I'm the best") ||
+                htmlFile.content.includes("i'm the best") ||
+                htmlFile.content.includes('I am the best');
             testResults.structure = hasHeader && hasFooter && hasBody && hasContent;
             console.log(`   - Has Header: ${hasHeader ? '✅' : '❌'}`);
             console.log(`   - Has Footer: ${hasFooter ? '✅' : '❌'}`);
@@ -268,7 +275,9 @@ class MCPClient {
             // Analyze accessibility
             const hasAltText = htmlFile.content.includes('alt=');
             const hasLang = htmlFile.content.includes('lang=');
-            const hasSemanticTags = htmlFile.content.includes('<main') || htmlFile.content.includes('<section') || htmlFile.content.includes('<article');
+            const hasSemanticTags = htmlFile.content.includes('<main') ||
+                htmlFile.content.includes('<section') ||
+                htmlFile.content.includes('<article');
             testResults.accessibility = hasLang || hasSemanticTags;
             console.log(`   - Has Language Attribute: ${hasLang ? '✅' : '❌'}`);
             console.log(`   - Has Alt Text: ${hasAltText ? '✅' : '❌'}`);
@@ -286,8 +295,8 @@ class MCPClient {
             console.log(`   - File Size: ${fileSize} characters`);
             console.log(`   - Is Lightweight: ${isLightweight ? '✅' : '❌'}`);
             // Save the generated HTML file for inspection
-            const htmlPath = (0, path_1.join)(process.cwd(), 'generated-html-test.html');
-            (0, fs_1.writeFileSync)(htmlPath, htmlFile.content);
+            const htmlPath = join(process.cwd(), 'generated-html-test.html');
+            writeFileSync(htmlPath, htmlFile.content);
             console.log(`💾 Generated HTML saved to: ${htmlPath}`);
         }
         else {
@@ -296,7 +305,7 @@ class MCPClient {
             testResults.codeQuality = false;
         }
     });
-    (0, vitest_1.it)('should document MCP stdio test results', async () => {
+    it('should document MCP stdio test results', async () => {
         console.log('\n🧪 Testing: MCP Stdio Results Documentation');
         // Document all results for analysis (no pass/fail)
         console.log('📊 MCP Stdio HTML Generation Analysis Summary:');
@@ -310,7 +319,7 @@ class MCPClient {
         console.log('   - Accessibility: Basic accessibility features from MCP');
         console.log('   - Performance: File size and loading optimization from MCP');
         // Always pass - this is just documentation
-        (0, vitest_1.expect)(true).toBe(true);
+        expect(true).toBe(true);
     });
 });
 //# sourceMappingURL=mcp_stdio_test.js.map

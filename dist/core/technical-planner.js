@@ -1,86 +1,83 @@
 #!/usr/bin/env node
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.TechnicalPlanner = exports.OptimizedPlanSchema = exports.TimelineSchema = exports.DependencySchema = exports.EffortEstimateSchema = exports.TaskSchema = exports.ArchitectureSchema = void 0;
-const zod_1 = require("zod");
+import { z } from 'zod';
 // Technical planning schemas
-exports.ArchitectureSchema = zod_1.z.object({
-    components: zod_1.z.array(zod_1.z.object({
-        name: zod_1.z.string(),
-        type: zod_1.z.enum(['frontend', 'backend', 'database', 'external', 'service']),
-        description: zod_1.z.string(),
-        dependencies: zod_1.z.array(zod_1.z.string()),
-        complexity: zod_1.z.enum(['low', 'medium', 'high']),
+export const ArchitectureSchema = z.object({
+    components: z.array(z.object({
+        name: z.string(),
+        type: z.enum(['frontend', 'backend', 'database', 'external', 'service']),
+        description: z.string(),
+        dependencies: z.array(z.string()),
+        complexity: z.enum(['low', 'medium', 'high']),
     })),
-    patterns: zod_1.z.array(zod_1.z.string()),
-    technologies: zod_1.z.array(zod_1.z.object({
-        name: zod_1.z.string(),
-        category: zod_1.z.enum(['language', 'framework', 'database', 'tool', 'service']),
-        justification: zod_1.z.string(),
+    patterns: z.array(z.string()),
+    technologies: z.array(z.object({
+        name: z.string(),
+        category: z.enum(['language', 'framework', 'database', 'tool', 'service']),
+        justification: z.string(),
     })),
-    constraints: zod_1.z.array(zod_1.z.string()),
+    constraints: z.array(z.string()),
 });
-exports.TaskSchema = zod_1.z.object({
-    id: zod_1.z.string(),
-    name: zod_1.z.string(),
-    description: zod_1.z.string(),
-    type: zod_1.z.enum(['development', 'testing', 'deployment', 'documentation', 'research']),
-    priority: zod_1.z.enum(['low', 'medium', 'high', 'critical']),
-    estimatedHours: zod_1.z.number().min(1),
-    dependencies: zod_1.z.array(zod_1.z.string()),
-    skills: zod_1.z.array(zod_1.z.string()),
-    phase: zod_1.z.string(),
+export const TaskSchema = z.object({
+    id: z.string(),
+    name: z.string(),
+    description: z.string(),
+    type: z.enum(['development', 'testing', 'deployment', 'documentation', 'research']),
+    priority: z.enum(['low', 'medium', 'high', 'critical']),
+    estimatedHours: z.number().min(1),
+    dependencies: z.array(z.string()),
+    skills: z.array(z.string()),
+    phase: z.string(),
 });
-exports.EffortEstimateSchema = zod_1.z.object({
-    totalHours: zod_1.z.number(),
-    breakdown: zod_1.z.object({
-        development: zod_1.z.number(),
-        testing: zod_1.z.number(),
-        deployment: zod_1.z.number(),
-        documentation: zod_1.z.number(),
-        research: zod_1.z.number(),
+export const EffortEstimateSchema = z.object({
+    totalHours: z.number(),
+    breakdown: z.object({
+        development: z.number(),
+        testing: z.number(),
+        deployment: z.number(),
+        documentation: z.number(),
+        research: z.number(),
     }),
-    confidence: zod_1.z.enum(['low', 'medium', 'high']),
-    assumptions: zod_1.z.array(zod_1.z.string()),
+    confidence: z.enum(['low', 'medium', 'high']),
+    assumptions: z.array(z.string()),
 });
-exports.DependencySchema = zod_1.z.object({
-    id: zod_1.z.string(),
-    from: zod_1.z.string(),
-    to: zod_1.z.string(),
-    type: zod_1.z.enum(['blocks', 'requires', 'enables', 'influences']),
-    description: zod_1.z.string(),
+export const DependencySchema = z.object({
+    id: z.string(),
+    from: z.string(),
+    to: z.string(),
+    type: z.enum(['blocks', 'requires', 'enables', 'influences']),
+    description: z.string(),
 });
-exports.TimelineSchema = zod_1.z.object({
-    phases: zod_1.z.array(zod_1.z.object({
-        id: zod_1.z.string(),
-        name: zod_1.z.string(),
-        startDate: zod_1.z.string(),
-        endDate: zod_1.z.string(),
-        duration: zod_1.z.number(),
-        tasks: zod_1.z.array(zod_1.z.string()),
-        milestones: zod_1.z.array(zod_1.z.string()),
+export const TimelineSchema = z.object({
+    phases: z.array(z.object({
+        id: z.string(),
+        name: z.string(),
+        startDate: z.string(),
+        endDate: z.string(),
+        duration: z.number(),
+        tasks: z.array(z.string()),
+        milestones: z.array(z.string()),
     })),
-    criticalPath: zod_1.z.array(zod_1.z.string()),
-    totalDuration: zod_1.z.number(),
-    bufferTime: zod_1.z.number(),
+    criticalPath: z.array(z.string()),
+    totalDuration: z.number(),
+    bufferTime: z.number(),
 });
-exports.OptimizedPlanSchema = zod_1.z.object({
-    originalEffort: zod_1.z.number(),
-    optimizedEffort: zod_1.z.number(),
-    savingsHours: zod_1.z.number(),
-    optimizations: zod_1.z.array(zod_1.z.object({
-        type: zod_1.z.enum(['parallel', 'reuse', 'simplify', 'automate']),
-        description: zod_1.z.string(),
-        impact: zod_1.z.string(),
-        savings: zod_1.z.number(),
+export const OptimizedPlanSchema = z.object({
+    originalEffort: z.number(),
+    optimizedEffort: z.number(),
+    savingsHours: z.number(),
+    optimizations: z.array(z.object({
+        type: z.enum(['parallel', 'reuse', 'simplify', 'automate']),
+        description: z.string(),
+        impact: z.string(),
+        savings: z.number(),
     })),
-    riskAdjustments: zod_1.z.array(zod_1.z.object({
-        risk: zod_1.z.string(),
-        adjustment: zod_1.z.string(),
-        impact: zod_1.z.number(),
+    riskAdjustments: z.array(z.object({
+        risk: z.string(),
+        adjustment: z.string(),
+        impact: z.number(),
     })),
 });
-class TechnicalPlanner {
+export class TechnicalPlanner {
     /**
      * Create system architecture based on requirements
      */
@@ -99,7 +96,7 @@ class TechnicalPlanner {
             // eslint-disable-next-line no-console
             console.warn(`Architecture creation took ${processingTime}ms - target is <100ms`);
         }
-        return exports.ArchitectureSchema.parse({
+        return ArchitectureSchema.parse({
             components,
             patterns,
             technologies,
@@ -139,7 +136,7 @@ class TechnicalPlanner {
         if (confidence === 'low') {
             assumptions.push('High complexity may require additional research time');
         }
-        return exports.EffortEstimateSchema.parse({
+        return EffortEstimateSchema.parse({
             totalHours,
             breakdown,
             confidence,
@@ -224,7 +221,7 @@ class TechnicalPlanner {
         const bufferTime = Math.ceil(totalDuration * 0.15);
         // Identify critical path (simplified - longest chain of dependencies)
         const criticalPath = this.findCriticalPath(phases.flatMap(p => p.tasks));
-        return exports.TimelineSchema.parse({
+        return TimelineSchema.parse({
             phases: timelinePhases,
             criticalPath,
             totalDuration,
@@ -295,7 +292,7 @@ class TechnicalPlanner {
             });
         }
         const optimizedEffort = plan.effort.totalHours - totalSavings;
-        return exports.OptimizedPlanSchema.parse({
+        return OptimizedPlanSchema.parse({
             originalEffort: plan.effort.totalHours,
             optimizedEffort,
             savingsHours: totalSavings,
@@ -468,5 +465,4 @@ class TechnicalPlanner {
             c.name.toLowerCase().includes('common'));
     }
 }
-exports.TechnicalPlanner = TechnicalPlanner;
 //# sourceMappingURL=technical-planner.js.map

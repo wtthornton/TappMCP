@@ -1,17 +1,14 @@
 #!/usr/bin/env node
-"use strict";
 /**
  * Business Context Broker for Smart Orchestrate Tool
  *
  * Manages business context preservation across role transitions and workflow phases.
  * Ensures all development activities remain aligned with business goals.
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.BusinessContextBroker = void 0;
 /**
  * Business Context Broker for managing context across workflow phases
  */
-class BusinessContextBroker {
+export class BusinessContextBroker {
     contextStore = new Map();
     roleHistory = new Map();
     contextMetadata = new Map();
@@ -251,5 +248,4 @@ class BusinessContextBroker {
         return result;
     }
 }
-exports.BusinessContextBroker = BusinessContextBroker;
 //# sourceMappingURL=business-context-broker.js.map

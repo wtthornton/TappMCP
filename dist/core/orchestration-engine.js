@@ -1,26 +1,23 @@
 #!/usr/bin/env node
-"use strict";
 /**
  * Orchestration Engine for Smart Orchestrate Tool
  *
  * Main engine that coordinates workflow execution, role switching,
  * and business context management for complete SDLC orchestration.
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.OrchestrationEngine = void 0;
-const business_context_broker_js_1 = require("./business-context-broker.js");
-const role_orchestrator_js_1 = require("./role-orchestrator.js");
+import { BusinessContextBroker, } from './business-context-broker.js';
+import { RoleOrchestrator } from './role-orchestrator.js';
 /**
  * Main Orchestration Engine for complete workflow management
  */
-class OrchestrationEngine {
+export class OrchestrationEngine {
     contextBroker;
     roleOrchestrator;
     activeWorkflows = new Map();
     workflowResults = new Map();
     constructor() {
-        this.contextBroker = new business_context_broker_js_1.BusinessContextBroker();
-        this.roleOrchestrator = new role_orchestrator_js_1.RoleOrchestrator();
+        this.contextBroker = new BusinessContextBroker();
+        this.roleOrchestrator = new RoleOrchestrator();
     }
     /**
      * Execute a complete workflow with role orchestration and context management
@@ -414,5 +411,4 @@ class OrchestrationEngine {
         return optimizedTools;
     }
 }
-exports.OrchestrationEngine = OrchestrationEngine;
 //# sourceMappingURL=orchestration-engine.js.map

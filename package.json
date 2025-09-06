@@ -43,7 +43,7 @@
     "docker:build": "docker build -t smart-mcp .",
     "docker:dev": "docker-compose up -d",
     "docker:test": "docker-compose exec app npm test",
-    "deploy:prod": "node scripts/deploy.js",
+    "deploy:prod": "node scripts/deploy-local-production.js",
     "deploy:docker": "docker-compose -f docker-compose.yml up -d",
     "deploy:local": "node scripts/deploy-local.js",
     "deploy:stop": "docker-compose down",
@@ -51,7 +51,11 @@
     "deploy:health": "curl -f http://localhost:8080/health || exit 1",
     "deploy:status": "docker ps --filter name=tappmcp-smart-mcp --format \"table {{.Names}}\\t{{.Status}}\\t{{.Ports}}\"",
     "deploy:monitor": "docker stats tappmcp-smart-mcp-1 --no-stream",
-    "deploy:rollback": "node scripts/rollback.js"
+    "deploy:rollback": "node scripts/rollback.js",
+    "deploy:test": "node scripts/test-deployed-mcp.js",
+    "deploy:test-tools": "node scripts/test-mcp-stdio-only.js",
+    "demo:comprehensive": "node scripts/comprehensive-mcp-demo-resilient.js",
+    "demo:quick": "node scripts/quick-mcp-demo.js"
   },
   "keywords": [
     "mcp",

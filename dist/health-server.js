@@ -1,11 +1,8 @@
 #!/usr/bin/env node
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.healthServer = void 0;
-const http_1 = require("http");
+import { createServer } from 'http';
 const PORT = process.env.PORT ?? 3000;
 // Health check server for Docker health checks
-const healthServer = (0, http_1.createServer)((req, res) => {
+const healthServer = createServer((req, res) => {
     if (req.url === '/health') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
@@ -32,7 +29,6 @@ const healthServer = (0, http_1.createServer)((req, res) => {
         }));
     }
 });
-exports.healthServer = healthServer;
 // Start health server
 healthServer.listen(Number(PORT), '0.0.0.0', () => {
     // eslint-disable-next-line no-console
@@ -53,4 +49,5 @@ process.on('SIGINT', () => {
         process.exit(0);
     });
 });
+export { healthServer };
 //# sourceMappingURL=health-server.js.map

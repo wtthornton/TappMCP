@@ -1,0 +1,533 @@
+import { MCPResource } from '../framework/mcp-resource.js';
+import { z } from 'zod';
+/**
+ * Database Resource Schema
+ */
+export const DatabaseResourceSchema = z.object({
+    operation: z.enum(['query', 'insert', 'update', 'delete', 'transaction']),
+    table: z.string().min(1, 'Table name is required'),
+    query: z.string().optional(),
+    data: z.record(z.any()).optional(),
+    where: z.record(z.any()).optional(),
+    limit: z.number().positive().optional(),
+    offset: z.number().nonnegative().optional(),
+    orderBy: z.string().optional(),
+    orderDirection: z.enum(['ASC', 'DESC']).default('ASC'),
+    transaction: z
+        .array(z.object({
+        operation: z.enum(['query', 'insert', 'update', 'delete']),
+        table: z.string(),
+        query: z.string().optional(),
+        data: z.record(z.any()).optional(),
+        where: z.record(z.any()).optional(),
+    }))
+        .optional(),
+});
+/**
+ * Database Resource Response Schema
+ */
+export const DatabaseResourceResponseSchema = z.object({
+    success: z.boolean(),
+    data: z.array(z.record(z.any())).optional(),
+    count: z.number().optional(),
+    affectedRows: z.number().optional(),
+    insertId: z.number().optional(),
+    error: z.string().optional(),
+    executionTime: z.number().optional(),
+    query: z.string().optional(),
+});
+/**
+ * MCP Database Resource
+ * Provides database operations with connection pooling and transaction support
+ */
+export class DatabaseResource extends MCPResource {
+    connectionPool = [];
+    poolConfig;
+    isInitialized = false;
+    activeConnections = 0;
+    maxConnections;
+    schema;
+    constructor(config = {}) {
+        const mcpConfig = {
+            name: 'database-resource',
+            type: 'database',
+            version: '1.0.0',
+            description: 'Database operations with connection pooling and transaction support',
+            connectionConfig: {},
+            maxConnections: config.poolConfig?.max || 10,
+        };
+        super(mcpConfig);
+        this.poolConfig = {
+            min: 2,
+            max: 10,
+            acquireTimeoutMillis: 30000,
+            createTimeoutMillis: 30000,
+            destroyTimeoutMillis: 5000,
+            idleTimeoutMillis: 30000,
+            reapIntervalMillis: 1000,
+            createRetryIntervalMillis: 200,
+            ...config.poolConfig,
+        };
+        this.maxConnections = this.poolConfig.max;
+        this.schema = DatabaseResourceSchema;
+    }
+    /**
+     * Initialize the database resource and connection pool
+     */
+    async initialize() {
+        try {
+            // Initialize connection pool
+            await this.initializeConnectionPool();
+            this.isInitialized = true;
+            this.logger.info('Database resource initialized', {
+                poolSize: this.connectionPool.length,
+                maxConnections: this.maxConnections,
+            });
+        }
+        catch (error) {
+            this.logger.error('Failed to initialize database resource', {
+                error: error instanceof Error ? error.message : String(error),
+            });
+            throw error;
+        }
+    }
+    /**
+     * Internal initialization (required by base class)
+     */
+    async initializeInternal() {
+        // Database resource initialization is handled in initialize()
+    }
+    /**
+     * Execute database operation
+     */
+    async execute(operation, _context) {
+        const startTime = Date.now();
+        if (!this.isInitialized) {
+            return {
+                success: false,
+                error: 'Database resource not initialized',
+                timestamp: new Date().toISOString(),
+                metadata: {
+                    timestamp: new Date().toISOString(),
+                    executionTime: 0,
+                    resourceName: 'database-resource',
+                    version: '1.0.0',
+                },
+            };
+        }
+        try {
+            // Get connection from pool
+            const connection = await this.getConnection();
+            try {
+                const result = await operation(connection);
+                return {
+                    success: true,
+                    data: result,
+                    timestamp: new Date().toISOString(),
+                    metadata: {
+                        timestamp: new Date().toISOString(),
+                        executionTime: Date.now() - startTime,
+                        resourceName: 'database-resource',
+                        version: '1.0.0',
+                    },
+                };
+            }
+            finally {
+                // Return connection to pool
+                await this.returnConnection(connection);
+            }
+        }
+        catch (error) {
+            this.logger.error('Database operation failed', {
+                error: error instanceof Error ? error.message : String(error),
+            });
+            return {
+                success: false,
+                error: error instanceof Error ? error.message : String(error),
+                timestamp: new Date().toISOString(),
+                metadata: {
+                    timestamp: new Date().toISOString(),
+                    executionTime: Date.now() - startTime,
+                    resourceName: 'database-resource',
+                    version: '1.0.0',
+                },
+            };
+        }
+    }
+    /**
+     * Execute database operation with config
+     */
+    async executeOperation(config) {
+        const startTime = Date.now();
+        if (!this.isInitialized) {
+            return {
+                success: false,
+                error: 'Database resource not initialized',
+            };
+        }
+        try {
+            // Validate configuration
+            const validatedConfig = this.schema.parse(config);
+            // Get connection from pool
+            const connection = await this.getConnection();
+            try {
+                let result;
+                switch (validatedConfig.operation) {
+                    case 'query':
+                        result = await this.executeQuery(connection, validatedConfig);
+                        break;
+                    case 'insert':
+                        result = await this.executeInsert(connection, validatedConfig);
+                        break;
+                    case 'update':
+                        result = await this.executeUpdate(connection, validatedConfig);
+                        break;
+                    case 'delete':
+                        result = await this.executeDelete(connection, validatedConfig);
+                        break;
+                    case 'transaction':
+                        result = await this.executeTransaction(connection, validatedConfig);
+                        break;
+                    default:
+                        throw new Error(`Unsupported operation: ${validatedConfig.operation}`);
+                }
+                // Add execution time
+                result.executionTime = Date.now() - startTime;
+                // Log performance metrics
+                this.logger.info('Database operation completed', {
+                    operation: validatedConfig.operation,
+                    table: validatedConfig.table,
+                    executionTime: `${result.executionTime}ms`,
+                    affectedRows: result.affectedRows || 0,
+                });
+                return result;
+            }
+            finally {
+                // Return connection to pool
+                await this.returnConnection(connection);
+            }
+        }
+        catch (error) {
+            const executionTime = Date.now() - startTime;
+            this.logger.error('Database operation failed', {
+                error: error instanceof Error ? error.message : String(error),
+                operation: config.operation,
+                table: config.table,
+                executionTime: `${executionTime}ms`,
+            });
+            return {
+                success: false,
+                error: error instanceof Error ? error.message : String(error),
+                executionTime,
+            };
+        }
+    }
+    /**
+     * Execute SELECT query
+     */
+    async executeQuery(connection, config) {
+        const query = this.buildSelectQuery(config);
+        const results = await this.runQuery(connection, query);
+        return {
+            success: true,
+            data: results,
+            count: results.length,
+            query,
+        };
+    }
+    /**
+     * Execute INSERT operation
+     */
+    async executeInsert(connection, config) {
+        if (!config.data) {
+            throw new Error('Data is required for insert operation');
+        }
+        const query = this.buildInsertQuery(config);
+        const result = await this.runQuery(connection, query);
+        return {
+            success: true,
+            affectedRows: 1,
+            insertId: result.insertId,
+            query,
+        };
+    }
+    /**
+     * Execute UPDATE operation
+     */
+    async executeUpdate(connection, config) {
+        if (!config.data || !config.where) {
+            throw new Error('Data and where clause are required for update operation');
+        }
+        const query = this.buildUpdateQuery(config);
+        const result = await this.runQuery(connection, query);
+        return {
+            success: true,
+            affectedRows: result.affectedRows,
+            query,
+        };
+    }
+    /**
+     * Execute DELETE operation
+     */
+    async executeDelete(connection, config) {
+        if (!config.where) {
+            throw new Error('Where clause is required for delete operation');
+        }
+        const query = this.buildDeleteQuery(config);
+        const result = await this.runQuery(connection, query);
+        return {
+            success: true,
+            affectedRows: result.affectedRows,
+            query,
+        };
+    }
+    /**
+     * Execute transaction
+     */
+    async executeTransaction(connection, config) {
+        if (!config.transaction || config.transaction.length === 0) {
+            throw new Error('Transaction operations are required');
+        }
+        try {
+            // Begin transaction
+            await this.runQuery(connection, 'BEGIN TRANSACTION');
+            const results = [];
+            for (const operation of config.transaction) {
+                let result;
+                switch (operation.operation) {
+                    case 'query':
+                        result = await this.executeQuery(connection, {
+                            ...operation,
+                            orderDirection: 'ASC',
+                        });
+                        break;
+                    case 'insert':
+                        result = await this.executeInsert(connection, {
+                            ...operation,
+                            orderDirection: 'ASC',
+                        });
+                        break;
+                    case 'update':
+                        result = await this.executeUpdate(connection, {
+                            ...operation,
+                            orderDirection: 'ASC',
+                        });
+                        break;
+                    case 'delete':
+                        result = await this.executeDelete(connection, {
+                            ...operation,
+                            orderDirection: 'ASC',
+                        });
+                        break;
+                    default:
+                        throw new Error(`Unsupported transaction operation: ${operation.operation}`);
+                }
+                results.push(result);
+            }
+            // Commit transaction
+            await this.runQuery(connection, 'COMMIT');
+            return {
+                success: true,
+                data: results,
+                count: results.length,
+            };
+        }
+        catch (error) {
+            // Rollback transaction on error
+            try {
+                await this.runQuery(connection, 'ROLLBACK');
+            }
+            catch (rollbackError) {
+                this.logger.error('Failed to rollback transaction', {
+                    error: rollbackError instanceof Error ? rollbackError.message : String(rollbackError),
+                });
+            }
+            throw error;
+        }
+    }
+    /**
+     * Build SELECT query
+     */
+    buildSelectQuery(config) {
+        let query = `SELECT * FROM ${config.table}`;
+        if (config.where) {
+            const whereClause = Object.entries(config.where)
+                .map(([key, value]) => `${key} = '${value}'`)
+                .join(' AND ');
+            query += ` WHERE ${whereClause}`;
+        }
+        if (config.orderBy || config.orderDirection) {
+            const orderBy = config.orderBy || 'id'; // Default to 'id' if only orderDirection is provided
+            const orderDirection = config.orderDirection || 'ASC';
+            query += ` ORDER BY ${orderBy} ${orderDirection}`;
+        }
+        if (config.limit) {
+            query += ` LIMIT ${config.limit}`;
+        }
+        if (config.offset) {
+            query += ` OFFSET ${config.offset}`;
+        }
+        return query;
+    }
+    /**
+     * Build INSERT query
+     */
+    buildInsertQuery(config) {
+        const columns = Object.keys(config.data);
+        const values = Object.values(config.data);
+        const columnsStr = columns.join(', ');
+        const valuesStr = values.map(v => `'${v}'`).join(', ');
+        return `INSERT INTO ${config.table} (${columnsStr}) VALUES (${valuesStr})`;
+    }
+    /**
+     * Build UPDATE query
+     */
+    buildUpdateQuery(config) {
+        const setClause = Object.entries(config.data)
+            .map(([key, value]) => `${key} = '${value}'`)
+            .join(', ');
+        const whereClause = Object.entries(config.where)
+            .map(([key, value]) => `${key} = '${value}'`)
+            .join(' AND ');
+        return `UPDATE ${config.table} SET ${setClause} WHERE ${whereClause}`;
+    }
+    /**
+     * Build DELETE query
+     */
+    buildDeleteQuery(config) {
+        const whereClause = Object.entries(config.where)
+            .map(([key, value]) => `${key} = '${value}'`)
+            .join(' AND ');
+        return `DELETE FROM ${config.table} WHERE ${whereClause}`;
+    }
+    /**
+     * Run SQL query
+     */
+    async runQuery(_connection, query) {
+        // Mock database query execution
+        // In a real implementation, this would use a database driver
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                // Mock successful query execution
+                if (query.includes('SELECT')) {
+                    resolve([{ id: 1, name: 'Test' }]);
+                }
+                else if (query.includes('INSERT')) {
+                    resolve({ insertId: 1, affectedRows: 1 });
+                }
+                else if (query.includes('UPDATE') || query.includes('DELETE')) {
+                    resolve({ affectedRows: 1 });
+                }
+                else if (query.includes('BEGIN') ||
+                    query.includes('COMMIT') ||
+                    query.includes('ROLLBACK')) {
+                    resolve({});
+                }
+                else {
+                    reject(new Error('Invalid query'));
+                }
+            }, 10); // Simulate database latency
+        });
+    }
+    /**
+     * Initialize connection pool
+     */
+    async initializeConnectionPool() {
+        // Create initial connections
+        for (let i = 0; i < this.poolConfig.min; i++) {
+            const connection = await this.createConnection();
+            this.connectionPool.push(connection);
+        }
+    }
+    /**
+     * Get connection from pool
+     */
+    async getConnection() {
+        if (this.connectionPool.length > 0) {
+            return this.connectionPool.pop();
+        }
+        if (this.activeConnections < this.maxConnections) {
+            this.activeConnections++;
+            return await this.createConnection();
+        }
+        // Wait for available connection
+        return new Promise(resolve => {
+            const checkForConnection = () => {
+                if (this.connectionPool.length > 0) {
+                    resolve(this.connectionPool.pop());
+                }
+                else {
+                    setTimeout(checkForConnection, 100);
+                }
+            };
+            checkForConnection();
+        });
+    }
+    /**
+     * Return connection to pool
+     */
+    async returnConnection(connection) {
+        if (connection?.connected) {
+            this.connectionPool.push(connection);
+        }
+        else {
+            this.activeConnections--;
+        }
+    }
+    /**
+     * Health check
+     */
+    async healthCheck() {
+        try {
+            const connection = await this.getConnection();
+            this.returnConnection(connection);
+            return true;
+        }
+        catch (error) {
+            this.logger.error('Database resource health check failed', {
+                error: error instanceof Error ? error.message : String(error),
+            });
+            return false;
+        }
+    }
+    /**
+     * Create a new database connection
+     */
+    async createConnection() {
+        // Mock connection creation
+        return {
+            id: Math.random().toString(36).substr(2, 9),
+            connected: true,
+            createdAt: new Date(),
+        };
+    }
+    /**
+     * Close a database connection
+     */
+    async closeConnection(connection) {
+        connection.connected = false;
+    }
+    /**
+     * Get connection ID
+     */
+    getConnectionId(connection) {
+        return connection.id;
+    }
+    /**
+     * Cleanup resources
+     */
+    async cleanup() {
+        // Close all connections in pool
+        for (const connection of this.connectionPool) {
+            if (connection?.connected) {
+                // Close connection (mock)
+                connection.connected = false;
+            }
+        }
+        this.connectionPool = [];
+        this.activeConnections = 0;
+        this.isInitialized = false;
+        this.logger.info('Database resource cleanup completed');
+    }
+}
+//# sourceMappingURL=database-resource.js.map

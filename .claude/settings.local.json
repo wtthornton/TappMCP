@@ -23,7 +23,13 @@
       "Bash(npm audit:*)",
       "Bash(git checkout:*)",
       "Bash(git rm:*)",
-      "Bash(timeout 30 npx vitest run:*)"
+      "Bash(timeout 30 npx vitest run:*)",
+      "Bash(pre-commit:*)",
+      "Bash(python:*)",
+      "Read(//c/Users/tappt/.cache/pre-commit/**)",
+      "Bash(time npm run test -- src/tools/smart-write-mcp.test.ts --reporter=minimal)",
+      "Bash(time npx vitest run src/tools/smart-write-mcp.test.ts --reporter=basic)",
+      "Bash(git reset:*)"
     ],
     "deny": [],
     "ask": []

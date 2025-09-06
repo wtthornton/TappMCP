@@ -1,10 +1,7 @@
 #!/usr/bin/env node
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.StaticAnalyzer = void 0;
-const child_process_1 = require("child_process");
-const fs_1 = require("fs");
-class StaticAnalyzer {
+import { execSync } from 'child_process';
+import { readFileSync } from 'fs';
+export class StaticAnalyzer {
     projectPath;
     constructor(projectPath) {
         this.projectPath = projectPath;
@@ -57,7 +54,7 @@ class StaticAnalyzer {
      */
     async runESLint() {
         try {
-            const eslintOutput = (0, child_process_1.execSync)('npx eslint src --format json', {
+            const eslintOutput = execSync('npx eslint src --format json', {
                 cwd: this.projectPath,
                 encoding: 'utf8',
                 stdio: 'pipe',
@@ -93,7 +90,7 @@ class StaticAnalyzer {
             // Check if semgrep is available - if not, skip gracefully
             let semgrepOutput;
             try {
-                semgrepOutput = (0, child_process_1.execSync)('semgrep --config=auto --json src/', {
+                semgrepOutput = execSync('semgrep --config=auto --json src/', {
                     cwd: this.projectPath,
                     encoding: 'utf8',
                     stdio: 'pipe',
@@ -134,7 +131,7 @@ class StaticAnalyzer {
      */
     async runTypeScriptCheck() {
         try {
-            (0, child_process_1.execSync)('npx tsc --noEmit --pretty false', {
+            execSync('npx tsc --noEmit --pretty false', {
                 cwd: this.projectPath,
                 encoding: 'utf8',
                 stdio: 'pipe',
@@ -173,7 +170,7 @@ class StaticAnalyzer {
         const sourceFiles = this.findSourceFiles();
         for (const file of sourceFiles) {
             try {
-                const content = (0, fs_1.readFileSync)(file, 'utf8');
+                const content = readFileSync(file, 'utf8');
                 const fileIssues = this.analyzeComplexity(file, content);
                 issues.push(...fileIssues);
             }
@@ -322,7 +319,7 @@ class StaticAnalyzer {
         if (sourceFiles.length === 0) {
             try {
                 // Try to read a default file for testing
-                const content = (0, fs_1.readFileSync)('src/server.ts', 'utf8');
+                const content = readFileSync('src/server.ts', 'utf8');
                 const complexity = this.calculateFileComplexity(content);
                 const duplicates = this.detectDuplicates(content);
                 const lines = content.split('\n');
@@ -343,7 +340,7 @@ class StaticAnalyzer {
         }
         for (const file of sourceFiles) {
             try {
-                const content = (0, fs_1.readFileSync)(file, 'utf8');
+                const content = readFileSync(file, 'utf8');
                 const lines = content.split('\n');
                 totalLines += lines.length;
                 // Simple complexity calculation
@@ -483,5 +480,4 @@ class StaticAnalyzer {
         }
     }
 }
-exports.StaticAnalyzer = StaticAnalyzer;
 //# sourceMappingURL=static-analyzer.js.map

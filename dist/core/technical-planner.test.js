@@ -1,15 +1,13 @@
 #!/usr/bin/env node
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const vitest_1 = require("vitest");
-const technical_planner_js_1 = require("./technical-planner.js");
-(0, vitest_1.describe)('TechnicalPlanner', () => {
+import { describe, it, expect, beforeEach } from 'vitest';
+import { TechnicalPlanner } from './technical-planner.js';
+describe('TechnicalPlanner', () => {
     let technicalPlanner;
-    (0, vitest_1.beforeEach)(() => {
-        technicalPlanner = new technical_planner_js_1.TechnicalPlanner();
+    beforeEach(() => {
+        technicalPlanner = new TechnicalPlanner();
     });
-    (0, vitest_1.describe)('createArchitecture', () => {
-        (0, vitest_1.it)('should create architecture from business requirements', () => {
+    describe('createArchitecture', () => {
+        it('should create architecture from business requirements', () => {
             const requirements = {
                 primaryGoals: ['User management', 'Authentication'],
                 targetUsers: ['Admin', 'User'],
@@ -18,13 +16,13 @@ const technical_planner_js_1 = require("./technical-planner.js");
                 riskFactors: ['Integration complexity'],
             };
             const result = technicalPlanner.createArchitecture(requirements);
-            (0, vitest_1.expect)(result.components).toBeDefined();
-            (0, vitest_1.expect)(result.components.length).toBeGreaterThan(0);
-            (0, vitest_1.expect)(result.patterns).toBeDefined();
-            (0, vitest_1.expect)(result.technologies).toBeDefined();
-            (0, vitest_1.expect)(result.constraints).toBeDefined();
+            expect(result.components).toBeDefined();
+            expect(result.components.length).toBeGreaterThan(0);
+            expect(result.patterns).toBeDefined();
+            expect(result.technologies).toBeDefined();
+            expect(result.constraints).toBeDefined();
         });
-        (0, vitest_1.it)('should include core components in architecture', () => {
+        it('should include core components in architecture', () => {
             const requirements = {
                 primaryGoals: ['Basic functionality'],
                 targetUsers: ['User'],
@@ -34,11 +32,11 @@ const technical_planner_js_1 = require("./technical-planner.js");
             };
             const result = technicalPlanner.createArchitecture(requirements);
             const componentNames = result.components.map((c) => c.name);
-            (0, vitest_1.expect)(componentNames).toContain('User Interface');
-            (0, vitest_1.expect)(componentNames).toContain('Backend API');
-            (0, vitest_1.expect)(componentNames).toContain('Database');
+            expect(componentNames).toContain('User Interface');
+            expect(componentNames).toContain('Backend API');
+            expect(componentNames).toContain('Database');
         });
-        (0, vitest_1.it)('should add authentication service for auth requirements', () => {
+        it('should add authentication service for auth requirements', () => {
             const requirements = {
                 primaryGoals: ['Authentication system'],
                 targetUsers: ['User'],
@@ -48,9 +46,9 @@ const technical_planner_js_1 = require("./technical-planner.js");
             };
             const result = technicalPlanner.createArchitecture(requirements);
             const hasAuthService = result.components.some((c) => c.name === 'Authentication Service');
-            (0, vitest_1.expect)(hasAuthService).toBe(true);
+            expect(hasAuthService).toBe(true);
         });
-        (0, vitest_1.it)('should add reporting engine for reporting requirements', () => {
+        it('should add reporting engine for reporting requirements', () => {
             const requirements = {
                 primaryGoals: ['Generate reports'],
                 targetUsers: ['Admin'],
@@ -60,9 +58,9 @@ const technical_planner_js_1 = require("./technical-planner.js");
             };
             const result = technicalPlanner.createArchitecture(requirements);
             const hasReportingEngine = result.components.some((c) => c.name === 'Analytics Engine');
-            (0, vitest_1.expect)(hasReportingEngine).toBe(true);
+            expect(hasReportingEngine).toBe(true);
         });
-        (0, vitest_1.it)('should complete within performance target', () => {
+        it('should complete within performance target', () => {
             const requirements = {
                 primaryGoals: ['Test performance'],
                 targetUsers: ['User'],
@@ -73,11 +71,11 @@ const technical_planner_js_1 = require("./technical-planner.js");
             const startTime = Date.now();
             technicalPlanner.createArchitecture(requirements);
             const duration = Date.now() - startTime;
-            (0, vitest_1.expect)(duration).toBeLessThan(100); // <100ms target
+            expect(duration).toBeLessThan(100); // <100ms target
         });
     });
-    (0, vitest_1.describe)('estimateEffort', () => {
-        (0, vitest_1.it)('should estimate effort for tasks', () => {
+    describe('estimateEffort', () => {
+        it('should estimate effort for tasks', () => {
             const tasks = [
                 {
                     id: 'task-1',
@@ -103,13 +101,13 @@ const technical_planner_js_1 = require("./technical-planner.js");
                 },
             ];
             const result = technicalPlanner.estimateEffort(tasks);
-            (0, vitest_1.expect)(result.totalHours).toBe(60);
-            (0, vitest_1.expect)(result.breakdown.development).toBe(40);
-            (0, vitest_1.expect)(result.breakdown.testing).toBe(20);
-            (0, vitest_1.expect)(['low', 'medium', 'high']).toContain(result.confidence);
-            (0, vitest_1.expect)(Array.isArray(result.assumptions)).toBe(true);
+            expect(result.totalHours).toBe(60);
+            expect(result.breakdown.development).toBe(40);
+            expect(result.breakdown.testing).toBe(20);
+            expect(['low', 'medium', 'high']).toContain(result.confidence);
+            expect(Array.isArray(result.assumptions)).toBe(true);
         });
-        (0, vitest_1.it)('should set low confidence for complex tasks', () => {
+        it('should set low confidence for complex tasks', () => {
             const tasks = [
                 {
                     id: 'task-1',
@@ -135,11 +133,11 @@ const technical_planner_js_1 = require("./technical-planner.js");
                 },
             ];
             const result = technicalPlanner.estimateEffort(tasks);
-            (0, vitest_1.expect)(result.confidence).toBe('low');
+            expect(result.confidence).toBe('low');
         });
     });
-    (0, vitest_1.describe)('identifyDependencies', () => {
-        (0, vitest_1.it)('should identify dependencies between tasks', () => {
+    describe('identifyDependencies', () => {
+        it('should identify dependencies between tasks', () => {
             const tasks = [
                 {
                     id: 'task-1',
@@ -165,11 +163,11 @@ const technical_planner_js_1 = require("./technical-planner.js");
                 },
             ];
             const result = technicalPlanner.identifyDependencies(tasks);
-            (0, vitest_1.expect)(result.length).toBeGreaterThan(0);
+            expect(result.length).toBeGreaterThan(0);
             const dependency = result.find((d) => d.from === 'task-1' && d.to === 'task-2');
-            (0, vitest_1.expect)(dependency).toBeDefined();
+            expect(dependency).toBeDefined();
         });
-        (0, vitest_1.it)('should create logical phase dependencies', () => {
+        it('should create logical phase dependencies', () => {
             const tasks = [
                 {
                     id: 'dev-task',
@@ -196,11 +194,11 @@ const technical_planner_js_1 = require("./technical-planner.js");
             ];
             const result = technicalPlanner.identifyDependencies(tasks);
             const phaseDependency = result.find((d) => d.type === 'enables' && d.description.includes('development enables testing'));
-            (0, vitest_1.expect)(phaseDependency).toBeDefined();
+            expect(phaseDependency).toBeDefined();
         });
     });
-    (0, vitest_1.describe)('createTimeline', () => {
-        (0, vitest_1.it)('should create timeline with phases', () => {
+    describe('createTimeline', () => {
+        it('should create timeline with phases', () => {
             const phases = [
                 {
                     name: 'Development',
@@ -236,12 +234,12 @@ const technical_planner_js_1 = require("./technical-planner.js");
                 },
             ];
             const result = technicalPlanner.createTimeline(phases);
-            (0, vitest_1.expect)(result.phases.length).toBe(2);
-            (0, vitest_1.expect)(result.totalDuration).toBeGreaterThan(0);
-            (0, vitest_1.expect)(result.bufferTime).toBeGreaterThan(0);
-            (0, vitest_1.expect)(Array.isArray(result.criticalPath)).toBe(true);
+            expect(result.phases.length).toBe(2);
+            expect(result.totalDuration).toBeGreaterThan(0);
+            expect(result.bufferTime).toBeGreaterThan(0);
+            expect(Array.isArray(result.criticalPath)).toBe(true);
         });
-        (0, vitest_1.it)('should calculate buffer time as 15% of total duration', () => {
+        it('should calculate buffer time as 15% of total duration', () => {
             const phases = [
                 {
                     name: 'Test Phase',
@@ -262,11 +260,11 @@ const technical_planner_js_1 = require("./technical-planner.js");
             ];
             const result = technicalPlanner.createTimeline(phases);
             const expectedBuffer = Math.ceil(result.totalDuration * 0.15);
-            (0, vitest_1.expect)(result.bufferTime).toBe(expectedBuffer);
+            expect(result.bufferTime).toBe(expectedBuffer);
         });
     });
-    (0, vitest_1.describe)('optimizePlan', () => {
-        (0, vitest_1.it)('should optimize plan and identify savings', () => {
+    describe('optimizePlan', () => {
+        it('should optimize plan and identify savings', () => {
             const plan = {
                 id: 'test-plan',
                 name: 'Test Plan',
@@ -330,13 +328,13 @@ const technical_planner_js_1 = require("./technical-planner.js");
                 dependencies: [],
             };
             const result = technicalPlanner.optimizePlan(plan);
-            (0, vitest_1.expect)(result.originalEffort).toBe(100);
-            (0, vitest_1.expect)(result.optimizedEffort).toBeLessThan(100);
-            (0, vitest_1.expect)(result.savingsHours).toBeGreaterThan(0);
-            (0, vitest_1.expect)(Array.isArray(result.optimizations)).toBe(true);
-            (0, vitest_1.expect)(result.optimizations.length).toBeGreaterThan(0);
+            expect(result.originalEffort).toBe(100);
+            expect(result.optimizedEffort).toBeLessThan(100);
+            expect(result.savingsHours).toBeGreaterThan(0);
+            expect(Array.isArray(result.optimizations)).toBe(true);
+            expect(result.optimizations.length).toBeGreaterThan(0);
         });
-        (0, vitest_1.it)('should identify parallelization opportunities', () => {
+        it('should identify parallelization opportunities', () => {
             const plan = {
                 id: 'test-plan',
                 name: 'Test Plan',
@@ -388,11 +386,11 @@ const technical_planner_js_1 = require("./technical-planner.js");
             };
             const result = technicalPlanner.optimizePlan(plan);
             const parallelOptimization = result.optimizations.find((opt) => opt.type === 'parallel');
-            (0, vitest_1.expect)(parallelOptimization).toBeDefined();
+            expect(parallelOptimization).toBeDefined();
         });
     });
-    (0, vitest_1.describe)('performance', () => {
-        (0, vitest_1.it)('should maintain performance targets', () => {
+    describe('performance', () => {
+        it('should maintain performance targets', () => {
             const requirements = {
                 primaryGoals: ['Complex system with multiple components'],
                 targetUsers: ['Multiple user types'],
@@ -418,7 +416,7 @@ const technical_planner_js_1 = require("./technical-planner.js");
             technicalPlanner.estimateEffort(tasks);
             technicalPlanner.identifyDependencies(tasks);
             const totalTime = Date.now() - startTime;
-            (0, vitest_1.expect)(totalTime).toBeLessThan(200); // All operations under 200ms
+            expect(totalTime).toBeLessThan(200); // All operations under 200ms
         });
     });
 });

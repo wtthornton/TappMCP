@@ -1,10 +1,7 @@
 #!/usr/bin/env node
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.SecurityScanner = void 0;
-const child_process_1 = require("child_process");
-const fs_1 = require("fs");
-class SecurityScanner {
+import { execSync } from 'child_process';
+import { readFileSync } from 'fs';
+export class SecurityScanner {
     projectPath;
     hasNpmAuditError = false;
     hasRetireError = false;
@@ -52,7 +49,7 @@ class SecurityScanner {
     async runNpmAudit() {
         try {
             this.hasNpmAuditError = false;
-            const auditOutput = (0, child_process_1.execSync)('npm audit --json', {
+            const auditOutput = execSync('npm audit --json', {
                 cwd: this.projectPath,
                 encoding: 'utf8',
                 stdio: 'pipe',
@@ -91,7 +88,7 @@ class SecurityScanner {
      */
     async executeOSVScan() {
         try {
-            return (0, child_process_1.execSync)('osv-scanner --json .', {
+            return execSync('osv-scanner --json .', {
                 cwd: this.projectPath,
                 encoding: 'utf8',
                 stdio: 'pipe',
@@ -175,7 +172,7 @@ class SecurityScanner {
     async runRetireScan() {
         try {
             this.hasRetireError = false;
-            const retireOutput = (0, child_process_1.execSync)('npx retire --outputformat json', {
+            const retireOutput = execSync('npx retire --outputformat json', {
                 cwd: this.projectPath,
                 encoding: 'utf8',
                 stdio: 'pipe',
@@ -219,7 +216,7 @@ class SecurityScanner {
             // Check for common security issues in source files
             const sourceFiles = this.findSourceFiles();
             for (const file of sourceFiles) {
-                const content = (0, fs_1.readFileSync)(file, 'utf8');
+                const content = readFileSync(file, 'utf8');
                 const fileVulns = this.checkFileContent(file, content);
                 vulnerabilities.push(...fileVulns);
             }
@@ -414,5 +411,4 @@ class SecurityScanner {
         }
     }
 }
-exports.SecurityScanner = SecurityScanner;
 //# sourceMappingURL=security-scanner.js.map

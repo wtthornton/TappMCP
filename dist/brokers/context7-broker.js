@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-"use strict";
 /**
  * Context7 Broker for MCP Integration
  *
@@ -9,12 +8,10 @@
  * - Best practices
  * - Troubleshooting guides
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Context7Broker = void 0;
 /**
  * Context7 Broker for external knowledge integration
  */
-class Context7Broker {
+export class Context7Broker {
     config;
     isAvailable = false;
     constructor(config = {}) {
@@ -309,5 +306,4 @@ class Context7Broker {
         ];
     }
 }
-exports.Context7Broker = Context7Broker;
 //# sourceMappingURL=context7-broker.js.map

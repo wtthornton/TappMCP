@@ -1,7 +1,5 @@
 #!/usr/bin/env node
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const vitest_1 = require("vitest");
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 /**
  * MCP HTML Generation Test: Real Web Page Creation
  *
@@ -15,7 +13,7 @@ const vitest_1 = require("vitest");
 const MCP_CONFIG = {
     serverUrl: 'http://localhost:8080', // TappMCP Docker container port
     timeout: 30000, // 30 second timeout
-    retries: 3
+    retries: 3,
 };
 // MCP Tool call function
 async function callMCPTool(toolName, input) {
@@ -28,7 +26,7 @@ async function callMCPTool(toolName, input) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(input),
-            signal: AbortSignal.timeout(MCP_CONFIG.timeout)
+            signal: AbortSignal.timeout(MCP_CONFIG.timeout),
         });
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -38,22 +36,22 @@ async function callMCPTool(toolName, input) {
         return {
             success: result.success || false,
             data: result.data,
-            error: result.error
+            error: result.error,
         };
     }
     catch (error) {
         console.error(`❌ MCP Tool Call Failed:`, error);
         return {
             success: false,
-            error: error instanceof Error ? error.message : 'Unknown error'
+            error: error instanceof Error ? error.message : 'Unknown error',
         };
     }
 }
-(0, vitest_1.describe)('MCP HTML Generation Test: Real Web Page Creation', () => {
+describe('MCP HTML Generation Test: Real Web Page Creation', () => {
     let projectId;
     let generatedCode;
     let testResults;
-    (0, vitest_1.beforeAll)(async () => {
+    beforeAll(async () => {
         testResults = {
             mcpConnection: false,
             projectInitialization: false,
@@ -66,7 +64,7 @@ async function callMCPTool(toolName, input) {
             performance: false,
         };
     });
-    (0, vitest_1.afterAll)(() => {
+    afterAll(() => {
         console.log('\n=== MCP HTML GENERATION TEST RESULTS ===');
         console.log('MCP Connection:', testResults.mcpConnection ? '✅ PASS' : '❌ FAIL');
         console.log('Project Initialization:', testResults.projectInitialization ? '✅ PASS' : '❌ FAIL');
@@ -83,13 +81,13 @@ async function callMCPTool(toolName, input) {
         console.log(`\nOverall Score: ${score}% (${passCount}/${totalCount} tests passed)`);
         console.log('Grade:', score >= 90 ? 'A' : score >= 80 ? 'B' : score >= 70 ? 'C' : score >= 60 ? 'D' : 'F');
     });
-    (0, vitest_1.it)('should connect to deployed MCP server', async () => {
+    it('should connect to deployed MCP server', async () => {
         console.log('\n🧪 Testing: MCP Server Connection');
         try {
             // Test basic connectivity
             const response = await fetch(`${MCP_CONFIG.serverUrl}/health`, {
                 method: 'GET',
-                signal: AbortSignal.timeout(5000)
+                signal: AbortSignal.timeout(5000),
             });
             if (response.ok) {
                 console.log('✅ MCP Server is running and accessible');
@@ -104,19 +102,19 @@ async function callMCPTool(toolName, input) {
             console.log('❌ MCP Server connection failed:', error);
             testResults.mcpConnection = false;
         }
-        (0, vitest_1.expect)(testResults.mcpConnection).toBe(true);
+        expect(testResults.mcpConnection).toBe(true);
     });
-    (0, vitest_1.it)('should initialize project via MCP', async () => {
+    it('should initialize project via MCP', async () => {
         console.log('\n🧪 Testing: MCP Project Initialization');
         const beginResult = await callMCPTool('smart_begin', {
             projectName: 'HTML Page Generator',
             description: 'Simple HTML page with header, footer, and body content',
             techStack: ['html', 'css', 'javascript'],
             targetUsers: ['non-technical-founder'],
-            businessGoals: ['create simple web page', 'learn HTML basics', 'build portfolio']
+            businessGoals: ['create simple web page', 'learn HTML basics', 'build portfolio'],
         });
-        (0, vitest_1.expect)(beginResult.success).toBe(true);
-        (0, vitest_1.expect)(beginResult.data).toBeDefined();
+        expect(beginResult.success).toBe(true);
+        expect(beginResult.data).toBeDefined();
         testResults.projectInitialization = beginResult.success;
         if (beginResult.success && beginResult.data) {
             const data = beginResult.data;
@@ -127,11 +125,11 @@ async function callMCPTool(toolName, input) {
             console.log(`   - Cost Prevention: $${data.businessValue?.costPrevention?.toLocaleString() || 'N/A'}`);
         }
     });
-    (0, vitest_1.it)('should generate HTML page via MCP', async () => {
+    it('should generate HTML page via MCP', async () => {
         console.log('\n🧪 Testing: MCP HTML Page Generation');
-        (0, vitest_1.expect)(projectId).toBeDefined();
+        expect(projectId).toBeDefined();
         const writeResult = await callMCPTool('smart_write', {
-            projectId: projectId,
+            projectId,
             featureDescription: 'Create me an HTML page that has a header, a footer, and says "I\'m the best" in the body',
             targetRole: 'developer',
             codeType: 'component',
@@ -139,16 +137,16 @@ async function callMCPTool(toolName, input) {
             businessContext: {
                 goals: ['create simple web page', 'learn HTML basics'],
                 targetUsers: ['non-technical-founder'],
-                priority: 'high'
+                priority: 'high',
             },
             qualityRequirements: {
                 testCoverage: 80,
                 complexity: 3,
-                securityLevel: 'medium'
-            }
+                securityLevel: 'medium',
+            },
         });
-        (0, vitest_1.expect)(writeResult.success).toBe(true);
-        (0, vitest_1.expect)(writeResult.data).toBeDefined();
+        expect(writeResult.success).toBe(true);
+        expect(writeResult.data).toBeDefined();
         testResults.htmlGeneration = writeResult.success;
         if (writeResult.success && writeResult.data) {
             const data = writeResult.data;
@@ -168,21 +166,25 @@ async function callMCPTool(toolName, input) {
             }
         }
     });
-    (0, vitest_1.it)('should analyze generated HTML code from MCP', async () => {
+    it('should analyze generated HTML code from MCP', async () => {
         console.log('\n🧪 Testing: MCP Generated HTML Analysis');
-        (0, vitest_1.expect)(generatedCode).toBeDefined();
-        (0, vitest_1.expect)(generatedCode.files).toBeDefined();
-        (0, vitest_1.expect)(generatedCode.files.length).toBeGreaterThan(0);
+        expect(generatedCode).toBeDefined();
+        expect(generatedCode.files).toBeDefined();
+        expect(generatedCode.files.length).toBeGreaterThan(0);
         // Find the HTML file
         const htmlFile = generatedCode.files.find((file) => file.path.endsWith('.html') || file.type === 'html' || file.content.includes('<html'));
         if (htmlFile) {
             console.log(`📄 Found HTML file: ${htmlFile.path}`);
             console.log(`📊 File size: ${htmlFile.content.length} characters`);
             // Analyze HTML structure
-            const hasHeader = htmlFile.content.includes('<header') || htmlFile.content.includes('<h1') || htmlFile.content.includes('header');
+            const hasHeader = htmlFile.content.includes('<header') ||
+                htmlFile.content.includes('<h1') ||
+                htmlFile.content.includes('header');
             const hasFooter = htmlFile.content.includes('<footer') || htmlFile.content.includes('footer');
             const hasBody = htmlFile.content.includes('<body') || htmlFile.content.includes('body');
-            const hasContent = htmlFile.content.includes("I'm the best") || htmlFile.content.includes("i'm the best") || htmlFile.content.includes("I am the best");
+            const hasContent = htmlFile.content.includes("I'm the best") ||
+                htmlFile.content.includes("i'm the best") ||
+                htmlFile.content.includes('I am the best');
             testResults.structure = hasHeader && hasFooter && hasBody && hasContent;
             console.log(`   - Has Header: ${hasHeader ? '✅' : '❌'}`);
             console.log(`   - Has Footer: ${hasFooter ? '✅' : '❌'}`);
@@ -204,7 +206,9 @@ async function callMCPTool(toolName, input) {
             // Analyze accessibility
             const hasAltText = htmlFile.content.includes('alt=');
             const hasLang = htmlFile.content.includes('lang=');
-            const hasSemanticTags = htmlFile.content.includes('<main') || htmlFile.content.includes('<section') || htmlFile.content.includes('<article');
+            const hasSemanticTags = htmlFile.content.includes('<main') ||
+                htmlFile.content.includes('<section') ||
+                htmlFile.content.includes('<article');
             testResults.accessibility = hasLang || hasSemanticTags;
             console.log(`   - Has Language Attribute: ${hasLang ? '✅' : '❌'}`);
             console.log(`   - Has Alt Text: ${hasAltText ? '✅' : '❌'}`);
@@ -228,7 +232,7 @@ async function callMCPTool(toolName, input) {
             testResults.codeQuality = false;
         }
     });
-    (0, vitest_1.it)('should document MCP test results', async () => {
+    it('should document MCP test results', async () => {
         console.log('\n🧪 Testing: MCP Results Documentation');
         // Document all results for analysis (no pass/fail)
         console.log('📊 MCP HTML Generation Analysis Summary:');
@@ -242,7 +246,7 @@ async function callMCPTool(toolName, input) {
         console.log('   - Accessibility: Basic accessibility features from MCP');
         console.log('   - Performance: File size and loading optimization from MCP');
         // Always pass - this is just documentation
-        (0, vitest_1.expect)(true).toBe(true);
+        expect(true).toBe(true);
     });
 });
 //# sourceMappingURL=mcp_html_generation_test.js.map

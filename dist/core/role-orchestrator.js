@@ -1,17 +1,14 @@
 #!/usr/bin/env node
-"use strict";
 /**
  * Role Orchestrator for Smart Orchestrate Tool
  *
  * Manages automatic role switching and role-based workflow orchestration.
  * Ensures specialized expertise is applied at the right workflow phases.
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.RoleOrchestrator = void 0;
 /**
  * Role Orchestrator for managing AI role switching and workflow orchestration
  */
-class RoleOrchestrator {
+export class RoleOrchestrator {
     roleCapabilities = new Map();
     transitionRules = [];
     activeRole = 'developer';
@@ -128,7 +125,7 @@ class RoleOrchestrator {
             trigger: 'user-experience-needed',
             condition: 'user-interface-required',
             priority: 2,
-        },
+        }, 
         // Development transitions
         {
             fromRole: 'developer',
@@ -148,7 +145,7 @@ class RoleOrchestrator {
             trigger: 'deployment-prep',
             condition: 'deployment-ready',
             priority: 3,
-        },
+        }, 
         // QA transitions
         {
             fromRole: 'qa-engineer',
@@ -168,7 +165,7 @@ class RoleOrchestrator {
             trigger: 'requirements-issues',
             condition: 'business-requirements-unclear',
             priority: 3,
-        },
+        }, 
         // UX Designer transitions
         {
             fromRole: 'ux-designer',
@@ -182,7 +179,7 @@ class RoleOrchestrator {
             trigger: 'design-validation',
             condition: 'usability-testing-needed',
             priority: 2,
-        },
+        }, 
         // Operations transitions
         {
             fromRole: 'operations-engineer',
@@ -476,5 +473,4 @@ class RoleOrchestrator {
         return tasks.reduce((total, task) => total + task.estimatedTime, 0);
     }
 }
-exports.RoleOrchestrator = RoleOrchestrator;
 //# sourceMappingURL=role-orchestrator.js.map

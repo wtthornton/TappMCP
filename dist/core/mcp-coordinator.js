@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-"use strict";
 /**
  * MCP Coordinator for External Service Integration
  *
@@ -7,15 +6,13 @@
  * including Context7, Web Search, and Memory brokers for comprehensive
  * external knowledge integration in the Smart Plan tool.
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.MCPCoordinator = void 0;
-const context7_broker_js_1 = require("../brokers/context7-broker.js");
-const websearch_broker_js_1 = require("../brokers/websearch-broker.js");
-const memory_broker_js_1 = require("../brokers/memory-broker.js");
+import { Context7Broker, } from '../brokers/context7-broker.js';
+import { WebSearchBroker, } from '../brokers/websearch-broker.js';
+import { MemoryBroker } from '../brokers/memory-broker.js';
 /**
  * MCP Coordinator for orchestrating external knowledge services
  */
-class MCPCoordinator {
+export class MCPCoordinator {
     context7;
     webSearch;
     memory;
@@ -29,16 +26,16 @@ class MCPCoordinator {
             healthCheckInterval: config.healthCheckInterval ?? 300000, // 5 minutes
         };
         // Initialize brokers
-        this.context7 = new context7_broker_js_1.Context7Broker({
+        this.context7 = new Context7Broker({
             timeout: 1000, // Reduced for test performance
             enableFallback: this.config.enableFallbacks,
         });
-        this.webSearch = new websearch_broker_js_1.WebSearchBroker({
+        this.webSearch = new WebSearchBroker({
             timeout: 1000, // Reduced for test performance
             enableFallback: this.config.enableFallbacks,
             maxResults: 5,
         });
-        this.memory = new memory_broker_js_1.MemoryBroker({
+        this.memory = new MemoryBroker({
             timeout: 1000, // Reduced for test performance
             enableFallback: this.config.enableFallbacks,
             enablePersistence: true,
@@ -493,5 +490,4 @@ class MCPCoordinator {
         ];
     }
 }
-exports.MCPCoordinator = MCPCoordinator;
 //# sourceMappingURL=mcp-coordinator.js.map

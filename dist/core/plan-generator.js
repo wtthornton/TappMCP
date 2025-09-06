@@ -1,66 +1,63 @@
 #!/usr/bin/env node
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.PlanGenerator = exports.ComprehensivePlanSchema = exports.PlanPhaseSchema = void 0;
-const zod_1 = require("zod");
-const business_analyzer_js_1 = require("./business-analyzer.js");
-const technical_planner_js_1 = require("./technical-planner.js");
+import { z } from 'zod';
+import { BusinessAnalyzer, BusinessRequirementsSchema, ComplexityAssessmentSchema, RiskSchema, UserStorySchema, } from './business-analyzer.js';
+import { TechnicalPlanner, ArchitectureSchema, EffortEstimateSchema, TimelineSchema, OptimizedPlanSchema, } from './technical-planner.js';
 // Plan generation schemas
-exports.PlanPhaseSchema = zod_1.z.object({
-    id: zod_1.z.string(),
-    name: zod_1.z.string(),
-    description: zod_1.z.string(),
-    duration: zod_1.z.number().positive(),
-    startDate: zod_1.z.string(),
-    endDate: zod_1.z.string(),
-    tasks: zod_1.z.array(zod_1.z.object({
-        id: zod_1.z.string(),
-        name: zod_1.z.string(),
-        description: zod_1.z.string(),
-        type: zod_1.z.enum(['development', 'testing', 'deployment', 'documentation', 'research']),
-        priority: zod_1.z.enum(['low', 'medium', 'high', 'critical']),
-        estimatedHours: zod_1.z.number().positive(),
-        assignedTo: zod_1.z.string().optional(),
-        status: zod_1.z.enum(['pending', 'in_progress', 'completed']).default('pending'),
+export const PlanPhaseSchema = z.object({
+    id: z.string(),
+    name: z.string(),
+    description: z.string(),
+    duration: z.number().positive(),
+    startDate: z.string(),
+    endDate: z.string(),
+    tasks: z.array(z.object({
+        id: z.string(),
+        name: z.string(),
+        description: z.string(),
+        type: z.enum(['development', 'testing', 'deployment', 'documentation', 'research']),
+        priority: z.enum(['low', 'medium', 'high', 'critical']),
+        estimatedHours: z.number().positive(),
+        assignedTo: z.string().optional(),
+        status: z.enum(['pending', 'in_progress', 'completed']).default('pending'),
     })),
-    deliverables: zod_1.z.array(zod_1.z.string()),
-    risks: zod_1.z.array(zod_1.z.string()),
-    milestones: zod_1.z.array(zod_1.z.string()),
+    deliverables: z.array(z.string()),
+    risks: z.array(z.string()),
+    milestones: z.array(z.string()),
 });
-exports.ComprehensivePlanSchema = zod_1.z.object({
-    id: zod_1.z.string(),
-    name: zod_1.z.string(),
-    description: zod_1.z.string(),
-    businessRequirements: business_analyzer_js_1.BusinessRequirementsSchema,
-    complexity: business_analyzer_js_1.ComplexityAssessmentSchema,
-    architecture: technical_planner_js_1.ArchitectureSchema,
-    phases: zod_1.z.array(exports.PlanPhaseSchema),
-    userStories: zod_1.z.array(business_analyzer_js_1.UserStorySchema),
-    risks: zod_1.z.array(business_analyzer_js_1.RiskSchema),
-    timeline: technical_planner_js_1.TimelineSchema,
-    effort: technical_planner_js_1.EffortEstimateSchema,
-    optimization: technical_planner_js_1.OptimizedPlanSchema,
-    businessValue: zod_1.z.object({
-        estimatedROI: zod_1.z.number(),
-        timeToMarket: zod_1.z.number(),
-        riskMitigation: zod_1.z.number(),
-        qualityImprovement: zod_1.z.number(),
-        costSavings: zod_1.z.number(),
+export const ComprehensivePlanSchema = z.object({
+    id: z.string(),
+    name: z.string(),
+    description: z.string(),
+    businessRequirements: BusinessRequirementsSchema,
+    complexity: ComplexityAssessmentSchema,
+    architecture: ArchitectureSchema,
+    phases: z.array(PlanPhaseSchema),
+    userStories: z.array(UserStorySchema),
+    risks: z.array(RiskSchema),
+    timeline: TimelineSchema,
+    effort: EffortEstimateSchema,
+    optimization: OptimizedPlanSchema,
+    businessValue: z.object({
+        estimatedROI: z.number(),
+        timeToMarket: z.number(),
+        riskMitigation: z.number(),
+        qualityImprovement: z.number(),
+        costSavings: z.number(),
     }),
-    qualityGates: zod_1.z.array(zod_1.z.object({
-        phase: zod_1.z.string(),
-        criteria: zod_1.z.array(zod_1.z.string()),
-        threshold: zod_1.z.string(),
+    qualityGates: z.array(z.object({
+        phase: z.string(),
+        criteria: z.array(z.string()),
+        threshold: z.string(),
     })),
-    successMetrics: zod_1.z.array(zod_1.z.string()),
-    nextSteps: zod_1.z.array(zod_1.z.string()),
+    successMetrics: z.array(z.string()),
+    nextSteps: z.array(z.string()),
 });
-class PlanGenerator {
+export class PlanGenerator {
     businessAnalyzer;
     technicalPlanner;
     constructor() {
-        this.businessAnalyzer = new business_analyzer_js_1.BusinessAnalyzer();
-        this.technicalPlanner = new technical_planner_js_1.TechnicalPlanner();
+        this.businessAnalyzer = new BusinessAnalyzer();
+        this.technicalPlanner = new TechnicalPlanner();
     }
     /**
      * Generate comprehensive project plan from business request
@@ -129,7 +126,7 @@ class PlanGenerator {
                 successMetrics,
                 nextSteps,
             };
-            return exports.ComprehensivePlanSchema.parse(plan);
+            return ComprehensivePlanSchema.parse(plan);
         }
         catch (error) {
             const processingTime = Date.now() - startTime;
@@ -551,5 +548,4 @@ class PlanGenerator {
         }
     }
 }
-exports.PlanGenerator = PlanGenerator;
 //# sourceMappingURL=plan-generator.js.map

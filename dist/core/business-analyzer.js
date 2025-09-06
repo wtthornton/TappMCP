@@ -1,52 +1,49 @@
 #!/usr/bin/env node
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.BusinessAnalyzer = exports.UserStorySchema = exports.RiskSchema = exports.ComplexityAssessmentSchema = exports.StakeholderSchema = exports.BusinessRequirementsSchema = void 0;
-const zod_1 = require("zod");
+import { z } from 'zod';
 // Business analysis schemas
-exports.BusinessRequirementsSchema = zod_1.z.object({
-    primaryGoals: zod_1.z.array(zod_1.z.string()),
-    targetUsers: zod_1.z.array(zod_1.z.string()),
-    successCriteria: zod_1.z.array(zod_1.z.string()),
-    constraints: zod_1.z.array(zod_1.z.string()),
-    riskFactors: zod_1.z.array(zod_1.z.string()),
+export const BusinessRequirementsSchema = z.object({
+    primaryGoals: z.array(z.string()),
+    targetUsers: z.array(z.string()),
+    successCriteria: z.array(z.string()),
+    constraints: z.array(z.string()),
+    riskFactors: z.array(z.string()),
 });
-exports.StakeholderSchema = zod_1.z.object({
-    name: zod_1.z.string(),
-    role: zod_1.z.string(),
-    influence: zod_1.z.enum(['high', 'medium', 'low']),
-    interest: zod_1.z.enum(['high', 'medium', 'low']),
-    requirements: zod_1.z.array(zod_1.z.string()),
+export const StakeholderSchema = z.object({
+    name: z.string(),
+    role: z.string(),
+    influence: z.enum(['high', 'medium', 'low']),
+    interest: z.enum(['high', 'medium', 'low']),
+    requirements: z.array(z.string()),
 });
-exports.ComplexityAssessmentSchema = zod_1.z.object({
-    technical: zod_1.z.enum(['low', 'medium', 'high', 'very-high']),
-    business: zod_1.z.enum(['low', 'medium', 'high', 'very-high']),
-    integration: zod_1.z.enum(['low', 'medium', 'high', 'very-high']),
-    overall: zod_1.z.enum(['low', 'medium', 'high', 'very-high']),
-    factors: zod_1.z.array(zod_1.z.string()),
+export const ComplexityAssessmentSchema = z.object({
+    technical: z.enum(['low', 'medium', 'high', 'very-high']),
+    business: z.enum(['low', 'medium', 'high', 'very-high']),
+    integration: z.enum(['low', 'medium', 'high', 'very-high']),
+    overall: z.enum(['low', 'medium', 'high', 'very-high']),
+    factors: z.array(z.string()),
 });
-exports.RiskSchema = zod_1.z.object({
-    id: zod_1.z.string(),
-    name: zod_1.z.string(),
-    description: zod_1.z.string(),
-    category: zod_1.z.enum(['technical', 'business', 'resource', 'timeline', 'quality']),
-    probability: zod_1.z.enum(['low', 'medium', 'high']),
-    impact: zod_1.z.enum(['low', 'medium', 'high']),
-    severity: zod_1.z.enum(['low', 'medium', 'high', 'critical']),
-    mitigation: zod_1.z.array(zod_1.z.string()),
+export const RiskSchema = z.object({
+    id: z.string(),
+    name: z.string(),
+    description: z.string(),
+    category: z.enum(['technical', 'business', 'resource', 'timeline', 'quality']),
+    probability: z.enum(['low', 'medium', 'high']),
+    impact: z.enum(['low', 'medium', 'high']),
+    severity: z.enum(['low', 'medium', 'high', 'critical']),
+    mitigation: z.array(z.string()),
 });
-exports.UserStorySchema = zod_1.z.object({
-    id: zod_1.z.string(),
-    title: zod_1.z.string(),
-    description: zod_1.z.string(),
-    asA: zod_1.z.string(),
-    iWant: zod_1.z.string(),
-    soThat: zod_1.z.string(),
-    acceptanceCriteria: zod_1.z.array(zod_1.z.string()),
-    priority: zod_1.z.enum(['low', 'medium', 'high', 'critical']),
-    estimatedEffort: zod_1.z.number().min(1).max(20),
+export const UserStorySchema = z.object({
+    id: z.string(),
+    title: z.string(),
+    description: z.string(),
+    asA: z.string(),
+    iWant: z.string(),
+    soThat: z.string(),
+    acceptanceCriteria: z.array(z.string()),
+    priority: z.enum(['low', 'medium', 'high', 'critical']),
+    estimatedEffort: z.number().min(1).max(20),
 });
-class BusinessAnalyzer {
+export class BusinessAnalyzer {
     /**
      * Analyze business requirements from a business request with optional external knowledge
      */
@@ -67,7 +64,7 @@ class BusinessAnalyzer {
             // eslint-disable-next-line no-console
             console.warn(`Business analysis took ${processingTime}ms - target is <100ms`);
         }
-        return exports.BusinessRequirementsSchema.parse({
+        return BusinessRequirementsSchema.parse({
             primaryGoals,
             targetUsers,
             successCriteria,
@@ -198,7 +195,7 @@ class BusinessAnalyzer {
         // Calculate overall complexity
         const overallScore = Math.max(technicalScore, businessScore, integrationScore);
         const overall = this.scoreToComplexity(overallScore);
-        return exports.ComplexityAssessmentSchema.parse({
+        return ComplexityAssessmentSchema.parse({
             technical,
             business,
             integration,
@@ -579,5 +576,4 @@ class BusinessAnalyzer {
         return Math.min(Math.max(Math.round(complexity / 10), 3), 13);
     }
 }
-exports.BusinessAnalyzer = BusinessAnalyzer;
 //# sourceMappingURL=business-analyzer.js.map

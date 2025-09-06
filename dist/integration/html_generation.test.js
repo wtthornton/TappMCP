@@ -1,9 +1,7 @@
 #!/usr/bin/env node
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const vitest_1 = require("vitest");
-const smart_begin_js_1 = require("../tools/smart_begin.js");
-const smart_write_js_1 = require("../tools/smart_write.js");
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { handleSmartBegin } from '../tools/smart-begin.js';
+import { handleSmartWrite } from '../tools/smart-write.js';
 /**
  * HTML Generation Test: Real Web Page Creation
  *
@@ -13,11 +11,11 @@ const smart_write_js_1 = require("../tools/smart_write.js");
  * Test Prompt: "Create me an HTML page that has a header, a footer, and says
  * 'I'm the best' in the body. Make sure it produces that code for you."
  */
-(0, vitest_1.describe)('HTML Generation Test: Real Web Page Creation', () => {
+describe('HTML Generation Test: Real Web Page Creation', () => {
     let projectId;
     let generatedCode;
     let testResults;
-    (0, vitest_1.beforeAll)(async () => {
+    beforeAll(async () => {
         testResults = {
             projectInitialization: false,
             htmlGeneration: false,
@@ -29,7 +27,7 @@ const smart_write_js_1 = require("../tools/smart_write.js");
             performance: false,
         };
     });
-    (0, vitest_1.afterAll)(() => {
+    afterAll(() => {
         console.log('\n=== HTML GENERATION TEST RESULTS ===');
         console.log('Project Initialization:', testResults.projectInitialization ? '✅ PASS' : '❌ FAIL');
         console.log('HTML Generation:', testResults.htmlGeneration ? '✅ PASS' : '❌ FAIL');
@@ -45,17 +43,17 @@ const smart_write_js_1 = require("../tools/smart_write.js");
         console.log(`\nOverall Score: ${score}% (${passCount}/${totalCount} tests passed)`);
         console.log('Grade:', score >= 90 ? 'A' : score >= 80 ? 'B' : score >= 70 ? 'C' : score >= 60 ? 'D' : 'F');
     });
-    (0, vitest_1.it)('should initialize project for HTML generation', async () => {
+    it('should initialize project for HTML generation', async () => {
         console.log('\n🧪 Testing: Project Initialization for HTML Generation');
-        const beginResult = await (0, smart_begin_js_1.handleSmartBegin)({
+        const beginResult = await handleSmartBegin({
             projectName: 'HTML Page Generator',
             description: 'Simple HTML page with header, footer, and body content',
             techStack: ['html', 'css', 'javascript'],
             targetUsers: ['non-technical-founder'],
-            businessGoals: ['create simple web page', 'learn HTML basics', 'build portfolio']
+            businessGoals: ['create simple web page', 'learn HTML basics', 'build portfolio'],
         });
-        (0, vitest_1.expect)(beginResult.success).toBe(true);
-        (0, vitest_1.expect)(beginResult.data).toBeDefined();
+        expect(beginResult.success).toBe(true);
+        expect(beginResult.data).toBeDefined();
         testResults.projectInitialization = beginResult.success;
         if (beginResult.success && beginResult.data) {
             const data = beginResult.data;
@@ -66,11 +64,11 @@ const smart_write_js_1 = require("../tools/smart_write.js");
             console.log(`   - Cost Prevention: $${data.businessValue.costPrevention.toLocaleString()}`);
         }
     });
-    (0, vitest_1.it)('should generate HTML page with header, footer, and body content', async () => {
+    it('should generate HTML page with header, footer, and body content', async () => {
         console.log('\n🧪 Testing: HTML Page Generation');
-        (0, vitest_1.expect)(projectId).toBeDefined();
-        const writeResult = await (0, smart_write_js_1.handleSmartWrite)({
-            projectId: projectId,
+        expect(projectId).toBeDefined();
+        const writeResult = await handleSmartWrite({
+            projectId,
             featureDescription: 'Create me an HTML page that has a header, a footer, and says "I\'m the best" in the body',
             targetRole: 'developer',
             codeType: 'component',
@@ -78,16 +76,16 @@ const smart_write_js_1 = require("../tools/smart_write.js");
             businessContext: {
                 goals: ['create simple web page', 'learn HTML basics'],
                 targetUsers: ['non-technical-founder'],
-                priority: 'high'
+                priority: 'high',
             },
             qualityRequirements: {
                 testCoverage: 80,
                 complexity: 3,
-                securityLevel: 'medium'
-            }
+                securityLevel: 'medium',
+            },
         });
-        (0, vitest_1.expect)(writeResult.success).toBe(true);
-        (0, vitest_1.expect)(writeResult.data).toBeDefined();
+        expect(writeResult.success).toBe(true);
+        expect(writeResult.data).toBeDefined();
         testResults.htmlGeneration = writeResult.success;
         if (writeResult.success && writeResult.data) {
             const data = writeResult.data;
@@ -109,21 +107,25 @@ const smart_write_js_1 = require("../tools/smart_write.js");
             generatedCode = data.generatedCode;
         }
     });
-    (0, vitest_1.it)('should analyze generated HTML code quality and structure', async () => {
+    it('should analyze generated HTML code quality and structure', async () => {
         console.log('\n🧪 Testing: HTML Code Analysis');
-        (0, vitest_1.expect)(generatedCode).toBeDefined();
-        (0, vitest_1.expect)(generatedCode.files).toBeDefined();
-        (0, vitest_1.expect)(generatedCode.files.length).toBeGreaterThan(0);
+        expect(generatedCode).toBeDefined();
+        expect(generatedCode.files).toBeDefined();
+        expect(generatedCode.files.length).toBeGreaterThan(0);
         // Find the HTML file
         const htmlFile = generatedCode.files.find((file) => file.path.endsWith('.html') || file.type === 'html' || file.content.includes('<html'));
         if (htmlFile) {
             console.log(`📄 Found HTML file: ${htmlFile.path}`);
             console.log(`📊 File size: ${htmlFile.content.length} characters`);
             // Analyze HTML structure
-            const hasHeader = htmlFile.content.includes('<header') || htmlFile.content.includes('<h1') || htmlFile.content.includes('header');
+            const hasHeader = htmlFile.content.includes('<header') ||
+                htmlFile.content.includes('<h1') ||
+                htmlFile.content.includes('header');
             const hasFooter = htmlFile.content.includes('<footer') || htmlFile.content.includes('footer');
             const hasBody = htmlFile.content.includes('<body') || htmlFile.content.includes('body');
-            const hasContent = htmlFile.content.includes("I'm the best") || htmlFile.content.includes("i'm the best") || htmlFile.content.includes("I am the best");
+            const hasContent = htmlFile.content.includes("I'm the best") ||
+                htmlFile.content.includes("i'm the best") ||
+                htmlFile.content.includes('I am the best');
             testResults.structure = hasHeader && hasFooter && hasBody && hasContent;
             console.log(`   - Has Header: ${hasHeader ? '✅' : '❌'}`);
             console.log(`   - Has Footer: ${hasFooter ? '✅' : '❌'}`);
@@ -146,7 +148,9 @@ const smart_write_js_1 = require("../tools/smart_write.js");
             // Analyze accessibility
             const hasAltText = htmlFile.content.includes('alt=');
             const hasLang = htmlFile.content.includes('lang=');
-            const hasSemanticTags = htmlFile.content.includes('<main') || htmlFile.content.includes('<section') || htmlFile.content.includes('<article');
+            const hasSemanticTags = htmlFile.content.includes('<main') ||
+                htmlFile.content.includes('<section') ||
+                htmlFile.content.includes('<article');
             testResults.accessibility = hasLang || hasSemanticTags;
             console.log(`   - Has Language Attribute: ${hasLang ? '✅' : '❌'}`);
             console.log(`   - Has Alt Text: ${hasAltText ? '✅' : '❌'}`);
@@ -170,7 +174,7 @@ const smart_write_js_1 = require("../tools/smart_write.js");
             testResults.codeQuality = false;
         }
     });
-    (0, vitest_1.it)('should document all analysis results', async () => {
+    it('should document all analysis results', async () => {
         console.log('\n🧪 Testing: Results Documentation');
         // Document all results for analysis (no pass/fail)
         console.log('📊 HTML Generation Analysis Summary:');
@@ -183,7 +187,7 @@ const smart_write_js_1 = require("../tools/smart_write.js");
         console.log('   - Accessibility: Basic accessibility features');
         console.log('   - Performance: File size and loading optimization');
         // Always pass - this is just documentation
-        (0, vitest_1.expect)(true).toBe(true);
+        expect(true).toBe(true);
     });
 });
 //# sourceMappingURL=html_generation.test.js.map

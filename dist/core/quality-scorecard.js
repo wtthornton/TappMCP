@@ -1,8 +1,5 @@
 #!/usr/bin/env node
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.QualityScorecardGenerator = void 0;
-class QualityScorecardGenerator {
+export class QualityScorecardGenerator {
     /**
      * Generate comprehensive quality scorecard
      */
@@ -299,5 +296,4 @@ class QualityScorecardGenerator {
         return issues;
     }
 }
-exports.QualityScorecardGenerator = QualityScorecardGenerator;
 //# sourceMappingURL=quality-scorecard.js.map
