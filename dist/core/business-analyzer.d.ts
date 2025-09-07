@@ -26,14 +26,14 @@ export declare const StakeholderSchema: z.ZodObject<{
     interest: z.ZodEnum<["high", "medium", "low"]>;
     requirements: z.ZodArray<z.ZodString, "many">;
 }, "strip", z.ZodTypeAny, {
-    name: string;
     role: string;
+    name: string;
     requirements: string[];
     influence: "high" | "medium" | "low";
     interest: "high" | "medium" | "low";
 }, {
-    name: string;
     role: string;
+    name: string;
     requirements: string[];
     influence: "high" | "medium" | "low";
     interest: "high" | "medium" | "low";
@@ -71,7 +71,7 @@ export declare const RiskSchema: z.ZodObject<{
     name: string;
     id: string;
     severity: "high" | "medium" | "low" | "critical";
-    category: "timeline" | "business" | "quality" | "technical" | "resource";
+    category: "timeline" | "business" | "technical" | "quality" | "resource";
     impact: "high" | "medium" | "low";
     probability: "high" | "medium" | "low";
     mitigation: string[];
@@ -80,7 +80,7 @@ export declare const RiskSchema: z.ZodObject<{
     name: string;
     id: string;
     severity: "high" | "medium" | "low" | "critical";
-    category: "timeline" | "business" | "quality" | "technical" | "resource";
+    category: "timeline" | "business" | "technical" | "quality" | "resource";
     impact: "high" | "medium" | "low";
     probability: "high" | "medium" | "low";
     mitigation: string[];

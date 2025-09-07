@@ -12,7 +12,7 @@ import {
   type BusinessContext,
   type RoleTransition,
 } from './business-context-broker.js';
-import { RoleOrchestrator, type WorkflowTask } from './role-orchestrator.js';
+// Role orchestration removed - implementing real role-specific behavior
 import { handleError, getErrorMessage } from '../utils/errors.js';
 
 export interface Workflow {
@@ -98,13 +98,11 @@ export interface OptimizedWorkflow {
  */
 export class OrchestrationEngine {
   private contextBroker: BusinessContextBroker;
-  private roleOrchestrator: RoleOrchestrator;
   private activeWorkflows: Map<string, Workflow> = new Map();
   private workflowResults: Map<string, WorkflowResult> = new Map();
 
   constructor() {
     this.contextBroker = new BusinessContextBroker();
-    this.roleOrchestrator = new RoleOrchestrator();
   }
 
   /**
@@ -152,15 +150,8 @@ export class OrchestrationEngine {
       for (const phase of workflow.phases) {
         // Execute phase tasks
 
-        // Determine if role switch is needed
-        const nextRole = this.roleOrchestrator.determineNextRole(context, phase.description);
-
-        if (nextRole !== currentRole) {
-          // Perform role transition
-          const transition = await this.switchRole(currentRole, nextRole, context);
-          result.roleTransitions.push(transition);
-          currentRole = nextRole;
-        }
+        // Role switching now handled by individual tools based on context
+        // No complex orchestration needed - tools determine their own role behavior
 
         // Execute phase
         const phaseResult = await this.executePhase(phase, currentRole, context);
@@ -223,19 +214,28 @@ export class OrchestrationEngine {
   }
 
   /**
-   * Switch roles with context preservation
+   * Role switching now handled by individual tools
+   * No complex orchestration needed
    */
   async switchRole(
     fromRole: string,
     toRole: string,
     context: BusinessContext
   ): Promise<RoleTransition> {
-    const transition = await this.roleOrchestrator.switchRole(fromRole, toRole, context);
-
-    // Preserve context through the broker
-    this.contextBroker.preserveContext(transition);
-
-    return transition;
+    // Simple role transition without complex orchestration
+    return {
+      fromRole,
+      toRole,
+      timestamp: new Date().toISOString(),
+      context,
+      preservedData: {
+        previousRole: fromRole,
+        transitionReason: 'tool-based',
+        contextVersion: context.version,
+        transitionTime: 0,
+      },
+      transitionId: `transition_${Date.now()}_${fromRole}_${toRole}`,
+    };
   }
 
   /**
@@ -566,52 +566,14 @@ export class OrchestrationEngine {
   }
 
   private optimizeRoleTransitions(phases: WorkflowPhase[]): string[] {
-    // Minimize role switches by grouping similar phases
-    const optimizedRoles: string[] = [];
-    let currentRole = '';
-
-    phases.forEach(phase => {
-      const suggestedRole = this.roleOrchestrator.determineNextRole(
-        {
-          projectId: 'optimization',
-          businessGoals: [],
-          requirements: [],
-          stakeholders: [],
-          constraints: {},
-          success: { metrics: [], criteria: [] },
-          timestamp: '',
-          version: 1,
-        },
-        phase.description
-      );
-
-      // Keep current role if it's capable, reduce transitions
-      const currentCapabilities = this.roleOrchestrator.getRoleCapabilities(currentRole);
-      if (currentCapabilities?.phases.some(p => phase.name.toLowerCase().includes(p))) {
-        optimizedRoles.push(currentRole);
-      } else {
-        optimizedRoles.push(suggestedRole);
-        currentRole = suggestedRole;
-      }
-    });
-
-    return optimizedRoles;
+    // Role transitions now handled by individual tools
+    // Return empty array as tools determine their own role behavior
+    return [];
   }
 
   private optimizeToolUsage(tools: string[], role: string): string[] {
-    const roleCapabilities = this.roleOrchestrator.getRoleCapabilities(role);
-    if (!roleCapabilities) return tools;
-
-    // Filter tools to only those supported by the role
-    const optimizedTools = tools.filter(tool => roleCapabilities.tools.includes(tool));
-
-    // Add recommended tools for the role if missing
-    roleCapabilities.tools.forEach(recommendedTool => {
-      if (!optimizedTools.includes(recommendedTool)) {
-        optimizedTools.push(recommendedTool);
-      }
-    });
-
-    return optimizedTools;
+    // Tool usage now handled by individual tools based on role
+    // Return tools as-is, tools will determine their own role-specific behavior
+    return tools;
   }
 }

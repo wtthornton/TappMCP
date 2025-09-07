@@ -70,9 +70,9 @@ export declare const ContextEntrySchema: z.ZodObject<{
         compressionRatio: number;
     }>>;
 }, "strip", z.ZodTypeAny, {
+    content: string;
     timestamp: Date;
     id: string;
-    content: string;
     toolName: string;
     sessionId: string;
     contextType: "user_query" | "system_response" | "tool_output" | "error_context" | "workflow_state";
@@ -96,9 +96,9 @@ export declare const ContextEntrySchema: z.ZodObject<{
         compressionRatio: number;
     } | undefined;
 }, {
+    content: string;
     timestamp: Date;
     id: string;
-    content: string;
     toolName: string;
     sessionId: string;
     contextType: "user_query" | "system_response" | "tool_output" | "error_context" | "workflow_state";

@@ -40,11 +40,11 @@ export declare const TemplateContextSchema: z.ZodObject<{
         commonPatterns: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
         successfulTemplateIds: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     }, "strip", z.ZodTypeAny, {
-        preferredVerbosity?: "moderate" | "concise" | "detailed" | undefined;
+        preferredVerbosity?: "detailed" | "moderate" | "concise" | undefined;
         commonPatterns?: string[] | undefined;
         successfulTemplateIds?: string[] | undefined;
     }, {
-        preferredVerbosity?: "moderate" | "concise" | "detailed" | undefined;
+        preferredVerbosity?: "detailed" | "moderate" | "concise" | undefined;
         commonPatterns?: string[] | undefined;
         successfulTemplateIds?: string[] | undefined;
     }>>;
@@ -66,7 +66,7 @@ export declare const TemplateContextSchema: z.ZodObject<{
     toolName: string;
     userLevel: "beginner" | "intermediate" | "advanced";
     taskType: "planning" | "analysis" | "generation" | "transformation" | "debugging";
-    outputFormat: "code" | "text" | "structured" | "markdown";
+    outputFormat: "code" | "markdown" | "text" | "structured";
     preferences: Record<string, any>;
     contextHistory: string[];
     timeConstraint: "standard" | "immediate" | "thorough";
@@ -77,7 +77,7 @@ export declare const TemplateContextSchema: z.ZodObject<{
         domain?: string | undefined;
     } | undefined;
     userBehaviorProfile?: {
-        preferredVerbosity?: "moderate" | "concise" | "detailed" | undefined;
+        preferredVerbosity?: "detailed" | "moderate" | "concise" | undefined;
         commonPatterns?: string[] | undefined;
         successfulTemplateIds?: string[] | undefined;
     } | undefined;
@@ -92,7 +92,7 @@ export declare const TemplateContextSchema: z.ZodObject<{
     constraints?: string[] | undefined;
     sessionId?: string | undefined;
     userLevel?: "beginner" | "intermediate" | "advanced" | undefined;
-    outputFormat?: "code" | "text" | "structured" | "markdown" | undefined;
+    outputFormat?: "code" | "markdown" | "text" | "structured" | undefined;
     preferences?: Record<string, any> | undefined;
     contextHistory?: string[] | undefined;
     timeConstraint?: "standard" | "immediate" | "thorough" | undefined;
@@ -102,7 +102,7 @@ export declare const TemplateContextSchema: z.ZodObject<{
         domain?: string | undefined;
     } | undefined;
     userBehaviorProfile?: {
-        preferredVerbosity?: "moderate" | "concise" | "detailed" | undefined;
+        preferredVerbosity?: "detailed" | "moderate" | "concise" | undefined;
         commonPatterns?: string[] | undefined;
         successfulTemplateIds?: string[] | undefined;
     } | undefined;

@@ -99,7 +99,9 @@ describe('smart_write tool', () => {
         const result = (await handleSmartWrite(input)) as SmartWriteResponse;
 
         expect(result.success).toBe(true);
-        expect(result.data?.generatedCode.files[0].content).toContain(role);
+        const roleDisplayName = role === 'product-strategist' ? 'Product Strategist' :
+                                role.charAt(0).toUpperCase() + role.slice(1);
+        expect(result.data?.generatedCode.files[0].content).toContain(`${roleDisplayName} Role Implementation`);
       }
     });
 

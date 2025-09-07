@@ -27,12 +27,12 @@ export declare const ContextEntrySchema: z.ZodObject<{
     tags: z.ZodDefault<z.ZodArray<z.ZodString, "many">>;
     metadata: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodAny>>;
 }, "strip", z.ZodTypeAny, {
+    content: string;
     timestamp: Date;
     priority: "high" | "medium" | "low" | "critical";
     id: string;
     version: number;
     tags: string[];
-    content: string;
     toolName: string;
     sessionId: string;
     contextType: "intermediate" | "metadata" | "input" | "output";
@@ -40,9 +40,9 @@ export declare const ContextEntrySchema: z.ZodObject<{
     compressed: boolean;
     tokens: number;
 }, {
+    content: string;
     timestamp: Date;
     id: string;
-    content: string;
     toolName: string;
     sessionId: string;
     contextType: "intermediate" | "metadata" | "input" | "output";

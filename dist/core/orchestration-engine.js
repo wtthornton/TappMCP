@@ -6,19 +6,17 @@
  * and business context management for complete SDLC orchestration.
  */
 import { BusinessContextBroker, } from './business-context-broker.js';
-import { RoleOrchestrator } from './role-orchestrator.js';
+// Role orchestration removed - implementing real role-specific behavior
 import { handleError, getErrorMessage } from '../utils/errors.js';
 /**
  * Main Orchestration Engine for complete workflow management
  */
 export class OrchestrationEngine {
     contextBroker;
-    roleOrchestrator;
     activeWorkflows = new Map();
     workflowResults = new Map();
     constructor() {
         this.contextBroker = new BusinessContextBroker();
-        this.roleOrchestrator = new RoleOrchestrator();
     }
     /**
      * Execute a complete workflow with role orchestration and context management
@@ -59,14 +57,8 @@ export class OrchestrationEngine {
             let currentRole = 'product-strategist'; // Start with strategic planning
             for (const phase of workflow.phases) {
                 // Execute phase tasks
-                // Determine if role switch is needed
-                const nextRole = this.roleOrchestrator.determineNextRole(context, phase.description);
-                if (nextRole !== currentRole) {
-                    // Perform role transition
-                    const transition = await this.switchRole(currentRole, nextRole, context);
-                    result.roleTransitions.push(transition);
-                    currentRole = nextRole;
-                }
+                // Role switching now handled by individual tools based on context
+                // No complex orchestration needed - tools determine their own role behavior
                 // Execute phase
                 const phaseResult = await this.executePhase(phase, currentRole, context);
                 result.phases.push(phaseResult);
@@ -118,13 +110,24 @@ export class OrchestrationEngine {
         }
     }
     /**
-     * Switch roles with context preservation
+     * Role switching now handled by individual tools
+     * No complex orchestration needed
      */
     async switchRole(fromRole, toRole, context) {
-        const transition = await this.roleOrchestrator.switchRole(fromRole, toRole, context);
-        // Preserve context through the broker
-        this.contextBroker.preserveContext(transition);
-        return transition;
+        // Simple role transition without complex orchestration
+        return {
+            fromRole,
+            toRole,
+            timestamp: new Date().toISOString(),
+            context,
+            preservedData: {
+                previousRole: fromRole,
+                transitionReason: 'tool-based',
+                contextVersion: context.version,
+                transitionTime: 0,
+            },
+            transitionId: `transition_${Date.now()}_${fromRole}_${toRole}`,
+        };
     }
     /**
      * Validate workflow before execution
@@ -373,45 +376,14 @@ export class OrchestrationEngine {
         return optimized;
     }
     optimizeRoleTransitions(phases) {
-        // Minimize role switches by grouping similar phases
-        const optimizedRoles = [];
-        let currentRole = '';
-        phases.forEach(phase => {
-            const suggestedRole = this.roleOrchestrator.determineNextRole({
-                projectId: 'optimization',
-                businessGoals: [],
-                requirements: [],
-                stakeholders: [],
-                constraints: {},
-                success: { metrics: [], criteria: [] },
-                timestamp: '',
-                version: 1,
-            }, phase.description);
-            // Keep current role if it's capable, reduce transitions
-            const currentCapabilities = this.roleOrchestrator.getRoleCapabilities(currentRole);
-            if (currentCapabilities?.phases.some(p => phase.name.toLowerCase().includes(p))) {
-                optimizedRoles.push(currentRole);
-            }
-            else {
-                optimizedRoles.push(suggestedRole);
-                currentRole = suggestedRole;
-            }
-        });
-        return optimizedRoles;
+        // Role transitions now handled by individual tools
+        // Return empty array as tools determine their own role behavior
+        return [];
     }
     optimizeToolUsage(tools, role) {
-        const roleCapabilities = this.roleOrchestrator.getRoleCapabilities(role);
-        if (!roleCapabilities)
-            return tools;
-        // Filter tools to only those supported by the role
-        const optimizedTools = tools.filter(tool => roleCapabilities.tools.includes(tool));
-        // Add recommended tools for the role if missing
-        roleCapabilities.tools.forEach(recommendedTool => {
-            if (!optimizedTools.includes(recommendedTool)) {
-                optimizedTools.push(recommendedTool);
-            }
-        });
-        return optimizedTools;
+        // Tool usage now handled by individual tools based on role
+        // Return tools as-is, tools will determine their own role-specific behavior
+        return tools;
     }
 }
 //# sourceMappingURL=orchestration-engine.js.map

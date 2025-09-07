@@ -2,42 +2,38 @@
 /**
  * Code Reuse Pattern Engine
  *
- * Detects, analyzes, and suggests reusable code patterns to reduce
- * redundancy and improve development efficiency across MCP tools.
- *
- * Phase 1, Week 1 - Code Reuse Pattern Detection System
+ * Detects, analyzes, and suggests reusable code patterns to reduce token usage
+ * and improve code quality through pattern-based optimization.
  */
 import { z } from 'zod';
-/**
- * Code Pattern Schema
- */
-export declare const CodePatternSchema: z.ZodObject<{
+declare const DetectionConfigSchema: z.ZodObject<{
+    minPatternSize: z.ZodDefault<z.ZodNumber>;
+    maxPatternSize: z.ZodDefault<z.ZodNumber>;
+    minOccurrences: z.ZodDefault<z.ZodNumber>;
+    minSimilarity: z.ZodDefault<z.ZodNumber>;
+    excludePatterns: z.ZodDefault<z.ZodArray<z.ZodString, "many">>;
+}, "strip", z.ZodTypeAny, {
+    minPatternSize: number;
+    maxPatternSize: number;
+    minOccurrences: number;
+    minSimilarity: number;
+    excludePatterns: string[];
+}, {
+    minPatternSize?: number | undefined;
+    maxPatternSize?: number | undefined;
+    minOccurrences?: number | undefined;
+    minSimilarity?: number | undefined;
+    excludePatterns?: string[] | undefined;
+}>;
+declare const CodePatternSchema: z.ZodObject<{
     id: z.ZodString;
     name: z.ZodString;
     description: z.ZodString;
-    category: z.ZodEnum<["validation", "error-handling", "data-transformation", "api-integration", "logging", "testing", "utility", "schema"]>;
+    category: z.ZodEnum<["function", "class", "type", "control-flow", "error-handling", "async", "testing", "module", "utility"]>;
+    complexity: z.ZodEnum<["low", "medium", "high"]>;
     pattern: z.ZodString;
     abstractPattern: z.ZodString;
-    complexity: z.ZodEnum<["low", "medium", "high"]>;
-    confidence: z.ZodNumber;
-    usageCount: z.ZodDefault<z.ZodNumber>;
-    locations: z.ZodArray<z.ZodObject<{
-        file: z.ZodString;
-        startLine: z.ZodNumber;
-        endLine: z.ZodNumber;
-        toolName: z.ZodOptional<z.ZodString>;
-    }, "strip", z.ZodTypeAny, {
-        file: string;
-        startLine: number;
-        endLine: number;
-        toolName?: string | undefined;
-    }, {
-        file: string;
-        startLine: number;
-        endLine: number;
-        toolName?: string | undefined;
-    }>, "many">;
-    variables: z.ZodDefault<z.ZodArray<z.ZodObject<{
+    variables: z.ZodArray<z.ZodObject<{
         name: z.ZodString;
         type: z.ZodString;
         description: z.ZodOptional<z.ZodString>;
@@ -49,37 +45,25 @@ export declare const CodePatternSchema: z.ZodObject<{
         type: string;
         name: string;
         description?: string | undefined;
-    }>, "many">>;
-    dependencies: z.ZodDefault<z.ZodArray<z.ZodString, "many">>;
-    examples: z.ZodDefault<z.ZodArray<z.ZodObject<{
-        code: z.ZodString;
-        description: z.ZodString;
-        context: z.ZodOptional<z.ZodString>;
-    }, "strip", z.ZodTypeAny, {
-        description: string;
-        code: string;
-        context?: string | undefined;
-    }, {
-        description: string;
-        code: string;
-        context?: string | undefined;
-    }>, "many">>;
-    metrics: z.ZodDefault<z.ZodObject<{
-        tokensPerUse: z.ZodDefault<z.ZodNumber>;
-        avgComplexity: z.ZodDefault<z.ZodNumber>;
-        reuseOpportunities: z.ZodDefault<z.ZodNumber>;
-        potentialSavings: z.ZodDefault<z.ZodNumber>;
+    }>, "many">;
+    dependencies: z.ZodArray<z.ZodString, "many">;
+    examples: z.ZodArray<z.ZodString, "many">;
+    metrics: z.ZodObject<{
+        tokensPerUse: z.ZodNumber;
+        avgComplexity: z.ZodNumber;
+        reuseOpportunities: z.ZodNumber;
+        potentialSavings: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
         tokensPerUse: number;
         avgComplexity: number;
         reuseOpportunities: number;
         potentialSavings: number;
     }, {
-        tokensPerUse?: number | undefined;
-        avgComplexity?: number | undefined;
-        reuseOpportunities?: number | undefined;
-        potentialSavings?: number | undefined;
-    }>>;
+        tokensPerUse: number;
+        avgComplexity: number;
+        reuseOpportunities: number;
+        potentialSavings: number;
+    }>;
 }, "strip", z.ZodTypeAny, {
     description: string;
     name: string;
@@ -92,122 +76,82 @@ export declare const CodePatternSchema: z.ZodObject<{
         reuseOpportunities: number;
         potentialSavings: number;
     };
-    confidence: number;
-    category: "validation" | "testing" | "logging" | "schema" | "error-handling" | "data-transformation" | "api-integration" | "utility";
-    usageCount: number;
+    category: "function" | "type" | "testing" | "class" | "control-flow" | "error-handling" | "async" | "module" | "utility";
     dependencies: string[];
     variables: {
         type: string;
         name: string;
         description?: string | undefined;
     }[];
-    examples: {
-        description: string;
-        code: string;
-        context?: string | undefined;
-    }[];
+    examples: string[];
     abstractPattern: string;
-    locations: {
-        file: string;
-        startLine: number;
-        endLine: number;
-        toolName?: string | undefined;
-    }[];
 }, {
     description: string;
     name: string;
     complexity: "high" | "medium" | "low";
     id: string;
     pattern: string;
-    confidence: number;
-    category: "validation" | "testing" | "logging" | "schema" | "error-handling" | "data-transformation" | "api-integration" | "utility";
-    abstractPattern: string;
-    locations: {
-        file: string;
-        startLine: number;
-        endLine: number;
-        toolName?: string | undefined;
-    }[];
-    metrics?: {
-        tokensPerUse?: number | undefined;
-        avgComplexity?: number | undefined;
-        reuseOpportunities?: number | undefined;
-        potentialSavings?: number | undefined;
-    } | undefined;
-    usageCount?: number | undefined;
-    dependencies?: string[] | undefined;
-    variables?: {
+    metrics: {
+        tokensPerUse: number;
+        avgComplexity: number;
+        reuseOpportunities: number;
+        potentialSavings: number;
+    };
+    category: "function" | "type" | "testing" | "class" | "control-flow" | "error-handling" | "async" | "module" | "utility";
+    dependencies: string[];
+    variables: {
         type: string;
         name: string;
         description?: string | undefined;
-    }[] | undefined;
-    examples?: {
-        description: string;
-        code: string;
-        context?: string | undefined;
-    }[] | undefined;
+    }[];
+    examples: string[];
+    abstractPattern: string;
 }>;
-export type CodePattern = z.infer<typeof CodePatternSchema>;
-/**
- * Pattern Detection Config
- */
-export declare const DetectionConfigSchema: z.ZodObject<{
-    minPatternSize: z.ZodDefault<z.ZodNumber>;
-    maxPatternSize: z.ZodDefault<z.ZodNumber>;
-    minSimilarity: z.ZodDefault<z.ZodNumber>;
-    minOccurrences: z.ZodDefault<z.ZodNumber>;
-    excludePatterns: z.ZodDefault<z.ZodArray<z.ZodString, "many">>;
-    priorityKeywords: z.ZodDefault<z.ZodArray<z.ZodString, "many">>;
+declare const PatternSuggestionSchema: z.ZodObject<{
+    id: z.ZodString;
+    patternId: z.ZodString;
+    code: z.ZodString;
+    similarity: z.ZodNumber;
+    suggestedReplacement: z.ZodString;
+    confidence: z.ZodNumber;
+    rationale: z.ZodString;
+    context: z.ZodRecord<z.ZodString, z.ZodUnknown>;
 }, "strip", z.ZodTypeAny, {
-    minPatternSize: number;
-    maxPatternSize: number;
-    minSimilarity: number;
-    minOccurrences: number;
-    excludePatterns: string[];
-    priorityKeywords: string[];
+    code: string;
+    id: string;
+    context: Record<string, unknown>;
+    confidence: number;
+    patternId: string;
+    similarity: number;
+    suggestedReplacement: string;
+    rationale: string;
 }, {
-    minPatternSize?: number | undefined;
-    maxPatternSize?: number | undefined;
-    minSimilarity?: number | undefined;
-    minOccurrences?: number | undefined;
-    excludePatterns?: string[] | undefined;
-    priorityKeywords?: string[] | undefined;
+    code: string;
+    id: string;
+    context: Record<string, unknown>;
+    confidence: number;
+    patternId: string;
+    similarity: number;
+    suggestedReplacement: string;
+    rationale: string;
+}>;
+declare const SimilarityResultSchema: z.ZodObject<{
+    similarity: z.ZodNumber;
+    commonLines: z.ZodNumber;
+    totalLines: z.ZodNumber;
+}, "strip", z.ZodTypeAny, {
+    totalLines: number;
+    similarity: number;
+    commonLines: number;
+}, {
+    totalLines: number;
+    similarity: number;
+    commonLines: number;
 }>;
 export type DetectionConfig = z.infer<typeof DetectionConfigSchema>;
-/**
- * Code Similarity Result
- */
-export interface SimilarityResult {
-    similarity: number;
-    matchedLines: number;
-    totalLines: number;
-    differences: Array<{
-        line: number;
-        expected: string;
-        actual: string;
-        type: 'addition' | 'deletion' | 'modification';
-    }>;
-}
-/**
- * Pattern Suggestion
- */
-export interface PatternSuggestion {
-    pattern: CodePattern;
-    confidence: number;
-    estimatedSavings: number;
-    replacements: Array<{
-        file: string;
-        startLine: number;
-        endLine: number;
-        currentCode: string;
-        suggestedCode: string;
-        variables: Record<string, string>;
-    }>;
-    rationale: string;
-}
-/**
- * Code Reuse Pattern Engine Class
- */
+export type CodePattern = z.infer<typeof CodePatternSchema>;
+export type PatternSuggestion = z.infer<typeof PatternSuggestionSchema>;
+export type SimilarityResult = z.infer<typeof SimilarityResultSchema>;
 export declare class CodeReusePatternEngine {
     private config;
     private patterns;
@@ -224,47 +168,57 @@ export declare class CodeReusePatternEngine {
     /**
      * Suggest pattern applications for new code
      */
-    suggestPatterns(code: string, context?: {
-        file?: string;
-        toolName?: string;
-        taskType?: string;
-    }): Promise<PatternSuggestion[]>;
-    /**
-     * Generate reusable utility function from pattern
-     */
-    generateUtilityFunction(pattern: CodePattern, functionName: string): {
-        functionCode: string;
-        imports: string[];
-        usage: string;
-    };
+    suggestPatterns(code: string, context?: Record<string, unknown>): Promise<PatternSuggestion[]>;
     /**
      * Get pattern statistics
      */
     getPatternStats(): {
         totalPatterns: number;
         patternsByCategory: Record<string, number>;
-        topPatterns: Array<{
-            pattern: CodePattern;
-            score: number;
+        totalPotentialSavings: number;
+        processCompliancePatterns: Array<{
+            id: string;
+            name: string;
+            description: string;
+            category: string;
+            pattern: string;
+            abstractPattern: string;
+            metrics: {
+                tokensPerUse: number;
+                avgComplexity: number;
+                reuseOpportunities: number;
+                potentialSavings: number;
+            };
         }>;
-        potentialSavings: number;
-        reuseOpportunities: number;
+        qualityFailurePatterns: Array<{
+            id: string;
+            name: string;
+            description: string;
+            category: string;
+            pattern: string;
+            abstractPattern: string;
+            metrics: {
+                tokensPerUse: number;
+                avgComplexity: number;
+                reuseOpportunities: number;
+                potentialSavings: number;
+            };
+        }>;
     };
+    /**
+     * Get process compliance patterns from archive lessons
+     */
+    private getProcessCompliancePatterns;
+    /**
+     * Get quality failure patterns from archive lessons
+     */
+    private getQualityFailurePatterns;
     /**
      * Extract code segments from files
      */
     private extractCodeSegments;
-    /**
-     * Find similar patterns in code segments
-     */
     private findSimilarPatterns;
-    /**
-     * Analyze detected patterns
-     */
     private analyzePatterns;
-    /**
-     * Helper methods
-     */
     private shouldExcludeSegment;
     private hashCodeSegment;
     private createAbstractPattern;
@@ -288,4 +242,5 @@ export declare class CodeReusePatternEngine {
     private indexPattern;
 }
 export declare function createCodeReusePatternEngine(config?: Partial<DetectionConfig>): CodeReusePatternEngine;
+export {};
 //# sourceMappingURL=CodeReusePatternEngine.d.ts.map

@@ -17,7 +17,7 @@ export declare const CodeReviewPromptSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     code: string;
     language: string;
-    reviewType: "maintainability" | "security" | "performance" | "comprehensive" | "readability";
+    reviewType: "security" | "maintainability" | "performance" | "comprehensive" | "readability";
     severity?: "high" | "medium" | "low" | undefined;
     requirements?: string[] | undefined;
     context?: string | undefined;
@@ -28,7 +28,7 @@ export declare const CodeReviewPromptSchema: z.ZodObject<{
 }, {
     code: string;
     language: string;
-    reviewType: "maintainability" | "security" | "performance" | "comprehensive" | "readability";
+    reviewType: "security" | "maintainability" | "performance" | "comprehensive" | "readability";
     severity?: "high" | "medium" | "low" | undefined;
     requirements?: string[] | undefined;
     context?: string | undefined;

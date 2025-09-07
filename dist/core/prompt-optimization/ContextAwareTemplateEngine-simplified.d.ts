@@ -51,6 +51,5 @@ export declare class ContextAwareTemplateEngine extends BaseTemplateEngine {
      */
     private calculatePerformanceScore;
 }
-export declare function createTemplateEngine(): ContextAwareTemplateEngine;
 export { TemplateContextSchema, UserProfileSchema, SessionContextSchema, TemplateMetadataSchema, TemplateEngineMetricsSchema, type TemplateContext, type UserProfile, type SessionContext, type TemplateMetadata, type TemplateEngineMetrics };
-//# sourceMappingURL=ContextAwareTemplateEngine.d.ts.map
+//# sourceMappingURL=ContextAwareTemplateEngine-simplified.d.ts.map

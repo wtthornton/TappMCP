@@ -160,130 +160,10 @@ export class ContextAwareTemplateEngine extends BaseTemplateEngine {
 }
 /**
  * Cross-Session Learning Engine
- * Enhanced with process compliance and quality lessons from archive
  */
 class CrossSessionLearningEngine {
-    processComplianceLessons = new Map();
-    qualityFailurePatterns = new Map();
-    roleComplianceHistory = new Map();
     async learnFromSession(sessionId, outcomes) {
-        // Learn from process compliance failures
-        await this.learnProcessCompliance(sessionId, outcomes);
-        // Learn from quality gate failures
-        await this.learnQualityPatterns(sessionId, outcomes);
-        // Learn from role switching patterns
-        await this.learnRoleCompliance(sessionId, outcomes);
-    }
-    async learnProcessCompliance(sessionId, outcomes) {
-        // Archive lesson: Phase 1C Role Compliance Failure
-        const processLesson = {
-            id: 'process-compliance-failure',
-            context: 'role-switching',
-            lesson: 'Always validate role compliance before claiming completion',
-            impact: 'high',
-            category: 'process',
-            preventionActions: [
-                'Explicitly confirm role at start',
-                'Follow role-specific prevention checklist',
-                'Track role-specific success metrics',
-                'Document role-specific decisions'
-            ],
-            failurePatterns: [
-                'No role validation at start',
-                'Bypassing quality gates',
-                'Making completion claims without validation',
-                'Process shortcuts to save time'
-            ],
-            successPatterns: [
-                'Run early-check before starting',
-                'Follow TDD approach',
-                'Validate all quality gates',
-                'Document all decisions'
-            ]
-        };
-        this.processComplianceLessons.set('process-compliance-failure', processLesson);
-    }
-    async learnQualityPatterns(sessionId, outcomes) {
-        // Archive lesson: Phase 2A QA Failure Analysis
-        const qualityPattern = {
-            id: 'qa-failure-pattern',
-            context: 'quality-validation',
-            lesson: 'Never claim completion without proper quality validation',
-            impact: 'critical',
-            category: 'quality',
-            requiredActions: [
-                'Run npm run early-check before completion claims',
-                'Validate all tests pass with ≥85% coverage',
-                'Ensure TypeScript compilation succeeds',
-                'Verify ESLint violations are resolved',
-                'Create Requirements Traceability Matrix'
-            ],
-            warningSigns: [
-                'Making assumptions about test results',
-                'Bypassing quality gates',
-                'False completion claims',
-                'Process violations'
-            ],
-            successIndicators: [
-                '100% test pass rate',
-                'All quality gates green',
-                'Complete requirements traceability',
-                'Zero critical vulnerabilities'
-            ]
-        };
-        this.qualityFailurePatterns.set('qa-failure-pattern', qualityPattern);
-    }
-    async learnRoleCompliance(sessionId, outcomes) {
-        // Archive lesson: TypeScript Error Resolution Process
-        const roleCompliance = {
-            id: 'typescript-error-resolution',
-            context: 'developer-role',
-            lesson: 'Systematic error reduction with test-first approach',
-            impact: 'high',
-            category: 'development',
-            systematicApproach: [
-                'Categorize errors by type and impact',
-                'Prioritize high-impact fixes first',
-                'Use tests as safety net for refactoring',
-                'Make minimal, targeted changes',
-                'Document patterns for future prevention'
-            ],
-            errorPatterns: [
-                'exactOptionalPropertyTypes configuration issues',
-                'Class inheritance access modifier mismatches',
-                'Parameter order in function signatures',
-                'Complex conditional types resolution',
-                'Unused variable patterns'
-            ],
-            preventionStrategies: [
-                'Use spread operators with conditional property inclusion',
-                'Keep access modifiers consistent across inheritance',
-                'Put required parameters before optional ones',
-                'Use simple, explicit types over complex conditionals',
-                'Regular cleanup of unused variables'
-            ]
-        };
-        this.roleComplianceHistory.set('typescript-error-resolution', roleCompliance);
-    }
-    /**
-     * Get process compliance lessons for current context
-     */
-    getProcessLessons(context) {
-        return Array.from(this.processComplianceLessons.values())
-            .filter(lesson => lesson.context === context || lesson.context === 'general');
-    }
-    /**
-     * Get quality patterns for prevention
-     */
-    getQualityPatterns() {
-        return Array.from(this.qualityFailurePatterns.values());
-    }
-    /**
-     * Get role compliance history
-     */
-    getRoleCompliance(role) {
-        return Array.from(this.roleComplianceHistory.values())
-            .filter(compliance => compliance.context.includes(role));
+        // Cross-session learning implementation
     }
 }
 /**
@@ -294,10 +174,6 @@ class TemplatePerformanceTracker {
         // Performance tracking implementation
     }
 }
-// Factory function for creating template engine instances
-export function createTemplateEngine() {
-    return new ContextAwareTemplateEngine();
-}
 // Re-export schemas and types
 export { TemplateContextSchema, UserProfileSchema, SessionContextSchema, TemplateMetadataSchema, TemplateEngineMetricsSchema };
-//# sourceMappingURL=ContextAwareTemplateEngine.js.map
+//# sourceMappingURL=ContextAwareTemplateEngine-simplified.js.map

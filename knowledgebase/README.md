@@ -36,6 +36,13 @@
 - [Logging Patterns](logging-patterns.md) *(coming soon)*
 - [Metrics and Analytics](metrics-analytics.md) *(coming soon)*
 
+### 🎓 Lessons Learned & Process Compliance
+- [Process Compliance Failures](process-compliance-failures.md) *(from archive)*
+- [Quality Gate Violations](quality-gate-violations.md) *(from archive)*
+- [TypeScript Error Resolution](typescript-error-resolution.md) *(from archive)*
+- [Role Switching Best Practices](role-switching-best-practices.md) *(from archive)*
+- [Trust and Accountability Patterns](trust-accountability-patterns.md) *(from archive)*
+
 ## 🎯 Usage Guidelines
 
 ### Adding New Knowledge

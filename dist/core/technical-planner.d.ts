@@ -79,21 +79,21 @@ export declare const TaskSchema: z.ZodObject<{
     phase: z.ZodString;
 }, "strip", z.ZodTypeAny, {
     description: string;
-    type: "development" | "testing" | "deployment" | "documentation" | "research";
+    type: "documentation" | "testing" | "development" | "deployment" | "research";
     name: string;
     priority: "high" | "medium" | "low" | "critical";
-    id: string;
     phase: string;
+    id: string;
     dependencies: string[];
     estimatedHours: number;
     skills: string[];
 }, {
     description: string;
-    type: "development" | "testing" | "deployment" | "documentation" | "research";
+    type: "documentation" | "testing" | "development" | "deployment" | "research";
     name: string;
     priority: "high" | "medium" | "low" | "critical";
-    id: string;
     phase: string;
+    id: string;
     dependencies: string[];
     estimatedHours: number;
     skills: string[];
@@ -107,16 +107,16 @@ export declare const EffortEstimateSchema: z.ZodObject<{
         documentation: z.ZodNumber;
         research: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
-        development: number;
-        testing: number;
-        deployment: number;
         documentation: number;
+        testing: number;
+        development: number;
+        deployment: number;
         research: number;
     }, {
-        development: number;
-        testing: number;
-        deployment: number;
         documentation: number;
+        testing: number;
+        development: number;
+        deployment: number;
         research: number;
     }>;
     confidence: z.ZodEnum<["low", "medium", "high"]>;
@@ -125,10 +125,10 @@ export declare const EffortEstimateSchema: z.ZodObject<{
     confidence: "high" | "medium" | "low";
     totalHours: number;
     breakdown: {
-        development: number;
-        testing: number;
-        deployment: number;
         documentation: number;
+        testing: number;
+        development: number;
+        deployment: number;
         research: number;
     };
     assumptions: string[];
@@ -136,10 +136,10 @@ export declare const EffortEstimateSchema: z.ZodObject<{
     confidence: "high" | "medium" | "low";
     totalHours: number;
     breakdown: {
-        development: number;
-        testing: number;
-        deployment: number;
         documentation: number;
+        testing: number;
+        development: number;
+        deployment: number;
         research: number;
     };
     assumptions: string[];

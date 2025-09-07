@@ -6,7 +6,6 @@
  * and business context management for complete SDLC orchestration.
  */
 import { type BusinessContext, type RoleTransition } from './business-context-broker.js';
-import { type WorkflowTask } from './role-orchestrator.js';
 export interface Workflow {
     id: string;
     name: string;
@@ -82,7 +81,6 @@ export interface OptimizedWorkflow {
  */
 export declare class OrchestrationEngine {
     private contextBroker;
-    private roleOrchestrator;
     private activeWorkflows;
     private workflowResults;
     constructor();
@@ -91,7 +89,8 @@ export declare class OrchestrationEngine {
      */
     executeWorkflow(workflow: Workflow, context: BusinessContext): Promise<WorkflowResult>;
     /**
-     * Switch roles with context preservation
+     * Role switching now handled by individual tools
+     * No complex orchestration needed
      */
     switchRole(fromRole: string, toRole: string, context: BusinessContext): Promise<RoleTransition>;
     /**

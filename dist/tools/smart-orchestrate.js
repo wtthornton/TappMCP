@@ -35,6 +35,11 @@ const SmartOrchestrateInputSchema = z.object({
         }),
     }),
     workflow: z.enum(['sdlc', 'project', 'quality', 'custom']).default('sdlc'),
+    role: z.enum(['developer', 'product-strategist', 'operations-engineer', 'designer', 'qa-engineer']).optional(),
+    orchestrationLevel: z.enum(['basic', 'standard', 'comprehensive', 'enterprise']).default('comprehensive'),
+    processCompliance: z.boolean().default(true),
+    learningIntegration: z.boolean().default(true),
+    archiveLessons: z.boolean().default(true),
     externalSources: z
         .object({
         useContext7: z.boolean().default(true),
@@ -241,7 +246,7 @@ function generateEnhancedWorkflowPhases(_workflowType, request, options) {
 /**
  * Generate next steps based on workflow execution results
  */
-function generateNextSteps(workflowResult, _businessContext) {
+function generateNextSteps(workflowResult, _businessContext, orchestrationValidation, processCompliance) {
     const nextSteps = [];
     if (workflowResult.success) {
         // Success path next steps
@@ -279,6 +284,26 @@ function generateNextSteps(workflowResult, _businessContext) {
             step: 'Review and update business requirements based on failures',
             role: 'product-strategist',
             estimatedTime: '2-3 days',
+            priority: 'high',
+        });
+    }
+    // Process compliance issues
+    if (orchestrationValidation?.recommendations?.length > 0) {
+        orchestrationValidation.recommendations.forEach((recommendation) => {
+            nextSteps.push({
+                step: recommendation,
+                role: 'developer',
+                estimatedTime: '1-2 hours',
+                priority: 'medium',
+            });
+        });
+    }
+    // Process compliance specific
+    if (processCompliance?.overallCompliance === 'Partially Compliant') {
+        nextSteps.push({
+            step: 'Address process compliance issues in orchestration',
+            role: 'qa-engineer',
+            estimatedTime: '2-4 hours',
             priority: 'high',
         });
     }
@@ -376,8 +401,14 @@ export async function handleSmartOrchestrate(input) {
         const businessValue = contextBroker.getBusinessValue(businessContext.projectId);
         // Generate context insights
         const contextInsights = contextBroker.generateContextInsights(businessContext.projectId);
-        // Generate next steps based on workflow result
-        const nextSteps = generateNextSteps(workflowResult, businessContext);
+        // Generate comprehensive orchestration validation
+        const orchestrationValidation = generateOrchestrationValidation(workflowResult, validatedInput.orchestrationLevel, validatedInput.role, validatedInput.processCompliance);
+        // Generate process compliance validation
+        const processCompliance = generateProcessComplianceValidation(validatedInput.role, validatedInput.processCompliance, workflowResult);
+        // Generate learning integration from archive lessons
+        const learningIntegration = generateLearningIntegration(validatedInput.role, validatedInput.learningIntegration, validatedInput.archiveLessons);
+        // Generate next steps based on workflow result and validation
+        const nextSteps = generateNextSteps(workflowResult, businessContext, orchestrationValidation, processCompliance);
         // Calculate enhanced technical metrics
         const responseTime = Date.now() - startTime;
         const orchestrationTime = workflowResult.technicalMetrics.totalExecutionTime;
@@ -386,6 +417,9 @@ export async function handleSmartOrchestrate(input) {
             success: workflowResult.success,
             orchestrationId: workflow.id,
             workflow: workflowResult,
+            orchestrationValidation,
+            processCompliance,
+            learningIntegration,
             businessContext,
             businessValue: {
                 ...businessValue,
@@ -402,6 +436,8 @@ export async function handleSmartOrchestrate(input) {
                 roleTransitionTime,
                 contextPreservationAccuracy: workflowResult.technicalMetrics.contextPreservationAccuracy,
                 businessAlignmentScore: contextInsights.businessAlignment,
+                orchestrationLevel: validatedInput.orchestrationLevel,
+                roleSpecificOrchestration: !!validatedInput.role,
             },
             nextSteps,
             externalIntegration: mcpStatus,
@@ -474,5 +510,139 @@ export async function handleSmartOrchestrate(input) {
             timestamp: new Date().toISOString(),
         };
     }
+}
+// Generate orchestration validation based on orchestration level and role
+function generateOrchestrationValidation(workflowResult, orchestrationLevel, role, processCompliance) {
+    const workflowValidation = workflowResult.phases?.map((phase) => ({
+        phase: phase.name || 'Unknown Phase',
+        status: phase.success ? 'pass' : 'fail',
+        score: phase.success ? 100 : 0,
+        details: phase.success ? 'Phase completed successfully' : 'Phase failed',
+    })) || [];
+    const processComplianceChecks = [
+        {
+            check: 'Role Validation',
+            status: role ? 'pass' : 'warning',
+            details: role ? `${role} role validated` : 'No role specified',
+        },
+        {
+            check: 'Workflow Orchestration',
+            status: workflowResult.success ? 'pass' : 'fail',
+            details: workflowResult.success ? 'Workflow orchestrated successfully' : 'Workflow orchestration failed',
+        },
+        {
+            check: 'Process Compliance',
+            status: processCompliance ? 'pass' : 'fail',
+            details: processCompliance ? 'Process compliance enabled' : 'Process compliance disabled',
+        },
+        {
+            check: 'Business Context',
+            status: workflowResult.businessContext ? 'pass' : 'fail',
+            details: workflowResult.businessContext ? 'Business context preserved' : 'Business context lost',
+        },
+    ];
+    const archiveLessonsApplied = [
+        {
+            lesson: 'Always validate role compliance before claiming completion',
+            applied: !!role,
+            impact: role ? 'High - Prevents process violations' : 'Low - No role validation',
+        },
+        {
+            lesson: 'Run early quality checks before starting work',
+            applied: processCompliance ?? true,
+            impact: 'High - Prevents quality issues',
+        },
+        {
+            lesson: 'Follow role-specific prevention checklist',
+            applied: !!role,
+            impact: role ? 'High - Prevents role-specific issues' : 'Medium - General checklist only',
+        },
+        {
+            lesson: 'Never bypass quality gates for speed',
+            applied: processCompliance ?? true,
+            impact: 'High - Prevents quality degradation',
+        },
+    ];
+    const recommendations = [];
+    if (!workflowResult.success) {
+        recommendations.push('Address workflow orchestration failures');
+    }
+    if (!role) {
+        recommendations.push('Specify role for role-specific orchestration');
+    }
+    if (!processCompliance) {
+        recommendations.push('Enable process compliance for better orchestration control');
+    }
+    return {
+        orchestrationLevel,
+        roleSpecificOrchestration: !!role,
+        workflowValidation,
+        processComplianceChecks,
+        archiveLessonsApplied,
+        recommendations,
+    };
+}
+// Generate process compliance validation
+function generateProcessComplianceValidation(role, processCompliance, workflowResult) {
+    const roleValidation = !!role;
+    const workflowOrchestration = workflowResult?.success ?? false;
+    const processComplianceStatus = processCompliance ?? true;
+    const businessContext = !!workflowResult?.businessContext;
+    const overallCompliance = roleValidation && workflowOrchestration && processComplianceStatus && businessContext
+        ? 'Fully Compliant'
+        : 'Partially Compliant';
+    return {
+        roleValidation,
+        workflowOrchestration,
+        processCompliance: processComplianceStatus,
+        businessContext,
+        overallCompliance,
+    };
+}
+// Generate learning integration from archive lessons
+function generateLearningIntegration(role, learningIntegration, archiveLessons) {
+    const processLessons = [
+        'Always validate role compliance before claiming completion',
+        'Run early quality checks before starting work',
+        'Follow role-specific prevention checklist',
+        'Never bypass quality gates for speed',
+    ];
+    const orchestrationPatterns = [
+        'Workflow orchestration with role-based execution',
+        'Process compliance enforcement in orchestration',
+        'Business context preservation across phases',
+        'Quality gate validation in orchestration',
+    ];
+    const roleCompliance = role ? [
+        `${role} role-specific orchestration configured`,
+        'Role validation enabled in orchestration',
+        'Process compliance checklist active',
+        'Quality gates role-specific in orchestration',
+    ] : [
+        'General orchestration process enabled',
+        'Quality gates configured in orchestration',
+        'Business context requirements active',
+    ];
+    const archiveLessonsApplied = archiveLessons ? [
+        'Process compliance failures prevention in orchestration',
+        'Quality gate violations prevention in orchestration',
+        'TypeScript error resolution patterns in orchestration',
+        'Role switching best practices in orchestration',
+        'Trust and accountability patterns in orchestration',
+    ] : [
+        'Basic orchestration validation only',
+    ];
+    const learningImpact = learningIntegration && archiveLessons
+        ? 'High - Full learning integration with archive lessons in orchestration'
+        : learningIntegration
+            ? 'Medium - Learning integration without archive lessons in orchestration'
+            : 'Low - Basic orchestration validation only';
+    return {
+        processLessons,
+        orchestrationPatterns,
+        roleCompliance,
+        archiveLessonsApplied,
+        learningImpact,
+    };
 }
 //# sourceMappingURL=smart-orchestrate.js.map

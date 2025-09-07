@@ -62,17 +62,17 @@ export declare const ContextSessionSchema: z.ZodObject<{
         toolSource: z.ZodOptional<z.ZodString>;
         compressed: z.ZodDefault<z.ZodBoolean>;
     }, "strip", z.ZodTypeAny, {
+        content: string;
         timestamp: Date;
         id: string;
         tags: string[];
-        content: string;
         relevanceScore: number;
         compressed: boolean;
         toolSource?: string | undefined;
     }, {
+        content: string;
         timestamp: Date;
         id: string;
-        content: string;
         relevanceScore: number;
         tags?: string[] | undefined;
         toolSource?: string | undefined;
@@ -88,10 +88,10 @@ export declare const ContextSessionSchema: z.ZodObject<{
     createdAt: Date;
     lastAccessed: Date;
     contextEntries: {
+        content: string;
         timestamp: Date;
         id: string;
         tags: string[];
-        content: string;
         relevanceScore: number;
         compressed: boolean;
         toolSource?: string | undefined;
@@ -109,9 +109,9 @@ export declare const ContextSessionSchema: z.ZodObject<{
     compressionRatio?: number | undefined;
     userId?: string | undefined;
     contextEntries?: {
+        content: string;
         timestamp: Date;
         id: string;
-        content: string;
         relevanceScore: number;
         tags?: string[] | undefined;
         toolSource?: string | undefined;

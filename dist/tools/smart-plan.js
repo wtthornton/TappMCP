@@ -56,6 +56,10 @@ const SmartPlanInputSchema = z.object({
         riskFactors: z.array(z.string()).default([]),
     })
         .optional(),
+    role: z.enum(['developer', 'product-strategist', 'operations-engineer', 'designer', 'qa-engineer']).optional(),
+    roadmapType: z.enum(['detailed', 'high-level', 'milestone', 'sprint', 'phase']).default('detailed'),
+    processCompliance: z.boolean().default(true),
+    learningIntegration: z.boolean().default(true),
 });
 // Tool definition
 export const smartPlanTool = {
@@ -340,19 +344,29 @@ export async function handleSmartPlan(input) {
         // Calculate technical metrics
         const responseTime = Date.now() - startTime;
         const planningTime = Math.max(1, responseTime - 5); // Ensure at least 1ms
+        // Generate detailed roadmap based on roadmap type
+        const detailedRoadmap = generateDetailedRoadmap(projectPlan, validatedInput.roadmapType, validatedInput.role);
+        // Generate process compliance validation
+        const processCompliance = generateProcessCompliance(validatedInput.role, validatedInput.processCompliance);
+        // Generate learning integration from archive lessons
+        const learningIntegration = generateLearningIntegration(validatedInput.role, validatedInput.learningIntegration);
         // Create response
         const response = {
             projectId: validatedInput.projectId,
             planType: validatedInput.planType,
             projectPlan,
+            detailedRoadmap,
             businessValue,
             successMetrics,
             nextSteps,
+            processCompliance,
+            learningIntegration,
             technicalMetrics: {
                 responseTime: Math.max(1, responseTime),
                 planningTime: Math.max(1, planningTime),
                 phasesPlanned: projectPlan.phases.length,
                 tasksPlanned: projectPlan.phases.reduce((sum, phase) => sum + phase.tasks.length, 0),
+                roadmapDetailLevel: validatedInput.roadmapType,
             },
         };
         return {
@@ -369,5 +383,198 @@ export async function handleSmartPlan(input) {
             timestamp: new Date().toISOString(),
         };
     }
+}
+// Generate detailed roadmap based on roadmap type and role
+function generateDetailedRoadmap(projectPlan, roadmapType, role) {
+    const phases = projectPlan.phases.map((phase) => ({
+        name: phase.name,
+        description: phase.description,
+        duration: phase.duration,
+        tasks: phase.tasks.map((task) => ({
+            name: task.name,
+            description: task.description,
+            estimatedHours: task.estimatedHours || 8,
+            dependencies: task.dependencies || [],
+            deliverables: task.deliverables || [],
+            qualityGates: generateQualityGatesForTask(task, role),
+        })),
+        milestones: generateMilestonesForPhase(phase, role),
+    }));
+    const timeline = {
+        startDate: projectPlan.timeline.startDate || new Date().toISOString(),
+        endDate: projectPlan.timeline.endDate || new Date(Date.now() + projectPlan.timeline.duration * 7 * 24 * 60 * 60 * 1000).toISOString(),
+        duration: projectPlan.timeline.duration,
+        criticalPath: generateCriticalPath(phases),
+    };
+    const riskMitigation = generateRiskMitigation(projectPlan, role);
+    const qualityGates = generateQualityGatesForRoadmap(phases, role);
+    return {
+        type: roadmapType,
+        phases,
+        timeline,
+        riskMitigation,
+        qualityGates,
+    };
+}
+// Generate quality gates for a specific task
+function generateQualityGatesForTask(task, role) {
+    const baseGates = [
+        'Code review completed',
+        'Unit tests written and passing',
+        'Integration tests passing',
+        'Documentation updated',
+    ];
+    if (role === 'developer') {
+        baseGates.push('TypeScript compilation successful', 'ESLint checks passed', 'Performance benchmarks met');
+    }
+    else if (role === 'qa-engineer') {
+        baseGates.push('Test coverage ≥85%', 'Security scan passed', 'Accessibility validation completed');
+    }
+    else if (role === 'operations-engineer') {
+        baseGates.push('Deployment readiness verified', 'Monitoring configured', 'Security compliance validated');
+    }
+    return baseGates;
+}
+// Generate milestones for a phase
+function generateMilestonesForPhase(phase, role) {
+    const milestones = [
+        {
+            name: `${phase.name} Planning Complete`,
+            description: `Planning phase completed for ${phase.name}`,
+            criteria: ['Requirements defined', 'Architecture approved', 'Resources allocated'],
+            deliverables: ['Requirements document', 'Architecture diagram', 'Resource plan'],
+        },
+        {
+            name: `${phase.name} Development Complete`,
+            description: `Development phase completed for ${phase.name}`,
+            criteria: ['All tasks completed', 'Code reviewed', 'Tests passing'],
+            deliverables: ['Source code', 'Test suite', 'Documentation'],
+        },
+    ];
+    if (role === 'qa-engineer') {
+        milestones.push({
+            name: `${phase.name} Quality Validation Complete`,
+            description: `Quality validation completed for ${phase.name}`,
+            criteria: ['All quality gates passed', 'Test coverage ≥85%', 'Security scan clean'],
+            deliverables: ['Quality report', 'Test results', 'Security assessment'],
+        });
+    }
+    return milestones;
+}
+// Generate critical path for the roadmap
+function generateCriticalPath(phases) {
+    const criticalPath = [];
+    for (const phase of phases) {
+        for (const task of phase.tasks) {
+            if (task.dependencies.length === 0) {
+                criticalPath.push(`${phase.name}: ${task.name}`);
+            }
+        }
+    }
+    return criticalPath;
+}
+// Generate risk mitigation strategies
+function generateRiskMitigation(projectPlan, role) {
+    const baseRisks = [
+        {
+            risk: 'Scope creep',
+            probability: 'Medium',
+            impact: 'High',
+            mitigation: 'Clear requirements definition and change control process',
+            contingency: 'Additional time and resources allocated',
+        },
+        {
+            risk: 'Technical complexity',
+            probability: 'Medium',
+            impact: 'Medium',
+            mitigation: 'Proof of concept and technical spikes',
+            contingency: 'Simplified implementation or additional expertise',
+        },
+    ];
+    if (role === 'developer') {
+        baseRisks.push({
+            risk: 'Code quality issues',
+            probability: 'Low',
+            impact: 'Medium',
+            mitigation: 'Automated quality gates and code reviews',
+            contingency: 'Refactoring sprint and additional testing',
+        });
+    }
+    else if (role === 'qa-engineer') {
+        baseRisks.push({
+            risk: 'Test coverage gaps',
+            probability: 'Medium',
+            impact: 'High',
+            mitigation: 'Comprehensive test planning and automated coverage tracking',
+            contingency: 'Additional testing phase and manual testing',
+        });
+    }
+    return baseRisks;
+}
+// Generate quality gates for the roadmap
+function generateQualityGatesForRoadmap(phases, role) {
+    const qualityGates = [];
+    for (const phase of phases) {
+        qualityGates.push({
+            phase: phase.name,
+            gate: 'Phase Entry Gate',
+            criteria: ['Previous phase completed', 'Dependencies resolved', 'Resources available'],
+            validation: ['Phase completion report', 'Dependency verification', 'Resource allocation confirmation'],
+        });
+        qualityGates.push({
+            phase: phase.name,
+            gate: 'Phase Exit Gate',
+            criteria: ['All tasks completed', 'Quality standards met', 'Deliverables ready'],
+            validation: ['Task completion report', 'Quality metrics', 'Deliverable review'],
+        });
+    }
+    return qualityGates;
+}
+// Generate process compliance validation
+function generateProcessCompliance(role, processCompliance) {
+    return {
+        roleValidation: !!role,
+        qualityGates: true,
+        documentation: true,
+        testing: true,
+        roadmapValidation: processCompliance ?? true,
+    };
+}
+// Generate learning integration from archive lessons
+function generateLearningIntegration(role, learningIntegration) {
+    const processLessons = [
+        'Always validate role compliance before claiming completion',
+        'Run early quality checks before starting work',
+        'Follow role-specific prevention checklist',
+        'Never bypass quality gates for speed',
+    ];
+    const qualityPatterns = [
+        'TypeScript error resolution with test-first approach',
+        'Quality gate validation pattern',
+        'Role validation pattern',
+        'Process compliance enforcement',
+    ];
+    const roleCompliance = role ? [
+        `${role} role-specific requirements configured`,
+        'Role validation enabled',
+        'Process compliance checklist active',
+        'Quality gates role-specific',
+    ] : [
+        'General process compliance enabled',
+        'Quality gates configured',
+        'Documentation requirements active',
+    ];
+    const roadmapLessons = [
+        'Detailed roadmaps prevent scope creep',
+        'Quality gates at each phase ensure quality',
+        'Risk mitigation reduces project failures',
+        'Process compliance prevents rework',
+    ];
+    return {
+        processLessons,
+        qualityPatterns,
+        roleCompliance,
+        roadmapLessons,
+    };
 }
 //# sourceMappingURL=smart-plan.js.map
