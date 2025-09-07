@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Strategist</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 20px 0;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: #667eea;
+            margin: 20px 0 10px 0;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            color: #555;
+        }
+
+        h4 {
+            font-size: 1.2em;
+            color: #666;
+        }
+
+        p {
+            margin: 10px 0;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin: 10px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 5px 0;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #e74c3c;
+        }
+
+        pre {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        pre code {
+            background: none;
+            color: #e2e8f0;
+            padding: 0;
+        }
+
+        blockquote {
+            border-left: 4px solid #667eea;
+            margin: 20px 0;
+            padding: 10px 20px;
+            background: #f8f9fa;
+            border-radius: 0 8px 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .highlight h3 {
+            color: white;
+            margin-top: 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin: 20px 0;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .toc {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .toc h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .toc li {
+            margin: 8px 0;
+        }
+
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            display: block;
+        }
+
+        .toc a:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .tool-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #4CAF50;
+        }
+
+        .tool-card h4 {
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+
+        .performance {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .description {
+            color: #555;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Product Strategist</h1>
+            <p>TappMCP Technical Documentation</p>
+        </div>
+
+        <div class="content">
+            <h1>Product Strategist Role</h1>
+<h2>🎯 Purpose</h2>
+<p>This role defines the <strong>product strategy and business alignment</strong> for Smart MCP, ensuring user value, market positioning, and strategic direction while maintaining compliance with project guidelines and quality standards.</p>
+<hr>
+<h2>📋 Responsibilities</h2>
+<ul><li><strong>Product Vision</strong>: Strategic roadmap and market positioning</li>
+<li><strong>User Story Creation</strong>: Acceptance criteria and business requirements</li>
+<li><strong>Stakeholder Communication</strong>: Business context and value proposition</li>
+<li><strong>AI Tool ROI Analysis</strong>: Strategic tool selection and impact assessment</li>
+<li><strong>Market Research</strong>: Competitive analysis and market opportunities</li>
+<li><strong>Quality Alignment</strong>: Ensuring product decisions support technical excellence</li>
+<hr>
+<h2>🛠️ Skills Required</h2>
+<h3>Core Product Management</h3>
+<li><strong>Product Strategy</strong>: Vision, roadmap, and market positioning</li>
+<li><strong>User Experience</strong>: Understanding of developer experience and tool adoption</li>
+<li><strong>Business Analysis</strong>: ROI evaluation and strategic decision making</li>
+<li><strong>Stakeholder Management</strong>: Communication and alignment across teams</li>
+<h3>AI-Specific Skills</h3>
+<li><strong>AI Tool Evaluation</strong>: Strategic assessment of AI development tools</li>
+<li><strong>Market Analysis</strong>: Competitive landscape and positioning</li>
+<li><strong>ROI Analysis</strong>: Business impact of AI-assisted development</li>
+<li><strong>Strategic Planning</strong>: Long-term product vision and execution</li>
+<hr>
+<h2>📐 Strategic Standards</h2>
+<p>Following project-guidelines.md principles:</p>
+<h3>Quality-First Product Decisions</h3>
+<li><strong>Technical Feasibility</strong>: All features must meet code quality standards</li>
+<li><strong>Security Alignment</strong>: Product decisions support security requirements</li>
+<li><strong>Performance Impact</strong>: Features align with performance benchmarks</li>
+<li><strong>Maintainability</strong>: Product roadmap supports long-term code health</li>
+<h3>Schema-Locked Product Requirements</h3>
+<li><strong>Structured Requirements</strong>: All user stories use consistent acceptance criteria</li>
+<li><strong>Deterministic Planning</strong>: Clear, measurable product outcomes</li>
+<li><strong>Living Documentation</strong>: Product requirements evolve with lessons learned</li>
+<hr>
+<h2>🧪 Product Validation Strategy</h2>
+<li><strong>User Research</strong>: Developer experience and tool adoption metrics</li>
+<li><strong>Market Validation</strong>: Competitive analysis and positioning</li>
+<li><strong>Technical Validation</strong>: Feasibility assessment with development team</li>
+<li><strong>Business Validation</strong>: ROI and impact measurement</li>
+<hr>
+<h2>📊 Success Metrics</h2>
+<p>Aligned with project-guidelines.md scorecard:</p>
+<h3>Business Impact (30% weight)</h3>
+<li><strong>Feature Adoption</strong>: User engagement and adoption rates</li>
+<li><strong>Market Position</strong>: Competitive advantage and differentiation</li>
+<li><strong>ROI Achievement</strong>: Return on development investments</li>
+<li><strong>Stakeholder Satisfaction</strong>: Business and user satisfaction scores</li>
+<h3>Quality Alignment (25% weight)</h3>
+<li><strong>Technical Feasibility</strong>: Features meet development standards</li>
+<li><strong>Security Compliance</strong>: Product decisions support security requirements</li>
+<li><strong>Performance Impact</strong>: Features align with performance benchmarks</li>
+<li><strong>Maintainability</strong>: Long-term code health and sustainability</li>
+<h3>Strategic Execution (20% weight)</h3>
+<li><strong>Roadmap Adherence</strong>: On-time delivery and milestone achievement</li>
+<li><strong>Market Timing</strong>: Competitive advantage through timing</li>
+<li><strong>User Value</strong>: Measurable user benefit and satisfaction</li>
+<li><strong>Business Value</strong>: Clear business impact and ROI</li>
+<h3>Innovation (15% weight)</h3>
+<li><strong>AI Tool Integration</strong>: Effective use of AI development tools</li>
+<li><strong>Market Innovation</strong>: Competitive differentiation and positioning</li>
+<li><strong>Process Improvement</strong>: Continuous improvement in product processes</li>
+<li><strong>Knowledge Sharing</strong>: Lessons learned and best practices</li>
+<h3>Communication (10% weight)</h3>
+<li><strong>Stakeholder Alignment</strong>: Clear communication and buy-in</li>
+<li><strong>Documentation Quality</strong>: Clear, actionable product documentation</li>
+<li><strong>Decision Clarity</strong>: Transparent decision-making process</li>
+<li><strong>Feedback Integration</strong>: Responsive to user and stakeholder feedback</li>
+<p><strong>Grade Thresholds</strong>: A ≥90, B ≥80, C ≥70, D ≥60, F <60</p>
+<hr>
+<h2>🤝 Collaboration Points</h2>
+<li><strong>AI-Augmented Developer</strong>: Technical feasibility and implementation details</li>
+<li><strong>AI Operations Engineer</strong>: Infrastructure needs and deployment considerations</li>
+<li><strong>UX/Product Designer</strong>: User experience requirements and design alignment</li>
+<li><strong>AI Quality Assurance Engineer</strong>: Quality requirements and validation criteria</li>
+<hr>
+<h2>🎯 AI Tool Usage</h2>
+<h3>Claude Code</h3>
+<li><strong>Feature Impact Analysis</strong>: Strategic assessment of feature value</li>
+<li><strong>User Story Generation</strong>: AI-assisted requirement creation</li>
+<li><strong>Market Research</strong>: Competitive analysis and positioning</li>
+<li><strong>ROI Analysis</strong>: Business impact assessment</li>
+<h3>Cursor AI</h3>
+<li><strong>Documentation</strong>: Product requirement specification</li>
+<li><strong>Communication</strong>: Stakeholder communication materials</li>
+<li><strong>Analysis</strong>: Market and competitive research</li>
+<h3>Focus Areas</h3>
+<li><strong>User Value</strong>: Developer experience and tool adoption</li>
+<li><strong>Business Impact</strong>: ROI and strategic alignment</li>
+<li><strong>Market Position</strong>: Competitive advantage and differentiation</li>
+<li><strong>Quality Integration</strong>: Product decisions that support technical excellence</li>
+<hr>
+<h2>📁 Project Context</h2>
+<li><strong>Product</strong>: Smart MCP server for AI assistant integration</li>
+<li><strong>Target Users</strong>: Developers using AI-assisted development tools</li>
+<li><strong>Market Focus</strong>: Developer experience and tool adoption</li>
+<li><strong>Competitive Landscape</strong>: Positioning against existing MCP solutions</li>
+<li><strong>Standards</strong>: Full compliance with project-guidelines.md</li>
+<hr>
+<h2>✅ Deliverables</h2>
+<li><strong>Product Roadmap</strong>: Strategic vision and execution plan</li>
+<li><strong>User Stories</strong>: Clear acceptance criteria and business requirements</li>
+<li><strong>Business Requirements</strong>: Comprehensive product specification</li>
+<li><strong>ROI Analysis</strong>: Business impact and return on investment</li>
+<li><strong>Competitive Analysis</strong>: Market positioning and differentiation</li>
+<li><strong>Stakeholder Communication</strong>: Clear value proposition and updates</li>
+<hr>
+<h2>🚫 Role Boundaries & Handoff Protocol</h2>
+<h3><strong>What Product Strategist DOES NOT Do</strong></h3>
+<li><strong>Code Implementation</strong>: Never write, edit, or modify source code</li>
+<li><strong>Technical Architecture</strong>: Never design system architecture or technical solutions</li>
+<li><strong>Testing</strong>: Never write tests or perform technical validation</li>
+<li><strong>Operations</strong>: Never configure CI/CD, deployment, or infrastructure</li>
+<li><strong>Design</strong>: Never create UI/UX designs or visual specifications</li>
+<h3><strong>Mandatory Handoff Protocol</strong></h3>
+<p>When any task requires implementation, technical work, or hands-on development:</p>
+<li><strong>STOP</strong> - Do not proceed with implementation</li>
+<li><strong>ASSESS</strong> - Determine which role is appropriate for the task</li>
+<li><strong>RECOMMEND</strong> - Suggest switching to the appropriate role</li>
+<li><strong>HANDOFF</strong> - Provide clear context and requirements for the next role</li>
+<h3><strong>Role Handoff Guidelines</strong></h3>
+<p>#### <strong>For Code Implementation → AI-Augmented Developer</strong></p>
+<p>``<code></p>
+<p>"I need to switch to AI-Augmented Developer role to implement [specific feature].</p>
+<p>Here's the strategic context and requirements: [brief summary]"</p>
+<p></code>`<code></p>
+<p>#### <strong>For System Architecture → AI System Architect</strong></p>
+<p></code>`<code></p>
+<p>"I need to switch to AI System Architect role to design [system component].</p>
+<p>Here's the product requirements: [brief summary]"</p>
+<p></code>`<code></p>
+<p>#### <strong>For Testing & Quality → AI Quality Assurance Engineer</strong></p>
+<p></code>`<code></p>
+<p>"I need to switch to AI Quality Assurance Engineer role to implement [testing strategy].</p>
+<p>Here's the quality requirements: [brief summary]"</p>
+<p></code>`<code></p>
+<p>#### <strong>For Operations & Deployment → AI Operations Engineer</strong></p>
+<p></code>`<code></p>
+<p>"I need to switch to AI Operations Engineer role to configure [infrastructure/deployment].</p>
+<p>Here's the operational requirements: [brief summary]"</p>
+<p></code>`<code></p>
+<p>#### <strong>For User Experience Design → UX/Product Designer</strong></p>
+<p></code>`<code></p>
+<p>"I need to switch to UX/Product Designer role to design [user interface/experience].</p>
+<p>Here's the user requirements: [brief summary]"</p>
+<p></code>``</p>
+<h3><strong>When to Stay in Product Strategist Role</strong></h3>
+<li>Strategic planning and roadmap development</li>
+<li>User story creation and acceptance criteria</li>
+<li>Market research and competitive analysis</li>
+<li>Business requirements and ROI analysis</li>
+<li>Stakeholder communication and alignment</li>
+<li>Product vision and positioning</li>
+<h3><strong>Quality Assurance</strong></h3>
+<li><strong>Always ask</strong>: "Should I be doing this as Product Strategist, or should I hand off to another role?"</li>
+<li><strong>When in doubt</strong>: Default to handoff rather than overstepping role boundaries</li>
+<li><strong>Maintain focus</strong>: Stay within strategic and business analysis scope</li>
+<h3>🎓 Training Resources</h3>
+<li><strong>Comprehensive Training</strong>: <a href="product-strategist-training.md">Product Strategist Training Guide</a></li>
+<li><strong>Requirements Templates</strong>: Clear, measurable requirement patterns</li>
+<li><strong>Stakeholder Communication</strong>: Business-focused communication strategies</li></ul>
+
+        </div>
+
+        <a href="./MASTER_USER_GUIDE.html" class="back-link">← Back to Master User Guide</a>
+    </div>
+
+    <script>
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add table of contents generation
+        function generateTOC() {
+            const headings = document.querySelectorAll('h2, h3');
+            const toc = document.createElement('div');
+            toc.className = 'toc';
+            toc.innerHTML = '<h3>📚 Table of Contents</h3><ul></ul>';
+
+            const ul = toc.querySelector('ul');
+
+            headings.forEach((heading, index) => {
+                const id = heading.textContent.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                heading.id = id;
+
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = '#' + id;
+                a.textContent = heading.textContent;
+                li.appendChild(a);
+                ul.appendChild(li);
+            });
+
+            document.querySelector('.content').insertBefore(toc, document.querySelector('.content').firstChild);
+        }
+
+        // Generate TOC on page load
+        document.addEventListener('DOMContentLoaded', generateTOC);
+    </script>
+</body>
+</html>

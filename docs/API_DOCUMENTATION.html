@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TappMCP: API Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 20px 0;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: #667eea;
+            margin: 20px 0 10px 0;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            color: #555;
+        }
+
+        h4 {
+            font-size: 1.2em;
+            color: #666;
+        }
+
+        p {
+            margin: 10px 0;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin: 10px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 5px 0;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #e74c3c;
+        }
+
+        pre {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        pre code {
+            background: none;
+            color: #e2e8f0;
+            padding: 0;
+        }
+
+        blockquote {
+            border-left: 4px solid #667eea;
+            margin: 20px 0;
+            padding: 10px 20px;
+            background: #f8f9fa;
+            border-radius: 0 8px 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .highlight h3 {
+            color: white;
+            margin-top: 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin: 20px 0;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .toc {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .toc h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .toc li {
+            margin: 8px 0;
+        }
+
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            display: block;
+        }
+
+        .toc a:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .tool-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #4CAF50;
+        }
+
+        .tool-card h4 {
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+
+        .performance {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .description {
+            color: #555;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>TappMCP: API Documentation</h1>
+            <p>TappMCP Technical Documentation</p>
+        </div>
+
+        <div class="content">
+            <h1>Smart MCP API Documentation</h1>
+<p>Complete API reference for Smart MCP tools, resources, and framework components.</p>
+<h2>Table of Contents</h2>
+<ul><li><a href="#mcp-tools-api">MCP Tools API</a></li>
+<li><a href="#resources-api">Resources API</a></li>
+<li><a href="#framework-api">Framework API</a></li>
+<li><a href="#response-formats">Response Formats</a></li>
+<li><a href="#error-handling">Error Handling</a></li>
+<li><a href="#performance-metrics">Performance Metrics</a></li>
+<h2>MCP Tools API</h2>
+<h3>Smart Begin Tool</h3>
+<p><strong>Purpose</strong>: Initialize projects with comprehensive planning and architecture design.</p>
+<p>#### Input Schema</p>
+<p>``<code>typescript</p>
+<p>interface SmartBeginInput {</p>
+<p>  request: string;                    // Project description (min: 10 chars)</p>
+<p>  options?: {</p>
+<p>    includeArchitecture?: boolean;    // Include architecture design (default: true)</p>
+<p>    includeTechnicalSpecs?: boolean;  // Include technical specifications (default: true)</p>
+<p>    includeBusinessContext?: boolean; // Include business analysis (default: true)</p>
+<p>    timeline?: string;                // Project timeline (e.g., "2 weeks")</p>
+<p>    teamSize?: number;                // Team size (1-20)</p>
+<p>    skillLevel?: 'beginner' | 'intermediate' | 'advanced';</p>
+<p>  };</p>
+<p>}</p>
+<p></code>`<code></p>
+<p>#### Output Schema</p>
+<p></code>`<code>typescript</p>
+<p>interface SmartBeginOutput {</p>
+<p>  projectPlan: {</p>
+<p>    phases: ProjectPhase[];</p>
+<p>    timeline: string;</p>
+<p>    milestones: Milestone[];</p>
+<p>    risks: Risk[];</p>
+<p>  };</p>
+<p>  architecture?: {</p>
+<p>    components: ArchitectureComponent[];</p>
+<p>    dataFlow: DataFlowDiagram;</p>
+<p>    technologies: TechnologyStack;</p>
+<p>  };</p>
+<p>  technicalSpecs?: {</p>
+<p>    requirements: Requirement[];</p>
+<p>    constraints: Constraint[];</p>
+<p>    assumptions: Assumption[];</p>
+<p>  };</p>
+<p>  businessContext?: {</p>
+<p>    goals: string[];</p>
+<p>    success_criteria: string[];</p>
+<p>    stakeholders: Stakeholder[];</p>
+<p>  };</p>
+<p>}</p>
+<p></code>`<code></p>
+<p>#### Example Usage</p>
+<p></code>`<code>typescript</p>
+<p>const tool = new SmartBeginMCPTool();</p>
+<p>const result = await tool.execute({</p>
+<p>  request: "Build a real-time chat application with file sharing",</p>
+<p>  options: {</p>
+<p>    includeArchitecture: true,</p>
+<p>    timeline: "4 weeks",</p>
+<p>    teamSize: 4,</p>
+<p>    skillLevel: "intermediate"</p>
+<p>  }</p>
+<p>});</p>
+<p>// Access results</p>
+<p>console.log('Project phases:', result.data?.projectPlan.phases);</p>
+<p>console.log('Architecture:', result.data?.architecture?.components);</p>
+<p></code>`<code></p>
+<p>#### Performance</p>
+<li><strong>Target Response Time</strong>: <1s</li>
+<li><strong>Average Response Time</strong>: 15-25ms</li>
+<li><strong>Timeout</strong>: 30 seconds</li>
+<hr>
+<h3>Smart Write Tool</h3>
+<p><strong>Purpose</strong>: Generate code with business context, quality requirements, and comprehensive analysis.</p>
+<p>#### Input Schema</p>
+<p></code>`<code>typescript</p>
+<p>interface SmartWriteInput {</p>
+<p>  projectId: string;                  // Project identifier (required)</p>
+<p>  featureDescription: string;         // Feature description (min: 1 char)</p>
+<p>  techStack: string[];               // Technology stack (required)</p>
+<p>  codeType?: 'function' | 'component' | 'api' | 'test' | 'config' | 'documentation';</p>
+<p>  role?: 'developer' | 'product-strategist' | 'designer' | 'qa-engineer' | 'operations-engineer';</p>
+<p>  priority?: 'low' | 'medium' | 'high' | 'critical';</p>
+<p>  securityLevel?: 'low' | 'medium' | 'high';</p>
+<p>  qualityRequirements?: {</p>
+<p>    testCoverage?: number;            // Percentage (0-100)</p>
+<p>    performanceTargets?: {</p>
+<p>      responseTime?: number;          // Milliseconds</p>
+<p>    };</p>
+<p>    securityLevel?: 'low' | 'medium' | 'high';</p>
+<p>  };</p>
+<p>}</p>
+<p></code>`<code></p>
+<p>#### Output Schema</p>
+<p></code>`<code>typescript</p>
+<p>interface SmartWriteOutput {</p>
+<p>  generatedCode: string;              // Generated source code</p>
+<p>  codeId: string;                     // Unique identifier</p>
+<p>  language: string;                   // Programming language detected</p>
+<p>  businessValue: {</p>
+<p>    estimatedHours: number;</p>
+<p>    costPrevention: number;</p>
+<p>    riskMitigation: string[];</p>
+<p>  };</p>
+<p>  qualityMetrics: {</p>
+<p>    complexity: number;               // Cyclomatic complexity</p>
+<p>    maintainability: number;         // 0-100 score</p>
+<p>    testability: number;             // 0-100 score</p>
+<p>  };</p>
+<p>  suggestedDependencies?: string[];   // NPM packages/dependencies</p>
+<p>  testCases?: TestCase[];            // Generated test cases</p>
+<p>  securityConsiderations?: string[]; // Security recommendations</p>
+<p>  roleSpecificInsights?: string[];   // Role-based recommendations</p>
+<p>}</p>
+<p></code>`<code></p>
+<p>#### Example Usage</p>
+<p></code>`<code>typescript</p>
+<p>const tool = new SmartWriteMCPTool();</p>
+<p>const result = await tool.execute({</p>
+<p>  projectId: "ecommerce-api",</p>
+<p>  featureDescription: "Product search with filters and pagination",</p>
+<p>  techStack: ["typescript", "express", "elasticsearch"],</p>
+<p>  codeType: "api",</p>
+<p>  role: "developer",</p>
+<p>  priority: "high",</p>
+<p>  securityLevel: "high",</p>
+<p>  qualityRequirements: {</p>
+<p>    testCoverage: 85,</p>
+<p>    performanceTargets: {</p>
+<p>      responseTime: 200</p>
+<p>    },</p>
+<p>    securityLevel: "high"</p>
+<p>  }</p>
+<p>});</p>
+<p>// Access generated content</p>
+<p>console.log('Code:', result.data?.generatedCode);</p>
+<p>console.log('Dependencies:', result.data?.suggestedDependencies);</p>
+<p>console.log('Security notes:', result.data?.securityConsiderations);</p>
+<p></code>`<code></p>
+<p>#### Performance</p>
+<li><strong>Target Response Time</strong>: <1s</li>
+<li><strong>Average Response Time</strong>: 0.1-0.5ms</li>
+<li><strong>Timeout</strong>: 10 seconds</li>
+<hr>
+<h3>Smart Orchestrate Tool</h3>
+<p><strong>Purpose</strong>: Coordinate complex workflows across multiple roles and phases with business context integration.</p>
+<p>#### Input Schema</p>
+<p></code>`<code>typescript</p>
+<p>interface SmartOrchestrateInput {</p>
+<p>  request: string;                    // Orchestration request (min: 10 chars)</p>
+<p>  workflow: 'sdlc' | 'project' | 'quality' | 'custom';</p>
+<p>  options: {</p>
+<p>    costPrevention: boolean;</p>
+<p>    skipPhases: string[];</p>
+<p>    focusAreas: string[];</p>
+<p>    qualityLevel: 'basic' | 'standard' | 'production';</p>
+<p>    businessContext: {</p>
+<p>      projectId: string;              // Required, min: 1 char</p>
+<p>      businessGoals: string[];</p>
+<p>      requirements: string[];</p>
+<p>      stakeholders: string[];</p>
+<p>      constraints: Record<string, any>;</p>
+<p>      success: {</p>
+<p>        metrics: string[];</p>
+<p>        criteria: string[];</p>
+<p>      };</p>
+<p>      marketContext?: {</p>
+<p>        industry?: string;</p>
+<p>        targetMarket?: string;</p>
+<p>        competitors?: string[];</p>
+<p>      };</p>
+<p>    };</p>
+<p>  };</p>
+<p>  externalSources: {</p>
+<p>    useContext7: boolean;</p>
+<p>    useWebSearch: boolean;</p>
+<p>    useMemory: boolean;</p>
+<p>  };</p>
+<p>}</p>
+<p></code>`<code></p>
+<p>#### Output Schema</p>
+<p></code>`<code>typescript</p>
+<p>interface SmartOrchestrateOutput {</p>
+<p>  workflow: {</p>
+<p>    id: string;</p>
+<p>    name: string;</p>
+<p>    phases: WorkflowPhase[];</p>
+<p>    currentPhase: string;</p>
+<p>    overallProgress: number;          // 0-100 percentage</p>
+<p>  };</p>
+<p>  businessContext: BusinessContext;   // Processed business context</p>
+<p>  externalIntegration: {</p>
+<p>    context7Status: 'active' | 'disabled' | 'error';</p>
+<p>    webSearchStatus: 'active' | 'disabled' | 'error';</p>
+<p>    memoryStatus: 'active' | 'disabled' | 'error';</p>
+<p>    integrationTime: number;          // Milliseconds</p>
+<p>  };</p>
+<p>  businessValue: {</p>
+<p>    costPrevention: number;</p>
+<p>    timeToMarket: number;</p>
+<p>    qualityImprovement: number;</p>
+<p>    riskMitigation: number;</p>
+<p>    strategicAlignment: number;</p>
+<p>  };</p>
+<p>  technicalMetrics: {</p>
+<p>    responseTime: number;</p>
+<p>    orchestrationTime: number;</p>
+<p>    roleTransitionTime: number;</p>
+<p>    contextPreservationAccuracy: number;</p>
+<p>    phaseSuccessRate: number;</p>
+<p>    businessAlignmentScore: number;</p>
+<p>    performanceScore: number;</p>
+<p>  };</p>
+<p>  nextSteps: {</p>
+<p>    immediate: string[];</p>
+<p>    short_term: string[];</p>
+<p>    long_term: string[];</p>
+<p>    dependencies: string[];</p>
+<p>    risks: string[];</p>
+<p>  };</p>
+<p>}</p>
+<p></code>`<code></p>
+<p>#### Example Usage</p>
+<p></code>`<code>typescript</p>
+<p>const tool = new SmartOrchestrateMCPTool();</p>
+<p>const result = await tool.execute({</p>
+<p>  request: "Implement secure user authentication system",</p>
+<p>  workflow: "sdlc",</p>
+<p>  options: {</p>
+<p>    costPrevention: true,</p>
+<p>    skipPhases: [],</p>
+<p>    focusAreas: ["security", "performance"],</p>
+<p>    qualityLevel: "production",</p>
+<p>    businessContext: {</p>
+<p>      projectId: "auth-system",</p>
+<p>      businessGoals: ["Secure user login", "SSO integration"],</p>
+<p>      requirements: ["JWT tokens", "2FA support", "OAuth providers"],</p>
+<p>      stakeholders: ["Security Team", "Product Manager", "Frontend Team"],</p>
+<p>      constraints: {</p>
+<p>        compliance: "SOC2",</p>
+<p>        budget: "$25k",</p>
+<p>        timeline: "4 weeks"</p>
+<p>      },</p>
+<p>      success: {</p>
+<p>        metrics: ["Zero security breaches", "99.9% uptime"],</p>
+<p>        criteria: ["Penetration test pass", "Performance benchmarks met"]</p>
+<p>      }</p>
+<p>    }</p>
+<p>  },</p>
+<p>  externalSources: {</p>
+<p>    useContext7: true,</p>
+<p>    useWebSearch: false,</p>
+<p>    useMemory: true</p>
+<p>  }</p>
+<p>});</p>
+<p>// Access workflow results</p>
+<p>console.log('Workflow phases:', result.data?.workflow.phases);</p>
+<p>console.log('Business value:', result.data?.businessValue);</p>
+<p>console.log('Next steps:', result.data?.nextSteps);</p>
+<p></code>`<code></p>
+<p>#### Performance</p>
+<li><strong>Target Response Time</strong>: <1s</li>
+<li><strong>Average Response Time</strong>: 0.2-0.8ms</li>
+<li><strong>Timeout</strong>: 30 seconds</li>
+<hr>
+<h3>Smart Plan Enhanced Tool</h3>
+<p><strong>Purpose</strong>: Advanced project planning with technical analysis, risk assessment, and stakeholder management.</p>
+<p>#### Input Schema</p>
+<p></code>`<code>typescript</p>
+<p>interface SmartPlanEnhancedInput {</p>
+<p>  projectRequest: string;</p>
+<p>  options?: {</p>
+<p>    includeRiskAssessment?: boolean;</p>
+<p>    includeStakeholderAnalysis?: boolean;</p>
+<p>    includeTechnicalSpecs?: boolean;</p>
+<p>    includeResourcePlanning?: boolean;</p>
+<p>    timeframe?: string;</p>
+<p>    complexity?: 'low' | 'medium' | 'high' | 'enterprise';</p>
+<p>  };</p>
+<p>}</p>
+<p></code>`<code></p>
+<p>#### Output Schema</p>
+<p></code>`<code>typescript</p>
+<p>interface SmartPlanEnhancedOutput {</p>
+<p>  projectPlan: {</p>
+<p>    overview: string;</p>
+<p>    phases: PlanPhase[];</p>
+<p>    timeline: Timeline;</p>
+<p>    deliverables: Deliverable[];</p>
+<p>  };</p>
+<p>  technicalSpecs?: TechnicalSpecification[];</p>
+<p>  riskAssessment?: {</p>
+<p>    risks: Risk[];</p>
+<p>    mitigationStrategies: MitigationStrategy[];</p>
+<p>    contingencyPlans: ContingencyPlan[];</p>
+<p>  };</p>
+<p>  stakeholderAnalysis?: StakeholderAnalysis;</p>
+<p>  resourcePlanning?: ResourcePlan;</p>
+<p>}</p>
+<p></code>`<code></p>
+<hr>
+<h3>Smart Finish Tool</h3>
+<p><strong>Purpose</strong>: Project completion validation, quality assessment, and deliverable verification.</p>
+<p>#### Input Schema</p>
+<p></code>`<code>typescript</p>
+<p>interface SmartFinishInput {</p>
+<p>  projectId: string;</p>
+<p>  options?: {</p>
+<p>    validateQuality?: boolean;</p>
+<p>    generateSummary?: boolean;</p>
+<p>    includeMetrics?: boolean;</p>
+<p>    performanceAnalysis?: boolean;</p>
+<p>  };</p>
+<p>}</p>
+<p></code>`<code></p>
+<p>#### Output Schema</p>
+<p></code>`<code>typescript</p>
+<p>interface SmartFinishOutput {</p>
+<p>  completionStatus: {</p>
+<p>    overall: QualityScore;</p>
+<p>    quality: QualityScore;</p>
+<p>    performance: QualityScore;</p>
+<p>    security: QualityScore;</p>
+<p>  };</p>
+<p>  projectSummary?: ProjectSummary;</p>
+<p>  qualityMetrics?: QualityMetrics;</p>
+<p>  performanceAnalysis?: PerformanceAnalysis;</p>
+<p>  recommendations: string[];</p>
+<p>  nextSteps: string[];</p>
+<p>}</p>
+<p></code>`<code></p>
+<h2>Resources API</h2>
+<h3>File Resource</h3>
+<p><strong>Purpose</strong>: Secure file operations with validation and backup capabilities.</p>
+<p>#### Methods</p>
+<p>##### connect(basePath: string): Promise<void></p>
+<p>Initialize file resource with base directory.</p>
+<p></code>`<code>typescript</p>
+<p>const fileResource = new FileResource();</p>
+<p>await fileResource.connect('/project/root');</p>
+<p></code>`<code></p>
+<p>##### read(filePath: string): Promise<string></p>
+<p>Read file content with security validation.</p>
+<p></code>`<code>typescript</p>
+<p>const content = await fileResource.read('src/utils/helper.ts');</p>
+<p></code>`<code></p>
+<p>##### write(filePath: string, content: string): Promise<void></p>
+<p>Write file with automatic backup.</p>
+<p></code>`<code>typescript</p>
+<p>await fileResource.write('src/new-component.tsx', componentCode);</p>
+<p></code>`<code></p>
+<p>##### list(directory: string, pattern?: string): Promise<FileInfo[]></p>
+<p>List files with optional filtering.</p>
+<p></code>`<code>typescript</p>
+<p>const files = await fileResource.list('src/', '*.ts');</p>
+<p></code>`<code></p>
+<p>##### exists(filePath: string): Promise<boolean></p>
+<p>Check if file exists.</p>
+<p>##### delete(filePath: string): Promise<void></p>
+<p>Delete file with backup retention.</p>
+<hr>
+<h3>API Resource</h3>
+<p><strong>Purpose</strong>: HTTP client with retry logic, error handling, and mock support.</p>
+<p>#### Methods</p>
+<p>##### connect(baseUrl: string, options?: ApiOptions): Promise<void></p>
+<p>Initialize API connection.</p>
+<p></code>`<code>typescript</p>
+<p>const apiResource = new ApiResource();</p>
+<p>await apiResource.connect('https://api.example.com', {</p>
+<p>  timeout: 5000,</p>
+<p>  retries: 3,</p>
+<p>  headers: { 'Authorization': 'Bearer token' }</p>
+<p>});</p>
+<p></code>`<code></p>
+<p>##### get<T>(endpoint: string, options?: RequestOptions): Promise<T></p>
+<p>GET request with retry logic.</p>
+<p>##### post<T>(endpoint: string, data: any, options?: RequestOptions): Promise<T></p>
+<p>POST request with validation.</p>
+<p>##### put<T>(endpoint: string, data: any, options?: RequestOptions): Promise<T></p>
+<p>PUT request for updates.</p>
+<p>##### delete<T>(endpoint: string, options?: RequestOptions): Promise<T></p>
+<p>DELETE request.</p>
+<hr>
+<h3>Database Resource</h3>
+<p><strong>Purpose</strong>: Database operations with connection pooling and transaction support.</p>
+<p>#### Methods</p>
+<p>##### connect(connectionString: string, options?: DbOptions): Promise<void></p>
+<p>Initialize database connection.</p>
+<p></code>`<code>typescript</p>
+<p>const dbResource = new DatabaseResource();</p>
+<p>await dbResource.connect('postgresql://localhost/mydb', {</p>
+<p>  pool: { min: 2, max: 10 },</p>
+<p>  ssl: { rejectUnauthorized: false }</p>
+<p>});</p>
+<p></code>`<code></p>
+<p>##### query<T>(sql: string, params?: any[]): Promise<T[]></p>
+<p>Execute parameterized query.</p>
+<p>##### transaction<T>(callback: (tx: Transaction) => Promise<T>): Promise<T></p>
+<p>Execute transaction with rollback support.</p>
+<p>##### migrate(migrationsPath: string): Promise<void></p>
+<p>Run database migrations.</p>
+<h2>Framework API</h2>
+<h3>MCPTool Base Class</h3>
+<p><strong>Purpose</strong>: Base class for creating custom MCP tools with validation and error handling.</p>
+<p>#### Constructor</p>
+<p></code>`<code>typescript</p>
+<p>constructor(config: {</p>
+<p>  name: string;</p>
+<p>  description: string;</p>
+<p>  inputSchema: z.ZodSchema;</p>
+<p>  outputSchema: z.ZodSchema;</p>
+<p>})</p>
+<p></code>`<code></p>
+<p>#### Methods</p>
+<p>##### execute<T, R>(input: T, context?: MCPToolContext): Promise<MCPToolResult<R>></p>
+<p>Execute tool with validation and error handling.</p>
+<p>##### validate(input: unknown): ValidationResult</p>
+<p>Validate input against schema.</p>
+<hr>
+<h3>Registry</h3>
+<p><strong>Purpose</strong>: Tool registration and discovery system.</p>
+<p>#### Methods</p>
+<p>##### register(tool: MCPTool): void</p>
+<p>Register a new tool.</p>
+<p>##### get(name: string): MCPTool | undefined</p>
+<p>Retrieve registered tool.</p>
+<p>##### list(): ToolInfo[]</p>
+<p>List all registered tools.</p>
+<h2>Response Formats</h2>
+<h3>Standard Response</h3>
+<p></code>`<code>typescript</p>
+<p>interface MCPToolResult<T> {</p>
+<p>  success: boolean;</p>
+<p>  data?: T;</p>
+<p>  error?: {</p>
+<p>    code: string;</p>
+<p>    message: string;</p>
+<p>    details?: any;</p>
+<p>  };</p>
+<p>  metadata: {</p>
+<p>    executionTime: number;       // milliseconds</p>
+<p>    timestamp: string;</p>
+<p>    requestId: string;</p>
+<p>    toolName: string;</p>
+<p>  };</p>
+<p>}</p>
+<p></code>`<code></p>
+<h3>Quality Score Format</h3>
+<p></code>`<code>typescript</p>
+<p>interface QualityScore {</p>
+<p>  score: number;                 // 0-100</p>
+<p>  grade: 'A' | 'B' | 'C' | 'D' | 'F';</p>
+<p>  status: 'pass' | 'fail' | 'warning';</p>
+<p>  details?: string[];</p>
+<p>}</p>
+<p></code>`<code></p>
+<h2>Error Handling</h2>
+<h3>Error Types</h3>
+<p>#### ValidationError</p>
+<p></code>`<code>typescript</p>
+<p>{</p>
+<p>  code: 'VALIDATION_ERROR',</p>
+<p>  message: 'Input validation failed',</p>
+<p>  details: {</p>
+<p>    field: string;</p>
+<p>    expected: string;</p>
+<p>    received: string;</p>
+<p>  }</p>
+<p>}</p>
+<p></code>`<code></p>
+<p>#### ExecutionError</p>
+<p></code>`<code>typescript</p>
+<p>{</p>
+<p>  code: 'EXECUTION_ERROR',</p>
+<p>  message: 'Tool execution failed',</p>
+<p>  details: {</p>
+<p>    phase: string;</p>
+<p>    originalError: string;</p>
+<p>  }</p>
+<p>}</p>
+<p></code>`<code></p>
+<p>#### TimeoutError</p>
+<p></code>`<code>typescript</p>
+<p>{</p>
+<p>  code: 'TIMEOUT_ERROR',</p>
+<p>  message: 'Operation timed out',</p>
+<p>  details: {</p>
+<p>    timeout: number;</p>
+<p>    elapsed: number;</p>
+<p>  }</p>
+<p>}</p>
+<p></code>`<code></p>
+<h2>Performance Metrics</h2>
+<h3>Response Time Targets</h3>
+<p>| Tool | Target | Average | 95th Percentile |</p>
+<p>|------|--------|---------|----------------|</p>
+<p>| smart-write | <1s | 0.1-0.5ms | <2ms |</p>
+<p>| smart-orchestrate | <1s | 0.2-0.8ms | <3ms |</p>
+<p>| smart-begin | <1s | 15-25ms | <50ms |</p>
+<p>| smart-plan | <1s | 20-30ms | <60ms |</p>
+<p>| smart-plan-enhanced | <1s | 1-2s | <3s |</p>
+<p>| smart-finish | <1s | 10-20ms | <40ms |</p>
+<h3>Performance Monitoring</h3>
+<p>All tools automatically track and report:</p>
+<li>Execution time (milliseconds)</li>
+<li>Memory usage</li>
+<li>Error rates</li>
+<li>Success rates</li>
+<li>Request/response sizes</li></ul>
+<p>Example performance log:</p>
+<p></code>`<code>typescript</p>
+<p>Tool execution successful {</p>
+<p>  toolName: 'smart_write',</p>
+<p>  requestId: 'req_1757115892052_ysi9xoog5',</p>
+<p>  executionTime: 0.234,</p>
+<p>  timestamp: '2025-09-05T23:44:52.054Z'</p>
+<p>}</p>
+<p></code>``</p>
+<hr>
+<p><strong>For more examples and advanced usage, see the <a href="./USER_GUIDE.md">User Guide</a>.</strong></p>
+
+        </div>
+
+        <a href="./MASTER_USER_GUIDE.html" class="back-link">← Back to Master User Guide</a>
+    </div>
+
+    <script>
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add table of contents generation
+        function generateTOC() {
+            const headings = document.querySelectorAll('h2, h3');
+            const toc = document.createElement('div');
+            toc.className = 'toc';
+            toc.innerHTML = '<h3>📚 Table of Contents</h3><ul></ul>';
+
+            const ul = toc.querySelector('ul');
+
+            headings.forEach((heading, index) => {
+                const id = heading.textContent.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                heading.id = id;
+
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = '#' + id;
+                a.textContent = heading.textContent;
+                li.appendChild(a);
+                ul.appendChild(li);
+            });
+
+            document.querySelector('.content').insertBefore(toc, document.querySelector('.content').firstChild);
+        }
+
+        // Generate TOC on page load
+        document.addEventListener('DOMContentLoaded', generateTOC);
+    </script>
+</body>
+</html>
