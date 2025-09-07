@@ -14,14 +14,14 @@ export class MCPTool {
     logger;
     constructor(config, logger) {
         this.config = config;
-        this.logger = logger || console;
+        this.logger = logger ?? console;
     }
     /**
      * Main execution method - validates input, executes tool logic, and returns result
      */
     async execute(input, context) {
         const startTime = performance.now();
-        const requestId = context?.requestId || this.generateRequestId();
+        const requestId = context?.requestId ?? this.generateRequestId();
         try {
             // Validate input
             const validatedInput = await this.validateInput(input);

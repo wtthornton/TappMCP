@@ -18,7 +18,7 @@ export interface MCPToolConfig {
     timeout?: number;
     retries?: number;
 }
-export interface MCPToolResult<T = any> {
+export interface MCPToolResult<T = unknown> {
     success: boolean;
     data?: T;
     error?: string;
@@ -33,13 +33,13 @@ export interface MCPToolContext {
     requestId: string;
     userId?: string;
     sessionId?: string;
-    businessContext?: Record<string, any>;
+    businessContext?: Record<string, unknown>;
     role?: string;
 }
-export declare abstract class MCPTool<TInput = any, TOutput = any> {
+export declare abstract class MCPTool<TInput = unknown, TOutput = unknown> {
     protected config: MCPToolConfig;
-    protected logger: any;
-    constructor(config: MCPToolConfig, logger?: any);
+    protected logger: Console;
+    constructor(config: MCPToolConfig, logger?: Console);
     /**
      * Main execution method - validates input, executes tool logic, and returns result
      */

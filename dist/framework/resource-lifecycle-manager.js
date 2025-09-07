@@ -37,7 +37,7 @@ export class ResourceLifecycleManager {
     }, logger) {
         this.cleanupConfig = cleanupConfig;
         this.monitoringConfig = monitoringConfig;
-        this.logger = logger || console;
+        this.logger = logger ?? console;
     }
     /**
      * Register a resource for lifecycle management

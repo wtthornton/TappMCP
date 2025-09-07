@@ -17,24 +17,24 @@ export declare const CodeReviewPromptSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     code: string;
     language: string;
-    reviewType: "performance" | "maintainability" | "security" | "comprehensive" | "readability";
+    reviewType: "maintainability" | "security" | "performance" | "comprehensive" | "readability";
     severity?: "high" | "medium" | "low" | undefined;
     requirements?: string[] | undefined;
     context?: string | undefined;
     focusAreas?: string[] | undefined;
-    standards?: string[] | undefined;
     includeSuggestions?: boolean | undefined;
+    standards?: string[] | undefined;
     includeExamples?: boolean | undefined;
 }, {
     code: string;
     language: string;
-    reviewType: "performance" | "maintainability" | "security" | "comprehensive" | "readability";
+    reviewType: "maintainability" | "security" | "performance" | "comprehensive" | "readability";
     severity?: "high" | "medium" | "low" | undefined;
     requirements?: string[] | undefined;
     context?: string | undefined;
     focusAreas?: string[] | undefined;
-    standards?: string[] | undefined;
     includeSuggestions?: boolean | undefined;
+    standards?: string[] | undefined;
     includeExamples?: boolean | undefined;
 }>;
 export type CodeReviewPromptInput = z.infer<typeof CodeReviewPromptSchema>;

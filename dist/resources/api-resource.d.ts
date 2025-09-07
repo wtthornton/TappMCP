@@ -32,16 +32,16 @@ export declare const ApiResourceSchema: z.ZodObject<{
     }, "strip", z.ZodTypeAny, {
         type: "basic" | "bearer" | "api-key" | "oauth2";
         apiKeyHeader: string;
+        apiKey?: string | undefined;
         token?: string | undefined;
         username?: string | undefined;
         password?: string | undefined;
-        apiKey?: string | undefined;
     }, {
         type: "basic" | "bearer" | "api-key" | "oauth2";
+        apiKey?: string | undefined;
         token?: string | undefined;
         username?: string | undefined;
         password?: string | undefined;
-        apiKey?: string | undefined;
         apiKeyHeader?: string | undefined;
     }>>;
 }, "strip", z.ZodTypeAny, {
@@ -51,16 +51,16 @@ export declare const ApiResourceSchema: z.ZodObject<{
     retries: number;
     retryDelay: number;
     params?: Record<string, string> | undefined;
-    body?: any;
     auth?: {
         type: "basic" | "bearer" | "api-key" | "oauth2";
         apiKeyHeader: string;
+        apiKey?: string | undefined;
         token?: string | undefined;
         username?: string | undefined;
         password?: string | undefined;
-        apiKey?: string | undefined;
     } | undefined;
     headers?: Record<string, string> | undefined;
+    body?: any;
     rateLimit?: {
         requests: number;
         window: number;
@@ -69,17 +69,17 @@ export declare const ApiResourceSchema: z.ZodObject<{
     url: string;
     method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
     params?: Record<string, string> | undefined;
-    body?: any;
     timeout?: number | undefined;
     auth?: {
         type: "basic" | "bearer" | "api-key" | "oauth2";
+        apiKey?: string | undefined;
         token?: string | undefined;
         username?: string | undefined;
         password?: string | undefined;
-        apiKey?: string | undefined;
         apiKeyHeader?: string | undefined;
     } | undefined;
     headers?: Record<string, string> | undefined;
+    body?: any;
     retries?: number | undefined;
     retryDelay?: number | undefined;
     rateLimit?: {
@@ -105,13 +105,13 @@ export declare const ApiResourceResponseSchema: z.ZodObject<{
         resetTime: z.ZodNumber;
         limit: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
+        limit: number;
         remaining: number;
         resetTime: number;
-        limit: number;
     }, {
+        limit: number;
         remaining: number;
         resetTime: number;
-        limit: number;
     }>>;
 }, "strip", z.ZodTypeAny, {
     success: boolean;
@@ -123,9 +123,9 @@ export declare const ApiResourceResponseSchema: z.ZodObject<{
     executionTime?: number | undefined;
     retryCount?: number | undefined;
     rateLimitInfo?: {
+        limit: number;
         remaining: number;
         resetTime: number;
-        limit: number;
     } | undefined;
 }, {
     success: boolean;
@@ -137,9 +137,9 @@ export declare const ApiResourceResponseSchema: z.ZodObject<{
     executionTime?: number | undefined;
     retryCount?: number | undefined;
     rateLimitInfo?: {
+        limit: number;
         remaining: number;
         resetTime: number;
-        limit: number;
     } | undefined;
 }>;
 export type ApiResourceResponse = z.infer<typeof ApiResourceResponseSchema>;

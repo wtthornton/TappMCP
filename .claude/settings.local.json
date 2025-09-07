@@ -29,7 +29,13 @@
       "Read(//c/Users/tappt/.cache/pre-commit/**)",
       "Bash(time npm run test -- src/tools/smart-write-mcp.test.ts --reporter=minimal)",
       "Bash(time npx vitest run src/tools/smart-write-mcp.test.ts --reporter=basic)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(time npx vitest run src/core/prompt-optimization --reporter=basic)",
+      "Bash(time npx vitest run src/core/prompt-optimization/ContextAwareTemplateEngine.test.ts --reporter=minimal)",
+      "Bash(time npx vitest run src/core/prompt-optimization/ContextAwareTemplateEngine.test.ts)",
+      "Bash(time npx vitest run src/context/enhanced-integration/DeepContext7Broker.test.ts)",
+      "Bash(time npx vitest run src/optimization/ToolChainOptimizer.test.ts)",
+      "Bash(chmod:*)"
     ],
     "deny": [],
     "ask": []

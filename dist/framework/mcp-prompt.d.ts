@@ -22,7 +22,7 @@ export interface MCPPromptConfig {
         maxSize?: number;
     };
 }
-export interface MCPPromptResult<T = any> {
+export interface MCPPromptResult<T = unknown> {
     success: boolean;
     prompt?: string;
     data?: T;
@@ -40,20 +40,20 @@ export interface MCPPromptContext {
     requestId: string;
     userId?: string;
     sessionId?: string;
-    businessContext?: Record<string, any>;
+    businessContext?: Record<string, unknown>;
     role?: string;
     conversationHistory?: Array<{
         role: 'user' | 'assistant' | 'system';
         content: string;
         timestamp: string;
     }>;
-    memory?: Record<string, any>;
+    memory?: Record<string, unknown>;
 }
-export declare abstract class MCPPrompt<TVariables = any, TOutput = any> {
+export declare abstract class MCPPrompt<TVariables = unknown, TOutput = unknown> {
     protected config: MCPPromptConfig;
-    protected logger: any;
+    protected logger: Console;
     protected templateCache: Map<string, string>;
-    constructor(config: MCPPromptConfig, logger?: any);
+    constructor(config: MCPPromptConfig, logger?: Console);
     /**
      * Generate prompt with variables and context
      */
@@ -133,7 +133,7 @@ export declare abstract class MCPPrompt<TVariables = any, TOutput = any> {
  */
 export declare class MCPPromptFactory {
     private static prompts;
-    static setLogger(_logger: any): void;
+    static setLogger(_logger: Console): void;
     static registerPrompt<T extends MCPPrompt>(prompt: T): void;
     static getPrompt(name: string): MCPPrompt | undefined;
     static getAllPrompts(): MCPPrompt[];

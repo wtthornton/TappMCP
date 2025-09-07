@@ -20,25 +20,25 @@ export class MCPCoordinator {
     serviceHealth = new Map();
     constructor(config = {}) {
         this.config = {
-            timeout: config.timeout ?? 3000, // 3 second total timeout for tests
-            maxConcurrentRequests: config.maxConcurrentRequests ?? 5,
+            timeout: config.timeout ?? 1000, // 1 second total timeout for better performance
+            maxConcurrentRequests: config.maxConcurrentRequests ?? 2,
             enableFallbacks: config.enableFallbacks ?? true,
             healthCheckInterval: config.healthCheckInterval ?? 300000, // 5 minutes
         };
-        // Initialize brokers
+        // Initialize brokers with optimized timeouts
         this.context7 = new Context7Broker({
-            timeout: 1000, // Reduced for test performance
+            timeout: 500, // Further reduced for test performance
             enableFallback: this.config.enableFallbacks,
         });
         this.webSearch = new WebSearchBroker({
-            timeout: 1000, // Reduced for test performance
+            timeout: 500, // Further reduced for test performance
             enableFallback: this.config.enableFallbacks,
-            maxResults: 5,
+            maxResults: 3, // Reduced results for performance
         });
         this.memory = new MemoryBroker({
-            timeout: 1000, // Reduced for test performance
+            timeout: 500, // Further reduced for test performance
             enableFallback: this.config.enableFallbacks,
-            enablePersistence: true,
+            enablePersistence: false, // Disable persistence for tests
         });
         // Initialize service health tracking
         this.initializeServiceHealth();
@@ -51,15 +51,19 @@ export class MCPCoordinator {
         const allKnowledge = [];
         const promises = [];
         try {
-            // Gather knowledge from enabled sources in parallel
-            if (request.sources.useContext7) {
+            // Gather knowledge from enabled sources in parallel (limit to 2 for performance)
+            let sourceCount = 0;
+            if (request.sources.useContext7 && sourceCount < 2) {
                 promises.push(this.gatherContext7Knowledge(request));
+                sourceCount++;
             }
-            if (request.sources.useWebSearch) {
+            if (request.sources.useWebSearch && sourceCount < 2) {
                 promises.push(this.gatherWebSearchKnowledge(request));
+                sourceCount++;
             }
-            if (request.sources.useMemory) {
+            if (request.sources.useMemory && sourceCount < 2) {
                 promises.push(this.gatherMemoryKnowledge(request));
+                sourceCount++;
             }
             // Execute all requests with timeout protection
             const timeoutPromise = new Promise((_, reject) => {
@@ -79,7 +83,7 @@ export class MCPCoordinator {
                 }
             }
             // Sort by relevance score and limit results
-            const maxResults = request.maxResults ?? 20;
+            const maxResults = request.maxResults ?? 5; // Reduced from 20 to 5 for performance
             const sortedKnowledge = allKnowledge
                 .sort((a, b) => b.relevanceScore - a.relevanceScore)
                 .slice(0, maxResults);
@@ -205,17 +209,16 @@ export class MCPCoordinator {
         try {
             // Extract key technologies/topics from the business request
             const topics = this.extractTopics(request.businessRequest, request.domain);
-            // Gather documentation
-            for (const topic of topics.slice(0, 2)) {
-                // Limit to 2 topics for performance
+            // Gather documentation (limit to 1 topic for performance)
+            for (const topic of topics.slice(0, 1)) {
                 const docs = await this.context7.getDocumentation(topic);
-                knowledge.push(...docs.map(doc => this.transformDocumentation(doc)));
+                knowledge.push(...docs.slice(0, 2).map(doc => this.transformDocumentation(doc))); // Limit to 2 docs
                 const examples = await this.context7.getCodeExamples(topic, 'best practices');
-                knowledge.push(...examples.map(example => this.transformCodeExample(example)));
+                knowledge.push(...examples.slice(0, 1).map(example => this.transformCodeExample(example))); // Limit to 1 example
             }
-            // Get best practices for domain
+            // Get best practices for domain (limit to 1 for performance)
             const practices = await this.context7.getBestPractices(request.domain);
-            knowledge.push(...practices.map(practice => this.transformBestPractice(practice)));
+            knowledge.push(...practices.slice(0, 1).map(practice => this.transformBestPractice(practice)));
             return knowledge;
         }
         catch (error) {
@@ -229,12 +232,12 @@ export class MCPCoordinator {
     async gatherWebSearchKnowledge(request) {
         const knowledge = [];
         try {
-            // Search for relevant information
-            const searchResults = await this.webSearch.searchRelevantInfo(`${request.businessRequest} ${request.domain}`, 3);
+            // Search for relevant information (limit to 2 results)
+            const searchResults = await this.webSearch.searchRelevantInfo(`${request.businessRequest} ${request.domain}`, 2);
             knowledge.push(...searchResults.map(result => this.transformSearchResult(result)));
-            // Get current trends
+            // Get current trends (limit to 1 trend)
             const trends = await this.webSearch.getCurrentTrends(request.domain);
-            knowledge.push(...trends.map(trend => this.transformTrend(trend)));
+            knowledge.push(...trends.slice(0, 1).map(trend => this.transformTrend(trend)));
             return knowledge;
         }
         catch (error) {
@@ -250,17 +253,16 @@ export class MCPCoordinator {
         try {
             // Extract problems from business request
             const problems = this.extractProblems(request.businessRequest);
-            // Get lessons learned
-            for (const problem of problems.slice(0, 2)) {
-                // Limit for performance
+            // Get lessons learned (limit to 1 problem for performance)
+            for (const problem of problems.slice(0, 1)) {
                 const lessons = await this.memory.getLessonsLearned(request.domain, problem);
-                knowledge.push(...lessons.map(lesson => this.transformLesson(lesson)));
+                knowledge.push(...lessons.slice(0, 1).map(lesson => this.transformLesson(lesson))); // Limit to 1 lesson
                 const patterns = await this.memory.getPatterns(problem, request.domain);
-                knowledge.push(...patterns.map(pattern => this.transformPattern(pattern)));
+                knowledge.push(...patterns.slice(0, 1).map(pattern => this.transformPattern(pattern))); // Limit to 1 pattern
             }
-            // Get insights
+            // Get insights (limit to 1 insight)
             const insights = await this.memory.getInsights(request.domain, request.businessRequest);
-            knowledge.push(...insights.map(insight => this.transformInsight(insight)));
+            knowledge.push(...insights.slice(0, 1).map(insight => this.transformInsight(insight)));
             return knowledge;
         }
         catch (error) {

@@ -555,6 +555,12 @@ declare const SmartPlanOutputSchema: z.ZodObject<{
                 };
             }>;
         }, "strip", z.ZodTypeAny, {
+            security: {
+                estimatedEffort: number;
+                requirements: string[];
+                tools: string[];
+                level: string;
+            };
             performance: {
                 estimatedEffort: number;
                 monitoring: string[];
@@ -563,12 +569,6 @@ declare const SmartPlanOutputSchema: z.ZodObject<{
                     throughput: number;
                     availability: number;
                 };
-            };
-            security: {
-                estimatedEffort: number;
-                requirements: string[];
-                tools: string[];
-                level: string;
             };
             testStrategy: {
                 unitTests: {
@@ -588,6 +588,12 @@ declare const SmartPlanOutputSchema: z.ZodObject<{
                 };
             };
         }, {
+            security: {
+                estimatedEffort: number;
+                requirements: string[];
+                tools: string[];
+                level: string;
+            };
             performance: {
                 estimatedEffort: number;
                 monitoring: string[];
@@ -596,12 +602,6 @@ declare const SmartPlanOutputSchema: z.ZodObject<{
                     throughput: number;
                     availability: number;
                 };
-            };
-            security: {
-                estimatedEffort: number;
-                requirements: string[];
-                tools: string[];
-                level: string;
             };
             testStrategy: {
                 unitTests: {
@@ -650,6 +650,12 @@ declare const SmartPlanOutputSchema: z.ZodObject<{
             }[];
         };
         quality: {
+            security: {
+                estimatedEffort: number;
+                requirements: string[];
+                tools: string[];
+                level: string;
+            };
             performance: {
                 estimatedEffort: number;
                 monitoring: string[];
@@ -658,12 +664,6 @@ declare const SmartPlanOutputSchema: z.ZodObject<{
                     throughput: number;
                     availability: number;
                 };
-            };
-            security: {
-                estimatedEffort: number;
-                requirements: string[];
-                tools: string[];
-                level: string;
             };
             testStrategy: {
                 unitTests: {
@@ -739,6 +739,12 @@ declare const SmartPlanOutputSchema: z.ZodObject<{
             }[];
         };
         quality: {
+            security: {
+                estimatedEffort: number;
+                requirements: string[];
+                tools: string[];
+                level: string;
+            };
             performance: {
                 estimatedEffort: number;
                 monitoring: string[];
@@ -747,12 +753,6 @@ declare const SmartPlanOutputSchema: z.ZodObject<{
                     throughput: number;
                     availability: number;
                 };
-            };
-            security: {
-                estimatedEffort: number;
-                requirements: string[];
-                tools: string[];
-                level: string;
             };
             testStrategy: {
                 unitTests: {
@@ -935,6 +935,12 @@ declare const SmartPlanOutputSchema: z.ZodObject<{
             }[];
         };
         quality: {
+            security: {
+                estimatedEffort: number;
+                requirements: string[];
+                tools: string[];
+                level: string;
+            };
             performance: {
                 estimatedEffort: number;
                 monitoring: string[];
@@ -943,12 +949,6 @@ declare const SmartPlanOutputSchema: z.ZodObject<{
                     throughput: number;
                     availability: number;
                 };
-            };
-            security: {
-                estimatedEffort: number;
-                requirements: string[];
-                tools: string[];
-                level: string;
             };
             testStrategy: {
                 unitTests: {
@@ -1048,6 +1048,12 @@ declare const SmartPlanOutputSchema: z.ZodObject<{
             }[];
         };
         quality: {
+            security: {
+                estimatedEffort: number;
+                requirements: string[];
+                tools: string[];
+                level: string;
+            };
             performance: {
                 estimatedEffort: number;
                 monitoring: string[];
@@ -1056,12 +1062,6 @@ declare const SmartPlanOutputSchema: z.ZodObject<{
                     throughput: number;
                     availability: number;
                 };
-            };
-            security: {
-                estimatedEffort: number;
-                requirements: string[];
-                tools: string[];
-                level: string;
             };
             testStrategy: {
                 unitTests: {

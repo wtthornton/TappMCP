@@ -20,7 +20,7 @@ export class MCPRegistry {
             healthCheckInterval: 30000, // 30 seconds
             ...config,
         };
-        this.logger = this.config.logger || console;
+        this.logger = this.config.logger ?? console;
     }
     /**
      * Initialize the registry

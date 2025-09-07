@@ -301,15 +301,15 @@ declare const SmartOrchestrateOutputSchema: z.ZodObject<{
     }, "strip", z.ZodTypeAny, {
         costPrevention: number;
         userSatisfaction: number;
-        riskMitigation: string[];
         qualityImprovement: number;
+        riskMitigation: string[];
         timesSaved: number;
         strategicAlignment: number;
     }, {
         costPrevention: number;
         userSatisfaction: number;
-        riskMitigation: string[];
         qualityImprovement: number;
+        riskMitigation: string[];
         timesSaved: number;
         strategicAlignment: number;
     }>;
@@ -423,23 +423,23 @@ declare const SmartOrchestrateOutputSchema: z.ZodObject<{
             }, "strip", z.ZodTypeAny, {
                 costPrevention: number;
                 userSatisfaction: number;
+                qualityImprovement: number;
                 estimatedROI: number;
                 timeToMarket: number;
-                qualityImprovement: number;
             }, {
                 costPrevention: number;
                 userSatisfaction: number;
+                qualityImprovement: number;
                 estimatedROI: number;
                 timeToMarket: number;
-                qualityImprovement: number;
             }>;
         }, "strip", z.ZodTypeAny, {
             businessValue: {
                 costPrevention: number;
                 userSatisfaction: number;
+                qualityImprovement: number;
                 estimatedROI: number;
                 timeToMarket: number;
-                qualityImprovement: number;
             };
             automation: {
                 monitoring: string[];
@@ -459,9 +459,9 @@ declare const SmartOrchestrateOutputSchema: z.ZodObject<{
             businessValue: {
                 costPrevention: number;
                 userSatisfaction: number;
+                qualityImprovement: number;
                 estimatedROI: number;
                 timeToMarket: number;
-                qualityImprovement: number;
             };
             automation: {
                 monitoring: string[];
@@ -547,9 +547,9 @@ declare const SmartOrchestrateOutputSchema: z.ZodObject<{
             businessValue: {
                 costPrevention: number;
                 userSatisfaction: number;
+                qualityImprovement: number;
                 estimatedROI: number;
                 timeToMarket: number;
-                qualityImprovement: number;
             };
             automation: {
                 monitoring: string[];
@@ -590,9 +590,9 @@ declare const SmartOrchestrateOutputSchema: z.ZodObject<{
             businessValue: {
                 costPrevention: number;
                 userSatisfaction: number;
+                qualityImprovement: number;
                 estimatedROI: number;
                 timeToMarket: number;
-                qualityImprovement: number;
             };
             automation: {
                 monitoring: string[];
@@ -620,8 +620,8 @@ declare const SmartOrchestrateOutputSchema: z.ZodObject<{
     businessValue: {
         costPrevention: number;
         userSatisfaction: number;
-        riskMitigation: string[];
         qualityImprovement: number;
+        riskMitigation: string[];
         timesSaved: number;
         strategicAlignment: number;
     };
@@ -656,9 +656,9 @@ declare const SmartOrchestrateOutputSchema: z.ZodObject<{
             businessValue: {
                 costPrevention: number;
                 userSatisfaction: number;
+                qualityImprovement: number;
                 estimatedROI: number;
                 timeToMarket: number;
-                qualityImprovement: number;
             };
             automation: {
                 monitoring: string[];
@@ -720,8 +720,8 @@ declare const SmartOrchestrateOutputSchema: z.ZodObject<{
     businessValue: {
         costPrevention: number;
         userSatisfaction: number;
-        riskMitigation: string[];
         qualityImprovement: number;
+        riskMitigation: string[];
         timesSaved: number;
         strategicAlignment: number;
     };
@@ -756,9 +756,9 @@ declare const SmartOrchestrateOutputSchema: z.ZodObject<{
             businessValue: {
                 costPrevention: number;
                 userSatisfaction: number;
+                qualityImprovement: number;
                 estimatedROI: number;
                 timeToMarket: number;
-                qualityImprovement: number;
             };
             automation: {
                 monitoring: string[];

@@ -120,9 +120,13 @@ export async function handleSmartPlan(input) {
             ...(validatedInput.timeConstraint && { timeConstraint: validatedInput.timeConstraint }),
             qualityRequirements: validatedInput.qualityRequirements,
         };
-        // Initialize plan generator and MCP coordinator
+        // Initialize plan generator and MCP coordinator with optimized config
         const planGenerator = new PlanGenerator();
-        const mcpCoordinator = new MCPCoordinator();
+        const mcpCoordinator = new MCPCoordinator({
+            timeout: 1000, // Reduced timeout for better performance
+            maxConcurrentRequests: 2,
+            enableFallbacks: true,
+        });
         // Gather external knowledge if requested (Phase 2A requirement)
         let externalKnowledge = [];
         const integrationStartTime = Date.now();

@@ -10,13 +10,13 @@ declare const SmartPlanEnhancedInputSchema: z.ZodObject<{
         performance: z.ZodDefault<z.ZodEnum<["basic", "standard", "high"]>>;
         accessibility: z.ZodDefault<z.ZodBoolean>;
     }, "strip", z.ZodTypeAny, {
-        accessibility: boolean;
-        performance: "high" | "basic" | "standard";
         security: "high" | "basic" | "standard";
+        performance: "high" | "basic" | "standard";
+        accessibility: boolean;
     }, {
-        accessibility?: boolean | undefined;
-        performance?: "high" | "basic" | "standard" | undefined;
         security?: "high" | "basic" | "standard" | undefined;
+        performance?: "high" | "basic" | "standard" | undefined;
+        accessibility?: boolean | undefined;
     }>>;
     externalSources: z.ZodOptional<z.ZodObject<{
         useContext7: z.ZodDefault<z.ZodBoolean>;
@@ -34,12 +34,12 @@ declare const SmartPlanEnhancedInputSchema: z.ZodObject<{
     planType: z.ZodDefault<z.ZodEnum<["strategic", "tactical", "technical", "comprehensive"]>>;
 }, "strip", z.ZodTypeAny, {
     projectId: string;
-    planType: "technical" | "strategic" | "tactical" | "comprehensive";
+    planType: "technical" | "comprehensive" | "strategic" | "tactical";
     priority: "high" | "medium" | "low" | "critical";
     qualityRequirements: {
-        accessibility: boolean;
-        performance: "high" | "basic" | "standard";
         security: "high" | "basic" | "standard";
+        performance: "high" | "basic" | "standard";
+        accessibility: boolean;
     };
     businessRequest: string;
     externalSources?: {
@@ -51,12 +51,12 @@ declare const SmartPlanEnhancedInputSchema: z.ZodObject<{
 }, {
     projectId: string;
     businessRequest: string;
-    planType?: "technical" | "strategic" | "tactical" | "comprehensive" | undefined;
+    planType?: "technical" | "comprehensive" | "strategic" | "tactical" | undefined;
     priority?: "high" | "medium" | "low" | "critical" | undefined;
     qualityRequirements?: {
-        accessibility?: boolean | undefined;
-        performance?: "high" | "basic" | "standard" | undefined;
         security?: "high" | "basic" | "standard" | undefined;
+        performance?: "high" | "basic" | "standard" | undefined;
+        accessibility?: boolean | undefined;
     } | undefined;
     externalSources?: {
         useContext7?: boolean | undefined;
@@ -221,16 +221,16 @@ declare const SmartPlanEnhancedOutputSchema: z.ZodObject<{
         riskMitigation: z.ZodNumber;
         qualityImprovement: z.ZodString;
     }, "strip", z.ZodTypeAny, {
+        qualityImprovement: string;
         estimatedROI: number;
         timeToMarket: string;
         riskMitigation: number;
-        qualityImprovement: string;
         costSavings: number;
     }, {
+        qualityImprovement: string;
         estimatedROI: number;
         timeToMarket: string;
         riskMitigation: number;
-        qualityImprovement: string;
         costSavings: number;
     }>;
     data: z.ZodObject<{
@@ -259,8 +259,8 @@ declare const SmartPlanEnhancedOutputSchema: z.ZodObject<{
         deliverables?: any;
         externalSources?: any;
         externalIntegration?: any;
-        businessRequest?: string | undefined;
         timeConstraint?: string | undefined;
+        businessRequest?: string | undefined;
         businessAnalysis?: any;
         strategicPlan?: any;
         technicalPlan?: any;
@@ -275,8 +275,8 @@ declare const SmartPlanEnhancedOutputSchema: z.ZodObject<{
         deliverables?: any;
         externalSources?: any;
         externalIntegration?: any;
-        businessRequest?: string | undefined;
         timeConstraint?: string | undefined;
+        businessRequest?: string | undefined;
         businessAnalysis?: any;
         strategicPlan?: any;
         technicalPlan?: any;
@@ -311,8 +311,8 @@ declare const SmartPlanEnhancedOutputSchema: z.ZodObject<{
         deliverables?: any;
         externalSources?: any;
         externalIntegration?: any;
-        businessRequest?: string | undefined;
         timeConstraint?: string | undefined;
+        businessRequest?: string | undefined;
         businessAnalysis?: any;
         strategicPlan?: any;
         technicalPlan?: any;
@@ -355,10 +355,10 @@ declare const SmartPlanEnhancedOutputSchema: z.ZodObject<{
     };
     externalKnowledge: any[];
     businessMetrics: {
+        qualityImprovement: string;
         estimatedROI: number;
         timeToMarket: string;
         riskMitigation: number;
-        qualityImprovement: string;
         costSavings: number;
     };
 }, {
@@ -390,8 +390,8 @@ declare const SmartPlanEnhancedOutputSchema: z.ZodObject<{
         deliverables?: any;
         externalSources?: any;
         externalIntegration?: any;
-        businessRequest?: string | undefined;
         timeConstraint?: string | undefined;
+        businessRequest?: string | undefined;
         businessAnalysis?: any;
         strategicPlan?: any;
         technicalPlan?: any;
@@ -434,10 +434,10 @@ declare const SmartPlanEnhancedOutputSchema: z.ZodObject<{
     };
     externalKnowledge: any[];
     businessMetrics: {
+        qualityImprovement: string;
         estimatedROI: number;
         timeToMarket: string;
         riskMitigation: number;
-        qualityImprovement: string;
         costSavings: number;
     };
 }>;

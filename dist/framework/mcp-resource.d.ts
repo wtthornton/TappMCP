@@ -13,7 +13,7 @@ export interface MCPResourceConfig {
     type: 'file' | 'database' | 'api' | 'memory' | 'cache';
     description: string;
     version: string;
-    connectionConfig: Record<string, any>;
+    connectionConfig: Record<string, unknown>;
     maxConnections?: number;
     timeout?: number;
     retries?: number;
@@ -21,10 +21,10 @@ export interface MCPResourceConfig {
         authentication?: boolean;
         authorization?: boolean;
         encryption?: boolean;
-        accessControl?: Record<string, any>;
+        accessControl?: Record<string, unknown>;
     };
 }
-export interface MCPResourceResult<T = any> {
+export interface MCPResourceResult<T = unknown> {
     success: boolean;
     data?: T;
     error?: string;
@@ -40,17 +40,17 @@ export interface MCPResourceContext {
     requestId: string;
     userId?: string;
     sessionId?: string;
-    businessContext?: Record<string, any>;
+    businessContext?: Record<string, unknown>;
     role?: string;
     permissions?: string[];
 }
-export declare abstract class MCPResource<TConnection = any, TData = any> {
+export declare abstract class MCPResource<TConnection = unknown, TData = unknown> {
     protected config: MCPResourceConfig;
-    protected logger: any;
+    protected logger: Console;
     protected connections: Map<string, TConnection>;
     protected connectionPool: TConnection[];
     protected isInitialized: boolean;
-    constructor(config: MCPResourceConfig, logger?: any);
+    constructor(config: MCPResourceConfig, logger?: Console);
     /**
      * Initialize the resource
      */

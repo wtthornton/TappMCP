@@ -50,7 +50,7 @@ export declare class ResourceLifecycleManager {
     private cleanupInterval?;
     private monitoringInterval?;
     private isRunning;
-    constructor(cleanupConfig?: CleanupConfig, monitoringConfig?: MonitoringConfig, logger?: any);
+    constructor(cleanupConfig?: CleanupConfig, monitoringConfig?: MonitoringConfig, logger?: Console);
     /**
      * Register a resource for lifecycle management
      */

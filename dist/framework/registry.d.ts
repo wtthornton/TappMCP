@@ -12,7 +12,7 @@ export interface MCPRegistryConfig {
     enableDependencyInjection?: boolean;
     enableHealthMonitoring?: boolean;
     healthCheckInterval?: number;
-    logger?: any;
+    logger?: Console;
 }
 export interface MCPRegistryStats {
     tools: {

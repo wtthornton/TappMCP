@@ -110,10 +110,16 @@ describe('HTML Generation Test: Real Web Page Creation', () => {
     it('should analyze generated HTML code quality and structure', async () => {
         console.log('\n🧪 Testing: HTML Code Analysis');
         expect(generatedCode).toBeDefined();
-        expect(generatedCode.files).toBeDefined();
-        expect(generatedCode.files.length).toBeGreaterThan(0);
+        const codeData = generatedCode;
+        expect(codeData.files).toBeDefined();
+        expect(codeData.files.length).toBeGreaterThan(0);
         // Find the HTML file
-        const htmlFile = generatedCode.files.find((file) => file.path.endsWith('.html') || file.type === 'html' || file.content.includes('<html'));
+        const htmlFile = codeData.files.find((file) => {
+            const fileObj = file;
+            return (fileObj.path.endsWith('.html') ||
+                fileObj.type === 'html' ||
+                fileObj.content.includes('<html'));
+        });
         if (htmlFile) {
             console.log(`📄 Found HTML file: ${htmlFile.path}`);
             console.log(`📊 File size: ${htmlFile.content.length} characters`);

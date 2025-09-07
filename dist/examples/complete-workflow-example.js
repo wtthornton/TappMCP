@@ -16,15 +16,15 @@ async function completeProjectWorkflow() {
     console.log('\n📋 Step 1: Project Initialization');
     const beginTool = new SmartBeginMCPTool();
     const projectInit = await beginTool.execute({
-        request: "Build a secure task management API with user authentication, real-time notifications, and analytics dashboard",
+        request: 'Build a secure task management API with user authentication, real-time notifications, and analytics dashboard',
         options: {
             includeArchitecture: true,
             includeTechnicalSpecs: true,
             includeBusinessContext: true,
-            timeline: "6 weeks",
+            timeline: '6 weeks',
             teamSize: 5,
-            skillLevel: "intermediate"
-        }
+            skillLevel: 'intermediate',
+        },
     });
     if (!projectInit.success) {
         throw new Error(`Project initialization failed: ${projectInit.error?.message}`);
@@ -37,15 +37,15 @@ async function completeProjectWorkflow() {
     console.log('\n🎯 Step 2: Enhanced Planning & Risk Assessment');
     const planTool = new SmartPlanEnhancedMCPTool();
     const enhancedPlan = await planTool.execute({
-        projectRequest: "Task management API with authentication, notifications, and analytics",
+        projectRequest: 'Task management API with authentication, notifications, and analytics',
         options: {
             includeRiskAssessment: true,
             includeStakeholderAnalysis: true,
             includeTechnicalSpecs: true,
             includeResourcePlanning: true,
-            timeframe: "6 weeks",
-            complexity: "high"
-        }
+            timeframe: '6 weeks',
+            complexity: 'high',
+        },
     });
     if (!enhancedPlan.success) {
         throw new Error(`Enhanced planning failed: ${enhancedPlan.error?.message}`);
@@ -58,72 +58,72 @@ async function completeProjectWorkflow() {
     console.log('\n🎭 Step 3: Workflow Orchestration');
     const orchestrateTool = new SmartOrchestrateMCPTool();
     const orchestration = await orchestrateTool.execute({
-        request: "Implement complete task management system with security, performance, and scalability",
-        workflow: "sdlc",
+        request: 'Implement complete task management system with security, performance, and scalability',
+        workflow: 'sdlc',
         options: {
             costPrevention: true,
             skipPhases: [],
-            focusAreas: ["security", "performance", "scalability", "user-experience"],
-            qualityLevel: "production",
+            focusAreas: ['security', 'performance', 'scalability', 'user-experience'],
+            qualityLevel: 'production',
             businessContext: {
-                projectId: "task-mgmt-api-v1",
+                projectId: 'task-mgmt-api-v1',
                 businessGoals: [
-                    "Secure multi-tenant task management",
-                    "Real-time collaboration features",
-                    "Comprehensive analytics and reporting",
-                    "Mobile-first responsive design"
+                    'Secure multi-tenant task management',
+                    'Real-time collaboration features',
+                    'Comprehensive analytics and reporting',
+                    'Mobile-first responsive design',
                 ],
                 requirements: [
-                    "JWT-based authentication with refresh tokens",
-                    "WebSocket real-time notifications",
-                    "RESTful API with OpenAPI documentation",
-                    "PostgreSQL with read replicas",
-                    "Redis for caching and sessions",
-                    "Elasticsearch for search functionality"
+                    'JWT-based authentication with refresh tokens',
+                    'WebSocket real-time notifications',
+                    'RESTful API with OpenAPI documentation',
+                    'PostgreSQL with read replicas',
+                    'Redis for caching and sessions',
+                    'Elasticsearch for search functionality',
                 ],
                 stakeholders: [
-                    "Product Manager",
-                    "Security Team",
-                    "Frontend Development Team",
-                    "DevOps/Platform Team",
-                    "QA Engineering Team",
-                    "Customer Success Team"
+                    'Product Manager',
+                    'Security Team',
+                    'Frontend Development Team',
+                    'DevOps/Platform Team',
+                    'QA Engineering Team',
+                    'Customer Success Team',
                 ],
                 constraints: {
-                    budget: "$75,000",
-                    timeline: "6 weeks",
-                    compliance: "SOC2 Type II",
-                    performance: "99.9% uptime, <200ms response time",
-                    scalability: "Support 10,000 concurrent users"
+                    budget: '$75,000',
+                    timeline: '6 weeks',
+                    compliance: 'SOC2 Type II',
+                    performance: '99.9% uptime, <200ms response time',
+                    scalability: 'Support 10,000 concurrent users',
                 },
                 success: {
                     metrics: [
-                        "Zero critical security vulnerabilities",
-                        "99.9% uptime SLA",
-                        "Average API response time <200ms",
-                        "Test coverage ≥90%",
-                        "Customer satisfaction score ≥4.5/5"
+                        'Zero critical security vulnerabilities',
+                        '99.9% uptime SLA',
+                        'Average API response time <200ms',
+                        'Test coverage ≥90%',
+                        'Customer satisfaction score ≥4.5/5',
                     ],
                     criteria: [
-                        "All security audits passed",
-                        "Load testing benchmarks met",
-                        "Full API documentation complete",
-                        "Mobile responsiveness verified",
-                        "Performance monitoring implemented"
-                    ]
+                        'All security audits passed',
+                        'Load testing benchmarks met',
+                        'Full API documentation complete',
+                        'Mobile responsiveness verified',
+                        'Performance monitoring implemented',
+                    ],
                 },
                 marketContext: {
-                    industry: "productivity-software",
-                    targetMarket: "small-to-medium businesses",
-                    competitors: ["Asana", "Trello", "Monday.com"]
-                }
-            }
+                    industry: 'productivity-software',
+                    targetMarket: 'small-to-medium businesses',
+                    competitors: ['Asana', 'Trello', 'Monday.com'],
+                },
+            },
         },
         externalSources: {
             useContext7: true,
             useWebSearch: true,
-            useMemory: true
-        }
+            useMemory: true,
+        },
     });
     if (!orchestration.success) {
         throw new Error(`Orchestration failed: ${orchestration.error?.message}`);
@@ -138,52 +138,52 @@ async function completeProjectWorkflow() {
     const writeTool = new SmartWriteMCPTool();
     // Generate authentication middleware
     const authCode = await writeTool.execute({
-        projectId: "task-mgmt-api-v1",
-        featureDescription: "JWT authentication middleware with refresh token support, rate limiting, and security headers",
-        techStack: ["typescript", "express", "jsonwebtoken", "bcrypt", "helmet", "express-rate-limit"],
-        codeType: "api",
-        role: "developer",
-        priority: "critical",
-        securityLevel: "high",
+        projectId: 'task-mgmt-api-v1',
+        featureDescription: 'JWT authentication middleware with refresh token support, rate limiting, and security headers',
+        techStack: ['typescript', 'express', 'jsonwebtoken', 'bcrypt', 'helmet', 'express-rate-limit'],
+        codeType: 'api',
+        role: 'developer',
+        priority: 'critical',
+        securityLevel: 'high',
         qualityRequirements: {
             testCoverage: 95,
             performanceTargets: {
-                responseTime: 50
+                responseTime: 50,
             },
-            securityLevel: "high"
-        }
+            securityLevel: 'high',
+        },
     });
     // Generate real-time notification system
     const notificationCode = await writeTool.execute({
-        projectId: "task-mgmt-api-v1",
-        featureDescription: "WebSocket-based real-time notification system with room management and message queuing",
-        techStack: ["typescript", "socket.io", "redis", "bull"],
-        codeType: "api",
-        role: "developer",
-        priority: "high",
-        securityLevel: "medium",
+        projectId: 'task-mgmt-api-v1',
+        featureDescription: 'WebSocket-based real-time notification system with room management and message queuing',
+        techStack: ['typescript', 'socket.io', 'redis', 'bull'],
+        codeType: 'api',
+        role: 'developer',
+        priority: 'high',
+        securityLevel: 'medium',
         qualityRequirements: {
             testCoverage: 85,
             performanceTargets: {
-                responseTime: 100
-            }
-        }
+                responseTime: 100,
+            },
+        },
     });
     // Generate task management API
     const taskApiCode = await writeTool.execute({
-        projectId: "task-mgmt-api-v1",
-        featureDescription: "RESTful task management API with CRUD operations, filtering, pagination, and search",
-        techStack: ["typescript", "express", "prisma", "elasticsearch", "joi"],
-        codeType: "api",
-        role: "developer",
-        priority: "high",
-        securityLevel: "medium",
+        projectId: 'task-mgmt-api-v1',
+        featureDescription: 'RESTful task management API with CRUD operations, filtering, pagination, and search',
+        techStack: ['typescript', 'express', 'prisma', 'elasticsearch', 'joi'],
+        codeType: 'api',
+        role: 'developer',
+        priority: 'high',
+        securityLevel: 'medium',
         qualityRequirements: {
             testCoverage: 90,
             performanceTargets: {
-                responseTime: 200
-            }
-        }
+                responseTime: 200,
+            },
+        },
     });
     console.log('✅ Core components generated:');
     console.log(`  🔐 Authentication: ${authCode.data?.generatedCode.length || 0} chars`);
@@ -192,19 +192,21 @@ async function completeProjectWorkflow() {
     console.log(`  💎 Avg complexity: ${[
         authCode.data?.qualityMetrics.complexity,
         notificationCode.data?.qualityMetrics.complexity,
-        taskApiCode.data?.qualityMetrics.complexity
-    ].filter(Boolean).reduce((a, b) => (a || 0) + (b || 0), 0) / 3 || 0}`);
+        taskApiCode.data?.qualityMetrics.complexity,
+    ]
+        .filter(Boolean)
+        .reduce((a, b) => (a || 0) + (b || 0), 0) / 3 || 0}`);
     // Step 5: Project Completion & Validation
     console.log('\n🏁 Step 5: Project Completion & Validation');
     const finishTool = new SmartFinishMCPTool();
     const completion = await finishTool.execute({
-        projectId: "task-mgmt-api-v1",
+        projectId: 'task-mgmt-api-v1',
         options: {
             validateQuality: true,
             generateSummary: true,
             includeMetrics: true,
-            performanceAnalysis: true
-        }
+            performanceAnalysis: true,
+        },
     });
     if (!completion.success) {
         throw new Error(`Project completion failed: ${completion.error?.message}`);
@@ -223,7 +225,7 @@ async function completeProjectWorkflow() {
         authCode.metadata.executionTime,
         notificationCode.metadata.executionTime,
         taskApiCode.metadata.executionTime,
-        completion.metadata.executionTime
+        completion.metadata.executionTime,
     ].reduce((total, time) => total + time, 0);
     console.log(`⏱️  Total execution time: ${totalExecutionTime}ms`);
     console.log(`🎯 Project phases completed: ${projectInit.data?.projectPlan.phases.length || 0}`);
@@ -253,15 +255,15 @@ async function completeProjectWorkflow() {
             codeComponents: {
                 authentication: authCode.data,
                 notifications: notificationCode.data,
-                taskApi: taskApiCode.data
+                taskApi: taskApiCode.data,
             },
-            completion: completion.data
+            completion: completion.data,
         },
         performanceMetrics: {
             totalTime: totalExecutionTime,
             averageResponseTime: avgResponseTime,
-            targetCompliance: avgResponseTime < 50
-        }
+            targetCompliance: avgResponseTime < 50,
+        },
     };
 }
 // Example usage with error handling

@@ -109,6 +109,7 @@ declare const SmartWriteOutputSchema: z.ZodObject<{
             examples: z.ZodArray<z.ZodString, "many">;
         }, "strip", z.ZodTypeAny, {
             description: string;
+            examples: string[];
             parameters: {
                 description: string;
                 type: string;
@@ -116,9 +117,9 @@ declare const SmartWriteOutputSchema: z.ZodObject<{
                 required: boolean;
             }[];
             returns: string;
-            examples: string[];
         }, {
             description: string;
+            examples: string[];
             parameters: {
                 description: string;
                 type: string;
@@ -126,11 +127,11 @@ declare const SmartWriteOutputSchema: z.ZodObject<{
                 required: boolean;
             }[];
             returns: string;
-            examples: string[];
         }>;
     }, "strip", z.ZodTypeAny, {
         documentation: {
             description: string;
+            examples: string[];
             parameters: {
                 description: string;
                 type: string;
@@ -138,7 +139,6 @@ declare const SmartWriteOutputSchema: z.ZodObject<{
                 required: boolean;
             }[];
             returns: string;
-            examples: string[];
         };
         language: string;
         content: string;
@@ -153,6 +153,7 @@ declare const SmartWriteOutputSchema: z.ZodObject<{
     }, {
         documentation: {
             description: string;
+            examples: string[];
             parameters: {
                 description: string;
                 type: string;
@@ -160,7 +161,6 @@ declare const SmartWriteOutputSchema: z.ZodObject<{
                 required: boolean;
             }[];
             returns: string;
-            examples: string[];
         };
         language: string;
         content: string;
@@ -225,6 +225,7 @@ declare const SmartWriteOutputSchema: z.ZodObject<{
     generatedCode: {
         documentation: {
             description: string;
+            examples: string[];
             parameters: {
                 description: string;
                 type: string;
@@ -232,7 +233,6 @@ declare const SmartWriteOutputSchema: z.ZodObject<{
                 required: boolean;
             }[];
             returns: string;
-            examples: string[];
         };
         language: string;
         content: string;
@@ -264,6 +264,7 @@ declare const SmartWriteOutputSchema: z.ZodObject<{
     generatedCode: {
         documentation: {
             description: string;
+            examples: string[];
             parameters: {
                 description: string;
                 type: string;
@@ -271,7 +272,6 @@ declare const SmartWriteOutputSchema: z.ZodObject<{
                 required: boolean;
             }[];
             returns: string;
-            examples: string[];
         };
         language: string;
         content: string;

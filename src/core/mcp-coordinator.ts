@@ -327,7 +327,9 @@ export class MCPCoordinator {
 
       // Get best practices for domain (limit to 1 for performance)
       const practices = await this.context7.getBestPractices(request.domain);
-      knowledge.push(...practices.slice(0, 1).map(practice => this.transformBestPractice(practice)));
+      knowledge.push(
+        ...practices.slice(0, 1).map(practice => this.transformBestPractice(practice))
+      );
 
       return knowledge;
     } catch (error) {

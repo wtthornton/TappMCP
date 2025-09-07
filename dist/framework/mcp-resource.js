@@ -17,7 +17,7 @@ export class MCPResource {
     isInitialized = false;
     constructor(config, logger) {
         this.config = config;
-        this.logger = logger || console;
+        this.logger = logger ?? console;
     }
     /**
      * Initialize the resource
@@ -53,10 +53,12 @@ export class MCPResource {
         }
         // Try to get from pool first
         if (this.connectionPool.length > 0) {
-            return this.connectionPool.pop();
+            const connection = this.connectionPool.pop();
+            if (connection)
+                return connection;
         }
         // Create new connection if pool is empty and under limit
-        if (this.connections.size < (this.config.maxConnections || 10)) {
+        if (this.connections.size < (this.config.maxConnections ?? 10)) {
             return await this.createConnection();
         }
         // Wait for connection to become available
@@ -66,7 +68,7 @@ export class MCPResource {
      * Return a connection to the pool
      */
     async returnConnection(connection) {
-        if (this.connectionPool.length < (this.config.maxConnections || 10)) {
+        if (this.connectionPool.length < (this.config.maxConnections ?? 10)) {
             this.connectionPool.push(connection);
         }
         else {
@@ -78,7 +80,7 @@ export class MCPResource {
      */
     async execute(operation, context) {
         const startTime = performance.now();
-        const requestId = context?.requestId || this.generateRequestId();
+        const requestId = context?.requestId ?? this.generateRequestId();
         let connection;
         try {
             if (!this.isInitialized) {
@@ -146,11 +148,13 @@ export class MCPResource {
         return new Promise((resolve, reject) => {
             const timeout = setTimeout(() => {
                 reject(new Error('Connection timeout - no available connections'));
-            }, this.config.timeout || 30000);
+            }, this.config.timeout ?? 30000);
             const checkConnection = () => {
                 if (this.connectionPool.length > 0) {
                     clearTimeout(timeout);
-                    resolve(this.connectionPool.pop());
+                    const connection = this.connectionPool.pop();
+                    if (connection)
+                        resolve(connection);
                 }
                 else {
                     setTimeout(checkConnection, 100);
