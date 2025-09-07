@@ -3,6 +3,7 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { CallToolRequestSchema, ListToolsRequestSchema, } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
+import { handleError, getErrorMessage } from './utils/errors.js';
 // Import health server for Docker health checks
 import './health-server.js';
 // Import tool handlers
@@ -56,7 +57,8 @@ class SmartMCPServer {
                 };
             }
             catch (error) {
-                throw new Error(`Failed to list tools: ${error instanceof Error ? error.message : 'Unknown error'}`);
+                const mcpError = handleError(error, { operation: 'list_tools' });
+                throw mcpError;
             }
         });
         // Call tool handler
@@ -81,7 +83,11 @@ class SmartMCPServer {
                         schema.parse(args);
                     }
                     catch (validationError) {
-                        throw new Error(`Invalid arguments for tool '${name}': ${validationError instanceof Error ? validationError.message : 'Validation failed'}`);
+                        const mcpError = handleError(validationError, {
+                            operation: 'validate_tool_arguments',
+                            toolName: name
+                        });
+                        throw mcpError;
                     }
                 }
                 // Execute tool handler
@@ -103,7 +109,8 @@ class SmartMCPServer {
                 };
             }
             catch (error) {
-                const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+                const mcpError = handleError(error, { operation: 'call_tool', toolName: name });
+                const errorMessage = getErrorMessage(mcpError);
                 return {
                     content: [
                         {
@@ -111,6 +118,7 @@ class SmartMCPServer {
                             text: JSON.stringify({
                                 success: false,
                                 error: errorMessage,
+                                code: mcpError.code,
                                 timestamp: new Date().toISOString(),
                             }, null, 2),
                         },
@@ -124,12 +132,12 @@ class SmartMCPServer {
         try {
             const transport = new StdioServerTransport();
             await this.server.connect(transport);
-            // eslint-disable-next-line no-console
-            console.error(`${SERVER_NAME} v${SERVER_VERSION} started successfully`);
+            // Server started successfully
         }
         catch (error) {
+            const mcpError = handleError(error, { operation: 'start_server' });
             // eslint-disable-next-line no-console
-            console.error(`Failed to start ${SERVER_NAME}:`, error);
+            console.error(`Failed to start ${SERVER_NAME}:`, mcpError.message);
             process.exit(1);
         }
     }
@@ -138,8 +146,7 @@ class SmartMCPServer {
 if (require.main === module) {
     const server = new SmartMCPServer();
     server.start().catch(error => {
-        // eslint-disable-next-line no-console
-        console.error('Server startup failed:', error);
+        // Server startup failed
         process.exit(1);
     });
 }

@@ -33,8 +33,8 @@ export declare const ContextEntrySchema: z.ZodObject<{
     version: number;
     tags: string[];
     content: string;
-    sessionId: string;
     toolName: string;
+    sessionId: string;
     contextType: "intermediate" | "metadata" | "input" | "output";
     metadata: Record<string, any>;
     compressed: boolean;
@@ -43,8 +43,8 @@ export declare const ContextEntrySchema: z.ZodObject<{
     timestamp: Date;
     id: string;
     content: string;
-    sessionId: string;
     toolName: string;
+    sessionId: string;
     contextType: "intermediate" | "metadata" | "input" | "output";
     priority?: "high" | "medium" | "low" | "critical" | undefined;
     version?: number | undefined;
@@ -106,8 +106,8 @@ export declare const SearchQuerySchema: z.ZodObject<{
     endDate?: Date | undefined;
     priority?: "high" | "medium" | "low" | "critical" | undefined;
     tags?: string[] | undefined;
-    sessionId?: string | undefined;
     toolName?: string | undefined;
+    sessionId?: string | undefined;
     contextType?: "intermediate" | "metadata" | "input" | "output" | undefined;
     textSearch?: string | undefined;
 }, {
@@ -115,8 +115,8 @@ export declare const SearchQuerySchema: z.ZodObject<{
     endDate?: Date | undefined;
     priority?: "high" | "medium" | "low" | "critical" | undefined;
     tags?: string[] | undefined;
-    sessionId?: string | undefined;
     toolName?: string | undefined;
+    sessionId?: string | undefined;
     contextType?: "intermediate" | "metadata" | "input" | "output" | undefined;
     textSearch?: string | undefined;
     limit?: number | undefined;

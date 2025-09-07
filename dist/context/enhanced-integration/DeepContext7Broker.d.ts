@@ -73,8 +73,8 @@ export declare const ContextEntrySchema: z.ZodObject<{
     timestamp: Date;
     id: string;
     content: string;
-    sessionId: string;
     toolName: string;
+    sessionId: string;
     contextType: "user_query" | "system_response" | "tool_output" | "error_context" | "workflow_state";
     relevanceScore: number;
     persistenceLevel: "project" | "user" | "session" | "global";
@@ -99,8 +99,8 @@ export declare const ContextEntrySchema: z.ZodObject<{
     timestamp: Date;
     id: string;
     content: string;
-    sessionId: string;
     toolName: string;
+    sessionId: string;
     contextType: "user_query" | "system_response" | "tool_output" | "error_context" | "workflow_state";
     relevanceScore: number;
     metadata?: {
@@ -261,7 +261,7 @@ export declare class DeepContext7Broker {
     private getToolContextRequirements;
     private buildContextPreamble;
     private estimateTokens;
-    private calculateQueryRelevance;
+    private _calculateQueryRelevance;
     private isHighValueContext;
 }
 export declare function createDeepContext7Broker(config?: Partial<ContextInjectionConfig>): DeepContext7Broker;

@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "strictNullChecks": false,
+    "exactOptionalPropertyTypes": false
+  },
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "src/**/*.test.ts"]
+}

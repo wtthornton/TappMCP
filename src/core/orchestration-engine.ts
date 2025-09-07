@@ -13,6 +13,7 @@ import {
   type RoleTransition,
 } from './business-context-broker.js';
 import { RoleOrchestrator, type WorkflowTask } from './role-orchestrator.js';
+import { handleError, getErrorMessage } from '../utils/errors.js';
 
 export interface Workflow {
   id: string;
@@ -193,6 +194,7 @@ export class OrchestrationEngine {
     } catch (error) {
       workflow.status = 'failed';
       const executionTime = Date.now() - startTime;
+      const mcpError = handleError(error, { operation: 'execute_workflow', workflowId });
 
       return {
         workflowId,
@@ -215,7 +217,7 @@ export class OrchestrationEngine {
           businessAlignmentScore: 0,
           performanceScore: 0,
         },
-        errors: [error instanceof Error ? error.message : 'Unknown error'],
+        errors: [getErrorMessage(mcpError)],
       };
     }
   }
@@ -425,6 +427,7 @@ export class OrchestrationEngine {
       };
     } catch (error) {
       const duration = Date.now() - startTime;
+      const mcpError = handleError(error, { operation: 'execute_phase', phaseName: phase.name });
 
       return {
         phase: phase.name,
@@ -433,7 +436,7 @@ export class OrchestrationEngine {
         deliverables: [],
         qualityMetrics: {},
         duration,
-        issues: [error instanceof Error ? error.message : 'Phase execution failed'],
+        issues: [getErrorMessage(mcpError)],
       };
     }
   }

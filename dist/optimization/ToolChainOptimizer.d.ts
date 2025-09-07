@@ -264,7 +264,7 @@ export interface ExecutionResult {
         success: boolean;
         executionTime: number;
         cost: number;
-        output?: any;
+        output?: unknown;
         error?: string;
         retryCount: number;
         cacheHit: boolean;
@@ -361,8 +361,8 @@ export declare class ToolChainOptimizer {
         goal: string;
         tools: Array<{
             tool: string;
-            inputs: any;
-            requirements?: any;
+            inputs: Record<string, unknown>;
+            requirements?: Record<string, unknown>;
         }>;
         constraints?: Partial<ExecutionPlan['constraints']>;
     }): Promise<ExecutionPlan>;

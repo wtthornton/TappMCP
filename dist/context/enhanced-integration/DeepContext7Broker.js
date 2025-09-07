@@ -118,7 +118,7 @@ export class DeepContext7Broker {
      */
     async getRelevantContext(sessionId, query, toolName, options = {}) {
         console.log(`Retrieving relevant context for ${toolName} in session ${sessionId}`);
-        const { maxResults = 5, minRelevance = this.config.relevanceThreshold, _includeMetadata = true, crossSession = this.config.crossSessionEnabled, } = options;
+        const { maxResults = 5, minRelevance = this.config.relevanceThreshold, includeMetadata = true, crossSession = this.config.crossSessionEnabled, } = options;
         // Get session-specific contexts
         let candidates = this.getSessionContext(sessionId);
         // Add cross-session contexts if enabled
@@ -219,7 +219,7 @@ export class DeepContext7Broker {
         let removed = 0;
         let preserved = 0;
         let preservedHighValue = 0;
-        for (const [contextId, context] of this.contextStore.entries()) {
+        for (const [_contextId, context] of this.contextStore.entries()) {
             // Skip if session-specific cleanup and context doesn't match
             if (sessionId && context.sessionId !== sessionId) {
                 continue;
@@ -229,7 +229,7 @@ export class DeepContext7Broker {
             const isLowRelevance = context.relevanceScore < minRelevance;
             const isHighValue = this.isHighValueContext(context);
             if (isOld && isLowRelevance && (!preserveHighValue || !isHighValue)) {
-                this.contextStore.delete(contextId);
+                this.contextStore.delete(_contextId);
                 this.removeFromSessionContext(context);
                 removed++;
             }
@@ -307,7 +307,7 @@ export class DeepContext7Broker {
     async getCrossSessionContext(sessionId, toolName) {
         const crossSessionContexts = [];
         // Find contexts from other sessions that might be relevant
-        for (const [contextId, context] of this.contextStore.entries()) {
+        for (const [_contextId, context] of this.contextStore.entries()) {
             if (context.sessionId !== sessionId &&
                 context.persistenceLevel !== 'session' &&
                 (context.toolName === toolName || context.contextType === 'workflow_state')) {
@@ -383,7 +383,7 @@ export class DeepContext7Broker {
         // Rough approximation: 1 token ≈ 4 characters
         return Math.ceil(text.length / 4);
     }
-    calculateQueryRelevance(context, query, toolName) {
+    _calculateQueryRelevance(context, query, toolName) {
         let relevance = context.relevanceScore;
         // Tool name match increases relevance
         if (context.toolName === toolName)

@@ -110,7 +110,7 @@ export interface ExecutionResult {
     success: boolean;
     executionTime: number;
     cost: number;
-    output?: any;
+    output?: unknown;
     error?: string;
     retryCount: number;
     cacheHit: boolean;
@@ -151,8 +151,8 @@ export type OptimizerConfig = z.infer<typeof OptimizerConfigSchema>;
 interface CacheEntry {
   key: string;
   toolName: string;
-  inputs: any;
-  output: any;
+  inputs: Record<string, unknown>;
+  output: unknown;
   timestamp: Date;
   executionTime: number;
   hitCount: number;
@@ -239,8 +239,8 @@ export class ToolChainOptimizer {
     goal: string;
     tools: Array<{
       tool: string;
-      inputs: any;
-      requirements?: any;
+      inputs: Record<string, unknown>;
+      requirements?: Record<string, unknown>;
     }>;
     constraints?: Partial<ExecutionPlan['constraints']>;
   }): Promise<ExecutionPlan> {
@@ -438,7 +438,7 @@ export class ToolChainOptimizer {
     }
 
     return suggestions.sort((a, b) => {
-      const impactScore = (suggestion: any) => {
+      const impactScore = (suggestion: { estimatedImpact: { timeReduction?: number; costReduction?: number; qualityImprovement?: number } }) => {
         return (
           (suggestion.estimatedImpact.timeReduction || 0) * 10 +
           (suggestion.estimatedImpact.costReduction || 0) * 100 +
@@ -717,7 +717,7 @@ export class ToolChainOptimizer {
     const promises = steps.map(async step => {
       const startTime = Date.now();
       let retryCount = 0;
-      let lastError: any;
+      let lastError: Error | unknown;
 
       while (retryCount <= (step.retryConfig?.maxRetries || 0)) {
         try {
@@ -801,7 +801,7 @@ export class ToolChainOptimizer {
     return Promise.all(promises);
   }
 
-  private async simulateToolExecution(toolName: string, inputs: any): Promise<any> {
+  private async simulateToolExecution(toolName: string, inputs: Record<string, unknown>): Promise<unknown> {
     const tool = this.toolRegistry.get(toolName);
     if (!tool) {
       throw new Error(`Tool ${toolName} not found`);
@@ -836,7 +836,7 @@ export class ToolChainOptimizer {
     return `step_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  private generateCacheKey(toolName: string, inputs: any): string {
+  private generateCacheKey(toolName: string, inputs: Record<string, unknown>): string {
     const inputHash = JSON.stringify(inputs);
     return `${toolName}_${Buffer.from(inputHash).toString('base64')}`;
   }
@@ -901,8 +901,8 @@ export class ToolChainOptimizer {
   }
 
   private generateRecommendations(
-    stepResults: Array<any>,
-    optimization: any,
+    stepResults: Array<{ stepId: string; toolName: string; success: boolean; executionTime: number; cost: number; output?: unknown; error?: string; retryCount: number; cacheHit: boolean }>,
+    optimization: { totalTime: number; totalCost: number; cacheHitRate: number; parallelizationEfficiency: number; retryRate: number },
     plan: ExecutionPlan
   ): ExecutionResult['recommendations'] {
     const recommendations: ExecutionResult['recommendations'] = [];

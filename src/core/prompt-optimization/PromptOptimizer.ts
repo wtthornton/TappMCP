@@ -189,13 +189,13 @@ export class PromptOptimizer {
       }
 
       // Generate optimized template
-      const templateResult = await this.templateEngine.generateTemplate(templateContext);
+      const templateResult = await this.templateEngine.generateOptimizedTemplate(templateContext);
 
       // Apply optimization strategies
       const strategy = this.selectOptimalStrategy(request, templateContext);
       const optimizedPrompt = await this.applyOptimization(
         request.originalPrompt,
-        templateResult.template,
+        templateResult,
         strategy,
         templateContext
       );
@@ -239,7 +239,7 @@ export class PromptOptimizer {
         strategy,
         qualityScore,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
         optimizedPrompt: request.originalPrompt,
@@ -247,7 +247,7 @@ export class PromptOptimizer {
         estimatedTokens: this.countTokens(request.originalPrompt),
         strategy: 'error',
         qualityScore: 0,
-        reason: error.message,
+        reason: error instanceof Error ? error.message : String(error),
       };
     }
   }
@@ -300,7 +300,7 @@ export class PromptOptimizer {
         optimizationTime: Date.now() - startTime,
         strategyReasons,
         contextInjected: appliedStrategies.includes('context-aware'),
-        templateUsed: this.getUsedTemplate(appliedStrategies),
+        templateUsed: this.getUsedTemplate(appliedStrategies) || undefined,
       },
     };
 
@@ -851,8 +851,8 @@ export class PromptOptimizer {
 
 // Export factory function
 export function createPromptOptimizer(config?: {
-  budgetConfig?: any;
-  costConfig?: any;
+  budgetConfig?: Record<string, unknown>;
+  costConfig?: Record<string, unknown>;
   optimizationConfig?: { defaultStrategy?: OptimizationStrategy };
 }): PromptOptimizer {
   const budgetManager = new TokenBudgetManager(config?.costConfig, config?.budgetConfig);

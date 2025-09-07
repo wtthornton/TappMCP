@@ -398,7 +398,7 @@ export class TokenBudgetManager {
   /**
    * Log usage for analytics
    */
-  private logUsage(requestId: string, usage: any): void {
+  private logUsage(requestId: string, usage: Record<string, unknown>): void {
     // In production, this would write to a logging service
     console.log(`Usage logged for ${requestId}:`, {
       timestamp: new Date().toISOString(),

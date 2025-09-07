@@ -9,7 +9,7 @@ COPY package.json package-lock.json ./
 # Install only production dependencies
 RUN npm ci --only=production && npm cache clean --force
 
-# Copy built distribution
+# Copy built distribution (includes Week 2 systems)
 COPY dist/ ./dist/
 COPY src/schemas/ ./src/schemas/
 
@@ -30,5 +30,5 @@ EXPOSE 3000 3001
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD node -e "require('http').get('http://localhost:3000/health', (res) => process.exit(res.statusCode === 200 ? 0 : 1))"
 
-# Start both health server and MCP server
-CMD ["sh", "-c", "node dist/health-server.js & node dist/server.js"]
+# Start both health server and MCP server with ES module support
+CMD ["sh", "-c", "node --input-type=module dist/health-server.js & node --input-type=module dist/server.js"]

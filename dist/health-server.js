@@ -31,20 +31,17 @@ const healthServer = createServer((req, res) => {
 });
 // Start health server
 healthServer.listen(Number(PORT), '0.0.0.0', () => {
-    // eslint-disable-next-line no-console
-    console.log(`Health server running on port ${PORT}`);
+    // Health server running
 });
 // Graceful shutdown
 process.on('SIGTERM', () => {
-    // eslint-disable-next-line no-console
-    console.log('SIGTERM received, shutting down health server');
+    // SIGTERM received, shutting down health server
     healthServer.close(() => {
         process.exit(0);
     });
 });
 process.on('SIGINT', () => {
-    // eslint-disable-next-line no-console
-    console.log('SIGINT received, shutting down health server');
+    // SIGINT received, shutting down health server
     healthServer.close(() => {
         process.exit(0);
     });

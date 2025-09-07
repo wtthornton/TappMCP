@@ -405,7 +405,7 @@ export class DeepContext7Broker {
     let preserved = 0;
     let preservedHighValue = 0;
 
-    for (const [contextId, context] of this.contextStore.entries()) {
+    for (const [_contextId, context] of this.contextStore.entries()) {
       // Skip if session-specific cleanup and context doesn't match
       if (sessionId && context.sessionId !== sessionId) {
         continue;
@@ -417,7 +417,7 @@ export class DeepContext7Broker {
       const isHighValue = this.isHighValueContext(context);
 
       if (isOld && isLowRelevance && (!preserveHighValue || !isHighValue)) {
-        this.contextStore.delete(contextId);
+        this.contextStore.delete(_contextId);
         this.removeFromSessionContext(context);
         removed++;
       } else {
@@ -531,7 +531,7 @@ export class DeepContext7Broker {
     const crossSessionContexts: ContextEntry[] = [];
 
     // Find contexts from other sessions that might be relevant
-    for (const [contextId, context] of this.contextStore.entries()) {
+    for (const [_contextId, context] of this.contextStore.entries()) {
       if (
         context.sessionId !== sessionId &&
         context.persistenceLevel !== 'session' &&
@@ -622,7 +622,7 @@ export class DeepContext7Broker {
     return Math.ceil(text.length / 4);
   }
 
-  private calculateQueryRelevance(context: ContextEntry, query: string, toolName: string): number {
+  private _calculateQueryRelevance(context: ContextEntry, query: string, toolName: string): number {
     let relevance = context.relevanceScore;
 
     // Tool name match increases relevance

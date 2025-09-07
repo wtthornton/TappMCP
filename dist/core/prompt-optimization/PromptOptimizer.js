@@ -100,10 +100,10 @@ export class PromptOptimizer {
                 };
             }
             // Generate optimized template
-            const templateResult = await this.templateEngine.generateTemplate(templateContext);
+            const templateResult = await this.templateEngine.generateOptimizedTemplate(templateContext);
             // Apply optimization strategies
             const strategy = this.selectOptimalStrategy(request, templateContext);
-            const optimizedPrompt = await this.applyOptimization(request.originalPrompt, templateResult.template, strategy, templateContext);
+            const optimizedPrompt = await this.applyOptimization(request.originalPrompt, templateResult, strategy, templateContext);
             const finalTokens = this.countTokens(optimizedPrompt);
             const tokenReduction = estimatedInputTokens - finalTokens;
             const qualityScore = this.calculateQualityScore(request.originalPrompt, optimizedPrompt, request.qualityThreshold || 80);
@@ -145,7 +145,7 @@ export class PromptOptimizer {
                 estimatedTokens: this.countTokens(request.originalPrompt),
                 strategy: 'error',
                 qualityScore: 0,
-                reason: error.message,
+                reason: error instanceof Error ? error.message : String(error),
             };
         }
     }
@@ -188,7 +188,7 @@ export class PromptOptimizer {
                 optimizationTime: Date.now() - startTime,
                 strategyReasons,
                 contextInjected: appliedStrategies.includes('context-aware'),
-                templateUsed: this.getUsedTemplate(appliedStrategies),
+                templateUsed: this.getUsedTemplate(appliedStrategies) || undefined,
             },
         };
         // Store for learning

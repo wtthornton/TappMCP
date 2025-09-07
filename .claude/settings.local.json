@@ -35,7 +35,8 @@
       "Bash(time npx vitest run src/core/prompt-optimization/ContextAwareTemplateEngine.test.ts)",
       "Bash(time npx vitest run src/context/enhanced-integration/DeepContext7Broker.test.ts)",
       "Bash(time npx vitest run src/optimization/ToolChainOptimizer.test.ts)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(./scripts/deploy-production.sh:*)"
     ],
     "deny": [],
     "ask": []

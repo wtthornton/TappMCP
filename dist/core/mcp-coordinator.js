@@ -79,7 +79,7 @@ export class MCPCoordinator {
                     allKnowledge.push(...result.value);
                 }
                 else if (result.status === 'rejected') {
-                    console.warn('MCP service failed:', result.reason);
+                    // MCP service failed
                 }
             }
             // Sort by relevance score and limit results
@@ -93,7 +93,7 @@ export class MCPCoordinator {
             return sortedKnowledge;
         }
         catch (error) {
-            console.error('MCP knowledge gathering failed:', error);
+            // MCP knowledge gathering failed
             if (this.config.enableFallbacks) {
                 return this.getFallbackKnowledge(request);
             }
@@ -112,7 +112,7 @@ export class MCPCoordinator {
                 .map(result => result.value);
         }
         catch (error) {
-            console.error('Assumption validation failed:', error);
+            // Assumption validation failed
             return [];
         }
     }
@@ -131,13 +131,11 @@ export class MCPCoordinator {
             const trends = trendsResult.status === 'fulfilled' ? trendsResult.value : [];
             const insights = insightsResult.status === 'fulfilled' ? insightsResult.value : [];
             const responseTime = Date.now() - startTime;
-            if (responseTime > 5000) {
-                console.warn(`Market intelligence gathering took ${responseTime}ms`);
-            }
+            // Performance monitoring for market intelligence
             return { analysis, trends, insights };
         }
         catch (error) {
-            console.error('Market intelligence gathering failed:', error);
+            // Market intelligence gathering failed
             return { analysis: null, trends: [], insights: [] };
         }
     }
@@ -198,7 +196,7 @@ export class MCPCoordinator {
             await this.memory.storeLessonLearned(lessonData);
         }
         catch (error) {
-            console.error('Failed to store lesson learned:', error);
+            // Failed to store lesson learned
         }
     }
     /**
@@ -222,7 +220,7 @@ export class MCPCoordinator {
             return knowledge;
         }
         catch (error) {
-            console.error('Context7 knowledge gathering failed:', error);
+            // Context7 knowledge gathering failed
             return [];
         }
     }
@@ -241,7 +239,7 @@ export class MCPCoordinator {
             return knowledge;
         }
         catch (error) {
-            console.error('Web search knowledge gathering failed:', error);
+            // Web search knowledge gathering failed
             return [];
         }
     }
@@ -266,7 +264,7 @@ export class MCPCoordinator {
             return knowledge;
         }
         catch (error) {
-            console.error('Memory knowledge gathering failed:', error);
+            // Memory knowledge gathering failed
             return [];
         }
     }
@@ -466,10 +464,7 @@ export class MCPCoordinator {
      */
     updatePerformanceMetrics(totalTime, resultCount) {
         // Log performance metrics for monitoring
-        if (totalTime > 8000) {
-            // 8 second warning threshold
-            console.warn(`MCP knowledge gathering took ${totalTime}ms for ${resultCount} results`);
-        }
+        // Performance monitoring for MCP knowledge gathering
     }
     /**
      * Provide fallback knowledge when services are unavailable

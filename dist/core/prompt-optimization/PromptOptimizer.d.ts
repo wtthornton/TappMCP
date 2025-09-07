@@ -240,8 +240,8 @@ export declare class PromptOptimizer {
     };
 }
 export declare function createPromptOptimizer(config?: {
-    budgetConfig?: any;
-    costConfig?: any;
+    budgetConfig?: Record<string, unknown>;
+    costConfig?: Record<string, unknown>;
     optimizationConfig?: {
         defaultStrategy?: OptimizationStrategy;
     };

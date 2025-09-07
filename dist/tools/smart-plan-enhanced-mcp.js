@@ -1,110 +1,113 @@
-import { z } from 'zod';
-import { MCPTool, } from '../framework/mcp-tool.js';
-import { PlanGenerator } from '../core/plan-generator.js';
-import { MCPCoordinator, } from '../core/mcp-coordinator.js';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SmartPlanEnhancedMCPTool = void 0;
+const zod_1 = require("zod");
+const mcp_tool_js_1 = require("../framework/mcp-tool.js");
+const plan_generator_js_1 = require("../core/plan-generator.js");
+const mcp_coordinator_js_1 = require("../core/mcp-coordinator.js");
 // Input schema for smart-plan-enhanced tool
-const SmartPlanEnhancedInputSchema = z.object({
-    projectId: z.string().min(1, 'Project ID is required'),
-    businessRequest: z.string().min(10, 'Business request must be at least 10 characters'),
-    priority: z.enum(['low', 'medium', 'high', 'critical']).default('medium'),
-    timeConstraint: z.string().optional(),
-    qualityRequirements: z
+const SmartPlanEnhancedInputSchema = zod_1.z.object({
+    projectId: zod_1.z.string().min(1, 'Project ID is required'),
+    businessRequest: zod_1.z.string().min(10, 'Business request must be at least 10 characters'),
+    priority: zod_1.z.enum(['low', 'medium', 'high', 'critical']).default('medium'),
+    timeConstraint: zod_1.z.string().optional(),
+    qualityRequirements: zod_1.z
         .object({
-        security: z.enum(['basic', 'standard', 'high']).default('standard'),
-        performance: z.enum(['basic', 'standard', 'high']).default('standard'),
-        accessibility: z.boolean().default(false),
+        security: zod_1.z.enum(['basic', 'standard', 'high']).default('standard'),
+        performance: zod_1.z.enum(['basic', 'standard', 'high']).default('standard'),
+        accessibility: zod_1.z.boolean().default(false),
     })
         .default({ security: 'standard', performance: 'standard', accessibility: false }),
-    externalSources: z
+    externalSources: zod_1.z
         .object({
-        useContext7: z.boolean().default(false),
-        useWebSearch: z.boolean().default(false),
-        useMemory: z.boolean().default(false),
+        useContext7: zod_1.z.boolean().default(false),
+        useWebSearch: zod_1.z.boolean().default(false),
+        useMemory: zod_1.z.boolean().default(false),
     })
         .optional(),
-    planType: z
+    planType: zod_1.z
         .enum(['strategic', 'tactical', 'technical', 'comprehensive'])
         .default('comprehensive'),
 });
 // Output schema for smart-plan-enhanced tool
-const SmartPlanEnhancedOutputSchema = z.object({
-    planId: z.string(),
-    planType: z.string(),
-    businessAnalysis: z.object({
-        requirements: z.any(),
-        complexity: z.any(),
-        stakeholderCount: z.number(),
-        riskFactors: z.number(),
+const SmartPlanEnhancedOutputSchema = zod_1.z.object({
+    planId: zod_1.z.string(),
+    planType: zod_1.z.string(),
+    businessAnalysis: zod_1.z.object({
+        requirements: zod_1.z.any(),
+        complexity: zod_1.z.any(),
+        stakeholderCount: zod_1.z.number(),
+        riskFactors: zod_1.z.number(),
     }),
-    strategicPlan: z.object({
-        phases: z.array(z.any()),
-        timeline: z.any(),
-        userStories: z.array(z.any()),
-        businessValue: z.any(),
+    strategicPlan: zod_1.z.object({
+        phases: zod_1.z.array(zod_1.z.any()),
+        timeline: zod_1.z.any(),
+        userStories: zod_1.z.array(zod_1.z.any()),
+        businessValue: zod_1.z.any(),
     }),
-    technicalPlan: z.object({
-        architecture: z.any(),
-        effort: z.any(),
-        optimization: z.any(),
-        qualityGates: z.array(z.any()),
+    technicalPlan: zod_1.z.object({
+        architecture: zod_1.z.any(),
+        effort: zod_1.z.any(),
+        optimization: zod_1.z.any(),
+        qualityGates: zod_1.z.array(zod_1.z.any()),
     }),
-    validation: z.object({
-        isValid: z.boolean(),
-        issues: z.array(z.any()),
-        recommendations: z.array(z.any()),
-        confidenceLevel: z.string(),
+    validation: zod_1.z.object({
+        isValid: zod_1.z.boolean(),
+        issues: zod_1.z.array(zod_1.z.any()),
+        recommendations: zod_1.z.array(zod_1.z.any()),
+        confidenceLevel: zod_1.z.string(),
     }),
-    externalIntegration: z.object({
-        context7Status: z.string(),
-        webSearchStatus: z.string(),
-        memoryStatus: z.string(),
-        integrationTime: z.number(),
-        knowledgeCount: z.number(),
+    externalIntegration: zod_1.z.object({
+        context7Status: zod_1.z.string(),
+        webSearchStatus: zod_1.z.string(),
+        memoryStatus: zod_1.z.string(),
+        integrationTime: zod_1.z.number(),
+        knowledgeCount: zod_1.z.number(),
     }),
-    externalKnowledge: z.array(z.any()),
-    deliverables: z.object({
-        successMetrics: z.array(z.string()),
-        nextSteps: z.array(z.string()),
-        qualityTargets: z.array(z.object({
-            phase: z.string(),
-            threshold: z.string(),
+    externalKnowledge: zod_1.z.array(zod_1.z.any()),
+    deliverables: zod_1.z.object({
+        successMetrics: zod_1.z.array(zod_1.z.string()),
+        nextSteps: zod_1.z.array(zod_1.z.string()),
+        qualityTargets: zod_1.z.array(zod_1.z.object({
+            phase: zod_1.z.string(),
+            threshold: zod_1.z.string(),
         })),
     }),
-    technicalMetrics: z.object({
-        responseTime: z.number(),
-        planGenerationTime: z.number(),
-        businessAnalysisTime: z.number(),
-        technicalPlanningTime: z.number(),
-        validationTime: z.number(),
-        phasesPlanned: z.number(),
-        tasksPlanned: z.number(),
-        risksIdentified: z.number(),
-        userStoriesGenerated: z.number(),
-        componentsMapped: z.number(),
+    technicalMetrics: zod_1.z.object({
+        responseTime: zod_1.z.number(),
+        planGenerationTime: zod_1.z.number(),
+        businessAnalysisTime: zod_1.z.number(),
+        technicalPlanningTime: zod_1.z.number(),
+        validationTime: zod_1.z.number(),
+        phasesPlanned: zod_1.z.number(),
+        tasksPlanned: zod_1.z.number(),
+        risksIdentified: zod_1.z.number(),
+        userStoriesGenerated: zod_1.z.number(),
+        componentsMapped: zod_1.z.number(),
     }),
-    businessMetrics: z.object({
-        estimatedROI: z.number(),
-        timeToMarket: z.string(),
-        costSavings: z.number(),
-        riskMitigation: z.number(),
-        qualityImprovement: z.string(),
+    businessMetrics: zod_1.z.object({
+        estimatedROI: zod_1.z.number(),
+        timeToMarket: zod_1.z.string(),
+        costSavings: zod_1.z.number(),
+        riskMitigation: zod_1.z.number(),
+        qualityImprovement: zod_1.z.string(),
     }),
-    data: z.object({
-        projectId: z.string(),
-        planType: z.string(),
-        timeConstraint: z.string().optional(),
-        qualityRequirements: z.any().optional(),
-        priority: z.string().optional(),
-        businessRequest: z.string().optional(),
-        externalSources: z.any().optional(),
-        businessAnalysis: z.any(),
-        strategicPlan: z.any(),
-        technicalPlan: z.any(),
-        validation: z.any(),
-        externalIntegration: z.any(),
-        deliverables: z.any(),
-        technicalMetrics: z.any(),
-        businessMetrics: z.any(),
+    data: zod_1.z.object({
+        projectId: zod_1.z.string(),
+        planType: zod_1.z.string(),
+        timeConstraint: zod_1.z.string().optional(),
+        qualityRequirements: zod_1.z.any().optional(),
+        priority: zod_1.z.string().optional(),
+        businessRequest: zod_1.z.string().optional(),
+        externalSources: zod_1.z.any().optional(),
+        businessAnalysis: zod_1.z.any(),
+        strategicPlan: zod_1.z.any(),
+        technicalPlan: zod_1.z.any(),
+        validation: zod_1.z.any(),
+        externalIntegration: zod_1.z.any(),
+        deliverables: zod_1.z.any(),
+        technicalMetrics: zod_1.z.any(),
+        businessMetrics: zod_1.z.any(),
     }),
 });
 // Tool configuration
@@ -119,13 +122,11 @@ const config = {
  * Smart Plan Enhanced MCP Tool
  * Generates comprehensive business and technical plans with external MCP integration
  */
-export class SmartPlanEnhancedMCPTool extends MCPTool {
-    planGenerator;
-    mcpCoordinator;
+class SmartPlanEnhancedMCPTool extends mcp_tool_js_1.MCPTool {
     constructor() {
         super(config);
-        this.planGenerator = new PlanGenerator();
-        this.mcpCoordinator = new MCPCoordinator();
+        this.planGenerator = new plan_generator_js_1.PlanGenerator();
+        this.mcpCoordinator = new mcp_coordinator_js_1.MCPCoordinator();
     }
     /**
      * Execute the smart plan enhanced tool
@@ -345,4 +346,5 @@ export class SmartPlanEnhancedMCPTool extends MCPTool {
         return response;
     }
 }
+exports.SmartPlanEnhancedMCPTool = SmartPlanEnhancedMCPTool;
 //# sourceMappingURL=smart-plan-enhanced-mcp.js.map

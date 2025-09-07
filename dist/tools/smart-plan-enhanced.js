@@ -1,33 +1,37 @@
 #!/usr/bin/env node
-import { z } from 'zod';
-import { PlanGenerator } from '../core/plan-generator.js';
-import { MCPCoordinator, } from '../core/mcp-coordinator.js';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = exports.smartPlanTool = void 0;
+exports.handleSmartPlan = handleSmartPlan;
+const zod_1 = require("zod");
+const plan_generator_js_1 = require("../core/plan-generator.js");
+const mcp_coordinator_js_1 = require("../core/mcp-coordinator.js");
 // Enhanced input schema for Phase 2A requirements
-const SmartPlanInputSchema = z.object({
-    projectId: z.string().min(1, 'Project ID is required'),
-    businessRequest: z.string().min(10, 'Business request must be at least 10 characters'),
-    priority: z.enum(['low', 'medium', 'high', 'critical']).default('medium'),
-    timeConstraint: z.string().optional(),
-    qualityRequirements: z
+const SmartPlanInputSchema = zod_1.z.object({
+    projectId: zod_1.z.string().min(1, 'Project ID is required'),
+    businessRequest: zod_1.z.string().min(10, 'Business request must be at least 10 characters'),
+    priority: zod_1.z.enum(['low', 'medium', 'high', 'critical']).default('medium'),
+    timeConstraint: zod_1.z.string().optional(),
+    qualityRequirements: zod_1.z
         .object({
-        security: z.enum(['basic', 'standard', 'high']).default('standard'),
-        performance: z.enum(['basic', 'standard', 'high']).default('standard'),
-        accessibility: z.boolean().default(false),
+        security: zod_1.z.enum(['basic', 'standard', 'high']).default('standard'),
+        performance: zod_1.z.enum(['basic', 'standard', 'high']).default('standard'),
+        accessibility: zod_1.z.boolean().default(false),
     })
         .default({ security: 'standard', performance: 'standard', accessibility: false }),
-    externalSources: z
+    externalSources: zod_1.z
         .object({
-        useContext7: z.boolean().default(false),
-        useWebSearch: z.boolean().default(false),
-        useMemory: z.boolean().default(false),
+        useContext7: zod_1.z.boolean().default(false),
+        useWebSearch: zod_1.z.boolean().default(false),
+        useMemory: zod_1.z.boolean().default(false),
     })
         .optional(),
-    planType: z
+    planType: zod_1.z
         .enum(['strategic', 'tactical', 'technical', 'comprehensive'])
         .default('comprehensive'),
 });
 // Enhanced tool definition for Phase 2A
-export const smartPlanTool = {
+exports.smartPlanTool = {
     name: 'smart_plan',
     description: 'Generate comprehensive business and technical plans with advanced analysis, external MCP integration, and strategic planning capabilities',
     inputSchema: {
@@ -107,7 +111,8 @@ export const smartPlanTool = {
         },
     },
 };
-export async function handleSmartPlan(input) {
+exports.default = exports.smartPlanTool;
+async function handleSmartPlan(input) {
     const startTime = Date.now();
     try {
         // Validate input with enhanced schema
@@ -121,8 +126,8 @@ export async function handleSmartPlan(input) {
             qualityRequirements: validatedInput.qualityRequirements,
         };
         // Initialize plan generator and MCP coordinator with optimized config
-        const planGenerator = new PlanGenerator();
-        const mcpCoordinator = new MCPCoordinator({
+        const planGenerator = new plan_generator_js_1.PlanGenerator();
+        const mcpCoordinator = new mcp_coordinator_js_1.MCPCoordinator({
             timeout: 1000, // Reduced timeout for better performance
             maxConcurrentRequests: 2,
             enableFallbacks: true,
@@ -256,12 +261,10 @@ export async function handleSmartPlan(input) {
         return {
             success: false,
             error: errorMessage,
-            errorType: error instanceof z.ZodError ? 'validation_error' : 'generation_error',
+            errorType: error instanceof zod_1.z.ZodError ? 'validation_error' : 'generation_error',
             responseTime,
             timestamp: new Date().toISOString(),
         };
     }
 }
-// Export both tool and handler
-export { smartPlanTool as default };
 //# sourceMappingURL=smart-plan-enhanced.js.map

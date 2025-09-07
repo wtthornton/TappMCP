@@ -4,11 +4,6 @@
  * Demonstrates using all Smart MCP tools together to build a complete project
  * from initialization to completion with quality validation.
  */
-import { SmartBeginMCPTool } from '../tools/smart-begin-mcp';
-import { SmartWriteMCPTool } from '../tools/smart-write-mcp';
-import { SmartOrchestrateMCPTool } from '../tools/smart-orchestrate-mcp';
-import { SmartPlanEnhancedMCPTool } from '../tools/smart-plan-enhanced-mcp';
-import { SmartFinishMCPTool } from '../tools/smart-finish-mcp';
 async function completeProjectWorkflow() {
     console.log('🚀 Starting Complete Project Workflow Example');
     console.log('='.repeat(50));

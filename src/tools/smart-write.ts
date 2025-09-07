@@ -135,7 +135,7 @@ function resetExecutionLog() {
 }
 
 // Generate real, functional code
-function generateRealCode(input: any) {
+function generateRealCode(input: { featureDescription: string; [key: string]: unknown }) {
   const featureName = input.featureDescription.toLowerCase().replace(/\s+/g, '_');
   const functionName = input.featureDescription.replace(/\s+/g, '');
 

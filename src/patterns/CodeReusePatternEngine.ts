@@ -403,7 +403,7 @@ ${this.parameterizePattern(pattern.abstractPattern, pattern.variables)}
         complexity,
         confidence: detected.confidence,
         usageCount: detected.segments.length,
-        locations: detected.segments.map((seg: any) => ({
+        locations: detected.segments.map((seg: { file: string; startLine: number; endLine: number }) => ({
           file: seg.file,
           startLine: seg.startLine,
           endLine: seg.endLine,
@@ -545,8 +545,8 @@ ${this.parameterizePattern(pattern.abstractPattern, pattern.variables)}
     return dependencies;
   }
 
-  private generateExamples(segments: Array<any>): Array<{ code: string; description: string }> {
-    return segments.map((segment: any, index: number) => ({
+  private generateExamples(segments: Array<{ code: string[]; file: string }>): Array<{ code: string; description: string }> {
+    return segments.map((segment: { code: string[]; file: string }, index: number) => ({
       code: segment.code.join('\n'),
       description: `Example ${index + 1} from ${segment.file.split('/').pop()}`,
     }));
@@ -629,7 +629,7 @@ ${this.parameterizePattern(pattern.abstractPattern, pattern.variables)}
     pattern: CodePattern,
     code: string,
     similarity: SimilarityResult,
-    context: any
+    context: Record<string, unknown>
   ): Promise<PatternSuggestion | null> {
     if (similarity.similarity < this.config.minSimilarity) {
       return null;

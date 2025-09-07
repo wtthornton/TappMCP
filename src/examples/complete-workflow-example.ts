@@ -5,11 +5,11 @@
  * from initialization to completion with quality validation.
  */
 
-import { SmartBeginMCPTool } from '../tools/smart-begin-mcp';
-import { SmartWriteMCPTool } from '../tools/smart-write-mcp';
-import { SmartOrchestrateMCPTool } from '../tools/smart-orchestrate-mcp';
-import { SmartPlanEnhancedMCPTool } from '../tools/smart-plan-enhanced-mcp';
-import { SmartFinishMCPTool } from '../tools/smart-finish-mcp';
+import { smartBeginTool, handleSmartBegin } from '../tools/smart-begin.js';
+import { smartWriteTool, handleSmartWrite } from '../tools/smart-write.js';
+import { smartOrchestrateTool, handleSmartOrchestrate } from '../tools/smart-orchestrate.js';
+import { smartPlanTool, handleSmartPlan } from '../tools/smart-plan.js';
+import { smartFinishTool, handleSmartFinish } from '../tools/smart-finish.js';
 
 async function completeProjectWorkflow() {
   console.log('🚀 Starting Complete Project Workflow Example');

@@ -10,60 +10,60 @@ declare const SmartPlanEnhancedInputSchema: z.ZodObject<{
         performance: z.ZodDefault<z.ZodEnum<["basic", "standard", "high"]>>;
         accessibility: z.ZodDefault<z.ZodBoolean>;
     }, "strip", z.ZodTypeAny, {
-        security: "high" | "basic" | "standard";
-        performance: "high" | "basic" | "standard";
-        accessibility: boolean;
+        security?: "high" | "basic" | "standard";
+        performance?: "high" | "basic" | "standard";
+        accessibility?: boolean;
     }, {
-        security?: "high" | "basic" | "standard" | undefined;
-        performance?: "high" | "basic" | "standard" | undefined;
-        accessibility?: boolean | undefined;
+        security?: "high" | "basic" | "standard";
+        performance?: "high" | "basic" | "standard";
+        accessibility?: boolean;
     }>>;
     externalSources: z.ZodOptional<z.ZodObject<{
         useContext7: z.ZodDefault<z.ZodBoolean>;
         useWebSearch: z.ZodDefault<z.ZodBoolean>;
         useMemory: z.ZodDefault<z.ZodBoolean>;
     }, "strip", z.ZodTypeAny, {
-        useContext7: boolean;
-        useWebSearch: boolean;
-        useMemory: boolean;
+        useContext7?: boolean;
+        useWebSearch?: boolean;
+        useMemory?: boolean;
     }, {
-        useContext7?: boolean | undefined;
-        useWebSearch?: boolean | undefined;
-        useMemory?: boolean | undefined;
+        useContext7?: boolean;
+        useWebSearch?: boolean;
+        useMemory?: boolean;
     }>>;
     planType: z.ZodDefault<z.ZodEnum<["strategic", "tactical", "technical", "comprehensive"]>>;
 }, "strip", z.ZodTypeAny, {
-    projectId: string;
-    planType: "technical" | "comprehensive" | "strategic" | "tactical";
-    priority: "high" | "medium" | "low" | "critical";
-    qualityRequirements: {
-        security: "high" | "basic" | "standard";
-        performance: "high" | "basic" | "standard";
-        accessibility: boolean;
-    };
-    businessRequest: string;
-    externalSources?: {
-        useContext7: boolean;
-        useWebSearch: boolean;
-        useMemory: boolean;
-    } | undefined;
-    timeConstraint?: string | undefined;
-}, {
-    projectId: string;
-    businessRequest: string;
-    planType?: "technical" | "comprehensive" | "strategic" | "tactical" | undefined;
-    priority?: "high" | "medium" | "low" | "critical" | undefined;
+    projectId?: string;
+    planType?: "technical" | "comprehensive" | "strategic" | "tactical";
+    priority?: "high" | "medium" | "low" | "critical";
     qualityRequirements?: {
-        security?: "high" | "basic" | "standard" | undefined;
-        performance?: "high" | "basic" | "standard" | undefined;
-        accessibility?: boolean | undefined;
-    } | undefined;
+        security?: "high" | "basic" | "standard";
+        performance?: "high" | "basic" | "standard";
+        accessibility?: boolean;
+    };
     externalSources?: {
-        useContext7?: boolean | undefined;
-        useWebSearch?: boolean | undefined;
-        useMemory?: boolean | undefined;
-    } | undefined;
-    timeConstraint?: string | undefined;
+        useContext7?: boolean;
+        useWebSearch?: boolean;
+        useMemory?: boolean;
+    };
+    timeConstraint?: string;
+    businessRequest?: string;
+}, {
+    projectId?: string;
+    planType?: "technical" | "comprehensive" | "strategic" | "tactical";
+    priority?: "high" | "medium" | "low" | "critical";
+    qualityRequirements?: {
+        security?: "high" | "basic" | "standard";
+        performance?: "high" | "basic" | "standard";
+        accessibility?: boolean;
+    };
+    externalSources?: {
+        useContext7?: boolean;
+        useWebSearch?: boolean;
+        useMemory?: boolean;
+    };
+    timeConstraint?: string;
+    businessRequest?: string;
 }>;
 declare const SmartPlanEnhancedOutputSchema: z.ZodObject<{
     planId: z.ZodString;
@@ -74,15 +74,15 @@ declare const SmartPlanEnhancedOutputSchema: z.ZodObject<{
         stakeholderCount: z.ZodNumber;
         riskFactors: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
-        riskFactors: number;
-        stakeholderCount: number;
+        riskFactors?: number;
         complexity?: any;
         requirements?: any;
+        stakeholderCount?: number;
     }, {
-        riskFactors: number;
-        stakeholderCount: number;
+        riskFactors?: number;
         complexity?: any;
         requirements?: any;
+        stakeholderCount?: number;
     }>;
     strategicPlan: z.ZodObject<{
         phases: z.ZodArray<z.ZodAny, "many">;
@@ -90,15 +90,15 @@ declare const SmartPlanEnhancedOutputSchema: z.ZodObject<{
         userStories: z.ZodArray<z.ZodAny, "many">;
         businessValue: z.ZodAny;
     }, "strip", z.ZodTypeAny, {
-        phases: any[];
-        userStories: any[];
         businessValue?: any;
         timeline?: any;
+        phases?: any[];
+        userStories?: any[];
     }, {
-        phases: any[];
-        userStories: any[];
         businessValue?: any;
         timeline?: any;
+        phases?: any[];
+        userStories?: any[];
     }>;
     technicalPlan: z.ZodObject<{
         architecture: z.ZodAny;
@@ -106,12 +106,12 @@ declare const SmartPlanEnhancedOutputSchema: z.ZodObject<{
         optimization: z.ZodAny;
         qualityGates: z.ZodArray<z.ZodAny, "many">;
     }, "strip", z.ZodTypeAny, {
-        qualityGates: any[];
+        qualityGates?: any[];
         architecture?: any;
         optimization?: any;
         effort?: any;
     }, {
-        qualityGates: any[];
+        qualityGates?: any[];
         architecture?: any;
         optimization?: any;
         effort?: any;
@@ -122,15 +122,15 @@ declare const SmartPlanEnhancedOutputSchema: z.ZodObject<{
         recommendations: z.ZodArray<z.ZodAny, "many">;
         confidenceLevel: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        issues: any[];
-        recommendations: any[];
-        isValid: boolean;
-        confidenceLevel: string;
+        issues?: any[];
+        isValid?: boolean;
+        recommendations?: any[];
+        confidenceLevel?: string;
     }, {
-        issues: any[];
-        recommendations: any[];
-        isValid: boolean;
-        confidenceLevel: string;
+        issues?: any[];
+        isValid?: boolean;
+        recommendations?: any[];
+        confidenceLevel?: string;
     }>;
     externalIntegration: z.ZodObject<{
         context7Status: z.ZodString;
@@ -139,17 +139,17 @@ declare const SmartPlanEnhancedOutputSchema: z.ZodObject<{
         integrationTime: z.ZodNumber;
         knowledgeCount: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
-        context7Status: string;
-        webSearchStatus: string;
-        memoryStatus: string;
-        integrationTime: number;
-        knowledgeCount: number;
+        context7Status?: string;
+        webSearchStatus?: string;
+        memoryStatus?: string;
+        integrationTime?: number;
+        knowledgeCount?: number;
     }, {
-        context7Status: string;
-        webSearchStatus: string;
-        memoryStatus: string;
-        integrationTime: number;
-        knowledgeCount: number;
+        context7Status?: string;
+        webSearchStatus?: string;
+        memoryStatus?: string;
+        integrationTime?: number;
+        knowledgeCount?: number;
     }>;
     externalKnowledge: z.ZodArray<z.ZodAny, "many">;
     deliverables: z.ZodObject<{
@@ -159,25 +159,25 @@ declare const SmartPlanEnhancedOutputSchema: z.ZodObject<{
             phase: z.ZodString;
             threshold: z.ZodString;
         }, "strip", z.ZodTypeAny, {
-            phase: string;
-            threshold: string;
+            phase?: string;
+            threshold?: string;
         }, {
-            phase: string;
-            threshold: string;
+            phase?: string;
+            threshold?: string;
         }>, "many">;
     }, "strip", z.ZodTypeAny, {
-        nextSteps: string[];
-        successMetrics: string[];
-        qualityTargets: {
-            phase: string;
-            threshold: string;
+        nextSteps?: string[];
+        successMetrics?: string[];
+        qualityTargets?: {
+            phase?: string;
+            threshold?: string;
         }[];
     }, {
-        nextSteps: string[];
-        successMetrics: string[];
-        qualityTargets: {
-            phase: string;
-            threshold: string;
+        nextSteps?: string[];
+        successMetrics?: string[];
+        qualityTargets?: {
+            phase?: string;
+            threshold?: string;
         }[];
     }>;
     technicalMetrics: z.ZodObject<{
@@ -192,27 +192,27 @@ declare const SmartPlanEnhancedOutputSchema: z.ZodObject<{
         userStoriesGenerated: z.ZodNumber;
         componentsMapped: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
-        responseTime: number;
-        planGenerationTime: number;
-        businessAnalysisTime: number;
-        technicalPlanningTime: number;
-        validationTime: number;
-        phasesPlanned: number;
-        tasksPlanned: number;
-        risksIdentified: number;
-        userStoriesGenerated: number;
-        componentsMapped: number;
+        responseTime?: number;
+        planGenerationTime?: number;
+        businessAnalysisTime?: number;
+        technicalPlanningTime?: number;
+        validationTime?: number;
+        phasesPlanned?: number;
+        tasksPlanned?: number;
+        risksIdentified?: number;
+        userStoriesGenerated?: number;
+        componentsMapped?: number;
     }, {
-        responseTime: number;
-        planGenerationTime: number;
-        businessAnalysisTime: number;
-        technicalPlanningTime: number;
-        validationTime: number;
-        phasesPlanned: number;
-        tasksPlanned: number;
-        risksIdentified: number;
-        userStoriesGenerated: number;
-        componentsMapped: number;
+        responseTime?: number;
+        planGenerationTime?: number;
+        businessAnalysisTime?: number;
+        technicalPlanningTime?: number;
+        validationTime?: number;
+        phasesPlanned?: number;
+        tasksPlanned?: number;
+        risksIdentified?: number;
+        userStoriesGenerated?: number;
+        componentsMapped?: number;
     }>;
     businessMetrics: z.ZodObject<{
         estimatedROI: z.ZodNumber;
@@ -221,17 +221,17 @@ declare const SmartPlanEnhancedOutputSchema: z.ZodObject<{
         riskMitigation: z.ZodNumber;
         qualityImprovement: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        qualityImprovement: string;
-        estimatedROI: number;
-        timeToMarket: string;
-        riskMitigation: number;
-        costSavings: number;
+        qualityImprovement?: string;
+        estimatedROI?: number;
+        timeToMarket?: string;
+        riskMitigation?: number;
+        costSavings?: number;
     }, {
-        qualityImprovement: string;
-        estimatedROI: number;
-        timeToMarket: string;
-        riskMitigation: number;
-        costSavings: number;
+        qualityImprovement?: string;
+        estimatedROI?: number;
+        timeToMarket?: string;
+        riskMitigation?: number;
+        costSavings?: number;
     }>;
     data: z.ZodObject<{
         projectId: z.ZodString;
@@ -250,195 +250,195 @@ declare const SmartPlanEnhancedOutputSchema: z.ZodObject<{
         technicalMetrics: z.ZodAny;
         businessMetrics: z.ZodAny;
     }, "strip", z.ZodTypeAny, {
-        projectId: string;
-        planType: string;
         validation?: any;
+        projectId?: string;
         technicalMetrics?: any;
-        priority?: string | undefined;
+        planType?: string;
+        priority?: string;
         qualityRequirements?: any;
         deliverables?: any;
         externalSources?: any;
         externalIntegration?: any;
-        timeConstraint?: string | undefined;
-        businessRequest?: string | undefined;
+        timeConstraint?: string;
+        businessRequest?: string;
         businessAnalysis?: any;
         strategicPlan?: any;
         technicalPlan?: any;
         businessMetrics?: any;
     }, {
-        projectId: string;
-        planType: string;
         validation?: any;
+        projectId?: string;
         technicalMetrics?: any;
-        priority?: string | undefined;
+        planType?: string;
+        priority?: string;
         qualityRequirements?: any;
         deliverables?: any;
         externalSources?: any;
         externalIntegration?: any;
-        timeConstraint?: string | undefined;
-        businessRequest?: string | undefined;
+        timeConstraint?: string;
+        businessRequest?: string;
         businessAnalysis?: any;
         strategicPlan?: any;
         technicalPlan?: any;
         businessMetrics?: any;
     }>;
 }, "strip", z.ZodTypeAny, {
-    validation: {
-        issues: any[];
-        recommendations: any[];
-        isValid: boolean;
-        confidenceLevel: string;
+    validation?: {
+        issues?: any[];
+        isValid?: boolean;
+        recommendations?: any[];
+        confidenceLevel?: string;
     };
-    technicalMetrics: {
-        responseTime: number;
-        planGenerationTime: number;
-        businessAnalysisTime: number;
-        technicalPlanningTime: number;
-        validationTime: number;
-        phasesPlanned: number;
-        tasksPlanned: number;
-        risksIdentified: number;
-        userStoriesGenerated: number;
-        componentsMapped: number;
+    technicalMetrics?: {
+        responseTime?: number;
+        planGenerationTime?: number;
+        businessAnalysisTime?: number;
+        technicalPlanningTime?: number;
+        validationTime?: number;
+        phasesPlanned?: number;
+        tasksPlanned?: number;
+        risksIdentified?: number;
+        userStoriesGenerated?: number;
+        componentsMapped?: number;
     };
-    data: {
-        projectId: string;
-        planType: string;
+    data?: {
         validation?: any;
+        projectId?: string;
         technicalMetrics?: any;
-        priority?: string | undefined;
+        planType?: string;
+        priority?: string;
         qualityRequirements?: any;
         deliverables?: any;
         externalSources?: any;
         externalIntegration?: any;
-        timeConstraint?: string | undefined;
-        businessRequest?: string | undefined;
+        timeConstraint?: string;
+        businessRequest?: string;
         businessAnalysis?: any;
         strategicPlan?: any;
         technicalPlan?: any;
         businessMetrics?: any;
     };
-    planType: string;
-    deliverables: {
-        nextSteps: string[];
-        successMetrics: string[];
-        qualityTargets: {
-            phase: string;
-            threshold: string;
+    planType?: string;
+    deliverables?: {
+        nextSteps?: string[];
+        successMetrics?: string[];
+        qualityTargets?: {
+            phase?: string;
+            threshold?: string;
         }[];
     };
-    externalIntegration: {
-        context7Status: string;
-        webSearchStatus: string;
-        memoryStatus: string;
-        integrationTime: number;
-        knowledgeCount: number;
+    externalIntegration?: {
+        context7Status?: string;
+        webSearchStatus?: string;
+        memoryStatus?: string;
+        integrationTime?: number;
+        knowledgeCount?: number;
     };
-    planId: string;
-    businessAnalysis: {
-        riskFactors: number;
-        stakeholderCount: number;
+    planId?: string;
+    businessAnalysis?: {
+        riskFactors?: number;
         complexity?: any;
         requirements?: any;
+        stakeholderCount?: number;
     };
-    strategicPlan: {
-        phases: any[];
-        userStories: any[];
+    strategicPlan?: {
         businessValue?: any;
         timeline?: any;
+        phases?: any[];
+        userStories?: any[];
     };
-    technicalPlan: {
-        qualityGates: any[];
+    technicalPlan?: {
+        qualityGates?: any[];
         architecture?: any;
         optimization?: any;
         effort?: any;
     };
-    externalKnowledge: any[];
-    businessMetrics: {
-        qualityImprovement: string;
-        estimatedROI: number;
-        timeToMarket: string;
-        riskMitigation: number;
-        costSavings: number;
+    externalKnowledge?: any[];
+    businessMetrics?: {
+        qualityImprovement?: string;
+        estimatedROI?: number;
+        timeToMarket?: string;
+        riskMitigation?: number;
+        costSavings?: number;
     };
 }, {
-    validation: {
-        issues: any[];
-        recommendations: any[];
-        isValid: boolean;
-        confidenceLevel: string;
+    validation?: {
+        issues?: any[];
+        isValid?: boolean;
+        recommendations?: any[];
+        confidenceLevel?: string;
     };
-    technicalMetrics: {
-        responseTime: number;
-        planGenerationTime: number;
-        businessAnalysisTime: number;
-        technicalPlanningTime: number;
-        validationTime: number;
-        phasesPlanned: number;
-        tasksPlanned: number;
-        risksIdentified: number;
-        userStoriesGenerated: number;
-        componentsMapped: number;
+    technicalMetrics?: {
+        responseTime?: number;
+        planGenerationTime?: number;
+        businessAnalysisTime?: number;
+        technicalPlanningTime?: number;
+        validationTime?: number;
+        phasesPlanned?: number;
+        tasksPlanned?: number;
+        risksIdentified?: number;
+        userStoriesGenerated?: number;
+        componentsMapped?: number;
     };
-    data: {
-        projectId: string;
-        planType: string;
+    data?: {
         validation?: any;
+        projectId?: string;
         technicalMetrics?: any;
-        priority?: string | undefined;
+        planType?: string;
+        priority?: string;
         qualityRequirements?: any;
         deliverables?: any;
         externalSources?: any;
         externalIntegration?: any;
-        timeConstraint?: string | undefined;
-        businessRequest?: string | undefined;
+        timeConstraint?: string;
+        businessRequest?: string;
         businessAnalysis?: any;
         strategicPlan?: any;
         technicalPlan?: any;
         businessMetrics?: any;
     };
-    planType: string;
-    deliverables: {
-        nextSteps: string[];
-        successMetrics: string[];
-        qualityTargets: {
-            phase: string;
-            threshold: string;
+    planType?: string;
+    deliverables?: {
+        nextSteps?: string[];
+        successMetrics?: string[];
+        qualityTargets?: {
+            phase?: string;
+            threshold?: string;
         }[];
     };
-    externalIntegration: {
-        context7Status: string;
-        webSearchStatus: string;
-        memoryStatus: string;
-        integrationTime: number;
-        knowledgeCount: number;
+    externalIntegration?: {
+        context7Status?: string;
+        webSearchStatus?: string;
+        memoryStatus?: string;
+        integrationTime?: number;
+        knowledgeCount?: number;
     };
-    planId: string;
-    businessAnalysis: {
-        riskFactors: number;
-        stakeholderCount: number;
+    planId?: string;
+    businessAnalysis?: {
+        riskFactors?: number;
         complexity?: any;
         requirements?: any;
+        stakeholderCount?: number;
     };
-    strategicPlan: {
-        phases: any[];
-        userStories: any[];
+    strategicPlan?: {
         businessValue?: any;
         timeline?: any;
+        phases?: any[];
+        userStories?: any[];
     };
-    technicalPlan: {
-        qualityGates: any[];
+    technicalPlan?: {
+        qualityGates?: any[];
         architecture?: any;
         optimization?: any;
         effort?: any;
     };
-    externalKnowledge: any[];
-    businessMetrics: {
-        qualityImprovement: string;
-        estimatedROI: number;
-        timeToMarket: string;
-        riskMitigation: number;
-        costSavings: number;
+    externalKnowledge?: any[];
+    businessMetrics?: {
+        qualityImprovement?: string;
+        estimatedROI?: number;
+        timeToMarket?: string;
+        riskMitigation?: number;
+        costSavings?: number;
     };
 }>;
 type SmartPlanEnhancedInput = z.infer<typeof SmartPlanEnhancedInputSchema>;
