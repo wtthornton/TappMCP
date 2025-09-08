@@ -36,7 +36,9 @@
       "Bash(time npx vitest run src/context/enhanced-integration/DeepContext7Broker.test.ts)",
       "Bash(time npx vitest run src/optimization/ToolChainOptimizer.test.ts)",
       "Bash(chmod:*)",
-      "Bash(./scripts/deploy-production.sh:*)"
+      "Bash(./scripts/deploy-production.sh:*)",
+      "Bash(where npx)",
+      "Bash(npx.cmd @modelcontextprotocol/server-filesystem@latest:*)"
     ],
     "deny": [],
     "ask": []
