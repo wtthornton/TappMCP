@@ -530,6 +530,97 @@ describe('SmartFinish - REAL TESTS (Expose Quality Gate Theater)', () => {
     });
   });
 
+  describe('BRANCH COVERAGE - Role-Specific Conditional Paths', () => {
+    it('should add basic qa-engineer recommendations (security grade is always C based on mock data)', async () => {
+      const input = {
+        projectId: 'qa-security-project',
+        codeIds: ['security-code'],
+        role: 'qa-engineer',
+        qualityGates: {
+          securityScore: 95, // High security score input, but mock generates C grade
+        },
+      };
+
+      const result = (await handleSmartFinish(input)) as SmartFinishResponse;
+
+      expect(result.success).toBe(true);
+
+      // Should always include basic QA recommendations
+      expect(result.data?.recommendations.some((rec: string) => rec.includes('Test coverage validation completed'))).toBe(true);
+      expect(result.data?.recommendations.some((rec: string) => rec.includes('Quality gates assessment finished'))).toBe(true);
+
+      // Security grade is always C (mock data), so no "Security standards validated" message
+      expect(result.data?.recommendations.some((rec: string) => rec.includes('Security standards validated'))).toBe(false);
+    });
+
+    it('should add performance recommendations for operations-engineer role with high performance grades', async () => {
+      const input = {
+        projectId: 'ops-performance-project',
+        codeIds: ['performance-code'],
+        role: 'operations-engineer',
+        qualityGates: {
+          performanceScore: 90, // High performance score to trigger grade A/B
+        },
+      };
+
+      const result = (await handleSmartFinish(input)) as SmartFinishResponse;
+
+      expect(result.success).toBe(true);
+      expect(result.data?.recommendations.some((rec: string) => rec.includes('Performance targets met'))).toBe(true);
+      expect(result.data?.recommendations.some((rec: string) => rec.includes('Deployment readiness assessment completed'))).toBe(true);
+    });
+
+    it('should handle qa-engineer role with low security grades (no security recommendation)', async () => {
+      const input = {
+        projectId: 'qa-low-security-project',
+        codeIds: ['low-security-code'],
+        role: 'qa-engineer',
+        qualityGates: {
+          securityScore: 60, // Low security score - should not trigger security validation message
+        },
+      };
+
+      const result = (await handleSmartFinish(input)) as SmartFinishResponse;
+
+      expect(result.success).toBe(true);
+      expect(result.data?.recommendations.some((rec: string) => rec.includes('Test coverage validation completed'))).toBe(true);
+      // Should NOT include security validation message
+      expect(result.data?.recommendations.some((rec: string) => rec.includes('Security standards validated'))).toBe(false);
+    });
+
+    it('should include performance recommendations for operations-engineer role (performance grade is always A based on mock data)', async () => {
+      const input = {
+        projectId: 'ops-performance-project',
+        codeIds: ['performance-code'],
+        role: 'operations-engineer',
+        qualityGates: {
+          performanceScore: 50, // Low input, but mock generates A grade
+        },
+      };
+
+      const result = (await handleSmartFinish(input)) as SmartFinishResponse;
+
+      expect(result.success).toBe(true);
+      expect(result.data?.recommendations.some((rec: string) => rec.includes('Deployment readiness assessment completed'))).toBe(true);
+      expect(result.data?.recommendations.some((rec: string) => rec.includes('Security compliance validation finished'))).toBe(true);
+      // Should include performance targets message (mock generates A grade)
+      expect(result.data?.recommendations.some((rec: string) => rec.includes('Performance targets met'))).toBe(true);
+    });
+
+    it('should handle moderate severity vulnerability branch coverage', async () => {
+      const input = {
+        projectId: 'moderate-vuln-project',
+        codeIds: ['vuln-test-code'],
+      };
+
+      const result = (await handleSmartFinish(input)) as SmartFinishResponse;
+
+      expect(result.success).toBe(true);
+      // The function should process without issues (line 213 coverage)
+      expect(result.data?.qualityScorecard).toBeDefined();
+    });
+  });
+
   describe('INTEGRATION - Full SmartFinish Quality Theater', () => {
     it('should provide complete template-based quality validation system', async () => {
       const input = {

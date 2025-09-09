@@ -376,6 +376,125 @@ describe('SmartBegin - REAL TESTS (Expose Template Theater)', () => {
       expect(result.success).toBe(false);
       expect(result.error).toBeDefined();
     });
+
+    it('should handle non-Error exceptions with custom error message', async () => {
+      // Test the edge case where a non-Error is thrown
+      // We'll test this indirectly through invalid input that causes a non-standard error
+      const input = {
+        projectName: 'test-project',
+        techStack: null as any, // This will cause a non-standard parsing error
+      };
+
+      const result = (await handleSmartBegin(input)) as SmartBeginResponse;
+
+      expect(result.success).toBe(false);
+      expect(result.error).toBeDefined();
+      expect(result.timestamp).toBeDefined();
+    });
+  });
+
+  describe('BRANCH COVERAGE - Conditional Paths', () => {
+    it('should generate mcp-server template when projectTemplate is mcp-server', async () => {
+      const input = {
+        projectName: 'mcp-server-project',
+        projectTemplate: 'mcp-server' as const,
+      };
+
+      const result = (await handleSmartBegin(input)) as SmartBeginResponse;
+
+      expect(result.success).toBe(true);
+      expect(result.data?.projectStructure.templates).toHaveLength(1);
+      expect(result.data?.projectStructure.templates[0].name).toBe('MCP Server Template');
+      expect(result.data?.projectStructure.templates[0].path).toBe('src/server.ts');
+      expect(result.data?.projectStructure.templates[0].content).toContain('smart-mcp-server');
+    });
+
+    it('should generate developer template when role is developer', async () => {
+      const input = {
+        projectName: 'developer-project',
+        role: 'developer' as const,
+      };
+
+      const result = (await handleSmartBegin(input)) as SmartBeginResponse;
+
+      expect(result.success).toBe(true);
+      // Should have developer-specific template
+      expect(result.data?.projectStructure.templates.some((template: any) => template.name === 'Developer Quality Template')).toBe(true);
+    });
+
+    it('should generate qa-engineer template when role is qa-engineer', async () => {
+      const input = {
+        projectName: 'qa-project',
+        role: 'qa-engineer' as const,
+      };
+
+      const result = (await handleSmartBegin(input)) as SmartBeginResponse;
+
+      expect(result.success).toBe(true);
+      // Should have QA-specific template
+      expect(result.data?.projectStructure.templates.some((template: any) => template.name === 'QA Test Template')).toBe(true);
+    });
+
+    it('should handle all projectTemplate enum values', async () => {
+      const templates = ['mcp-server', 'web-app', 'api-service', 'full-stack', 'microservice', 'library'] as const;
+
+      for (const template of templates) {
+        const input = {
+          projectName: `${template}-project`,
+          projectTemplate: template,
+        };
+
+        const result = (await handleSmartBegin(input)) as SmartBeginResponse;
+        expect(result.success).toBe(true);
+        expect(result.data?.projectId).toContain(`${template}-project`);
+      }
+    });
+
+    it('should handle all role enum values', async () => {
+      const roles = ['developer', 'product-strategist', 'operations-engineer', 'designer', 'qa-engineer'] as const;
+
+      for (const role of roles) {
+        const input = {
+          projectName: `${role}-project`,
+          role: role,
+        };
+
+        const result = (await handleSmartBegin(input)) as SmartBeginResponse;
+        expect(result.success).toBe(true);
+        expect(result.data?.projectId).toContain(`${role}-project`);
+      }
+    });
+
+    it('should handle all qualityLevel enum values', async () => {
+      const qualityLevels = ['basic', 'standard', 'enterprise', 'production'] as const;
+
+      for (const level of qualityLevels) {
+        const input = {
+          projectName: `${level}-project`,
+          qualityLevel: level,
+        };
+
+        const result = (await handleSmartBegin(input)) as SmartBeginResponse;
+        expect(result.success).toBe(true);
+        expect(result.data?.projectId).toContain(`${level}-project`);
+      }
+    });
+
+    it('should handle combined mcp-server template with qa-engineer role', async () => {
+      const input = {
+        projectName: 'mcp-qa-project',
+        projectTemplate: 'mcp-server' as const,
+        role: 'qa-engineer' as const,
+      };
+
+      const result = (await handleSmartBegin(input)) as SmartBeginResponse;
+
+      expect(result.success).toBe(true);
+      // Should have both MCP server template and QA template
+      expect(result.data?.projectStructure.templates).toHaveLength(2);
+      expect(result.data?.projectStructure.templates.some((template: any) => template.name === 'MCP Server Template')).toBe(true);
+      expect(result.data?.projectStructure.templates.some((template: any) => template.name === 'QA Test Template')).toBe(true);
+    });
   });
 
   describe('INTEGRATION - Full SmartBegin Analysis', () => {

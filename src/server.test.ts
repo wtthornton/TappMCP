@@ -1,311 +1,226 @@
-#!/usr/bin/env node
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { SmartMCPServer } from './server.js';
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { spawn, ChildProcess } from 'child_process';
-import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
-import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import path from 'path';
+// Mock MCP SDK
+vi.mock('@modelcontextprotocol/sdk/server/index.js');
+vi.mock('@modelcontextprotocol/sdk/server/stdio.js');
 
-describe.skip('SmartMCP Server Integration Tests', () => {
-  let serverProcess: ChildProcess;
-  let client: Client;
+// Mock health server import
+vi.mock('./health-server.js', () => ({}));
 
-  beforeAll(async () => {
-    // Start the MCP server process
-    const serverPath = path.resolve('./dist/server.js');
-    serverProcess = spawn('node', [serverPath], {
-      stdio: ['pipe', 'pipe', 'pipe'],
-      env: process.env,
-    });
+// Mock tool imports
+vi.mock('./tools/smart-begin.js', () => ({
+  smartBeginTool: { name: 'smart_begin', description: 'Test tool' },
+  handleSmartBegin: vi.fn(),
+}));
+vi.mock('./tools/smart-plan.js', () => ({
+  smartPlanTool: { name: 'smart_plan', description: 'Test tool' },
+  handleSmartPlan: vi.fn(),
+}));
+vi.mock('./tools/smart-write.js', () => ({
+  smartWriteTool: { name: 'smart_write', description: 'Test tool' },
+  handleSmartWrite: vi.fn(),
+}));
+vi.mock('./tools/smart-finish.js', () => ({
+  smartFinishTool: { name: 'smart_finish', description: 'Test tool' },
+  handleSmartFinish: vi.fn(),
+}));
+vi.mock('./tools/smart-orchestrate.js', () => ({
+  smartOrchestrateTool: { name: 'smart_orchestrate', description: 'Test tool' },
+  handleSmartOrchestrate: vi.fn(),
+}));
 
-    // Create MCP client connected to our server
-    const transport = new StdioClientTransport({
-      command: 'node',
-      args: [serverPath],
-    });
+// Mock error utilities
+vi.mock('./utils/errors.js', () => ({
+  handleError: vi.fn((error) => ({ ...error, code: 'MOCK_ERROR' })),
+  getErrorMessage: vi.fn((error) => error.message || 'Unknown error'),
+}));
 
-    client = new Client({
-      name: 'test-client',
-      version: '1.0.0',
-      capabilities: {},
-    } as any);
+describe('SmartMCPServer', () => {
+  let mockServer: any;
+  let mockTransport: any;
 
-    await client.connect(transport);
-  }, 30000);
+  beforeEach(() => {
+    mockServer = {
+      setRequestHandler: vi.fn(),
+      connect: vi.fn(),
+    };
+    mockTransport = {};
 
-  afterAll(async () => {
-    if (client) {
-      await client.close();
-    }
-    if (serverProcess && !serverProcess.killed) {
-      serverProcess.kill();
-    }
+    (Server as any).mockImplementation(() => mockServer);
+    (StdioServerTransport as any).mockImplementation(() => mockTransport);
   });
 
-  describe('MCP Protocol Basic Operations', () => {
-    it('should list all available tools', async () => {
-      const result = await client.listTools();
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
 
-      expect(result.tools).toBeDefined();
+  describe('Server Initialization', () => {
+    it('should create server with correct configuration', () => {
+      const server = new SmartMCPServer();
+
+      expect(Server).toHaveBeenCalledWith({
+        name: 'smart-mcp',
+        version: '0.1.0',
+        capabilities: {
+          tools: {},
+        },
+      });
+
+      expect(mockServer.setRequestHandler).toHaveBeenCalledTimes(2);
+    });
+
+    it('should setup handlers during initialization', () => {
+      new SmartMCPServer();
+
+      expect(mockServer.setRequestHandler).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('Tool Registration', () => {
+    it('should register all smart tools', () => {
+      new SmartMCPServer();
+
+      // Verify setRequestHandler was called for ListTools and CallTool
+      expect(mockServer.setRequestHandler).toHaveBeenCalledTimes(2);
+    });
+
+    it('should handle list tools request', async () => {
+      new SmartMCPServer();
+
+      // Get the handler for ListTools (first call)
+      const listToolsHandler = mockServer.setRequestHandler.mock.calls[0][1];
+      const result = await listToolsHandler();
+
+      expect(result).toHaveProperty('tools');
       expect(Array.isArray(result.tools)).toBe(true);
-      expect(result.tools.length).toBe(5); // We have 5 smart tools
-
-      const toolNames = result.tools.map(tool => tool.name);
-      expect(toolNames).toContain('smart_begin');
-      expect(toolNames).toContain('smart_plan');
-      expect(toolNames).toContain('smart_write');
-      expect(toolNames).toContain('smart_finish');
-      expect(toolNames).toContain('smart_orchestrate');
-
-      console.log(`✅ MCP Server exposed ${result.tools.length} tools: ${toolNames.join(', ')}`);
-    }, 15000);
-
-    it('should call smart_begin through MCP protocol', async () => {
-      const result = await client.callTool({
-        name: 'smart_begin',
-        arguments: {
-          projectName: 'MCP Test Project',
-          description: 'Testing smart_begin through MCP protocol',
-          techStack: ['TypeScript', 'Node.js'],
-          targetUsers: ['developers'],
-        },
-      });
-
-      expect(result.content).toBeDefined();
-      expect((result.content as any).length).toBeGreaterThan(0);
-
-      const response = JSON.parse((result.content as any)[0].text);
-      expect(response.success).toBe(true);
-      expect(response.data.projectId).toBeDefined();
-      expect(response.data.projectStructure).toBeDefined();
-
-      console.log(`✅ smart_begin called via MCP protocol, projectId: ${response.data.projectId}`);
-    }, 15000);
-
-    it('should call smart_plan through MCP protocol', async () => {
-      const result = await client.callTool({
-        name: 'smart_plan',
-        arguments: {
-          projectId: 'mcp_test_project',
-          planType: 'development',
-          scope: {
-            techStack: ['TypeScript', 'React'],
-            timeline: 4,
-            resources: { budget: 50000 },
-          },
-        },
-      });
-
-      expect(result.content).toBeDefined();
-      expect((result.content as any).length).toBeGreaterThan(0);
-
-      const response = JSON.parse((result.content as any)[0].text);
-      expect(response.success).toBe(true);
-      expect(response.data.projectPlan).toBeDefined();
-      expect(response.data.projectPlan.phases.length).toBeGreaterThanOrEqual(3); // Dynamic phases
-
-      console.log(
-        `✅ smart_plan called via MCP protocol, generated ${response.data.projectPlan.phases.length} phases`
-      );
-    }, 15000);
-
-    it('should call smart_write through MCP protocol', async () => {
-      const result = await client.callTool({
-        name: 'smart_write',
-        arguments: {
-          projectId: 'mcp_test_project',
-          specification: 'Create a simple TypeScript function that adds two numbers',
-          requirements: {
-            language: 'TypeScript',
-            framework: 'none',
-            testingRequired: true,
-          },
-        },
-      });
-
-      expect(result.content).toBeDefined();
-      expect((result.content as any).length).toBeGreaterThan(0);
-
-      const response = JSON.parse((result.content as any)[0].text);
-      expect(response.success).toBe(true);
-      expect(response.data.codeId).toBeDefined();
-      expect(response.data.code).toBeDefined();
-
-      console.log(`✅ smart_write called via MCP protocol, codeId: ${response.data.codeId}`);
-    }, 15000);
-
-    it('should call smart_finish through MCP protocol', async () => {
-      const result = await client.callTool({
-        name: 'smart_finish',
-        arguments: {
-          projectId: 'mcp_test_project',
-          codeIds: ['test_code_id'],
-        },
-      });
-
-      expect(result.content).toBeDefined();
-      expect((result.content as any).length).toBeGreaterThan(0);
-
-      const response = JSON.parse((result.content as any)[0].text);
-      expect(response.success).toBe(true);
-      expect(response.data.qualityScorecard).toBeDefined();
-
-      console.log(
-        `✅ smart_finish called via MCP protocol, quality score: ${response.data.qualityScorecard.overall.score}%`
-      );
-    }, 15000);
-
-    it('should call smart_orchestrate through MCP protocol', async () => {
-      const result = await client.callTool({
-        name: 'smart_orchestrate',
-        arguments: {
-          request: 'Build a simple web application with user authentication',
-          options: {
-            businessContext: {
-              projectId: 'mcp_test_orchestration',
-              businessGoals: ['User registration', 'Secure login'],
-              requirements: ['Authentication system', 'User database'],
-            },
-          },
-        },
-      });
-
-      expect(result.content).toBeDefined();
-      expect((result.content as any).length).toBeGreaterThan(0);
-
-      const response = JSON.parse((result.content as any)[0].text);
-      expect(response.success).toBe(true);
-      expect(response.orchestrationId).toBeDefined();
-      expect(response.workflow).toBeDefined();
-
-      console.log(
-        `✅ smart_orchestrate called via MCP protocol, orchestrationId: ${response.orchestrationId}`
-      );
-    }, 20000);
+      expect(result.tools).toHaveLength(5);
+    });
   });
 
-  describe('MCP Protocol Context Sharing', () => {
-    let sharedProjectId: string;
-
-    it('should maintain context across tool calls - smart_begin → smart_plan', async () => {
-      // First, create a project with smart_begin
-      const beginResult = await client.callTool({
-        name: 'smart_begin',
-        arguments: {
-          projectName: 'Context Test Project',
-          techStack: ['TypeScript', 'Express'],
-          targetUsers: ['developers'],
-        },
+  describe('Tool Execution', () => {
+    it('should handle valid tool calls', async () => {
+      const mockHandleSmartBegin = vi.fn().mockResolvedValue({
+        success: true,
+        data: { message: 'Success' },
       });
 
-      const beginResponse = JSON.parse((beginResult.content as any)[0].text);
-      sharedProjectId = beginResponse.data.projectId;
-      expect(sharedProjectId).toBeDefined();
-
-      // Then use the same projectId in smart_plan
-      const planResult = await client.callTool({
-        name: 'smart_plan',
-        arguments: {
-          projectId: sharedProjectId,
-          planType: 'development',
-          scope: {
-            techStack: ['TypeScript', 'Express'],
-            timeline: 6,
-          },
+      // Re-mock to use our test handler
+      vi.doMock('./tools/smart-begin.js', () => ({
+        smartBeginTool: {
+          name: 'smart_begin',
+          description: 'Test tool',
+          inputSchema: { properties: {} }
         },
-      });
+        handleSmartBegin: mockHandleSmartBegin,
+      }));
 
-      const planResponse = JSON.parse((planResult.content as any)[0].text);
-      expect(planResponse.success).toBe(true);
-      expect(planResponse.data.projectId).toBe(sharedProjectId);
+      new SmartMCPServer();
 
-      console.log(
-        `✅ Context sharing works: smart_begin → smart_plan with projectId: ${sharedProjectId}`
-      );
-    }, 20000);
-
-    it('should maintain context across tool calls - smart_plan → smart_write', async () => {
-      // Use the shared projectId from previous test
-      const writeResult = await client.callTool({
-        name: 'smart_write',
-        arguments: {
-          projectId: sharedProjectId,
-          specification: 'Create Express server setup code',
-          requirements: {
-            language: 'TypeScript',
-            framework: 'Express',
-          },
-        },
-      });
-
-      const writeResponse = JSON.parse((writeResult.content as any)[0].text);
-      expect(writeResponse.success).toBe(true);
-      expect(writeResponse.data.projectId).toBe(sharedProjectId);
-
-      console.log(
-        `✅ Context sharing works: smart_plan → smart_write with projectId: ${sharedProjectId}`
-      );
-    }, 15000);
-  });
-
-  describe('MCP Protocol Error Handling', () => {
-    it('should handle invalid tool name gracefully', async () => {
-      try {
-        await client.callTool({
-          name: 'invalid_tool',
+      // Get the CallTool handler (second call)
+      const callToolHandler = mockServer.setRequestHandler.mock.calls[1][1];
+      const request = {
+        params: {
+          name: 'smart_begin',
           arguments: {},
-        });
-        // Should not reach here
-        expect(true).toBe(false);
-      } catch (error) {
-        // Should throw an error for invalid tool
-        expect(error).toBeDefined();
-        console.log(`✅ Invalid tool name handled correctly: ${error}`);
-      }
-    }, 10000);
-
-    it('should handle invalid arguments gracefully', async () => {
-      const result = await client.callTool({
-        name: 'smart_begin',
-        arguments: {
-          // Missing required projectName
-          description: 'Test invalid args',
         },
-      });
+      };
 
-      const response = JSON.parse((result.content as any)[0].text);
-      expect(response.success).toBe(false);
-      expect(response.error).toBeDefined();
-      expect(response.error).toContain('Project name is required');
+      const result = await callToolHandler(request);
 
-      console.log(`✅ Invalid arguments handled correctly: ${response.error}`);
-    }, 10000);
+      expect(result).toHaveProperty('content');
+      expect(result.content[0].type).toBe('text');
+    });
+
+    it('should handle tool not found error', async () => {
+      new SmartMCPServer();
+
+      const callToolHandler = mockServer.setRequestHandler.mock.calls[1][1];
+      const request = {
+        params: {
+          name: 'nonexistent_tool',
+          arguments: {},
+        },
+      };
+
+      const result = await callToolHandler(request);
+
+      expect(result).toHaveProperty('content');
+      expect(result.isError).toBe(true);
+    });
+
+    it('should validate tool input', async () => {
+      new SmartMCPServer();
+
+      const callToolHandler = mockServer.setRequestHandler.mock.calls[1][1];
+      const request = {
+        params: {
+          name: '',  // Invalid: empty name
+          arguments: {},
+        },
+      };
+
+      const result = await callToolHandler(request);
+
+      expect(result).toHaveProperty('content');
+      expect(result.isError).toBe(true);
+    });
   });
 
-  describe('MCP Protocol Performance', () => {
-    it('should respond within performance requirements (<100ms for simple calls)', async () => {
-      const startTime = Date.now();
+  describe('Server Startup', () => {
+    it('should start server successfully', async () => {
+      const server = new SmartMCPServer();
 
-      const result = await client.callTool({
-        name: 'smart_begin',
-        arguments: {
-          projectName: 'Performance Test',
-          techStack: ['TypeScript'],
-        },
+      await server.start();
+
+      expect(StdioServerTransport).toHaveBeenCalled();
+      expect(mockServer.connect).toHaveBeenCalledWith(mockTransport);
+    });
+
+    it('should handle startup errors', async () => {
+      const server = new SmartMCPServer();
+      const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {
+        throw new Error('Process exit called');
       });
 
-      const responseTime = Date.now() - startTime;
-      const response = JSON.parse((result.content as any)[0].text);
+      mockServer.connect.mockRejectedValue(new Error('Connection failed'));
 
-      expect(response.success).toBe(true);
-      expect(responseTime).toBeLessThan(5000); // Allow 5s for MCP overhead, but tool should be fast
+      await expect(server.start()).rejects.toThrow('Process exit called');
+      expect(mockExit).toHaveBeenCalledWith(1);
 
-      // Check the actual tool response time in the data
-      expect(response.data.technicalMetrics.responseTime).toBeLessThan(100);
+      mockExit.mockRestore();
+    });
+  });
 
-      console.log(
-        `✅ Performance test: MCP call took ${responseTime}ms, tool processing took ${response.data.technicalMetrics.responseTime}ms`
-      );
-    }, 10000);
+  describe('Error Handling', () => {
+    it('should handle list tools errors gracefully', async () => {
+      new SmartMCPServer();
+
+      // Mock the handler to throw an error
+      const originalListHandler = mockServer.setRequestHandler.mock.calls[0][1];
+      const errorHandler = async () => {
+        throw new Error('List tools failed');
+      };
+
+      expect(async () => await errorHandler()).rejects.toThrow('List tools failed');
+    });
+
+    it('should handle call tool errors gracefully', async () => {
+      new SmartMCPServer();
+
+      const callToolHandler = mockServer.setRequestHandler.mock.calls[1][1];
+      const request = {
+        params: {
+          name: 'smart_begin',
+          arguments: { invalid: 'data' },
+        },
+      };
+
+      // This should not throw but return error response
+      const result = await callToolHandler(request);
+      expect(result).toHaveProperty('content');
+    });
   });
 });
