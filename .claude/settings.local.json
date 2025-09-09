@@ -59,7 +59,8 @@
       "Bash(NODE_ENV=test npx vitest run src/tools/smart-orchestrate.test.ts)",
       "Bash(NODE_ENV=test timeout 30s npx vitest run src/tools/smart-orchestrate.test.ts --reporter=basic)",
       "Bash(timeout 60s npm run qa:tests)",
-      "Bash(timeout 30s npm run test -- src/optimization/ToolChainOptimizer.test.ts --reporter=verbose)"
+      "Bash(timeout 30s npm run test -- src/optimization/ToolChainOptimizer.test.ts --reporter=verbose)",
+      "Bash(NODE_ENV=test npx vitest run --coverage --reporter=basic)"
     ],
     "deny": [],
     "ask": []
