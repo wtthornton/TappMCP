@@ -63,7 +63,8 @@
       "Bash(NODE_ENV=test npx vitest run --coverage --reporter=basic)",
       "Bash(tar:*)",
       "Read(//c/cursor/**)",
-      "Bash(timeout 5s npx @modelcontextprotocol/server-filesystem@latest)"
+      "Bash(timeout 5s npx @modelcontextprotocol/server-filesystem@latest)",
+      "Bash(NODE_ENV=test npx vitest run src/prompts/documentation-prompt.test.ts --reporter=verbose)"
     ],
     "deny": [],
     "ask": []

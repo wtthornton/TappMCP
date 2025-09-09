@@ -118,6 +118,7 @@ export class ErrorAnalysisPrompt extends MCPPrompt {
                 success: true,
                 prompt,
                 data: prompt,
+                variables: validatedInput,
                 metadata: {
                     executionTime,
                     timestamp: new Date().toISOString(),

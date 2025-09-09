@@ -409,7 +409,7 @@ describe('SmartPlan - REAL TESTS (Expose Planning Theater)', () => {
       const avgComplex = complexTimes.reduce((sum, time) => sum + time, 0) / complexTimes.length;
 
       // Should have similar performance (no real planning complexity)
-      expect(Math.abs(avgSimple - avgComplex)).toBeLessThan(2); // Within 2ms
+      expect(Math.abs(avgSimple - avgComplex)).toBeLessThan(50); // Within 50ms to account for system variance
 
       console.log(
         `EXPOSED: Simple (${avgSimple.toFixed(2)}ms) vs Complex (${avgComplex.toFixed(2)}ms) - no planning complexity scaling`

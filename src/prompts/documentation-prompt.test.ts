@@ -21,7 +21,15 @@ describe('DocumentationPrompt', () => {
     });
 
     it('should validate all docType enum values', () => {
-      const docTypes = ['api', 'function', 'class', 'module', 'readme', 'tutorial', 'guide'] as const;
+      const docTypes = [
+        'api',
+        'function',
+        'class',
+        'module',
+        'readme',
+        'tutorial',
+        'guide',
+      ] as const;
 
       for (const docType of docTypes) {
         const input = {
@@ -103,7 +111,7 @@ describe('DocumentationPrompt', () => {
         includeReturnValues: true,
         includeErrors: true,
         includeUsage: true,
-        context: 'Simple calculator utility class',
+        contextInfo: 'Simple calculator utility class',
         requirements: ['Include method signatures', 'Add usage examples'],
       };
 
@@ -124,7 +132,7 @@ describe('DocumentationPrompt', () => {
         version: '1.0.0',
       };
 
-      const prompt = new DocumentationPrompt(config);
+      const prompt = new DocumentationPrompt();
       expect(prompt).toBeInstanceOf(DocumentationPrompt);
     });
 
@@ -135,7 +143,7 @@ describe('DocumentationPrompt', () => {
         version: '1.0.0',
       };
 
-      const prompt = new DocumentationPrompt(config);
+      const prompt = new DocumentationPrompt();
       const input: DocumentationPromptInput = {
         code: 'function calculateTax(income, rate) { return income * rate; }',
         language: 'javascript',
@@ -147,12 +155,12 @@ describe('DocumentationPrompt', () => {
         timestamp: new Date().toISOString(),
       };
 
-      const result = await prompt.generatePrompt(input, context);
+      const result = await prompt.generateDocumentation(input, context);
 
       expect(result.success).toBe(true);
       expect(result.prompt).toContain('calculateTax');
       expect(result.prompt).toContain('function');
-      expect(result.variables).toMatchObject(input);
+      expect(result.metadata?.variablesUsed).toEqual(Object.keys(input));
     });
 
     it('should generate prompt for class documentation', async () => {
@@ -162,7 +170,7 @@ describe('DocumentationPrompt', () => {
         version: '1.0.0',
       };
 
-      const prompt = new DocumentationPrompt(config);
+      const prompt = new DocumentationPrompt();
       const input: DocumentationPromptInput = {
         code: `class UserManager {
           constructor(database) { this.db = database; }
@@ -183,13 +191,13 @@ describe('DocumentationPrompt', () => {
         timestamp: new Date().toISOString(),
       };
 
-      const result = await prompt.generatePrompt(input, context);
+      const result = await prompt.generateDocumentation(input, context);
 
       expect(result.success).toBe(true);
       expect(result.prompt).toContain('UserManager');
       expect(result.prompt).toContain('class');
       expect(result.prompt).toContain('jsdoc');
-      expect(result.variables.includeExamples).toBe(true);
+      expect(result.variables!.includeExamples).toBe(true);
     });
 
     it('should generate prompt for API documentation', async () => {
@@ -199,7 +207,7 @@ describe('DocumentationPrompt', () => {
         version: '1.0.0',
       };
 
-      const prompt = new DocumentationPrompt(config);
+      const prompt = new DocumentationPrompt();
       const input: DocumentationPromptInput = {
         code: `@app.route('/users', methods=['POST'])
 def create_user():
@@ -214,7 +222,7 @@ def create_user():
         includeParameters: true,
         includeReturnValues: true,
         includeErrors: true,
-        context: 'REST API for user management',
+        contextInfo: 'REST API for user management',
       };
 
       const context = {
@@ -222,13 +230,13 @@ def create_user():
         timestamp: new Date().toISOString(),
       };
 
-      const result = await prompt.generatePrompt(input, context);
+      const result = await prompt.generateDocumentation(input, context);
 
       expect(result.success).toBe(true);
       expect(result.prompt).toContain('/users');
       expect(result.prompt).toContain('POST');
       expect(result.prompt).toContain('sphinx');
-      expect(result.variables.context).toContain('REST API');
+      expect(result.variables!.contextInfo).toContain('REST API');
     });
 
     it('should handle different programming languages', async () => {
@@ -238,12 +246,15 @@ def create_user():
         version: '1.0.0',
       };
 
-      const prompt = new DocumentationPrompt(config);
+      const prompt = new DocumentationPrompt();
 
       const languages = [
         { lang: 'javascript', code: 'const sum = (a, b) => a + b;' },
         { lang: 'python', code: 'def sum(a, b):\n    return a + b' },
-        { lang: 'typescript', code: 'function sum(a: number, b: number): number { return a + b; }' },
+        {
+          lang: 'typescript',
+          code: 'function sum(a: number, b: number): number { return a + b; }',
+        },
         { lang: 'java', code: 'public int sum(int a, int b) { return a + b; }' },
         { lang: 'csharp', code: 'public int Sum(int a, int b) { return a + b; }' },
       ];
@@ -261,11 +272,11 @@ def create_user():
           timestamp: new Date().toISOString(),
         };
 
-        const result = await prompt.generatePrompt(input, context);
+        const result = await prompt.generateDocumentation(input, context);
 
         expect(result.success).toBe(true);
         expect(result.prompt).toContain(lang);
-        expect(result.prompt).toContain('sum');
+        expect(result.prompt?.toLowerCase()).toContain('sum');
       }
     });
 
@@ -276,7 +287,7 @@ def create_user():
         version: '1.0.0',
       };
 
-      const prompt = new DocumentationPrompt(config);
+      const prompt = new DocumentationPrompt();
       const input: DocumentationPromptInput = {
         code: `// Main application entry point
 const app = require('./app');
@@ -290,7 +301,7 @@ app.listen(port, () => {
         style: 'markdown',
         audience: 'end-user',
         includeUsage: true,
-        context: 'Express.js web application',
+        contextInfo: 'Express.js web application',
         requirements: ['Installation instructions', 'Environment setup', 'Usage examples'],
       };
 
@@ -299,12 +310,12 @@ app.listen(port, () => {
         timestamp: new Date().toISOString(),
       };
 
-      const result = await prompt.generatePrompt(input, context);
+      const result = await prompt.generateDocumentation(input, context);
 
       expect(result.success).toBe(true);
       expect(result.prompt).toContain('readme');
       expect(result.prompt).toContain('Express');
-      expect(result.variables.requirements).toHaveLength(3);
+      expect(result.variables!.requirements).toHaveLength(3);
     });
 
     it('should handle validation errors gracefully', async () => {
@@ -314,7 +325,7 @@ app.listen(port, () => {
         version: '1.0.0',
       };
 
-      const prompt = new DocumentationPrompt(config);
+      const prompt = new DocumentationPrompt();
       const invalidInput = {
         code: 'function test() {}',
         // Missing required language field
@@ -326,7 +337,7 @@ app.listen(port, () => {
         timestamp: new Date().toISOString(),
       };
 
-      const result = await prompt.generatePrompt(invalidInput, context);
+      const result = await prompt.generateDocumentation(invalidInput, context);
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('Required');
@@ -339,7 +350,7 @@ app.listen(port, () => {
         version: '1.0.0',
       };
 
-      const prompt = new DocumentationPrompt(config);
+      const prompt = new DocumentationPrompt();
       const baseInput = {
         code: 'function fibonacci(n) { return n <= 1 ? n : fibonacci(n-1) + fibonacci(n-2); }',
         language: 'javascript',
@@ -359,11 +370,11 @@ app.listen(port, () => {
           timestamp: new Date().toISOString(),
         };
 
-        const result = await prompt.generatePrompt(input, context);
+        const result = await prompt.generateDocumentation(input, context);
 
         expect(result.success).toBe(true);
         expect(result.prompt).toContain(audience);
-        expect(result.variables.audience).toBe(audience);
+        expect(result.variables!!.audience).toBe(audience);
       }
     });
   });
@@ -376,7 +387,7 @@ app.listen(port, () => {
         version: '1.0.0',
       };
 
-      const prompt = new DocumentationPrompt(config);
+      const prompt = new DocumentationPrompt();
       const input: DocumentationPromptInput = {
         code: `const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/;
 function validateEmail(email) {
@@ -393,7 +404,7 @@ function validateEmail(email) {
         timestamp: new Date().toISOString(),
       };
 
-      const result = await prompt.generatePrompt(input, context);
+      const result = await prompt.generateDocumentation(input, context);
 
       expect(result.success).toBe(true);
       expect(result.prompt).toContain('validateEmail');
@@ -407,7 +418,7 @@ function validateEmail(email) {
         version: '1.0.0',
       };
 
-      const prompt = new DocumentationPrompt(config);
+      const prompt = new DocumentationPrompt();
       const longCode = 'function longFunction() {\n' + '  // comment\n'.repeat(100) + '}';
 
       const input: DocumentationPromptInput = {
@@ -422,7 +433,7 @@ function validateEmail(email) {
         timestamp: new Date().toISOString(),
       };
 
-      const result = await prompt.generatePrompt(input, context);
+      const result = await prompt.generateDocumentation(input, context);
 
       expect(result.success).toBe(true);
       expect(result.prompt).toContain('longFunction');
@@ -435,7 +446,7 @@ function validateEmail(email) {
         version: '1.0.0',
       };
 
-      const prompt = new DocumentationPrompt(config);
+      const prompt = new DocumentationPrompt();
       const input: DocumentationPromptInput = {
         code: 'function simple() { return true; }',
         language: 'javascript',
@@ -448,10 +459,10 @@ function validateEmail(email) {
         timestamp: new Date().toISOString(),
       };
 
-      const result = await prompt.generatePrompt(input, context);
+      const result = await prompt.generateDocumentation(input, context);
 
       expect(result.success).toBe(true);
-      expect(result.variables.requirements).toEqual([]);
+      expect(result.variables!.requirements).toEqual([]);
     });
   });
 });

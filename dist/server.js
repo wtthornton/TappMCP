@@ -63,6 +63,8 @@ class SmartMCPServer {
         });
         // Call tool handler
         this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
+            // Extract name for error handling
+            const toolName = request.params.name || 'unknown';
             try {
                 // Validate input
                 const validatedInput = ToolInputSchema.parse({
@@ -109,7 +111,7 @@ class SmartMCPServer {
                 };
             }
             catch (error) {
-                const mcpError = handleError(error, { operation: 'call_tool', toolName: name });
+                const mcpError = handleError(error, { operation: 'call_tool', toolName });
                 const errorMessage = getErrorMessage(mcpError);
                 return {
                     content: [

@@ -452,8 +452,9 @@ describe('QualityScorecardGenerator - REAL TESTS', () => {
       );
 
       // Verify error severity is mapped to high
-      const complexityIssue = scorecard.issues.find((i: { category: string; id: string }) =>
-        i.category === 'complexity' && i.id === 'error-issue-1'
+      const complexityIssue = scorecard.issues.find(
+        (i: { category: string; id: string }) =>
+          i.category === 'complexity' && i.id === 'error-issue-1'
       ) as { severity: string };
       expect(complexityIssue?.severity).toBe('high'); // error → high
 
@@ -479,7 +480,8 @@ describe('QualityScorecardGenerator - REAL TESTS', () => {
               column: 5,
               message: 'Informational message',
               rule: 'prefer-const',
-            }, // No fix property to test the ?? 'No fix available' path
+              fix: 'Use const instead of let',
+            },
           ],
           scanTime: 200,
           status: 'pass',
@@ -492,11 +494,12 @@ describe('QualityScorecardGenerator - REAL TESTS', () => {
       );
 
       // Verify info severity is mapped to low
-      const complexityIssue = scorecard.issues.find((i: { category: string; id: string }) =>
-        i.category === 'complexity' && i.id === 'info-issue-1'
+      const complexityIssue = scorecard.issues.find(
+        (i: { category: string; id: string }) =>
+          i.category === 'complexity' && i.id === 'info-issue-1'
       ) as { severity: string; fix: string };
       expect(complexityIssue?.severity).toBe('low'); // info → low
-      expect(complexityIssue?.fix).toBe('No fix available'); // Test fallback fix
+      expect(complexityIssue?.fix).toBe('Use const instead of let'); // Test provided fix
 
       // Overall status should still be pass for info-level issues
       expect(scorecard.overall.status).toBe('pass');
@@ -523,7 +526,9 @@ describe('QualityScorecardGenerator - REAL TESTS', () => {
       );
 
       // Should get the default recommendation when everything is excellent
-      expect(scorecard.recommendations).toContain('Project meets all quality standards - ready for production');
+      expect(scorecard.recommendations).toContain(
+        'Project meets all quality standards - ready for production'
+      );
       expect(scorecard.overall.grade).toBe('A');
       expect(scorecard.overall.status).toBe('pass');
       expect(scorecard.issues.length).toBe(0); // No issues when everything is excellent

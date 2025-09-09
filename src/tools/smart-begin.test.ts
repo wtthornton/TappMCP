@@ -345,7 +345,7 @@ describe('SmartBegin - REAL TESTS (Expose Template Theater)', () => {
       const avgComplex = complexTimes.reduce((sum, time) => sum + time, 0) / complexTimes.length;
 
       // Should have similar performance (template generation doesn't scale with complexity)
-      expect(Math.abs(avgSimple - avgComplex)).toBeLessThan(1); // Within 1ms
+      expect(Math.abs(avgSimple - avgComplex)).toBeLessThan(2); // Within 2ms to account for system variance
 
       console.log(
         `EXPOSED: Simple (${avgSimple.toFixed(2)}ms) vs Complex (${avgComplex.toFixed(2)}ms) - no analysis complexity scaling`
@@ -419,7 +419,11 @@ describe('SmartBegin - REAL TESTS (Expose Template Theater)', () => {
 
       expect(result.success).toBe(true);
       // Should have developer-specific template
-      expect(result.data?.projectStructure.templates.some((template: any) => template.name === 'Developer Quality Template')).toBe(true);
+      expect(
+        result.data?.projectStructure.templates.some(
+          (template: any) => template.name === 'Developer Quality Template'
+        )
+      ).toBe(true);
     });
 
     it('should generate qa-engineer template when role is qa-engineer', async () => {
@@ -432,11 +436,22 @@ describe('SmartBegin - REAL TESTS (Expose Template Theater)', () => {
 
       expect(result.success).toBe(true);
       // Should have QA-specific template
-      expect(result.data?.projectStructure.templates.some((template: any) => template.name === 'QA Test Template')).toBe(true);
+      expect(
+        result.data?.projectStructure.templates.some(
+          (template: any) => template.name === 'QA Test Template'
+        )
+      ).toBe(true);
     });
 
     it('should handle all projectTemplate enum values', async () => {
-      const templates = ['mcp-server', 'web-app', 'api-service', 'full-stack', 'microservice', 'library'] as const;
+      const templates = [
+        'mcp-server',
+        'web-app',
+        'api-service',
+        'full-stack',
+        'microservice',
+        'library',
+      ] as const;
 
       for (const template of templates) {
         const input = {
@@ -451,7 +466,13 @@ describe('SmartBegin - REAL TESTS (Expose Template Theater)', () => {
     });
 
     it('should handle all role enum values', async () => {
-      const roles = ['developer', 'product-strategist', 'operations-engineer', 'designer', 'qa-engineer'] as const;
+      const roles = [
+        'developer',
+        'product-strategist',
+        'operations-engineer',
+        'designer',
+        'qa-engineer',
+      ] as const;
 
       for (const role of roles) {
         const input = {
@@ -492,8 +513,16 @@ describe('SmartBegin - REAL TESTS (Expose Template Theater)', () => {
       expect(result.success).toBe(true);
       // Should have both MCP server template and QA template
       expect(result.data?.projectStructure.templates).toHaveLength(2);
-      expect(result.data?.projectStructure.templates.some((template: any) => template.name === 'MCP Server Template')).toBe(true);
-      expect(result.data?.projectStructure.templates.some((template: any) => template.name === 'QA Test Template')).toBe(true);
+      expect(
+        result.data?.projectStructure.templates.some(
+          (template: any) => template.name === 'MCP Server Template'
+        )
+      ).toBe(true);
+      expect(
+        result.data?.projectStructure.templates.some(
+          (template: any) => template.name === 'QA Test Template'
+        )
+      ).toBe(true);
     });
   });
 

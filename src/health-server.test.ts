@@ -22,11 +22,13 @@ describe('Health Server', () => {
     };
 
     mockServer = {
-      listen: vi.fn((port, host, callback) => callback && callback()),
-      close: vi.fn((callback) => callback && callback()),
+      listen: vi.fn(
+        (_port: number, _host: string, callback?: () => void) => callback && callback()
+      ),
+      close: vi.fn(callback => callback && callback()),
     };
 
-    (createServer as any).mockImplementation((handler) => {
+    (createServer as any).mockImplementation((handler: any) => {
       requestHandler = handler;
       return mockServer;
     });
@@ -52,7 +54,9 @@ describe('Health Server', () => {
 
       requestHandler(mockRequest, mockResponse);
 
-      expect(mockResponse.writeHead).toHaveBeenCalledWith(200, { 'Content-Type': 'application/json' });
+      expect(mockResponse.writeHead).toHaveBeenCalledWith(200, {
+        'Content-Type': 'application/json',
+      });
       const responseCall = mockResponse.end.mock.calls[0][0];
       const responseData = JSON.parse(responseCall);
       expect(responseData.status).toBe('healthy');
@@ -78,7 +82,9 @@ describe('Health Server', () => {
 
       requestHandler(mockRequest, mockResponse);
 
-      expect(mockResponse.writeHead).toHaveBeenCalledWith(200, { 'Content-Type': 'application/json' });
+      expect(mockResponse.writeHead).toHaveBeenCalledWith(200, {
+        'Content-Type': 'application/json',
+      });
       const responseCall = mockResponse.end.mock.calls[0][0];
       const responseData = JSON.parse(responseCall);
       expect(responseData.status).toBe('ready');
@@ -101,7 +107,9 @@ describe('Health Server', () => {
 
       requestHandler(mockRequest, mockResponse);
 
-      expect(mockResponse.writeHead).toHaveBeenCalledWith(404, { 'Content-Type': 'application/json' });
+      expect(mockResponse.writeHead).toHaveBeenCalledWith(404, {
+        'Content-Type': 'application/json',
+      });
       const responseCall = mockResponse.end.mock.calls[0][0];
       const responseData = JSON.parse(responseCall);
       expect(responseData.status).toBe('not found');
@@ -112,7 +120,9 @@ describe('Health Server', () => {
 
       requestHandler(mockRequest, mockResponse);
 
-      expect(mockResponse.writeHead).toHaveBeenCalledWith(404, { 'Content-Type': 'application/json' });
+      expect(mockResponse.writeHead).toHaveBeenCalledWith(404, {
+        'Content-Type': 'application/json',
+      });
       const responseCall = mockResponse.end.mock.calls[0][0];
       const responseData = JSON.parse(responseCall);
       expect(responseData.message).toBe('Endpoint not found');

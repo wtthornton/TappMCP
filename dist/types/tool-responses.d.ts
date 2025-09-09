@@ -6,6 +6,12 @@ export interface SmartBeginResponse {
             folders: string[];
             files: string[];
             configFiles: string[];
+            templates: Array<{
+                name: string;
+                description: string;
+                path: string;
+                content: string;
+            }>;
         };
         qualityGates: Array<{
             name: string;

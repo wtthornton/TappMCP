@@ -498,16 +498,16 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         qualityImprovement: z.ZodNumber;
         costSavings: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
-        estimatedROI: number;
         timeToMarket: number;
-        riskMitigation: number;
         qualityImprovement: number;
+        riskMitigation: number;
+        estimatedROI: number;
         costSavings: number;
     }, {
-        estimatedROI: number;
         timeToMarket: number;
-        riskMitigation: number;
         qualityImprovement: number;
+        riskMitigation: number;
+        estimatedROI: number;
         costSavings: number;
     }>;
     qualityGates: z.ZodArray<z.ZodObject<{
@@ -535,10 +535,10 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
     }[];
     nextSteps: string[];
     businessValue: {
-        estimatedROI: number;
         timeToMarket: number;
-        riskMitigation: number;
         qualityImprovement: number;
+        riskMitigation: number;
+        estimatedROI: number;
         costSavings: number;
     };
     timeline: {
@@ -667,10 +667,10 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
     }[];
     nextSteps: string[];
     businessValue: {
-        estimatedROI: number;
         timeToMarket: number;
-        riskMitigation: number;
         qualityImprovement: number;
+        riskMitigation: number;
+        estimatedROI: number;
         costSavings: number;
     };
     timeline: {

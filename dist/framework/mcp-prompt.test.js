@@ -282,7 +282,7 @@ describe('MCPPromptFactory', () => {
                 log: vi.fn(),
                 warn: vi.fn(),
                 debug: vi.fn(),
-                trace: vi.fn()
+                trace: vi.fn(),
             };
             MCPPromptFactory.setLogger(mockLogger);
             // Logger is set but not directly testable without implementation details

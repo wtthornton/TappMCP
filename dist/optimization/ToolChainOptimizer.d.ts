@@ -43,6 +43,7 @@ export declare const ToolDefinitionSchema: z.ZodObject<{
     inputSchema: Record<string, any>;
     version: string;
     category: "validation" | "planning" | "analysis" | "generation" | "transformation" | "orchestration";
+    reliability: number;
     dependencies: string[];
     outputSchema: Record<string, any>;
     estimatedExecutionTime: number;
@@ -51,7 +52,6 @@ export declare const ToolDefinitionSchema: z.ZodObject<{
         tokens: number;
         cpu: number;
     };
-    reliability: number;
     costPerExecution: number;
     parallelizable: boolean;
     cacheEnabled: boolean;
@@ -62,6 +62,7 @@ export declare const ToolDefinitionSchema: z.ZodObject<{
     category: "validation" | "planning" | "analysis" | "generation" | "transformation" | "orchestration";
     outputSchema: Record<string, any>;
     version?: string | undefined;
+    reliability?: number | undefined;
     dependencies?: string[] | undefined;
     estimatedExecutionTime?: number | undefined;
     resourceRequirements?: {
@@ -69,7 +70,6 @@ export declare const ToolDefinitionSchema: z.ZodObject<{
         tokens?: number | undefined;
         cpu?: number | undefined;
     } | undefined;
-    reliability?: number | undefined;
     costPerExecution?: number | undefined;
     parallelizable?: boolean | undefined;
     cacheEnabled?: boolean | undefined;

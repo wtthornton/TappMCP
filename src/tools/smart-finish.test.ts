@@ -546,11 +546,23 @@ describe('SmartFinish - REAL TESTS (Expose Quality Gate Theater)', () => {
       expect(result.success).toBe(true);
 
       // Should always include basic QA recommendations
-      expect(result.data?.recommendations.some((rec: string) => rec.includes('Test coverage validation completed'))).toBe(true);
-      expect(result.data?.recommendations.some((rec: string) => rec.includes('Quality gates assessment finished'))).toBe(true);
+      expect(
+        result.data?.recommendations.some((rec: string) =>
+          rec.includes('Test coverage validation completed')
+        )
+      ).toBe(true);
+      expect(
+        result.data?.recommendations.some((rec: string) =>
+          rec.includes('Quality gates assessment finished')
+        )
+      ).toBe(true);
 
       // Security grade is always C (mock data), so no "Security standards validated" message
-      expect(result.data?.recommendations.some((rec: string) => rec.includes('Security standards validated'))).toBe(false);
+      expect(
+        result.data?.recommendations.some((rec: string) =>
+          rec.includes('Security standards validated')
+        )
+      ).toBe(false);
     });
 
     it('should add performance recommendations for operations-engineer role with high performance grades', async () => {
@@ -566,8 +578,14 @@ describe('SmartFinish - REAL TESTS (Expose Quality Gate Theater)', () => {
       const result = (await handleSmartFinish(input)) as SmartFinishResponse;
 
       expect(result.success).toBe(true);
-      expect(result.data?.recommendations.some((rec: string) => rec.includes('Performance targets met'))).toBe(true);
-      expect(result.data?.recommendations.some((rec: string) => rec.includes('Deployment readiness assessment completed'))).toBe(true);
+      expect(
+        result.data?.recommendations.some((rec: string) => rec.includes('Performance targets met'))
+      ).toBe(true);
+      expect(
+        result.data?.recommendations.some((rec: string) =>
+          rec.includes('Deployment readiness assessment completed')
+        )
+      ).toBe(true);
     });
 
     it('should handle qa-engineer role with low security grades (no security recommendation)', async () => {
@@ -583,9 +601,17 @@ describe('SmartFinish - REAL TESTS (Expose Quality Gate Theater)', () => {
       const result = (await handleSmartFinish(input)) as SmartFinishResponse;
 
       expect(result.success).toBe(true);
-      expect(result.data?.recommendations.some((rec: string) => rec.includes('Test coverage validation completed'))).toBe(true);
+      expect(
+        result.data?.recommendations.some((rec: string) =>
+          rec.includes('Test coverage validation completed')
+        )
+      ).toBe(true);
       // Should NOT include security validation message
-      expect(result.data?.recommendations.some((rec: string) => rec.includes('Security standards validated'))).toBe(false);
+      expect(
+        result.data?.recommendations.some((rec: string) =>
+          rec.includes('Security standards validated')
+        )
+      ).toBe(false);
     });
 
     it('should include performance recommendations for operations-engineer role (performance grade is always A based on mock data)', async () => {
@@ -601,10 +627,20 @@ describe('SmartFinish - REAL TESTS (Expose Quality Gate Theater)', () => {
       const result = (await handleSmartFinish(input)) as SmartFinishResponse;
 
       expect(result.success).toBe(true);
-      expect(result.data?.recommendations.some((rec: string) => rec.includes('Deployment readiness assessment completed'))).toBe(true);
-      expect(result.data?.recommendations.some((rec: string) => rec.includes('Security compliance validation finished'))).toBe(true);
+      expect(
+        result.data?.recommendations.some((rec: string) =>
+          rec.includes('Deployment readiness assessment completed')
+        )
+      ).toBe(true);
+      expect(
+        result.data?.recommendations.some((rec: string) =>
+          rec.includes('Security compliance validation finished')
+        )
+      ).toBe(true);
       // Should include performance targets message (mock generates A grade)
-      expect(result.data?.recommendations.some((rec: string) => rec.includes('Performance targets met'))).toBe(true);
+      expect(
+        result.data?.recommendations.some((rec: string) => rec.includes('Performance targets met'))
+      ).toBe(true);
     });
 
     it('should handle moderate severity vulnerability branch coverage', async () => {

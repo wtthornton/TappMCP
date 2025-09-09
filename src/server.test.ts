@@ -34,8 +34,8 @@ vi.mock('./tools/smart-orchestrate.js', () => ({
 
 // Mock error utilities
 vi.mock('./utils/errors.js', () => ({
-  handleError: vi.fn((error) => ({ ...error, code: 'MOCK_ERROR' })),
-  getErrorMessage: vi.fn((error) => error.message || 'Unknown error'),
+  handleError: vi.fn(error => ({ ...error, code: 'MOCK_ERROR' })),
+  getErrorMessage: vi.fn(error => error.message || 'Unknown error'),
 }));
 
 describe('SmartMCPServer', () => {
@@ -112,7 +112,7 @@ describe('SmartMCPServer', () => {
         smartBeginTool: {
           name: 'smart_begin',
           description: 'Test tool',
-          inputSchema: { properties: {} }
+          inputSchema: { properties: {} },
         },
         handleSmartBegin: mockHandleSmartBegin,
       }));
@@ -157,7 +157,7 @@ describe('SmartMCPServer', () => {
       const callToolHandler = mockServer.setRequestHandler.mock.calls[1][1];
       const request = {
         params: {
-          name: '',  // Invalid: empty name
+          name: '', // Invalid: empty name
           arguments: {},
         },
       };

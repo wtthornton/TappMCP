@@ -318,6 +318,118 @@ describe('QualityScorecardGenerator - REAL TESTS', () => {
             expect(scorecard.business.grade).toBe('C'); // Updated based on calculation
             expect(scorecard.security.grade).toBe('A');
         });
+        // EDGE CASE TESTS - Added to improve branch coverage from 95.16% to 90%+
+        it('should handle static analysis issues with error severity', () => {
+            const scorecard = generator.generateScorecard({
+                vulnerabilities: [],
+                scanTime: 100,
+                status: 'pass',
+                summary: { total: 0, critical: 0, high: 0, moderate: 0, low: 0 },
+            }, {
+                issues: [
+                    {
+                        id: 'error-issue-1',
+                        severity: 'error', // Test 'error' severity path (maps to 'high')
+                        file: 'test.ts',
+                        line: 15,
+                        column: 1,
+                        message: 'Critical error in code',
+                        rule: 'no-error',
+                        fix: 'Fix the error',
+                    },
+                ],
+                scanTime: 200,
+                status: 'fail',
+                summary: { total: 1, error: 1, warning: 0, info: 0 },
+                metrics: { complexity: 8, maintainability: 70, duplication: 3 },
+            }, { line: 85, branch: 80, function: 85 }, { responseTime: 90, memoryUsage: 128 }, { costPrevention: 12000, timeSaved: 4, userSatisfaction: 88 });
+            // Verify error severity is mapped to high
+            const complexityIssue = scorecard.issues.find((i) => i.category === 'complexity' && i.id === 'error-issue-1');
+            expect(complexityIssue?.severity).toBe('high'); // error → high
+            // Overall status should be fail due to error
+            expect(scorecard.overall.status).toBe('fail');
+        });
+        it('should handle static analysis issues with info severity', () => {
+            const scorecard = generator.generateScorecard({
+                vulnerabilities: [],
+                scanTime: 100,
+                status: 'pass',
+                summary: { total: 0, critical: 0, high: 0, moderate: 0, low: 0 },
+            }, {
+                issues: [
+                    {
+                        id: 'info-issue-1',
+                        severity: 'info', // Test 'info' severity path (maps to 'low')
+                        file: 'test.ts',
+                        line: 20,
+                        column: 5,
+                        message: 'Informational message',
+                        rule: 'prefer-const',
+                        fix: 'Use const instead of let',
+                    },
+                ],
+                scanTime: 200,
+                status: 'pass',
+                summary: { total: 1, error: 0, warning: 0, info: 1 },
+                metrics: { complexity: 5, maintainability: 85, duplication: 2 },
+            }, { line: 90, branch: 85, function: 90 }, { responseTime: 80, memoryUsage: 100 }, { costPrevention: 15000, timeSaved: 5, userSatisfaction: 95 });
+            // Verify info severity is mapped to low
+            const complexityIssue = scorecard.issues.find((i) => i.category === 'complexity' && i.id === 'info-issue-1');
+            expect(complexityIssue?.severity).toBe('low'); // info → low
+            expect(complexityIssue?.fix).toBe('Use const instead of let'); // Test provided fix
+            // Overall status should still be pass for info-level issues
+            expect(scorecard.overall.status).toBe('pass');
+        });
+        it('should handle edge case with no recommendations needed (all metrics excellent)', () => {
+            const scorecard = generator.generateScorecard({
+                vulnerabilities: [],
+                scanTime: 100,
+                status: 'pass',
+                summary: { total: 0, critical: 0, high: 0, moderate: 0, low: 0 },
+            }, {
+                issues: [],
+                scanTime: 200,
+                status: 'pass',
+                summary: { total: 0, error: 0, warning: 0, info: 0 },
+                metrics: { complexity: 3, maintainability: 95, duplication: 1 }, // Excellent metrics
+            }, { line: 95, branch: 95, function: 95 }, // Excellent coverage
+            { responseTime: 50, memoryUsage: 64 }, // Excellent performance
+            { costPrevention: 25000, timeSaved: 10, userSatisfaction: 98 } // Excellent business metrics
+            );
+            // Should get the default recommendation when everything is excellent
+            expect(scorecard.recommendations).toContain('Project meets all quality standards - ready for production');
+            expect(scorecard.overall.grade).toBe('A');
+            expect(scorecard.overall.status).toBe('pass');
+            expect(scorecard.issues.length).toBe(0); // No issues when everything is excellent
+        });
+        it('should handle critical security vulnerability with overall score penalty', () => {
+            const scorecard = generator.generateScorecard({
+                vulnerabilities: [
+                    {
+                        id: 'CVE-CRITICAL',
+                        severity: 'critical',
+                        package: 'vulnerable-pkg',
+                        version: '1.0.0',
+                        description: 'Critical security flaw',
+                    },
+                ],
+                scanTime: 100,
+                status: 'fail',
+                summary: { total: 1, critical: 1, high: 0, moderate: 0, low: 0 },
+            }, {
+                issues: [],
+                scanTime: 200,
+                status: 'pass',
+                summary: { total: 0, error: 0, warning: 0, info: 0 },
+                metrics: { complexity: 5, maintainability: 85, duplication: 2 },
+            }, { line: 90, branch: 85, function: 88 }, { responseTime: 80, memoryUsage: 128 }, { costPrevention: 15000, timeSaved: 5, userSatisfaction: 95 });
+            // Critical vulnerability should trigger the additional penalty logic
+            // Line 110-112: if (securityResult.summary.critical > 0) { overallScore = Math.max(...) }
+            expect(scorecard.overall.score).toBe(68); // Actual calculated score with penalty
+            expect(scorecard.overall.grade).toBe('D'); // Critical issues result in D grade
+            expect(scorecard.overall.status).toBe('fail');
+            expect(scorecard.security.score).toBe(70); // 100 - (1*30) = 70
+        });
     });
 });
 //# sourceMappingURL=quality-scorecard.test.js.map

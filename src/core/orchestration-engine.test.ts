@@ -27,8 +27,8 @@ vi.mock('./business-context-broker.js', () => ({
 }));
 
 vi.mock('../utils/errors.js', () => ({
-  handleError: vi.fn((error) => ({ ...error, code: 'TEST_ERROR' })),
-  getErrorMessage: vi.fn((error) => error.message || 'Test error message'),
+  handleError: vi.fn(error => ({ ...error, code: 'TEST_ERROR' })),
+  getErrorMessage: vi.fn(error => error.message || 'Test error message'),
 }));
 
 describe('OrchestrationEngine', () => {

@@ -31,7 +31,7 @@ export const DocumentationPromptSchema = z.object({
     .describe('Whether to include return value documentation'),
   includeErrors: z.boolean().optional().describe('Whether to include error documentation'),
   includeUsage: z.boolean().optional().describe('Whether to include usage examples'),
-  context: z.string().optional().describe('Additional context about the code'),
+  contextInfo: z.string().optional().describe('Additional context about the code'),
   requirements: z.array(z.string()).optional().describe('Specific documentation requirements'),
 });
 
@@ -51,8 +51,8 @@ Code to Document:
 {{code}}
 \`\`\`
 
-{{#if context}}
-Context: {{context}}
+{{#if contextInfo}}
+Context: {{contextInfo}}
 {{/if}}
 
 {{#if requirements}}
@@ -123,7 +123,7 @@ Format the documentation according to {{style}} standards and make it suitable f
     includeReturnValues: z.boolean().optional(),
     includeErrors: z.boolean().optional(),
     includeUsage: z.boolean().optional(),
-    context: z.string().optional(),
+    contextInfo: z.string().optional(),
     requirements: z.array(z.string()).optional(),
   },
   contextSchema: DocumentationPromptSchema,
@@ -166,6 +166,7 @@ export class DocumentationPrompt extends MCPPrompt {
         success: true,
         prompt,
         data: prompt,
+        variables: validatedInput,
         metadata: {
           executionTime,
           timestamp: new Date().toISOString(),
@@ -233,7 +234,7 @@ export class DocumentationPrompt extends MCPPrompt {
       docType: 'readme',
       style: 'markdown',
       audience: 'developer',
-      context: `Project: ${projectName}`,
+      contextInfo: `Project: ${projectName}`,
       requirements: [
         'Include installation instructions',
         'Include usage examples',
@@ -263,7 +264,7 @@ export class DocumentationPrompt extends MCPPrompt {
       docType: 'tutorial',
       style: 'markdown',
       audience: 'beginner',
-      context: `Topic: ${topic}`,
+      contextInfo: `Topic: ${topic}`,
       requirements: [
         'Step-by-step instructions',
         'Beginner-friendly explanations',

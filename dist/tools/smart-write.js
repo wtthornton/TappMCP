@@ -858,6 +858,7 @@ export async function handleSmartWrite(input) {
         executionLog.duration = Date.now() - startTime;
         // Create clean response
         const response = {
+            projectId: validatedInput.projectId,
             codeId,
             generatedCode,
             qualityMetrics: {

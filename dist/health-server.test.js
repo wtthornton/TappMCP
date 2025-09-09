@@ -1,43 +1,200 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const vitest_1 = require("vitest");
-const health_server_1 = require("./health-server");
-(0, vitest_1.describe)('Health Server', () => {
-    let server;
-    const TEST_PORT = 3001; // Use different port to avoid conflicts
-    (0, vitest_1.beforeAll)(() => {
-        server = (0, health_server_1.createHealthServer)(TEST_PORT);
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { createServer } from 'http';
+// Mock http module
+vi.mock('http');
+describe('Health Server', () => {
+    let mockServer;
+    let mockRequest;
+    let mockResponse;
+    let requestHandler;
+    beforeEach(() => {
+        mockResponse = {
+            writeHead: vi.fn(),
+            end: vi.fn(),
+        };
+        mockRequest = {
+            url: '/',
+        };
+        mockServer = {
+            listen: vi.fn((_port, _host, callback) => callback && callback()),
+            close: vi.fn(callback => callback && callback()),
+        };
+        createServer.mockImplementation((handler) => {
+            requestHandler = handler;
+            return mockServer;
+        });
+        // Reset environment
+        delete process.env.NODE_ENV;
+        delete process.env.VITEST;
     });
-    (0, vitest_1.afterAll)((done) => {
-        if (server) {
-            server.close(done);
-        }
-        else {
-            done();
-        }
+    afterEach(() => {
+        vi.clearAllMocks();
+        vi.resetModules();
     });
-    (0, vitest_1.it)('should create health server successfully', () => {
-        (0, vitest_1.expect)(server).toBeDefined();
-        (0, vitest_1.expect)(server.listening).toBe(true);
+    describe('Health Endpoint', () => {
+        beforeEach(async () => {
+            // Import the health server to trigger initialization
+            await import('./health-server.js');
+        });
+        it('should respond to /health endpoint with healthy status', () => {
+            mockRequest.url = '/health';
+            requestHandler(mockRequest, mockResponse);
+            expect(mockResponse.writeHead).toHaveBeenCalledWith(200, {
+                'Content-Type': 'application/json',
+            });
+            const responseCall = mockResponse.end.mock.calls[0][0];
+            const responseData = JSON.parse(responseCall);
+            expect(responseData.status).toBe('healthy');
+        });
+        it('should include system information in health response', () => {
+            mockRequest.url = '/health';
+            requestHandler(mockRequest, mockResponse);
+            const responseCall = mockResponse.end.mock.calls[0][0];
+            const responseData = JSON.parse(responseCall);
+            expect(responseData).toHaveProperty('status', 'healthy');
+            expect(responseData).toHaveProperty('timestamp');
+            expect(responseData).toHaveProperty('uptime');
+            expect(responseData).toHaveProperty('memory');
+            expect(responseData).toHaveProperty('version');
+        });
+        it('should respond to /ready endpoint', () => {
+            mockRequest.url = '/ready';
+            requestHandler(mockRequest, mockResponse);
+            expect(mockResponse.writeHead).toHaveBeenCalledWith(200, {
+                'Content-Type': 'application/json',
+            });
+            const responseCall = mockResponse.end.mock.calls[0][0];
+            const responseData = JSON.parse(responseCall);
+            expect(responseData.status).toBe('ready');
+        });
+        it('should include timestamp in ready response', () => {
+            mockRequest.url = '/ready';
+            requestHandler(mockRequest, mockResponse);
+            const responseCall = mockResponse.end.mock.calls[0][0];
+            const responseData = JSON.parse(responseCall);
+            expect(responseData).toHaveProperty('status', 'ready');
+            expect(responseData).toHaveProperty('timestamp');
+        });
+        it('should return 404 for unknown endpoints', () => {
+            mockRequest.url = '/unknown';
+            requestHandler(mockRequest, mockResponse);
+            expect(mockResponse.writeHead).toHaveBeenCalledWith(404, {
+                'Content-Type': 'application/json',
+            });
+            const responseCall = mockResponse.end.mock.calls[0][0];
+            const responseData = JSON.parse(responseCall);
+            expect(responseData.status).toBe('not found');
+        });
+        it('should handle root path with 404', () => {
+            mockRequest.url = '/';
+            requestHandler(mockRequest, mockResponse);
+            expect(mockResponse.writeHead).toHaveBeenCalledWith(404, {
+                'Content-Type': 'application/json',
+            });
+            const responseCall = mockResponse.end.mock.calls[0][0];
+            const responseData = JSON.parse(responseCall);
+            expect(responseData.message).toBe('Endpoint not found');
+        });
     });
-    (0, vitest_1.it)('should respond to health check', async () => {
-        const response = await fetch(`http://localhost:${TEST_PORT}/health`);
-        const data = await response.json();
-        (0, vitest_1.expect)(response.status).toBe(200);
-        (0, vitest_1.expect)(data.status).toBe('healthy');
-        (0, vitest_1.expect)(data.timestamp).toBeDefined();
-        (0, vitest_1.expect)(data.uptime).toBeGreaterThanOrEqual(0);
+    describe('Server Startup', () => {
+        it('should start server on specified port in production', async () => {
+            process.env.NODE_ENV = 'production';
+            process.env.HEALTH_PORT = '3001';
+            // Re-import to test startup behavior
+            await import('./health-server.js');
+            expect(createServer).toHaveBeenCalled();
+            expect(mockServer.listen).toHaveBeenCalledWith(3001, '0.0.0.0', expect.any(Function));
+        });
+        it('should use default port when HEALTH_PORT not set', async () => {
+            process.env.NODE_ENV = 'production';
+            delete process.env.HEALTH_PORT;
+            await import('./health-server.js');
+            expect(mockServer.listen).toHaveBeenCalledWith(3001, '0.0.0.0', expect.any(Function));
+        });
+        it('should not start server in test environment', async () => {
+            process.env.NODE_ENV = 'test';
+            await import('./health-server.js');
+            expect(createServer).toHaveBeenCalled();
+            expect(mockServer.listen).not.toHaveBeenCalled();
+        });
+        it('should not start server when VITEST is set', async () => {
+            process.env.VITEST = 'true';
+            await import('./health-server.js');
+            expect(createServer).toHaveBeenCalled();
+            expect(mockServer.listen).not.toHaveBeenCalled();
+        });
+        it('should use custom port from environment', async () => {
+            process.env.NODE_ENV = 'production';
+            process.env.HEALTH_PORT = '9000';
+            await import('./health-server.js');
+            expect(mockServer.listen).toHaveBeenCalledWith(9000, '0.0.0.0', expect.any(Function));
+        });
     });
-    (0, vitest_1.it)('should respond to readiness check', async () => {
-        const response = await fetch(`http://localhost:${TEST_PORT}/ready`);
-        const data = await response.json();
-        (0, vitest_1.expect)(response.status).toBe(200);
-        (0, vitest_1.expect)(data.ready).toBe(true);
-        (0, vitest_1.expect)(data.timestamp).toBeDefined();
+    describe('Graceful Shutdown', () => {
+        beforeEach(async () => {
+            await import('./health-server.js');
+        });
+        it('should handle SIGTERM signal', () => {
+            const mockExit = vi.spyOn(process, 'exit').mockImplementation((() => { }));
+            // Emit SIGTERM
+            process.emit('SIGTERM');
+            expect(mockServer.close).toHaveBeenCalledWith(expect.any(Function));
+            // Trigger the callback
+            const closeCallback = mockServer.close.mock.calls[0][0];
+            closeCallback();
+            expect(mockExit).toHaveBeenCalledWith(0);
+            mockExit.mockRestore();
+        });
+        it('should handle SIGINT signal', () => {
+            const mockExit = vi.spyOn(process, 'exit').mockImplementation((() => { }));
+            // Emit SIGINT
+            process.emit('SIGINT');
+            expect(mockServer.close).toHaveBeenCalledWith(expect.any(Function));
+            // Trigger the callback
+            const closeCallback = mockServer.close.mock.calls[0][0];
+            closeCallback();
+            expect(mockExit).toHaveBeenCalledWith(0);
+            mockExit.mockRestore();
+        });
     });
-    (0, vitest_1.it)('should return 404 for unknown routes', async () => {
-        const response = await fetch(`http://localhost:${TEST_PORT}/unknown`);
-        (0, vitest_1.expect)(response.status).toBe(404);
+    describe('Response Format', () => {
+        beforeEach(async () => {
+            await import('./health-server.js');
+        });
+        it('should return valid JSON for health endpoint', () => {
+            mockRequest.url = '/health';
+            requestHandler(mockRequest, mockResponse);
+            const responseCall = mockResponse.end.mock.calls[0][0];
+            expect(() => JSON.parse(responseCall)).not.toThrow();
+        });
+        it('should return valid JSON for ready endpoint', () => {
+            mockRequest.url = '/ready';
+            requestHandler(mockRequest, mockResponse);
+            const responseCall = mockResponse.end.mock.calls[0][0];
+            expect(() => JSON.parse(responseCall)).not.toThrow();
+        });
+        it('should return valid JSON for 404 responses', () => {
+            mockRequest.url = '/unknown';
+            requestHandler(mockRequest, mockResponse);
+            const responseCall = mockResponse.end.mock.calls[0][0];
+            expect(() => JSON.parse(responseCall)).not.toThrow();
+        });
+        it('should include version from environment', () => {
+            process.env.npm_package_version = '1.2.3';
+            mockRequest.url = '/health';
+            requestHandler(mockRequest, mockResponse);
+            const responseCall = mockResponse.end.mock.calls[0][0];
+            const responseData = JSON.parse(responseCall);
+            expect(responseData.version).toBe('1.2.3');
+        });
+        it('should use default version when env not set', () => {
+            delete process.env.npm_package_version;
+            mockRequest.url = '/health';
+            requestHandler(mockRequest, mockResponse);
+            const responseCall = mockResponse.end.mock.calls[0][0];
+            const responseData = JSON.parse(responseCall);
+            expect(responseData.version).toBe('0.1.0');
+        });
     });
 });
 //# sourceMappingURL=health-server.test.js.map

@@ -23,7 +23,7 @@ describe('MCP Protocol Simulation', () => {
         const result = await handleSmartBegin({
             projectName: 'MCP Direct Test',
             techStack: ['TypeScript'],
-            targetUsers: ['developers']
+            targetUsers: ['developers'],
         });
         expect(result.success).toBe(true);
         expect(result.data.projectId).toBeDefined();
@@ -39,7 +39,7 @@ describe('MCP Protocol Simulation', () => {
         const beginResult = await handleSmartBegin({
             projectName: 'MCP Chain Test',
             techStack: ['TypeScript', 'Node.js'],
-            targetUsers: ['developers']
+            targetUsers: ['developers'],
         });
         expect(beginResult.success).toBe(true);
         const projectId = beginResult.data.projectId;
@@ -50,8 +50,8 @@ describe('MCP Protocol Simulation', () => {
             planType: 'development',
             scope: {
                 techStack: ['TypeScript', 'Node.js'],
-                timeline: { duration: 4, unit: 'weeks' }
-            }
+                timeline: { duration: 4, unit: 'weeks' },
+            },
         });
         if (!planResult.success) {
             console.log('❌ smart_plan failed:', planResult.error);
@@ -63,20 +63,26 @@ describe('MCP Protocol Simulation', () => {
         // 3. smart_write
         const writeResult = await handleSmartWrite({
             projectId: projectId,
-            specification: 'Create a TypeScript utility function',
+            featureDescription: 'Create a TypeScript utility function',
             requirements: {
                 language: 'TypeScript',
-                framework: 'none'
-            }
+                framework: 'none',
+            },
         });
+        if (!writeResult.success) {
+            console.log('❌ smart_write failed:', writeResult.error);
+            console.log('Full response:', JSON.stringify(writeResult, null, 2));
+        }
         expect(writeResult.success).toBe(true);
+        console.log('smart_write response projectId:', writeResult.data.projectId);
+        console.log('Expected projectId:', projectId);
         expect(writeResult.data.projectId).toBe(projectId);
         const codeId = writeResult.data.codeId;
         console.log(`✅ Step 3 - smart_write: ${codeId}`);
-        // 4. smart_finish  
+        // 4. smart_finish
         const finishResult = await handleSmartFinish({
             projectId: projectId,
-            codeIds: [codeId]
+            codeIds: [codeId],
         });
         expect(finishResult.success).toBe(true);
         expect(finishResult.data.projectId).toBe(projectId);
@@ -91,9 +97,9 @@ describe('MCP Protocol Simulation', () => {
                 businessContext: {
                     projectId: 'mcp_orchestrate_test',
                     businessGoals: ['Secure API', 'User authentication'],
-                    requirements: ['REST endpoints', 'JWT auth']
-                }
-            }
+                    requirements: ['REST endpoints', 'JWT auth'],
+                },
+            },
         });
         if (!result.success) {
             console.log('❌ smart_orchestrate failed:', result.error);

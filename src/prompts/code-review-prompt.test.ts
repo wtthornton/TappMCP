@@ -21,7 +21,13 @@ describe('CodeReviewPrompt', () => {
     });
 
     it('should validate all reviewType enum values', () => {
-      const reviewTypes = ['security', 'performance', 'maintainability', 'readability', 'comprehensive'] as const;
+      const reviewTypes = [
+        'security',
+        'performance',
+        'maintainability',
+        'readability',
+        'comprehensive',
+      ] as const;
 
       for (const reviewType of reviewTypes) {
         const input = {
@@ -107,7 +113,7 @@ describe('CodeReviewPrompt', () => {
         version: '1.0.0',
       };
 
-      const prompt = new CodeReviewPrompt(config);
+      const prompt = new CodeReviewPrompt();
       expect(prompt).toBeInstanceOf(CodeReviewPrompt);
     });
 
@@ -118,7 +124,7 @@ describe('CodeReviewPrompt', () => {
         version: '1.0.0',
       };
 
-      const prompt = new CodeReviewPrompt(config);
+      const prompt = new CodeReviewPrompt();
       const input: CodeReviewPromptInput = {
         code: `function authenticateUser(username, password) {
           const query = "SELECT * FROM users WHERE username='" + username + "' AND password='" + password + "'";
@@ -134,12 +140,12 @@ describe('CodeReviewPrompt', () => {
         timestamp: new Date().toISOString(),
       };
 
-      const result = await prompt.generatePrompt(input, context);
+      const result = await prompt.reviewCode(input, context);
 
       expect(result.success).toBe(true);
       expect(result.prompt).toContain('security');
       expect(result.prompt).toContain('authenticateUser');
-      expect(result.variables).toMatchObject(input);
+      expect(result.metadata?.variablesUsed).toEqual(Object.keys(input));
     });
 
     it('should generate prompt for performance review', async () => {
@@ -149,7 +155,7 @@ describe('CodeReviewPrompt', () => {
         version: '1.0.0',
       };
 
-      const prompt = new CodeReviewPrompt(config);
+      const prompt = new CodeReviewPrompt();
       const input: CodeReviewPromptInput = {
         code: `function findMaxValue(array) {
           let max = array[0];
@@ -171,12 +177,12 @@ describe('CodeReviewPrompt', () => {
         timestamp: new Date().toISOString(),
       };
 
-      const result = await prompt.generatePrompt(input, context);
+      const result = await prompt.reviewCode(input, context);
 
       expect(result.success).toBe(true);
       expect(result.prompt).toContain('performance');
       expect(result.prompt).toContain('findMaxValue');
-      expect(result.variables.focusAreas).toHaveLength(2);
+      expect(result.variables!.focusAreas).toHaveLength(2);
     });
 
     it('should generate prompt for maintainability review', async () => {
@@ -186,7 +192,7 @@ describe('CodeReviewPrompt', () => {
         version: '1.0.0',
       };
 
-      const prompt = new CodeReviewPrompt(config);
+      const prompt = new CodeReviewPrompt();
       const input: CodeReviewPromptInput = {
         code: `def process_data(d, t, f=False):
           if t == 1:
@@ -207,12 +213,12 @@ describe('CodeReviewPrompt', () => {
         timestamp: new Date().toISOString(),
       };
 
-      const result = await prompt.generatePrompt(input, context);
+      const result = await prompt.reviewCode(input, context);
 
       expect(result.success).toBe(true);
       expect(result.prompt).toContain('maintainability');
       expect(result.prompt).toContain('process_data');
-      expect(result.variables.standards).toContain('PEP 8');
+      expect(result.variables!.standards).toContain('PEP 8');
     });
 
     it('should generate prompt for readability review', async () => {
@@ -222,7 +228,7 @@ describe('CodeReviewPrompt', () => {
         version: '1.0.0',
       };
 
-      const prompt = new CodeReviewPrompt(config);
+      const prompt = new CodeReviewPrompt();
       const input: CodeReviewPromptInput = {
         code: `public class DataProcessor {
           private List<Integer> data;
@@ -248,12 +254,12 @@ describe('CodeReviewPrompt', () => {
         timestamp: new Date().toISOString(),
       };
 
-      const result = await prompt.generatePrompt(input, context);
+      const result = await prompt.reviewCode(input, context);
 
       expect(result.success).toBe(true);
       expect(result.prompt).toContain('readability');
       expect(result.prompt).toContain('DataProcessor');
-      expect(result.variables.context).toContain('utility class');
+      expect(result.variables!.context).toContain('utility class');
     });
 
     it('should generate prompt for comprehensive review', async () => {
@@ -263,7 +269,7 @@ describe('CodeReviewPrompt', () => {
         version: '1.0.0',
       };
 
-      const prompt = new CodeReviewPrompt(config);
+      const prompt = new CodeReviewPrompt();
       const input: CodeReviewPromptInput = {
         code: `async function fetchUserData(userId) {
           try {
@@ -280,7 +286,11 @@ describe('CodeReviewPrompt', () => {
         focusAreas: ['error handling', 'security', 'performance', 'maintainability'],
         standards: ['TypeScript strict mode', 'ESLint recommended'],
         context: 'User data fetching for web application',
-        requirements: ['Handle network failures', 'Validate response data', 'Log errors appropriately'],
+        requirements: [
+          'Handle network failures',
+          'Validate response data',
+          'Log errors appropriately',
+        ],
         includeSuggestions: true,
         includeExamples: true,
         severity: 'medium',
@@ -291,13 +301,13 @@ describe('CodeReviewPrompt', () => {
         timestamp: new Date().toISOString(),
       };
 
-      const result = await prompt.generatePrompt(input, context);
+      const result = await prompt.reviewCode(input, context);
 
       expect(result.success).toBe(true);
       expect(result.prompt).toContain('comprehensive');
       expect(result.prompt).toContain('fetchUserData');
-      expect(result.variables.focusAreas).toHaveLength(4);
-      expect(result.variables.requirements).toHaveLength(3);
+      expect(result.variables!.focusAreas).toHaveLength(4);
+      expect(result.variables!.requirements).toHaveLength(3);
     });
 
     it('should handle validation errors gracefully', async () => {
@@ -307,7 +317,7 @@ describe('CodeReviewPrompt', () => {
         version: '1.0.0',
       };
 
-      const prompt = new CodeReviewPrompt(config);
+      const prompt = new CodeReviewPrompt();
       const invalidInput = {
         code: 'function test() {}',
         language: 'javascript',
@@ -319,7 +329,7 @@ describe('CodeReviewPrompt', () => {
         timestamp: new Date().toISOString(),
       };
 
-      const result = await prompt.generatePrompt(invalidInput, context);
+      const result = await prompt.reviewCode(invalidInput, context);
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('Required');
@@ -332,12 +342,15 @@ describe('CodeReviewPrompt', () => {
         version: '1.0.0',
       };
 
-      const prompt = new CodeReviewPrompt(config);
+      const prompt = new CodeReviewPrompt();
 
       const languages = [
         { lang: 'javascript', code: 'const multiply = (a, b) => a * b;' },
         { lang: 'python', code: 'def multiply(a, b):\n    return a * b' },
-        { lang: 'typescript', code: 'function multiply(a: number, b: number): number { return a * b; }' },
+        {
+          lang: 'typescript',
+          code: 'function multiply(a: number, b: number): number { return a * b; }',
+        },
         { lang: 'java', code: 'public int multiply(int a, int b) { return a * b; }' },
         { lang: 'csharp', code: 'public int Multiply(int a, int b) { return a * b; }' },
       ];
@@ -354,11 +367,11 @@ describe('CodeReviewPrompt', () => {
           timestamp: new Date().toISOString(),
         };
 
-        const result = await prompt.generatePrompt(input, context);
+        const result = await prompt.reviewCode(input, context);
 
         expect(result.success).toBe(true);
         expect(result.prompt).toContain(lang);
-        expect(result.variables.language).toBe(lang);
+        expect(result.variables!!.language).toBe(lang);
       }
     });
 
@@ -369,7 +382,7 @@ describe('CodeReviewPrompt', () => {
         version: '1.0.0',
       };
 
-      const prompt = new CodeReviewPrompt(config);
+      const prompt = new CodeReviewPrompt();
       const severities = ['low', 'medium', 'high'] as const;
 
       for (const severity of severities) {
@@ -385,10 +398,10 @@ describe('CodeReviewPrompt', () => {
           timestamp: new Date().toISOString(),
         };
 
-        const result = await prompt.generatePrompt(input, context);
+        const result = await prompt.reviewCode(input, context);
 
         expect(result.success).toBe(true);
-        expect(result.variables.severity).toBe(severity);
+        expect(result.variables!!.severity).toBe(severity);
       }
     });
   });
@@ -401,7 +414,7 @@ describe('CodeReviewPrompt', () => {
         version: '1.0.0',
       };
 
-      const prompt = new CodeReviewPrompt(config);
+      const prompt = new CodeReviewPrompt();
       const input: CodeReviewPromptInput = {
         code: `const regex = /^[\\w\\.-]+@[\\w\\.-]+\\.[a-zA-Z]{2,}$/;
 function validateEmail(email) {
@@ -417,7 +430,7 @@ function validateEmail(email) {
         timestamp: new Date().toISOString(),
       };
 
-      const result = await prompt.generatePrompt(input, context);
+      const result = await prompt.reviewCode(input, context);
 
       expect(result.success).toBe(true);
       expect(result.prompt).toContain('validateEmail');
@@ -431,7 +444,7 @@ function validateEmail(email) {
         version: '1.0.0',
       };
 
-      const prompt = new CodeReviewPrompt(config);
+      const prompt = new CodeReviewPrompt();
       const longCode = 'function longFunction() {\n' + '  console.log("line");\n'.repeat(50) + '}';
 
       const input: CodeReviewPromptInput = {
@@ -446,7 +459,7 @@ function validateEmail(email) {
         timestamp: new Date().toISOString(),
       };
 
-      const result = await prompt.generatePrompt(input, context);
+      const result = await prompt.reviewCode(input, context);
 
       expect(result.success).toBe(true);
       expect(result.prompt).toContain('longFunction');
@@ -459,7 +472,7 @@ function validateEmail(email) {
         version: '1.0.0',
       };
 
-      const prompt = new CodeReviewPrompt(config);
+      const prompt = new CodeReviewPrompt();
       const input: CodeReviewPromptInput = {
         code: 'function simple() { return true; }',
         language: 'javascript',
@@ -474,12 +487,12 @@ function validateEmail(email) {
         timestamp: new Date().toISOString(),
       };
 
-      const result = await prompt.generatePrompt(input, context);
+      const result = await prompt.reviewCode(input, context);
 
       expect(result.success).toBe(true);
-      expect(result.variables.focusAreas).toEqual([]);
-      expect(result.variables.standards).toEqual([]);
-      expect(result.variables.requirements).toEqual([]);
+      expect(result.variables!.focusAreas).toEqual([]);
+      expect(result.variables!.standards).toEqual([]);
+      expect(result.variables!.requirements).toEqual([]);
     });
 
     it('should handle code with multiple languages mixed', async () => {
@@ -489,7 +502,7 @@ function validateEmail(email) {
         version: '1.0.0',
       };
 
-      const prompt = new CodeReviewPrompt(config);
+      const prompt = new CodeReviewPrompt();
       const input: CodeReviewPromptInput = {
         code: `<!-- HTML Template -->
 <script>
@@ -511,11 +524,11 @@ function validateEmail(email) {
         timestamp: new Date().toISOString(),
       };
 
-      const result = await prompt.generatePrompt(input, context);
+      const result = await prompt.reviewCode(input, context);
 
       expect(result.success).toBe(true);
       expect(result.prompt).toContain('updateUI');
-      expect(result.variables.focusAreas).toContain('XSS prevention');
+      expect(result.variables!.focusAreas).toContain('XSS prevention');
     });
   });
 });

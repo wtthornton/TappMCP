@@ -32,6 +32,7 @@ export interface MCPPromptResult<T = unknown> {
   prompt?: string;
   data?: T;
   error?: string;
+  variables?: Record<string, unknown>;
   metadata: {
     executionTime: number;
     timestamp: string;

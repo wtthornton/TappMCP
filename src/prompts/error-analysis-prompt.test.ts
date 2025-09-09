@@ -83,7 +83,7 @@ describe('ErrorAnalysisPrompt', () => {
         version: '1.0.0',
       };
 
-      const prompt = new ErrorAnalysisPrompt(config);
+      const prompt = new ErrorAnalysisPrompt();
       expect(prompt).toBeInstanceOf(ErrorAnalysisPrompt);
     });
 
@@ -94,7 +94,7 @@ describe('ErrorAnalysisPrompt', () => {
         version: '1.0.0',
       };
 
-      const prompt = new ErrorAnalysisPrompt(config);
+      const prompt = new ErrorAnalysisPrompt();
       const input: ErrorAnalysisPromptInput = {
         errorMessage: 'TypeError: Cannot read property "length" of null',
       };
@@ -104,12 +104,12 @@ describe('ErrorAnalysisPrompt', () => {
         timestamp: new Date().toISOString(),
       };
 
-      const result = await prompt.generatePrompt(input, context);
+      const result = await prompt.analyzeError(input, context);
 
       expect(result.success).toBe(true);
       expect(result.prompt).toContain('TypeError');
       expect(result.prompt).toContain('length');
-      expect(result.variables).toMatchObject(input);
+      expect(result.metadata?.variablesUsed).toEqual(Object.keys(input));
     });
 
     it('should generate comprehensive prompt with all fields', async () => {
@@ -119,7 +119,7 @@ describe('ErrorAnalysisPrompt', () => {
         version: '1.0.0',
       };
 
-      const prompt = new ErrorAnalysisPrompt(config);
+      const prompt = new ErrorAnalysisPrompt();
       const input: ErrorAnalysisPromptInput = {
         errorMessage: 'ReferenceError: fetch is not defined',
         errorType: 'ReferenceError',
@@ -130,7 +130,7 @@ describe('ErrorAnalysisPrompt', () => {
         environment: 'Node.js v16',
         recentChanges: [
           'Migrated from browser to Node.js environment',
-          'Removed fetch polyfill import'
+          'Removed fetch polyfill import',
         ],
         severity: 'high',
       };
@@ -140,15 +140,15 @@ describe('ErrorAnalysisPrompt', () => {
         timestamp: new Date().toISOString(),
       };
 
-      const result = await prompt.generatePrompt(input, context);
+      const result = await prompt.analyzeError(input, context);
 
       expect(result.success).toBe(true);
       expect(result.prompt).toContain('ReferenceError');
       expect(result.prompt).toContain('fetch is not defined');
       expect(result.prompt).toContain('Node.js');
       expect(result.prompt).toContain('high');
-      expect(result.variables.severity).toBe('high');
-      expect(result.variables.recentChanges).toHaveLength(2);
+      expect(result.variables!.severity).toBe('high');
+      expect(result.variables!.recentChanges).toHaveLength(2);
     });
 
     it('should handle JavaScript-specific errors', async () => {
@@ -158,7 +158,7 @@ describe('ErrorAnalysisPrompt', () => {
         version: '1.0.0',
       };
 
-      const prompt = new ErrorAnalysisPrompt(config);
+      const prompt = new ErrorAnalysisPrompt();
       const input: ErrorAnalysisPromptInput = {
         errorMessage: 'SyntaxError: Unexpected token "}" in JSON',
         errorType: 'SyntaxError',
@@ -172,7 +172,7 @@ describe('ErrorAnalysisPrompt', () => {
         timestamp: new Date().toISOString(),
       };
 
-      const result = await prompt.generatePrompt(input, context);
+      const result = await prompt.analyzeError(input, context);
 
       expect(result.success).toBe(true);
       expect(result.prompt).toContain('SyntaxError');
@@ -187,7 +187,7 @@ describe('ErrorAnalysisPrompt', () => {
         version: '1.0.0',
       };
 
-      const prompt = new ErrorAnalysisPrompt(config);
+      const prompt = new ErrorAnalysisPrompt();
       const invalidInput = {
         // Missing required errorMessage field
         errorType: 'TypeError',
@@ -198,7 +198,7 @@ describe('ErrorAnalysisPrompt', () => {
         timestamp: new Date().toISOString(),
       };
 
-      const result = await prompt.generatePrompt(invalidInput, context);
+      const result = await prompt.analyzeError(invalidInput, context);
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('Required');
@@ -211,7 +211,7 @@ describe('ErrorAnalysisPrompt', () => {
         version: '1.0.0',
       };
 
-      const prompt = new ErrorAnalysisPrompt(config);
+      const prompt = new ErrorAnalysisPrompt();
       const input: ErrorAnalysisPromptInput = {
         errorMessage: 'ModuleNotFoundError: No module named "requests"',
         errorType: 'ModuleNotFoundError',
@@ -229,15 +229,15 @@ describe('ErrorAnalysisPrompt', () => {
         timestamp: new Date().toISOString(),
       };
 
-      const result = await prompt.generatePrompt(input, context);
+      const result = await prompt.analyzeError(input, context);
 
       expect(result.success).toBe(true);
       expect(result.prompt).toContain('ModuleNotFoundError');
       expect(result.prompt).toContain('python');
       expect(result.prompt).toContain('critical');
-      expect(result.variables.framework).toBe('flask');
-      expect(result.variables.environment).toBe('Python 3.9');
-      expect(result.variables.recentChanges).toHaveLength(2);
+      expect(result.variables!.framework).toBe('flask');
+      expect(result.variables!.environment).toBe('Python 3.9');
+      expect(result.variables!.recentChanges).toHaveLength(2);
     });
   });
 
@@ -249,7 +249,7 @@ describe('ErrorAnalysisPrompt', () => {
         version: '1.0.0',
       };
 
-      const prompt = new ErrorAnalysisPrompt(config);
+      const prompt = new ErrorAnalysisPrompt();
 
       const errorTypes = [
         'TypeError',
@@ -272,7 +272,7 @@ describe('ErrorAnalysisPrompt', () => {
           timestamp: new Date().toISOString(),
         };
 
-        const result = await prompt.generatePrompt(input, context);
+        const result = await prompt.analyzeError(input, context);
 
         expect(result.success).toBe(true);
         expect(result.prompt).toContain(errorType);
@@ -288,7 +288,7 @@ describe('ErrorAnalysisPrompt', () => {
         version: '1.0.0',
       };
 
-      const prompt = new ErrorAnalysisPrompt(config);
+      const prompt = new ErrorAnalysisPrompt();
       const longErrorMessage = 'Error: ' + 'x'.repeat(1000);
 
       const input: ErrorAnalysisPromptInput = {
@@ -301,7 +301,7 @@ describe('ErrorAnalysisPrompt', () => {
         timestamp: new Date().toISOString(),
       };
 
-      const result = await prompt.generatePrompt(input, context);
+      const result = await prompt.analyzeError(input, context);
 
       expect(result.success).toBe(true);
       expect(result.prompt).toContain('x'.repeat(50)); // Should contain part of the long message
@@ -314,7 +314,7 @@ describe('ErrorAnalysisPrompt', () => {
         version: '1.0.0',
       };
 
-      const prompt = new ErrorAnalysisPrompt(config);
+      const prompt = new ErrorAnalysisPrompt();
       const input: ErrorAnalysisPromptInput = {
         errorMessage: 'Error: Failed to parse JSON: {"invalid": "syntax}',
         codeContext: 'const data = JSON.parse(\'{"invalid": "syntax}\');',
@@ -326,7 +326,7 @@ describe('ErrorAnalysisPrompt', () => {
         timestamp: new Date().toISOString(),
       };
 
-      const result = await prompt.generatePrompt(input, context);
+      const result = await prompt.analyzeError(input, context);
 
       expect(result.success).toBe(true);
       expect(result.prompt).toContain('JSON');

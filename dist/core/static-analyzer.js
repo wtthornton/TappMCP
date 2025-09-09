@@ -17,7 +17,7 @@ export class StaticAnalyzer {
         const isTestEnvironment = this.projectPath.includes('test-static-') || process.env.NODE_ENV === 'test';
         // THEATER EXPOSURE: Add artificial delay to simulate tool execution time
         if (isTestEnvironment) {
-            // Simulate tools trying to run (proves theater nature)
+            // Simulate tools trying to run
             await new Promise(resolve => setTimeout(resolve, 150));
         }
         if (!isTestEnvironment) {
@@ -48,7 +48,7 @@ export class StaticAnalyzer {
         const hasErrors = summary.error > 0;
         const onlyBasicAnalysis = isTestEnvironment && !toolsConfigured && issues.length <= 1;
         const status = onlyBasicAnalysis
-            ? 'fail' // No real tools configured = fail (theater exposed)
+            ? 'fail' // No real tools configured = fail
             : hasErrors
                 ? 'fail'
                 : this.determineStatus(summary);
@@ -354,7 +354,7 @@ export class StaticAnalyzer {
         let duplicateLines = 0;
         // THEATER EXPOSURE: If no source files found, return zeros (not intelligent defaults)
         if (sourceFiles.length === 0) {
-            // When tools fail or no files exist, return zeros to expose the theater
+            // When tools fail or no files exist, return zeros
             return {
                 complexity: 0,
                 maintainability: 0,

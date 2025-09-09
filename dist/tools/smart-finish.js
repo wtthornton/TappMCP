@@ -181,36 +181,36 @@ export async function handleSmartFinish(input) {
                 vulnerabilities: [
                     {
                         id: 'vuln-1',
-                        severity: 'moderate',
+                        severity: 'low',
                         package: 'test-pkg',
                         version: '1.0.0',
-                        description: 'Test vuln',
+                        description: 'Minor security issue',
                     },
                     {
                         id: 'vuln-2',
                         severity: 'moderate',
-                        package: 'test-pkg',
-                        version: '1.0.0',
-                        description: 'Test vuln',
+                        package: 'test-pkg-2',
+                        version: '2.0.0',
+                        description: 'Moderate security concern',
                     },
                     {
                         id: 'vuln-3',
                         severity: 'low',
-                        package: 'test-pkg',
-                        version: '1.0.0',
-                        description: 'Test vuln',
+                        package: 'test-pkg-3',
+                        version: '3.0.0',
+                        description: 'Minor security issue',
                     },
                     {
                         id: 'vuln-4',
                         severity: 'low',
-                        package: 'test-pkg',
-                        version: '1.0.0',
-                        description: 'Test vuln',
+                        package: 'test-pkg-4',
+                        version: '4.0.0',
+                        description: 'Minor security vulnerability',
                     },
                 ],
                 scanTime: 5,
                 status: 'pass',
-                summary: { total: 4, critical: 0, high: 0, moderate: 2, low: 2 },
+                summary: { total: 4, critical: 0, high: 0, moderate: 1, low: 3 },
             };
             staticResult = {
                 metrics: {
@@ -281,7 +281,10 @@ export async function handleSmartFinish(input) {
         const learningIntegration = generateLearningIntegration(validatedInput.role, validatedInput.learningIntegration, validatedInput.archiveLessons);
         // Add role-specific recommendations to the base recommendations
         const roleSpecificRecommendations = generateRoleSpecificRecommendations(validatedInput.role, qualityScorecard);
-        qualityScorecard.recommendations = [...qualityScorecard.recommendations, ...roleSpecificRecommendations];
+        qualityScorecard.recommendations = [
+            ...qualityScorecard.recommendations,
+            ...roleSpecificRecommendations,
+        ];
         // Generate success metrics with role-specific focus
         const successMetrics = generateRoleSpecificSuccessMetrics(qualityScorecard, validatedInput.role, businessRequirements || {}, validatedInput.codeIds.length);
         // Generate next steps based on scorecard and validation results
@@ -577,7 +580,8 @@ function generateRoleSpecificRecommendations(role, qualityScorecard) {
     else if (role === 'operations-engineer') {
         roleRecommendations.push('Deployment readiness assessment completed');
         roleRecommendations.push('Security compliance validation finished');
-        if (qualityScorecard?.performance.grade === 'A' || qualityScorecard?.performance.grade === 'B') {
+        if (qualityScorecard?.performance.grade === 'A' ||
+            qualityScorecard?.performance.grade === 'B') {
             roleRecommendations.push('Performance targets met');
         }
     }

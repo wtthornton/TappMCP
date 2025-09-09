@@ -320,7 +320,7 @@ export class OrchestrationEngine {
         const roleCapabilities = this.roleOrchestrator?.getRoleCapabilities?.(role) || {
             qualityGates: ['code-quality', 'test-coverage', 'security-scan'],
             tools: ['smart_begin', 'smart_plan', 'smart_write', 'smart_finish'],
-            metrics: ['quality', 'performance', 'security']
+            metrics: ['quality', 'performance', 'security'],
         };
         const metrics = {};
         if (roleCapabilities) {
