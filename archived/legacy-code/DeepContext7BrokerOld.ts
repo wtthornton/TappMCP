@@ -512,14 +512,16 @@ export class DeepContext7Broker {
  * Context Suggestion Engine (Stub implementation)
  */
 class ContextSuggestionEngine {
-  constructor(private config: ContextConfig) {}
+  constructor(private _config: ContextConfig) {
+    // Configuration stored for potential future use
+  }
 
   async generateSuggestions(
-    currentContext: string,
+    _currentContext: string,
     historicalContext: string,
-    session: ContextSession,
+    _session: ContextSession,
     toolName: string,
-    priority: 'speed' | 'balanced' | 'comprehensive',
+    _priority: 'speed' | 'balanced' | 'comprehensive',
     count: number = 5
   ): Promise<ContextSuggestion[]> {
     // Implementation stub - would include ML-based suggestion generation
@@ -557,12 +559,14 @@ class ContextSuggestionEngine {
  * Context Compression Engine (Stub implementation)
  */
 class ContextCompressionEngine {
-  constructor(private config: ContextConfig) {}
+  constructor(private _config: ContextConfig) {
+    // Configuration stored for potential future use
+  }
 
   async compressContext(
     context: string,
     targetTokens: number,
-    priority: 'speed' | 'balanced' | 'comprehensive'
+    _priority: 'speed' | 'balanced' | 'comprehensive'
   ): Promise<{ compressedContext: string; finalTokens: number }> {
     // Simple compression - remove redundant whitespace and duplicate sentences
     let compressed = context
@@ -575,7 +579,7 @@ class ContextCompressionEngine {
     // If still too long, truncate intelligently
     if (finalTokens > targetTokens) {
       const targetLength = targetTokens * 4;
-      compressed = compressed.substring(0, targetLength) + '...';
+      compressed = `${compressed.substring(0, targetLength)}...`;
     }
 
     return {
@@ -618,7 +622,9 @@ class ContextCompressionEngine {
  * Context Persistence Engine (Stub implementation)
  */
 class ContextPersistenceEngine {
-  constructor(private config: ContextConfig) {}
+  constructor(private _config: ContextConfig) {
+    // Configuration stored for potential future use
+  }
 
   async saveSession(session: ContextSession): Promise<boolean> {
     // In production, this would save to a database
@@ -628,10 +634,10 @@ class ContextPersistenceEngine {
     return true;
   }
 
-  async loadSession(sessionId: string): Promise<ContextSession | null> {
+  async loadSession(sessionId: string): Promise<ContextSession | undefined> {
     // In production, this would load from a database
     console.log(`Loading session ${sessionId}`);
-    return null; // No existing session found
+    return undefined; // No existing session found
   }
 
   async deleteSession(sessionId: string): Promise<boolean> {

@@ -13,7 +13,9 @@ const DetectionConfigSchema = z.object({
     maxPatternSize: z.number().max(50).default(20),
     minOccurrences: z.number().min(2).default(2),
     minSimilarity: z.number().min(0.1).max(1.0).default(0.7),
-    excludePatterns: z.array(z.string()).default([
+    excludePatterns: z
+        .array(z.string())
+        .default([
         'import ',
         'export ',
         '//',
@@ -137,7 +139,7 @@ export class CodeReusePatternEngine {
     async suggestPatterns(code, context = {}) {
         const suggestions = [];
         const lines = code.split('\n');
-        for (const [patternId, pattern] of this.patterns) {
+        for (const [_patternId, pattern] of this.patterns) {
             const similarity = this.calculateSimilarity(lines, pattern.pattern.split('\n'));
             if (similarity.similarity >= this.config.minSimilarity) {
                 const suggestion = await this.createPatternSuggestion(pattern, code, similarity, context);
@@ -224,9 +226,9 @@ if (tsResults.errors.length > 0) {
                     tokensPerUse: 120,
                     avgComplexity: 4,
                     reuseOpportunities: 15,
-                    potentialSavings: 1800
-                }
-            }
+                    potentialSavings: 1800,
+                },
+            },
         ];
     }
     /**
@@ -243,16 +245,16 @@ if (tsResults.errors.length > 0) {
 async function resolve{{ERROR_TYPE}}Errors(): Promise<void> {
   // Phase 1: Identify error types
   const errors = await this.identifyTypeScriptErrors();
-  
+
   // Phase 2: Categorize by severity
   const criticalErrors = errors.filter(e => e.severity === 'error');
   const warnings = errors.filter(e => e.severity === 'warning');
-  
+
   // Phase 3: Fix in order of priority
   for (const error of criticalErrors) {
     await this.fixTypeScriptError(error);
   }
-  
+
   // Phase 4: Validate with tests
   await this.validateWithTests();
 }`,
@@ -260,16 +262,16 @@ async function resolve{{ERROR_TYPE}}Errors(): Promise<void> {
 async function resolve{{ERROR_TYPE}}Errors(): Promise<void> {
   // Phase 1: Identify error types
   const errors = await this.identifyTypeScriptErrors();
-  
+
   // Phase 2: Categorize by severity
   const criticalErrors = errors.filter(e => e.severity === 'error');
   const warnings = errors.filter(e => e.severity === 'warning');
-  
+
   // Phase 3: Fix in order of priority
   for (const error of criticalErrors) {
     await this.fixTypeScriptError(error);
   }
-  
+
   // Phase 4: Validate with tests
   await this.validateWithTests();
 }`,
@@ -277,9 +279,9 @@ async function resolve{{ERROR_TYPE}}Errors(): Promise<void> {
                     tokensPerUse: 80,
                     avgComplexity: 6,
                     reuseOpportunities: 8,
-                    potentialSavings: 960
-                }
-            }
+                    potentialSavings: 960,
+                },
+            },
         ];
     }
     /**
@@ -313,14 +315,14 @@ async function resolve{{ERROR_TYPE}}Errors(): Promise<void> {
     findSimilarPatterns(segments) {
         const patternGroups = new Map();
         for (const segment of segments) {
-            const hash = segment.hash;
+            const { hash } = segment;
             if (!patternGroups.has(hash)) {
                 patternGroups.set(hash, []);
             }
             patternGroups.get(hash).push(segment);
         }
         const patterns = [];
-        for (const [hash, group] of patternGroups) {
+        for (const [_hash, group] of patternGroups) {
             if (group.length >= this.config.minOccurrences) {
                 const pattern = group[0].code.join('\n');
                 const abstractPattern = this.createAbstractPattern(group);
@@ -348,7 +350,7 @@ async function resolve{{ERROR_TYPE}}Errors(): Promise<void> {
                 abstractPattern: detected.abstractPattern,
                 variables: this.extractVariables(detected.abstractPattern),
                 dependencies: this.extractDependencies(detected.pattern),
-                examples: this.generateExamples(detected.segments),
+                examples: this.generateExamples(detected.segments).map(ex => ex.code),
                 metrics: {
                     tokensPerUse: this.estimateTokenCount(detected.pattern),
                     avgComplexity: this.calculateAverageComplexity(detected.segments),
@@ -420,7 +422,7 @@ async function resolve{{ERROR_TYPE}}Errors(): Promise<void> {
         }
         return abstractPattern;
     }
-    calculatePatternConfidence(segments, pattern) {
+    calculatePatternConfidence(segments, _pattern) {
         if (segments.length < 2)
             return 0;
         let totalSimilarity = 0;
@@ -445,19 +447,28 @@ async function resolve{{ERROR_TYPE}}Errors(): Promise<void> {
         else if (content.includes('interface') || content.includes('type')) {
             return 'type';
         }
-        else if (content.includes('if') || content.includes('switch') || content.includes('for') || content.includes('while')) {
+        else if (content.includes('if') ||
+            content.includes('switch') ||
+            content.includes('for') ||
+            content.includes('while')) {
             return 'control-flow';
         }
         else if (content.includes('try') || content.includes('catch') || content.includes('throw')) {
             return 'error-handling';
         }
-        else if (content.includes('async') || content.includes('await') || content.includes('promise')) {
+        else if (content.includes('async') ||
+            content.includes('await') ||
+            content.includes('promise')) {
             return 'async';
         }
-        else if (content.includes('test') || content.includes('describe') || content.includes('it(')) {
+        else if (content.includes('test') ||
+            content.includes('describe') ||
+            content.includes('it(')) {
             return 'testing';
         }
-        else if (content.includes('import') || content.includes('export') || content.includes('require')) {
+        else if (content.includes('import') ||
+            content.includes('export') ||
+            content.includes('require')) {
             return 'module';
         }
         else {
@@ -548,8 +559,8 @@ async function resolve{{ERROR_TYPE}}Errors(): Promise<void> {
         return `A ${category} pattern: ${firstLine.substring(0, 100)}...`;
     }
     calculateSimilarity(lines1, lines2) {
-        const content1 = lines1.join('\n');
-        const content2 = lines2.join('\n');
+        // const _content1 = lines1.join('\n');
+        // const _content2 = lines2.join('\n');
         // Simple similarity calculation based on common lines
         const set1 = new Set(lines1);
         const set2 = new Set(lines2);
@@ -578,32 +589,35 @@ async function resolve{{ERROR_TYPE}}Errors(): Promise<void> {
         };
         return suggestion;
     }
-    applyPatternToCode(pattern, code) {
+    applyPatternToCode(pattern, _code) {
         // Simple pattern application - replace with abstract pattern
         return pattern.abstractPattern;
     }
-    extractVariableValues(code, pattern) {
-        const values = {};
-        // Extract values based on pattern variables
-        for (const variable of pattern.variables) {
-            // This is a simplified extraction - in practice, you'd need more sophisticated parsing
-            const regex = new RegExp(`\\b${variable.name}\\b`, 'g');
-            const matches = code.match(regex);
-            if (matches) {
-                values[variable.name] = matches[0];
-            }
-        }
-        return values;
-    }
-    parameterizePattern(abstractPattern, variables) {
-        let parameterized = abstractPattern;
-        for (const variable of variables) {
-            const placeholder = `{{VAR_${variable.name}}}`;
-            const replacement = `\${${variable.name}}`;
-            parameterized = parameterized.replace(new RegExp(placeholder, 'g'), replacement);
-        }
-        return parameterized;
-    }
+    // private _extractVariableValues(_code: string, _pattern: CodePattern): Record<string, string> {
+    //   const values: Record<string, string> = {};
+    //   // Extract values based on pattern variables
+    //   for (const variable of _pattern.variables) {
+    //     // This is a simplified extraction - in practice, you'd need more sophisticated parsing
+    //     const regex = new RegExp(`\\b${variable.name}\\b`, 'g');
+    //     const matches = _code.match(regex);
+    //     if (matches) {
+    //       values[variable.name] = matches[0];
+    //     }
+    //   }
+    //   return values;
+    // }
+    // private _parameterizePattern(
+    //   abstractPattern: string,
+    //   variables: Array<{ name: string; type: string }>
+    // ): string {
+    //   let parameterized = abstractPattern;
+    //   for (const variable of variables) {
+    //     const placeholder = `{{VAR_${variable.name}}}`;
+    //     const replacement = `\${${variable.name}}`;
+    //     parameterized = parameterized.replace(new RegExp(placeholder, 'g'), replacement);
+    //   }
+    //   return parameterized;
+    // }
     indexPattern(pattern) {
         const hash = createHash('md5').update(pattern.pattern).digest('hex');
         if (!this.patternIndex.has(hash)) {

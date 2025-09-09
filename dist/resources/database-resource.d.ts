@@ -20,27 +20,27 @@ export declare const DatabaseResourceSchema: z.ZodObject<{
         data: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodAny>>;
         where: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodAny>>;
     }, "strip", z.ZodTypeAny, {
-        operation: "query" | "insert" | "update" | "delete";
+        operation: "query" | "delete" | "insert" | "update";
         table: string;
         data?: Record<string, any> | undefined;
         query?: string | undefined;
         where?: Record<string, any> | undefined;
     }, {
-        operation: "query" | "insert" | "update" | "delete";
+        operation: "query" | "delete" | "insert" | "update";
         table: string;
         data?: Record<string, any> | undefined;
         query?: string | undefined;
         where?: Record<string, any> | undefined;
     }>, "many">>;
 }, "strip", z.ZodTypeAny, {
-    operation: "query" | "insert" | "update" | "delete" | "transaction";
+    operation: "query" | "delete" | "insert" | "update" | "transaction";
     table: string;
     orderDirection: "ASC" | "DESC";
     data?: Record<string, any> | undefined;
     limit?: number | undefined;
     query?: string | undefined;
     transaction?: {
-        operation: "query" | "insert" | "update" | "delete";
+        operation: "query" | "delete" | "insert" | "update";
         table: string;
         data?: Record<string, any> | undefined;
         query?: string | undefined;
@@ -50,13 +50,13 @@ export declare const DatabaseResourceSchema: z.ZodObject<{
     offset?: number | undefined;
     orderBy?: string | undefined;
 }, {
-    operation: "query" | "insert" | "update" | "delete" | "transaction";
+    operation: "query" | "delete" | "insert" | "update" | "transaction";
     table: string;
     data?: Record<string, any> | undefined;
     limit?: number | undefined;
     query?: string | undefined;
     transaction?: {
-        operation: "query" | "insert" | "update" | "delete";
+        operation: "query" | "delete" | "insert" | "update";
         table: string;
         data?: Record<string, any> | undefined;
         query?: string | undefined;

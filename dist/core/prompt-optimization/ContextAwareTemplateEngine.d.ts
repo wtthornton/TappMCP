@@ -14,8 +14,8 @@ import { TemplateContext, TemplateMetadata, UserProfile, SessionContext, Templat
  * Enhanced template engine with cross-session learning and user adaptation
  */
 export declare class ContextAwareTemplateEngine extends BaseTemplateEngine {
-    private contextPatterns;
-    private crossSessionLearning;
+    private _contextPatterns;
+    private _crossSessionLearning;
     private performanceTracker;
     constructor();
     /**
@@ -52,5 +52,5 @@ export declare class ContextAwareTemplateEngine extends BaseTemplateEngine {
     private calculatePerformanceScore;
 }
 export declare function createTemplateEngine(): ContextAwareTemplateEngine;
-export { TemplateContextSchema, UserProfileSchema, SessionContextSchema, TemplateMetadataSchema, TemplateEngineMetricsSchema, type TemplateContext, type UserProfile, type SessionContext, type TemplateMetadata, type TemplateEngineMetrics };
+export { TemplateContextSchema, UserProfileSchema, SessionContextSchema, TemplateMetadataSchema, TemplateEngineMetricsSchema, type TemplateContext, type UserProfile, type SessionContext, type TemplateMetadata, type TemplateEngineMetrics, };
 //# sourceMappingURL=ContextAwareTemplateEngine.d.ts.map

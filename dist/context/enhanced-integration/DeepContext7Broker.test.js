@@ -51,7 +51,7 @@ describe('DeepContext7Broker - Week 2 Enhanced', () => {
                 content: longContent,
                 relevanceScore: 0.7,
             };
-            const contextId = await broker.storeContext(contextEntry);
+            const _contextId = await broker.storeContext(contextEntry);
             const contexts = await broker.getRelevantContext('test_session_002', 'long context', 'smart_write');
             expect(contexts).toHaveLength(1);
             expect(contexts[0].compressionInfo).toBeDefined();

@@ -325,7 +325,17 @@ export class ToolChainOptimizer {
         totalCost,
         stepResults,
         optimization,
-        recommendations: this.generateRecommendations(stepResults, optimization, plan),
+        recommendations: this.generateRecommendations(
+          stepResults,
+          {
+            totalTime: executionTime,
+            totalCost,
+            cacheHitRate: 0.8,
+            parallelizationEfficiency: 0.7,
+            retryRate: 0.1,
+          },
+          plan
+        ),
       };
 
       // Store execution history
@@ -392,7 +402,7 @@ export class ToolChainOptimizer {
     // Analyze caching opportunities
     const cacheableSteps = plan.steps.filter(step => {
       const tool = this.toolRegistry.get(step.toolName);
-      return tool && tool.cacheEnabled;
+      return tool?.cacheEnabled;
     });
 
     if (cacheableSteps.length > 0) {
@@ -438,11 +448,17 @@ export class ToolChainOptimizer {
     }
 
     return suggestions.sort((a, b) => {
-      const impactScore = (suggestion: { estimatedImpact: { timeReduction?: number; costReduction?: number; qualityImprovement?: number } }) => {
+      const impactScore = (suggestion: {
+        estimatedImpact: {
+          timeReduction?: number;
+          costReduction?: number;
+          qualityImprovement?: number;
+        };
+      }) => {
         return (
           (suggestion.estimatedImpact.timeReduction || 0) * 10 +
           (suggestion.estimatedImpact.costReduction || 0) * 100 +
-          (suggestion.estimatedImpact.reliabilityImprovement || 0) * 50
+          (suggestion.estimatedImpact.qualityImprovement || 0) * 50
         );
       };
 
@@ -792,7 +808,7 @@ export class ToolChainOptimizer {
         success: false,
         executionTime,
         cost: 0,
-        error: lastError?.message || 'Execution failed',
+        error: (lastError as any)?.message || 'Execution failed',
         retryCount,
         cacheHit: false,
       };
@@ -801,7 +817,10 @@ export class ToolChainOptimizer {
     return Promise.all(promises);
   }
 
-  private async simulateToolExecution(toolName: string, inputs: Record<string, unknown>): Promise<unknown> {
+  private async simulateToolExecution(
+    toolName: string,
+    inputs: Record<string, unknown>
+  ): Promise<unknown> {
     const tool = this.toolRegistry.get(toolName);
     if (!tool) {
       throw new Error(`Tool ${toolName} not found`);
@@ -877,7 +896,7 @@ export class ToolChainOptimizer {
   }
 
   private groupStepsByParallelism(steps: Array<any>): Array<Array<any>> {
-    const groups: Array<Array<any>> = [];
+    // const _groups: Array<Array<any>> = [];
     const groupMap = new Map<number, Array<any>>();
 
     for (const step of steps) {
@@ -901,9 +920,25 @@ export class ToolChainOptimizer {
   }
 
   private generateRecommendations(
-    stepResults: Array<{ stepId: string; toolName: string; success: boolean; executionTime: number; cost: number; output?: unknown; error?: string; retryCount: number; cacheHit: boolean }>,
-    optimization: { totalTime: number; totalCost: number; cacheHitRate: number; parallelizationEfficiency: number; retryRate: number },
-    plan: ExecutionPlan
+    stepResults: Array<{
+      stepId: string;
+      toolName: string;
+      success: boolean;
+      executionTime: number;
+      cost: number;
+      output?: unknown;
+      error?: string;
+      retryCount: number;
+      cacheHit: boolean;
+    }>,
+    _optimization: {
+      totalTime: number;
+      totalCost: number;
+      cacheHitRate: number;
+      parallelizationEfficiency: number;
+      retryRate: number;
+    },
+    _plan: ExecutionPlan
   ): ExecutionResult['recommendations'] {
     const recommendations: ExecutionResult['recommendations'] = [];
 

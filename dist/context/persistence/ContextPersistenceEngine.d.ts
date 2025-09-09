@@ -166,7 +166,7 @@ export declare class ContextPersistenceEngine {
     /**
      * Retrieve a context entry by ID
      */
-    retrieve(id: string): Promise<ContextEntry | null>;
+    retrieve(id: string): Promise<ContextEntry | undefined>;
     /**
      * Search for context entries
      */

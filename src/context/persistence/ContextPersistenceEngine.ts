@@ -108,7 +108,7 @@ export interface ContextStats {
 export class ContextPersistenceEngine {
   private config: StorageConfig;
   private memoryStorage: Map<string, ContextEntry>;
-  private memoryIndex: Map<string, Set<string>>; // field -> value -> entry IDs
+  private memoryIndex: Map<string, Map<string, Set<string>>>; // field -> value -> entry IDs
   private compressionCache: Map<string, string>;
 
   constructor(config: Partial<StorageConfig> = {}) {
@@ -151,7 +151,7 @@ export class ContextPersistenceEngine {
   /**
    * Retrieve a context entry by ID
    */
-  async retrieve(id: string): Promise<ContextEntry | null> {
+  async retrieve(id: string): Promise<ContextEntry | undefined> {
     // Check memory first
     let entry = this.memoryStorage.get(id);
 
@@ -161,7 +161,7 @@ export class ContextPersistenceEngine {
     }
 
     if (!entry) {
-      return null;
+      return undefined;
     }
 
     // Decompress if needed
@@ -368,7 +368,7 @@ export class ContextPersistenceEngine {
       if (candidates === null) {
         candidates = new Set(fieldCandidates);
       } else {
-        candidates = new Set([...candidates].filter(id => fieldCandidates.has(id)));
+        candidates = new Set([...candidates].filter((id: string) => fieldCandidates.has(id)));
       }
     }
 
@@ -475,9 +475,9 @@ export class ContextPersistenceEngine {
     console.log('Flushing memory entries to disk...');
   }
 
-  private async loadFromDisk(id: string): Promise<ContextEntry | null> {
+  private async loadFromDisk(_id: string): Promise<ContextEntry | undefined> {
     // Implementation would load from disk storage
-    return null;
+    return undefined;
   }
 
   private async getDiskEntryCount(): Promise<number> {

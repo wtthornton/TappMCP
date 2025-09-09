@@ -19,34 +19,34 @@ export class BaseTemplateEngine {
      */
     initializeHandlebarsHelpers() {
         // Equality helper
-        Handlebars.registerHelper('if_eq', function (a, b, options) {
+        Handlebars.registerHelper('if_eq', (a, b, options) => {
             if (a === b) {
-                return options.fn(this);
+                return options.fn(options.data.root);
             }
-            return options.inverse(this);
+            return options.inverse(options.data.root);
         });
         // Conditional helper
-        Handlebars.registerHelper('if_contains', function (array, value, options) {
+        Handlebars.registerHelper('if_contains', (array, value, options) => {
             if (Array.isArray(array) && array.includes(value)) {
-                return options.fn(this);
+                return options.fn(options.data.root);
             }
-            return options.inverse(this);
+            return options.inverse(options.data.root);
         });
         // User level helper
-        Handlebars.registerHelper('user_level', function (level, options) {
+        Handlebars.registerHelper('user_level', (level, options) => {
             const context = options.data.root;
             if (context.userLevel === level) {
-                return options.fn(this);
+                return options.fn(options.data.root);
             }
-            return options.inverse(this);
+            return options.inverse(options.data.root);
         });
         // Task type helper
-        Handlebars.registerHelper('task_type', function (type, options) {
+        Handlebars.registerHelper('task_type', (type, options) => {
             const context = options.data.root;
             if (context.taskType === type) {
-                return options.fn(this);
+                return options.fn(options.data.root);
             }
-            return options.inverse(this);
+            return options.inverse(options.data.root);
         });
     }
     /**

@@ -106,7 +106,7 @@ export class ContextPersistenceEngine {
             entry = await this.loadFromDisk(id);
         }
         if (!entry) {
-            return null;
+            return undefined;
         }
         // Decompress if needed
         if (entry.compressed) {
@@ -289,7 +289,7 @@ export class ContextPersistenceEngine {
                 candidates = new Set(fieldCandidates);
             }
             else {
-                candidates = new Set([...candidates].filter(id => fieldCandidates.has(id)));
+                candidates = new Set([...candidates].filter((id) => fieldCandidates.has(id)));
             }
         }
         // Handle tag filters
@@ -379,7 +379,7 @@ export class ContextPersistenceEngine {
     }
     async loadFromDisk(id) {
         // Implementation would load from disk storage
-        return null;
+        return undefined;
     }
     async getDiskEntryCount() {
         // Implementation would count disk entries

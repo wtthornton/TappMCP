@@ -15,6 +15,19 @@ export interface Workflow {
     currentPhase?: string;
     status: 'pending' | 'running' | 'completed' | 'failed' | 'paused';
 }
+export interface WorkflowTask {
+    id: string;
+    name: string;
+    description: string;
+    type: string;
+    role?: string;
+    phase?: string;
+    deliverables?: string[];
+    estimatedTime?: number;
+    status: 'pending' | 'running' | 'completed' | 'failed';
+    estimatedDuration?: number;
+    dependencies?: string[];
+}
 export interface WorkflowPhase {
     name: string;
     description: string;
@@ -83,6 +96,7 @@ export declare class OrchestrationEngine {
     private contextBroker;
     private activeWorkflows;
     private workflowResults;
+    private roleOrchestrator;
     constructor();
     /**
      * Execute a complete workflow with role orchestration and context management
@@ -120,5 +134,6 @@ export declare class OrchestrationEngine {
     private optimizePhaseOrder;
     private optimizeRoleTransitions;
     private optimizeToolUsage;
+    private calculateContextPreservationAccuracy;
 }
 //# sourceMappingURL=orchestration-engine.d.ts.map

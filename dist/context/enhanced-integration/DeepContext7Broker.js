@@ -118,7 +118,7 @@ export class DeepContext7Broker {
      */
     async getRelevantContext(sessionId, query, toolName, options = {}) {
         console.log(`Retrieving relevant context for ${toolName} in session ${sessionId}`);
-        const { maxResults = 5, minRelevance = this.config.relevanceThreshold, includeMetadata = true, crossSession = this.config.crossSessionEnabled, } = options;
+        const { maxResults = 5, minRelevance = this.config.relevanceThreshold, includeMetadata: _includeMetadata = true, crossSession = this.config.crossSessionEnabled, } = options;
         // Get session-specific contexts
         let candidates = this.getSessionContext(sessionId);
         // Add cross-session contexts if enabled
@@ -383,14 +383,14 @@ export class DeepContext7Broker {
         // Rough approximation: 1 token ≈ 4 characters
         return Math.ceil(text.length / 4);
     }
-    _calculateQueryRelevance(context, query, toolName) {
-        let relevance = context.relevanceScore;
+    _calculateQueryRelevance(_context, _query, _toolName) {
+        let relevance = _context.relevanceScore;
         // Tool name match increases relevance
-        if (context.toolName === toolName)
+        if (_context.toolName === _toolName)
             relevance += 0.2;
         // Content similarity (simplified keyword matching)
-        const queryWords = query.toLowerCase().split(/\s+/);
-        const contextWords = context.content.toLowerCase().split(/\s+/);
+        const queryWords = _query.toLowerCase().split(/\s+/);
+        const contextWords = _context.content.toLowerCase().split(/\s+/);
         const commonWords = queryWords.filter(word => contextWords.includes(word));
         const similarity = commonWords.length / Math.max(queryWords.length, 1);
         relevance += similarity * 0.3;
@@ -406,7 +406,7 @@ export class DeepContext7Broker {
 }
 // Supporting engine classes
 class ContextRelevanceScorer {
-    async calculateRelevance(context, sessionContexts) {
+    async calculateRelevance(context, _sessionContexts) {
         // Simple relevance scoring - would use ML models in production
         let score = 0.5; // Base relevance
         // Recent contexts are more relevant
@@ -441,7 +441,7 @@ class ContextCompressor {
         const original = context.content;
         const originalLength = original.length;
         // Simple compression - remove redundant whitespace and common words
-        let compressed = original
+        const compressed = original
             .replace(/\s+/g, ' ')
             .replace(/\b(the|and|or|but|in|on|at|to|for|of|with|by)\b/gi, '')
             .trim();
@@ -466,7 +466,7 @@ class ContextSuggestionEngine {
                 suggestions.push({
                     id: `relevant_${index}`,
                     type: 'relevant_context',
-                    content: context.content.substring(0, 200) + '...',
+                    content: `${context.content.substring(0, 200)}...`,
                     relevanceScore: context.relevanceScore,
                     reasoning: `Similar ${toolName} context from previous interaction`,
                     suggestedAction: 'inject',
@@ -493,7 +493,7 @@ class ContextSuggestionEngine {
         }
         return suggestions;
     }
-    async generateWorkflowSuggestions(sessionContexts, workflowStage) {
+    async generateWorkflowSuggestions(_sessionContexts, workflowStage) {
         const suggestions = [];
         if (workflowStage) {
             suggestions.push({
@@ -508,7 +508,7 @@ class ContextSuggestionEngine {
         }
         return suggestions;
     }
-    async generateErrorPreventionSuggestions(sessionContexts, toolName, userInput) {
+    async generateErrorPreventionSuggestions(sessionContexts, _toolName, _userInput) {
         const suggestions = [];
         // Look for error contexts in session
         const errorContexts = sessionContexts.filter(ctx => ctx.contextType === 'error_context');

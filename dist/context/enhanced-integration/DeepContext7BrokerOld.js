@@ -331,11 +331,11 @@ export class DeepContext7Broker {
  * Context Suggestion Engine (Stub implementation)
  */
 class ContextSuggestionEngine {
-    config;
-    constructor(config) {
-        this.config = config;
+    _config;
+    constructor(_config) {
+        this._config = _config;
     }
-    async generateSuggestions(currentContext, historicalContext, session, toolName, priority, count = 5) {
+    async generateSuggestions(currentContext, historicalContext, _session, toolName, _priority, count = 5) {
         // Implementation stub - would include ML-based suggestion generation
         const suggestions = [];
         if (historicalContext.length > 0) {
@@ -367,11 +367,11 @@ class ContextSuggestionEngine {
  * Context Compression Engine (Stub implementation)
  */
 class ContextCompressionEngine {
-    config;
-    constructor(config) {
-        this.config = config;
+    _config;
+    constructor(_config) {
+        this._config = _config;
     }
-    async compressContext(context, targetTokens, priority) {
+    async compressContext(context, targetTokens, _priority) {
         // Simple compression - remove redundant whitespace and duplicate sentences
         let compressed = context
             .replace(/\s+/g, ' ')
@@ -381,7 +381,7 @@ class ContextCompressionEngine {
         // If still too long, truncate intelligently
         if (finalTokens > targetTokens) {
             const targetLength = targetTokens * 4;
-            compressed = compressed.substring(0, targetLength) + '...';
+            compressed = `${compressed.substring(0, targetLength)}...`;
         }
         return {
             compressedContext: compressed,
@@ -412,9 +412,9 @@ class ContextCompressionEngine {
  * Context Persistence Engine (Stub implementation)
  */
 class ContextPersistenceEngine {
-    config;
-    constructor(config) {
-        this.config = config;
+    _config;
+    constructor(_config) {
+        this._config = _config;
     }
     async saveSession(session) {
         // In production, this would save to a database
@@ -424,7 +424,7 @@ class ContextPersistenceEngine {
     async loadSession(sessionId) {
         // In production, this would load from a database
         console.log(`Loading session ${sessionId}`);
-        return null; // No existing session found
+        return undefined; // No existing session found
     }
     async deleteSession(sessionId) {
         console.log(`Deleting session ${sessionId}`);

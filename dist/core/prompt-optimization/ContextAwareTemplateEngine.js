@@ -7,20 +7,20 @@
  * Provides maximum efficiency through predictive template optimization.
  */
 import { BaseTemplateEngine } from './template-engine-core.js';
-import { TemplateContextSchema, UserProfileSchema, SessionContextSchema, TemplateMetadataSchema, TemplateEngineMetricsSchema } from './template-schemas.js';
+import { TemplateContextSchema, UserProfileSchema, SessionContextSchema, TemplateMetadataSchema, TemplateEngineMetricsSchema, } from './template-schemas.js';
 /**
  * Context-Aware Template Engine
  *
  * Enhanced template engine with cross-session learning and user adaptation
  */
 export class ContextAwareTemplateEngine extends BaseTemplateEngine {
-    contextPatterns;
-    crossSessionLearning;
+    _contextPatterns;
+    _crossSessionLearning;
     performanceTracker;
     constructor() {
         super();
-        this.contextPatterns = new Map();
-        this.crossSessionLearning = new CrossSessionLearningEngine();
+        this._contextPatterns = new Map();
+        this._crossSessionLearning = new CrossSessionLearningEngine();
         this.performanceTracker = new TemplatePerformanceTracker();
     }
     /**
@@ -63,15 +63,14 @@ export class ContextAwareTemplateEngine extends BaseTemplateEngine {
     async findBestTemplate(context, userProfile) {
         const templates = this.getAllTemplates();
         // Filter by tool name and task type
-        const relevantTemplates = templates.filter(t => t.toolName === context.toolName &&
-            t.taskType === context.taskType);
+        const relevantTemplates = templates.filter(t => t.toolName === context.toolName && t.taskType === context.taskType);
         if (relevantTemplates.length === 0) {
             throw new Error(`No templates found for tool: ${context.toolName}, task: ${context.taskType}`);
         }
         // Score templates based on context
         const scoredTemplates = relevantTemplates.map(template => ({
             template,
-            score: this.calculateTemplateScore(template, context, userProfile)
+            score: this.calculateTemplateScore(template, context, userProfile),
         }));
         // Return highest scoring template
         scoredTemplates.sort((a, b) => b.score - a.score);
@@ -114,7 +113,7 @@ export class ContextAwareTemplateEngine extends BaseTemplateEngine {
             tokenCount: this.estimateTokenCount(context),
             timestamp: new Date(),
             userLevel: context.userLevel,
-            sessionId: context.sessionId,
+            ...(context.sessionId && { sessionId: context.sessionId }),
         });
     }
     /**
@@ -174,7 +173,7 @@ class CrossSessionLearningEngine {
         // Learn from role switching patterns
         await this.learnRoleCompliance(sessionId, outcomes);
     }
-    async learnProcessCompliance(sessionId, outcomes) {
+    async learnProcessCompliance(_sessionId, _outcomes) {
         // Archive lesson: Phase 1C Role Compliance Failure
         const processLesson = {
             id: 'process-compliance-failure',
@@ -186,24 +185,24 @@ class CrossSessionLearningEngine {
                 'Explicitly confirm role at start',
                 'Follow role-specific prevention checklist',
                 'Track role-specific success metrics',
-                'Document role-specific decisions'
+                'Document role-specific decisions',
             ],
             failurePatterns: [
                 'No role validation at start',
                 'Bypassing quality gates',
                 'Making completion claims without validation',
-                'Process shortcuts to save time'
+                'Process shortcuts to save time',
             ],
             successPatterns: [
                 'Run early-check before starting',
                 'Follow TDD approach',
                 'Validate all quality gates',
-                'Document all decisions'
-            ]
+                'Document all decisions',
+            ],
         };
         this.processComplianceLessons.set('process-compliance-failure', processLesson);
     }
-    async learnQualityPatterns(sessionId, outcomes) {
+    async learnQualityPatterns(_sessionId, _outcomes) {
         // Archive lesson: Phase 2A QA Failure Analysis
         const qualityPattern = {
             id: 'qa-failure-pattern',
@@ -216,24 +215,24 @@ class CrossSessionLearningEngine {
                 'Validate all tests pass with ≥85% coverage',
                 'Ensure TypeScript compilation succeeds',
                 'Verify ESLint violations are resolved',
-                'Create Requirements Traceability Matrix'
+                'Create Requirements Traceability Matrix',
             ],
             warningSigns: [
                 'Making assumptions about test results',
                 'Bypassing quality gates',
                 'False completion claims',
-                'Process violations'
+                'Process violations',
             ],
             successIndicators: [
                 '100% test pass rate',
                 'All quality gates green',
                 'Complete requirements traceability',
-                'Zero critical vulnerabilities'
-            ]
+                'Zero critical vulnerabilities',
+            ],
         };
         this.qualityFailurePatterns.set('qa-failure-pattern', qualityPattern);
     }
-    async learnRoleCompliance(sessionId, outcomes) {
+    async learnRoleCompliance(_sessionId, _outcomes) {
         // Archive lesson: TypeScript Error Resolution Process
         const roleCompliance = {
             id: 'typescript-error-resolution',
@@ -246,22 +245,22 @@ class CrossSessionLearningEngine {
                 'Prioritize high-impact fixes first',
                 'Use tests as safety net for refactoring',
                 'Make minimal, targeted changes',
-                'Document patterns for future prevention'
+                'Document patterns for future prevention',
             ],
             errorPatterns: [
                 'exactOptionalPropertyTypes configuration issues',
                 'Class inheritance access modifier mismatches',
                 'Parameter order in function signatures',
                 'Complex conditional types resolution',
-                'Unused variable patterns'
+                'Unused variable patterns',
             ],
             preventionStrategies: [
                 'Use spread operators with conditional property inclusion',
                 'Keep access modifiers consistent across inheritance',
                 'Put required parameters before optional ones',
                 'Use simple, explicit types over complex conditionals',
-                'Regular cleanup of unused variables'
-            ]
+                'Regular cleanup of unused variables',
+            ],
         };
         this.roleComplianceHistory.set('typescript-error-resolution', roleCompliance);
     }
@@ -269,8 +268,7 @@ class CrossSessionLearningEngine {
      * Get process compliance lessons for current context
      */
     getProcessLessons(context) {
-        return Array.from(this.processComplianceLessons.values())
-            .filter(lesson => lesson.context === context || lesson.context === 'general');
+        return Array.from(this.processComplianceLessons.values()).filter(lesson => lesson.context === context || lesson.context === 'general');
     }
     /**
      * Get quality patterns for prevention
@@ -282,15 +280,14 @@ class CrossSessionLearningEngine {
      * Get role compliance history
      */
     getRoleCompliance(role) {
-        return Array.from(this.roleComplianceHistory.values())
-            .filter(compliance => compliance.context.includes(role));
+        return Array.from(this.roleComplianceHistory.values()).filter(compliance => compliance.context.includes(role));
     }
 }
 /**
  * Template Performance Tracker
  */
 class TemplatePerformanceTracker {
-    async recordUsage(usage) {
+    async recordUsage(_usage) {
         // Performance tracking implementation
     }
 }
@@ -299,5 +296,5 @@ export function createTemplateEngine() {
     return new ContextAwareTemplateEngine();
 }
 // Re-export schemas and types
-export { TemplateContextSchema, UserProfileSchema, SessionContextSchema, TemplateMetadataSchema, TemplateEngineMetricsSchema };
+export { TemplateContextSchema, UserProfileSchema, SessionContextSchema, TemplateMetadataSchema, TemplateEngineMetricsSchema, };
 //# sourceMappingURL=ContextAwareTemplateEngine.js.map

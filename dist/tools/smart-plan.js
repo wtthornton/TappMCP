@@ -56,8 +56,12 @@ const SmartPlanInputSchema = z.object({
         riskFactors: z.array(z.string()).default([]),
     })
         .optional(),
-    role: z.enum(['developer', 'product-strategist', 'operations-engineer', 'designer', 'qa-engineer']).optional(),
-    roadmapType: z.enum(['detailed', 'high-level', 'milestone', 'sprint', 'phase']).default('detailed'),
+    role: z
+        .enum(['developer', 'product-strategist', 'operations-engineer', 'designer', 'qa-engineer'])
+        .optional(),
+    roadmapType: z
+        .enum(['detailed', 'high-level', 'milestone', 'sprint', 'phase'])
+        .default('detailed'),
     processCompliance: z.boolean().default(true),
     learningIntegration: z.boolean().default(true),
 });
@@ -402,7 +406,8 @@ function generateDetailedRoadmap(projectPlan, roadmapType, role) {
     }));
     const timeline = {
         startDate: projectPlan.timeline.startDate || new Date().toISOString(),
-        endDate: projectPlan.timeline.endDate || new Date(Date.now() + projectPlan.timeline.duration * 7 * 24 * 60 * 60 * 1000).toISOString(),
+        endDate: projectPlan.timeline.endDate ||
+            new Date(Date.now() + projectPlan.timeline.duration * 7 * 24 * 60 * 60 * 1000).toISOString(),
         duration: projectPlan.timeline.duration,
         criticalPath: generateCriticalPath(phases),
     };
@@ -417,20 +422,20 @@ function generateDetailedRoadmap(projectPlan, roadmapType, role) {
     };
 }
 // Generate quality gates for a specific task
-function generateQualityGatesForTask(task, role) {
+function generateQualityGatesForTask(_task, _role) {
     const baseGates = [
         'Code review completed',
         'Unit tests written and passing',
         'Integration tests passing',
         'Documentation updated',
     ];
-    if (role === 'developer') {
+    if (_role === 'developer') {
         baseGates.push('TypeScript compilation successful', 'ESLint checks passed', 'Performance benchmarks met');
     }
-    else if (role === 'qa-engineer') {
+    else if (_role === 'qa-engineer') {
         baseGates.push('Test coverage ≥85%', 'Security scan passed', 'Accessibility validation completed');
     }
-    else if (role === 'operations-engineer') {
+    else if (_role === 'operations-engineer') {
         baseGates.push('Deployment readiness verified', 'Monitoring configured', 'Security compliance validated');
     }
     return baseGates;
@@ -474,7 +479,7 @@ function generateCriticalPath(phases) {
     return criticalPath;
 }
 // Generate risk mitigation strategies
-function generateRiskMitigation(projectPlan, role) {
+function generateRiskMitigation(_projectPlan, _role) {
     const baseRisks = [
         {
             risk: 'Scope creep',
@@ -491,7 +496,7 @@ function generateRiskMitigation(projectPlan, role) {
             contingency: 'Simplified implementation or additional expertise',
         },
     ];
-    if (role === 'developer') {
+    if (_role === 'developer') {
         baseRisks.push({
             risk: 'Code quality issues',
             probability: 'Low',
@@ -500,7 +505,7 @@ function generateRiskMitigation(projectPlan, role) {
             contingency: 'Refactoring sprint and additional testing',
         });
     }
-    else if (role === 'qa-engineer') {
+    else if (_role === 'qa-engineer') {
         baseRisks.push({
             risk: 'Test coverage gaps',
             probability: 'Medium',
@@ -512,14 +517,18 @@ function generateRiskMitigation(projectPlan, role) {
     return baseRisks;
 }
 // Generate quality gates for the roadmap
-function generateQualityGatesForRoadmap(phases, role) {
+function generateQualityGatesForRoadmap(phases, _role) {
     const qualityGates = [];
     for (const phase of phases) {
         qualityGates.push({
             phase: phase.name,
             gate: 'Phase Entry Gate',
             criteria: ['Previous phase completed', 'Dependencies resolved', 'Resources available'],
-            validation: ['Phase completion report', 'Dependency verification', 'Resource allocation confirmation'],
+            validation: [
+                'Phase completion report',
+                'Dependency verification',
+                'Resource allocation confirmation',
+            ],
         });
         qualityGates.push({
             phase: phase.name,
@@ -541,7 +550,7 @@ function generateProcessCompliance(role, processCompliance) {
     };
 }
 // Generate learning integration from archive lessons
-function generateLearningIntegration(role, learningIntegration) {
+function generateLearningIntegration(_role, _learningIntegration) {
     const processLessons = [
         'Always validate role compliance before claiming completion',
         'Run early quality checks before starting work',
@@ -554,16 +563,18 @@ function generateLearningIntegration(role, learningIntegration) {
         'Role validation pattern',
         'Process compliance enforcement',
     ];
-    const roleCompliance = role ? [
-        `${role} role-specific requirements configured`,
-        'Role validation enabled',
-        'Process compliance checklist active',
-        'Quality gates role-specific',
-    ] : [
-        'General process compliance enabled',
-        'Quality gates configured',
-        'Documentation requirements active',
-    ];
+    const roleCompliance = _role
+        ? [
+            `${_role} role-specific requirements configured`,
+            'Role validation enabled',
+            'Process compliance checklist active',
+            'Quality gates role-specific',
+        ]
+        : [
+            'General process compliance enabled',
+            'Quality gates configured',
+            'Documentation requirements active',
+        ];
     const roadmapLessons = [
         'Detailed roadmaps prevent scope creep',
         'Quality gates at each phase ensure quality',

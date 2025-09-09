@@ -459,7 +459,7 @@ export class ErrorPreventionSystem {
     const location = this.findMatchLocation(codeText, regex);
 
     // Generate suggested fixes
-    const suggestedFixes = pattern.preventionStrategies.map((strategy, index) => ({
+    const suggestedFixes = pattern.preventionStrategies.map((strategy, _index) => ({
       fix: strategy.strategy,
       description: strategy.description,
       priority: Math.round(strategy.effectiveness * 100),
@@ -563,7 +563,7 @@ export class ErrorPreventionSystem {
 
     return {
       line: lineNumber,
-      function: functionName,
+      ...(functionName && { function: functionName }),
       context,
     };
   }
@@ -591,7 +591,7 @@ export class ErrorPreventionSystem {
    */
   private async applyAutoFixes(
     predictions: ErrorPrediction[],
-    context: AnalysisContext
+    _context: AnalysisContext
   ): Promise<void> {
     for (const prediction of predictions) {
       const autoFixes = prediction.suggestedFixes.filter(fix => fix.autoApplicable);

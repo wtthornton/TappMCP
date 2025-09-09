@@ -85,7 +85,7 @@ class SmartMCPServer {
                     catch (validationError) {
                         const mcpError = handleError(validationError, {
                             operation: 'validate_tool_arguments',
-                            toolName: name
+                            toolName: name,
                         });
                         throw mcpError;
                     }
@@ -145,7 +145,7 @@ class SmartMCPServer {
 // Start server if this file is run directly
 if (require.main === module) {
     const server = new SmartMCPServer();
-    server.start().catch(error => {
+    server.start().catch(_error => {
         // Server startup failed
         process.exit(1);
     });

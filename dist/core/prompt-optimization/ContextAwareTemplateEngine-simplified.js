@@ -7,7 +7,7 @@
  * Provides maximum efficiency through predictive template optimization.
  */
 import { BaseTemplateEngine } from './template-engine-core.js';
-import { TemplateContextSchema, UserProfileSchema, SessionContextSchema, TemplateMetadataSchema, TemplateEngineMetricsSchema } from './template-schemas.js';
+import { TemplateContextSchema, UserProfileSchema, SessionContextSchema, TemplateMetadataSchema, TemplateEngineMetricsSchema, } from './template-schemas.js';
 /**
  * Context-Aware Template Engine
  *
@@ -63,15 +63,14 @@ export class ContextAwareTemplateEngine extends BaseTemplateEngine {
     async findBestTemplate(context, userProfile) {
         const templates = this.getAllTemplates();
         // Filter by tool name and task type
-        const relevantTemplates = templates.filter(t => t.toolName === context.toolName &&
-            t.taskType === context.taskType);
+        const relevantTemplates = templates.filter(t => t.toolName === context.toolName && t.taskType === context.taskType);
         if (relevantTemplates.length === 0) {
             throw new Error(`No templates found for tool: ${context.toolName}, task: ${context.taskType}`);
         }
         // Score templates based on context
         const scoredTemplates = relevantTemplates.map(template => ({
             template,
-            score: this.calculateTemplateScore(template, context, userProfile)
+            score: this.calculateTemplateScore(template, context, userProfile),
         }));
         // Return highest scoring template
         scoredTemplates.sort((a, b) => b.score - a.score);
@@ -175,5 +174,5 @@ class TemplatePerformanceTracker {
     }
 }
 // Re-export schemas and types
-export { TemplateContextSchema, UserProfileSchema, SessionContextSchema, TemplateMetadataSchema, TemplateEngineMetricsSchema };
+export { TemplateContextSchema, UserProfileSchema, SessionContextSchema, TemplateMetadataSchema, TemplateEngineMetricsSchema, };
 //# sourceMappingURL=ContextAwareTemplateEngine-simplified.js.map

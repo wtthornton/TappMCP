@@ -61,8 +61,12 @@ const SmartPlanInputSchema = z.object({
       riskFactors: z.array(z.string()).default([]),
     })
     .optional(),
-  role: z.enum(['developer', 'product-strategist', 'operations-engineer', 'designer', 'qa-engineer']).optional(),
-  roadmapType: z.enum(['detailed', 'high-level', 'milestone', 'sprint', 'phase']).default('detailed'),
+  role: z
+    .enum(['developer', 'product-strategist', 'operations-engineer', 'designer', 'qa-engineer'])
+    .optional(),
+  roadmapType: z
+    .enum(['detailed', 'high-level', 'milestone', 'sprint', 'phase'])
+    .default('detailed'),
   processCompliance: z.boolean().default(true),
   learningIntegration: z.boolean().default(true),
 });
@@ -308,10 +312,26 @@ export async function handleSmartPlan(input: unknown): Promise<{
         budget: {
           total: validatedInput.scope?.resources?.budget ?? 50000,
           breakdown: [
-            { category: 'Personnel', amount: 30000, percentage: 60 },
-            { category: 'Tools', amount: 7500, percentage: 15 },
-            { category: 'Infrastructure', amount: 7500, percentage: 15 },
-            { category: 'External Services', amount: 5000, percentage: 10 },
+            {
+              category: 'Personnel',
+              amount: (validatedInput.scope?.resources?.budget ?? 50000) * 0.6,
+              percentage: 60,
+            },
+            {
+              category: 'Tools',
+              amount: (validatedInput.scope?.resources?.budget ?? 50000) * 0.15,
+              percentage: 15,
+            },
+            {
+              category: 'Infrastructure',
+              amount: (validatedInput.scope?.resources?.budget ?? 50000) * 0.15,
+              percentage: 15,
+            },
+            {
+              category: 'External Services',
+              amount: (validatedInput.scope?.resources?.budget ?? 50000) * 0.1,
+              percentage: 10,
+            },
           ],
         },
         tools: [
@@ -367,13 +387,23 @@ export async function handleSmartPlan(input: unknown): Promise<{
     const planningTime = Math.max(1, responseTime - 5); // Ensure at least 1ms
 
     // Generate detailed roadmap based on roadmap type
-    const detailedRoadmap = generateDetailedRoadmap(projectPlan, validatedInput.roadmapType, validatedInput.role);
+    const detailedRoadmap = generateDetailedRoadmap(
+      projectPlan,
+      validatedInput.roadmapType,
+      validatedInput.role
+    );
 
     // Generate process compliance validation
-    const processCompliance = generateProcessCompliance(validatedInput.role, validatedInput.processCompliance);
+    const processCompliance = generateProcessCompliance(
+      validatedInput.role,
+      validatedInput.processCompliance
+    );
 
     // Generate learning integration from archive lessons
-    const learningIntegration = generateLearningIntegration(validatedInput.role, validatedInput.learningIntegration);
+    const learningIntegration = generateLearningIntegration(
+      validatedInput.role,
+      validatedInput.learningIntegration
+    );
 
     // Create response
     const response = {
@@ -474,7 +504,9 @@ function generateDetailedRoadmap(
 
   const timeline = {
     startDate: projectPlan.timeline.startDate || new Date().toISOString(),
-    endDate: projectPlan.timeline.endDate || new Date(Date.now() + projectPlan.timeline.duration * 7 * 24 * 60 * 60 * 1000).toISOString(),
+    endDate:
+      projectPlan.timeline.endDate ||
+      new Date(Date.now() + projectPlan.timeline.duration * 7 * 24 * 60 * 60 * 1000).toISOString(),
     duration: projectPlan.timeline.duration,
     criticalPath: generateCriticalPath(phases),
   };
@@ -492,7 +524,7 @@ function generateDetailedRoadmap(
 }
 
 // Generate quality gates for a specific task
-function generateQualityGatesForTask(task: any, role?: string): string[] {
+function generateQualityGatesForTask(_task: any, _role?: string): string[] {
   const baseGates = [
     'Code review completed',
     'Unit tests written and passing',
@@ -500,19 +532,34 @@ function generateQualityGatesForTask(task: any, role?: string): string[] {
     'Documentation updated',
   ];
 
-  if (role === 'developer') {
-    baseGates.push('TypeScript compilation successful', 'ESLint checks passed', 'Performance benchmarks met');
-  } else if (role === 'qa-engineer') {
-    baseGates.push('Test coverage ≥85%', 'Security scan passed', 'Accessibility validation completed');
-  } else if (role === 'operations-engineer') {
-    baseGates.push('Deployment readiness verified', 'Monitoring configured', 'Security compliance validated');
+  if (_role === 'developer') {
+    baseGates.push(
+      'TypeScript compilation successful',
+      'ESLint checks passed',
+      'Performance benchmarks met'
+    );
+  } else if (_role === 'qa-engineer') {
+    baseGates.push(
+      'Test coverage ≥85%',
+      'Security scan passed',
+      'Accessibility validation completed'
+    );
+  } else if (_role === 'operations-engineer') {
+    baseGates.push(
+      'Deployment readiness verified',
+      'Monitoring configured',
+      'Security compliance validated'
+    );
   }
 
   return baseGates;
 }
 
 // Generate milestones for a phase
-function generateMilestonesForPhase(phase: any, role?: string): Array<{
+function generateMilestonesForPhase(
+  phase: any,
+  role?: string
+): Array<{
   name: string;
   description: string;
   criteria: string[];
@@ -559,7 +606,10 @@ function generateCriticalPath(phases: any[]): string[] {
 }
 
 // Generate risk mitigation strategies
-function generateRiskMitigation(projectPlan: any, role?: string): Array<{
+function generateRiskMitigation(
+  _projectPlan: any,
+  _role?: string
+): Array<{
   risk: string;
   probability: string;
   impact: string;
@@ -583,7 +633,7 @@ function generateRiskMitigation(projectPlan: any, role?: string): Array<{
     },
   ];
 
-  if (role === 'developer') {
+  if (_role === 'developer') {
     baseRisks.push({
       risk: 'Code quality issues',
       probability: 'Low',
@@ -591,7 +641,7 @@ function generateRiskMitigation(projectPlan: any, role?: string): Array<{
       mitigation: 'Automated quality gates and code reviews',
       contingency: 'Refactoring sprint and additional testing',
     });
-  } else if (role === 'qa-engineer') {
+  } else if (_role === 'qa-engineer') {
     baseRisks.push({
       risk: 'Test coverage gaps',
       probability: 'Medium',
@@ -605,7 +655,10 @@ function generateRiskMitigation(projectPlan: any, role?: string): Array<{
 }
 
 // Generate quality gates for the roadmap
-function generateQualityGatesForRoadmap(phases: any[], role?: string): Array<{
+function generateQualityGatesForRoadmap(
+  phases: any[],
+  _role?: string
+): Array<{
   phase: string;
   gate: string;
   criteria: string[];
@@ -618,7 +671,11 @@ function generateQualityGatesForRoadmap(phases: any[], role?: string): Array<{
       phase: phase.name,
       gate: 'Phase Entry Gate',
       criteria: ['Previous phase completed', 'Dependencies resolved', 'Resources available'],
-      validation: ['Phase completion report', 'Dependency verification', 'Resource allocation confirmation'],
+      validation: [
+        'Phase completion report',
+        'Dependency verification',
+        'Resource allocation confirmation',
+      ],
     });
 
     qualityGates.push({
@@ -633,7 +690,10 @@ function generateQualityGatesForRoadmap(phases: any[], role?: string): Array<{
 }
 
 // Generate process compliance validation
-function generateProcessCompliance(role?: string, processCompliance?: boolean): {
+function generateProcessCompliance(
+  role?: string,
+  processCompliance?: boolean
+): {
   roleValidation: boolean;
   qualityGates: boolean;
   documentation: boolean;
@@ -650,7 +710,10 @@ function generateProcessCompliance(role?: string, processCompliance?: boolean): 
 }
 
 // Generate learning integration from archive lessons
-function generateLearningIntegration(role?: string, learningIntegration?: boolean): {
+function generateLearningIntegration(
+  _role?: string,
+  _learningIntegration?: boolean
+): {
   processLessons: string[];
   qualityPatterns: string[];
   roleCompliance: string[];
@@ -670,16 +733,18 @@ function generateLearningIntegration(role?: string, learningIntegration?: boolea
     'Process compliance enforcement',
   ];
 
-  const roleCompliance = role ? [
-    `${role} role-specific requirements configured`,
-    'Role validation enabled',
-    'Process compliance checklist active',
-    'Quality gates role-specific',
-  ] : [
-    'General process compliance enabled',
-    'Quality gates configured',
-    'Documentation requirements active',
-  ];
+  const roleCompliance = _role
+    ? [
+        `${_role} role-specific requirements configured`,
+        'Role validation enabled',
+        'Process compliance checklist active',
+        'Quality gates role-specific',
+      ]
+    : [
+        'General process compliance enabled',
+        'Quality gates configured',
+        'Documentation requirements active',
+      ];
 
   const roadmapLessons = [
     'Detailed roadmaps prevent scope creep',

@@ -14,7 +14,7 @@ describe('PROVE Real MCP Integration Works', () => {
 
   describe('🚀 ACTUAL MCP SERVER CONNECTIONS', () => {
     it('should PROVE we can connect to real external MCP servers', async () => {
-      console.log('\n' + '='.repeat(60));
+      console.log(`\n${'='.repeat(60)}`);
       console.log('🎯 ULTIMATE TEST: PROVING REAL MCP INTEGRATION WORKS');
       console.log('='.repeat(60));
 
@@ -41,12 +41,15 @@ describe('PROVE Real MCP Integration Works', () => {
         console.log(`  ❌ ${name.toUpperCase()}: Connection failed`);
       });
 
-      const realIntegrationPercentage = (connectedServers.length / Object.keys(connectivityResults).length) * 100;
+      const realIntegrationPercentage =
+        (connectedServers.length / Object.keys(connectivityResults).length) * 100;
 
       console.log('\n📊 FINAL INTEGRATION STATUS:');
       console.log('=============================');
       console.log(`🎯 Real Integration Achieved: ${realIntegrationPercentage.toFixed(1)}%`);
-      console.log(`📈 Connected Servers: ${connectedServers.length}/${Object.keys(connectivityResults).length}`);
+      console.log(
+        `📈 Connected Servers: ${connectedServers.length}/${Object.keys(connectivityResults).length}`
+      );
 
       if (realIntegrationPercentage > 0) {
         console.log('\n🎉 SUCCESS! REAL MCP INTEGRATION IS WORKING!');
@@ -71,7 +74,6 @@ describe('PROVE Real MCP Integration Works', () => {
         console.log('\n⚠️ No real connections - but test framework is ready');
         expect(failedServers.length).toBe(Object.keys(connectivityResults).length);
       }
-
     }, 60000); // 60 second timeout for thorough testing
   });
 
@@ -99,7 +101,9 @@ describe('PROVE Real MCP Integration Works', () => {
         try {
           // List available tools
           const tools = await client.listTools(serverName);
-          console.log(`📋 ${serverName} available tools: ${tools.map((t: any) => t.name).join(', ')}`);
+          console.log(
+            `📋 ${serverName} available tools: ${tools.map((t: any) => t.name).join(', ')}`
+          );
 
           if (tools.length > 0) {
             // Try to execute first available tool with safe parameters
@@ -128,7 +132,6 @@ describe('PROVE Real MCP Integration Works', () => {
               // Tool execution failure doesn't fail the test - connection is what matters
             }
           }
-
         } catch (error) {
           console.log(`❌ Error testing ${serverName}: ${error}`);
         }
@@ -136,7 +139,6 @@ describe('PROVE Real MCP Integration Works', () => {
 
       console.log('\n🎯 TOOL EXECUTION TEST COMPLETE');
       console.log(`✅ Successfully tested tools on ${connectedServers.length} real MCP servers`);
-
     }, 45000);
   });
 
@@ -148,7 +150,7 @@ describe('PROVE Real MCP Integration Works', () => {
       const beforeState = {
         realConnections: 0,
         totalServers: 5,
-        integrationPercentage: 0
+        integrationPercentage: 0,
       };
 
       console.log('🔙 BEFORE (Previous Test Results):');
@@ -165,7 +167,9 @@ describe('PROVE Real MCP Integration Works', () => {
       console.log('\n🔜 AFTER (With Real MCP Client):');
       console.log(`   Real Integration: ${newIntegrationPercentage.toFixed(1)}%`);
       console.log(`   Connected: ${realConnections}/${totalServers}`);
-      console.log(`   Status: ${realConnections > 0 ? '✅ Real connections achieved!' : '❌ Still simulated'}`);
+      console.log(
+        `   Status: ${realConnections > 0 ? '✅ Real connections achieved!' : '❌ Still simulated'}`
+      );
 
       const improvement = newIntegrationPercentage - beforeState.integrationPercentage;
 
@@ -195,7 +199,6 @@ describe('PROVE Real MCP Integration Works', () => {
       console.log(`2. Ensure ${totalServers - realConnections} more servers connect successfully`);
       console.log(`3. Replace fallback brokers with real MCP connections`);
       console.log(`4. Add authentication for servers that require it`);
-
     }, 45000);
   });
 });

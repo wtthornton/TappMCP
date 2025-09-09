@@ -153,6 +153,7 @@ export class PromptOptimizer {
         constraints: request.context.constraints || [],
         preferences: request.context.preferences || {},
         contextHistory: request.context.contextHistory || [],
+        sessionId: `optimizer_${Date.now()}`,
       };
 
       // Check budget approval
@@ -178,13 +179,13 @@ export class PromptOptimizer {
           strategy: 'none',
           qualityScore: 0,
           reason: budgetApproval.reason || 'Budget approval failed',
-          fallback: budgetApproval.alternatives
-            ? {
-                optimizedPrompt: request.originalPrompt,
-                qualityScore: 70,
-                strategy: budgetApproval.alternatives.fallbackStrategy,
-              }
-            : undefined,
+          ...(budgetApproval.alternatives && {
+            fallback: {
+              optimizedPrompt: request.originalPrompt,
+              qualityScore: 70,
+              strategy: budgetApproval.alternatives.fallbackStrategy,
+            },
+          }),
         };
       }
 
@@ -226,7 +227,7 @@ export class PromptOptimizer {
           optimizationTime: 50, // Mock time
           strategyReasons: [`Applied ${strategy} strategy`],
           contextInjected: strategy === 'context-aware',
-          templateUsed: strategy === 'template-based' ? request.toolName : undefined,
+          ...(strategy === 'template-based' && { templateUsed: request.toolName }),
         },
       };
       this.optimizationHistory.push(optimizationResult);
@@ -300,7 +301,9 @@ export class PromptOptimizer {
         optimizationTime: Date.now() - startTime,
         strategyReasons,
         contextInjected: appliedStrategies.includes('context-aware'),
-        templateUsed: this.getUsedTemplate(appliedStrategies) || undefined,
+        ...(this.getUsedTemplate(appliedStrategies) && {
+          templateUsed: this.getUsedTemplate(appliedStrategies),
+        }),
       },
     };
 
@@ -314,7 +317,7 @@ export class PromptOptimizer {
    * Smart strategy selection based on context
    */
   private selectOptimalStrategies(
-    prompt: string,
+    _prompt: string,
     context: PromptContext,
     tokenCount: number
   ): OptimizationStrategy[] {
@@ -625,7 +628,7 @@ export class PromptOptimizer {
     return prompt.replace(/\b(?:comprehensive|detailed|thorough)\b/gi, '').trim();
   }
 
-  private enhanceForHighComplexity(prompt: string, context: PromptContext): string {
+  private enhanceForHighComplexity(prompt: string, _context: PromptContext): string {
     if (!prompt.includes('comprehensive') && !prompt.includes('detailed')) {
       return `Please provide a comprehensive and detailed ${prompt}`;
     }
@@ -643,7 +646,7 @@ export class PromptOptimizer {
   private applyTemplate(
     template: string,
     info: Record<string, string>,
-    context: PromptContext
+    _context: PromptContext
   ): string {
     let result = template;
     for (const [key, value] of Object.entries(info)) {
@@ -652,7 +655,7 @@ export class PromptOptimizer {
     return result;
   }
 
-  private applyHeuristicOptimization(prompt: string, context: PromptContext): string {
+  private applyHeuristicOptimization(prompt: string, _context: PromptContext): string {
     // Apply common heuristic optimizations
     let optimized = prompt;
 
@@ -750,7 +753,7 @@ export class PromptOptimizer {
     return compressionResult.prompt;
   }
 
-  private applyAdaptiveOptimization(prompt: string, context: TemplateContext): string {
+  private applyAdaptiveOptimization(prompt: string, _context: TemplateContext): string {
     const tokens = this.countTokens(prompt);
     if (tokens > 1000) {
       const compressionResult = this.applyCompression(prompt);
@@ -765,7 +768,7 @@ export class PromptOptimizer {
     return sentences.slice(0, 3).join('. ').trim();
   }
 
-  private calculateQualityScore(original: string, optimized: string, threshold: number): number {
+  private calculateQualityScore(original: string, optimized: string, _threshold: number): number {
     const originalTokens = this.countTokens(original);
     const optimizedTokens = this.countTokens(optimized);
     const compressionRatio = 1 - optimizedTokens / originalTokens;

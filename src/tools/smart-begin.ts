@@ -10,8 +10,12 @@ const SmartBeginInputSchema = z.object({
   techStack: z.array(z.string()).default([]),
   targetUsers: z.array(z.string()).default([]),
   businessGoals: z.array(z.string()).optional(),
-  projectTemplate: z.enum(['mcp-server', 'web-app', 'api-service', 'full-stack', 'microservice', 'library']).optional(),
-  role: z.enum(['developer', 'product-strategist', 'operations-engineer', 'designer', 'qa-engineer']).optional(),
+  projectTemplate: z
+    .enum(['mcp-server', 'web-app', 'api-service', 'full-stack', 'microservice', 'library'])
+    .optional(),
+  role: z
+    .enum(['developer', 'product-strategist', 'operations-engineer', 'designer', 'qa-engineer'])
+    .optional(),
   qualityLevel: z.enum(['basic', 'standard', 'enterprise', 'production']).default('standard'),
   complianceRequirements: z.array(z.string()).default([]),
 });
@@ -23,12 +27,14 @@ const SmartBeginOutputSchema = z.object({
     folders: z.array(z.string()),
     files: z.array(z.string()),
     configFiles: z.array(z.string()),
-    templates: z.array(z.object({
-      name: z.string(),
-      description: z.string(),
-      path: z.string(),
-      content: z.string(),
-    })),
+    templates: z.array(
+      z.object({
+        name: z.string(),
+        description: z.string(),
+        path: z.string(),
+        content: z.string(),
+      })
+    ),
   }),
   qualityGates: z.array(
     z.object({
@@ -166,7 +172,11 @@ function generateProjectStructure(
 }
 
 // Quality gates generator with role-specific requirements
-function generateQualityGates(techStack: string[], role?: string, qualityLevel?: string): Array<{
+function generateQualityGates(
+  techStack: string[],
+  _role?: string,
+  _qualityLevel?: string
+): Array<{
   name: string;
   description: string;
   status: 'enabled' | 'disabled';
@@ -252,7 +262,7 @@ function generateNextSteps(projectName: string, targetUsers: string[], role?: st
 function generateProjectTemplates(
   projectTemplate?: string,
   role?: string,
-  techStack: string[] = []
+  _techStack: string[] = []
 ): Array<{
   name: string;
   description: string;
@@ -436,7 +446,7 @@ function generateProcessCompliance(role?: string): {
 // Generate learning integration from archive lessons
 function generateLearningIntegration(
   role?: string,
-  qualityLevel?: string
+  _qualityLevel?: string
 ): {
   processLessons: string[];
   qualityPatterns: string[];
@@ -456,16 +466,18 @@ function generateLearningIntegration(
     'Process compliance enforcement',
   ];
 
-  const roleCompliance = role ? [
-    `${role} role-specific requirements configured`,
-    'Role validation enabled',
-    'Process compliance checklist active',
-    'Quality gates role-specific',
-  ] : [
-    'General process compliance enabled',
-    'Quality gates configured',
-    'Documentation requirements active',
-  ];
+  const roleCompliance = role
+    ? [
+        `${role} role-specific requirements configured`,
+        'Role validation enabled',
+        'Process compliance checklist active',
+        'Quality gates role-specific',
+      ]
+    : [
+        'General process compliance enabled',
+        'Quality gates configured',
+        'Documentation requirements active',
+      ];
 
   return {
     processLessons,
@@ -535,10 +547,18 @@ export async function handleSmartBegin(input: unknown): Promise<{
     );
 
     // Generate quality gates with role-specific requirements
-    const qualityGates = generateQualityGates(validatedInput.techStack, validatedInput.role, validatedInput.qualityLevel);
+    const qualityGates = generateQualityGates(
+      validatedInput.techStack,
+      validatedInput.role,
+      validatedInput.qualityLevel
+    );
 
     // Generate next steps with process compliance
-    const nextSteps = generateNextSteps(validatedInput.projectName, validatedInput.targetUsers, validatedInput.role);
+    const nextSteps = generateNextSteps(
+      validatedInput.projectName,
+      validatedInput.targetUsers,
+      validatedInput.role
+    );
 
     // Calculate business value
     const businessValue = calculateBusinessValue(
@@ -558,7 +578,10 @@ export async function handleSmartBegin(input: unknown): Promise<{
     const processCompliance = generateProcessCompliance(validatedInput.role);
 
     // Generate learning integration from archive lessons
-    const learningIntegration = generateLearningIntegration(validatedInput.role, validatedInput.qualityLevel);
+    const learningIntegration = generateLearningIntegration(
+      validatedInput.role,
+      validatedInput.qualityLevel
+    );
 
     // Generate project ID
     const projectId = `proj_${Date.now()}_${validatedInput.projectName.toLowerCase().replace(/\s+/g, '_')}`;

@@ -56,7 +56,10 @@
     "deploy:test": "node scripts/test-deployed-mcp.js",
     "deploy:test-tools": "node scripts/test-mcp-stdio-only.js",
     "demo:comprehensive": "node scripts/comprehensive-mcp-demo-resilient.js",
-    "demo:quick": "node scripts/quick-mcp-demo.js"
+    "demo:quick": "node scripts/quick-mcp-demo.js",
+    "test:compare": "node tests/simple-mcp-comparison.js",
+    "test:compare:html": "node tests/simple-mcp-comparison-html.js",
+    "test:compare:html:open": "node tests/simple-mcp-comparison-html.js && start tests/comparison-results/comparison-report-*.html"
   },
   "keywords": [
     "mcp",

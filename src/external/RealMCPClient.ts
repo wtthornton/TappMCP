@@ -36,7 +36,11 @@ export class RealMCPClient extends EventEmitter {
   /**
    * Connect to a real MCP server using stdio transport
    */
-  async connectToServer(serverName: string, command: string[], args: string[] = []): Promise<boolean> {
+  async connectToServer(
+    serverName: string,
+    command: string[],
+    args: string[] = []
+  ): Promise<boolean> {
     try {
       console.log(`🔌 Connecting to ${serverName} MCP server...`);
       console.log(`📋 Command: ${command.join(' ')} ${args.join(' ')}`);
@@ -46,19 +50,19 @@ export class RealMCPClient extends EventEmitter {
 
       const process = spawn(execCommand, [...command.slice(1), ...args], {
         stdio: ['pipe', 'pipe', 'pipe'],
-        shell: true // Enable shell for Windows compatibility
+        shell: true, // Enable shell for Windows compatibility
       });
 
       const connection: RealMCPConnection = {
         serverName,
         process,
         isConnected: false,
-        lastError: undefined
+        // lastError: undefined
       };
 
       // Set up message handling
       let buffer = '';
-      process.stdout?.on('data', (data) => {
+      process.stdout?.on('data', data => {
         buffer += data.toString();
         const lines = buffer.split('\n');
         buffer = lines.pop() || '';
@@ -70,18 +74,18 @@ export class RealMCPClient extends EventEmitter {
         }
       });
 
-      process.stderr?.on('data', (data) => {
+      process.stderr?.on('data', data => {
         const error = data.toString();
         console.error(`❌ ${serverName} stderr:`, error);
         connection.lastError = error;
       });
 
-      process.on('exit', (code) => {
+      process.on('exit', code => {
         console.log(`🔌 ${serverName} process exited with code ${code}`);
         connection.isConnected = false;
       });
 
-      process.on('error', (error) => {
+      process.on('error', error => {
         console.error(`❌ ${serverName} process error:`, error);
         connection.lastError = error.message;
         connection.isConnected = false;
@@ -100,7 +104,6 @@ export class RealMCPClient extends EventEmitter {
       }
 
       return initialized;
-
     } catch (error) {
       console.error(`❌ Failed to connect to ${serverName}:`, error);
       return false;
@@ -118,13 +121,13 @@ export class RealMCPClient extends EventEmitter {
       params: {
         protocolVersion: '2024-11-05',
         capabilities: {
-          tools: {}
+          tools: {},
         },
         clientInfo: {
           name: 'TappMCP-Client',
-          version: '1.0.0'
-        }
-      }
+          version: '1.0.0',
+        },
+      },
     };
 
     try {
@@ -139,7 +142,11 @@ export class RealMCPClient extends EventEmitter {
   /**
    * Send a message to MCP server and wait for response
    */
-  private async sendMessage(serverName: string, message: MCPMessage, timeout = 10000): Promise<MCPMessage | null> {
+  private async sendMessage(
+    serverName: string,
+    message: MCPMessage,
+    timeout = 10000
+  ): Promise<MCPMessage | null> {
     const connection = this.connections.get(serverName);
     if (!connection?.process.stdin) {
       throw new Error(`No connection to ${serverName}`);
@@ -163,11 +170,11 @@ export class RealMCPClient extends EventEmitter {
         reject: (error: Error) => {
           clearTimeout(timeoutHandle);
           reject(error);
-        }
+        },
       });
 
       // Send message
-      const messageStr = JSON.stringify(message) + '\n';
+      const messageStr = `${JSON.stringify(message)}\n`;
       connection.process.stdin!.write(messageStr);
     });
   }
@@ -201,7 +208,7 @@ export class RealMCPClient extends EventEmitter {
     const message: MCPMessage = {
       jsonrpc: '2.0',
       id: this.messageId++,
-      method: 'tools/list'
+      method: 'tools/list',
     };
 
     try {
@@ -223,8 +230,8 @@ export class RealMCPClient extends EventEmitter {
       method: 'tools/call',
       params: {
         name: toolName,
-        arguments: args
-      }
+        arguments: args,
+      },
     };
 
     try {
@@ -271,10 +278,10 @@ export class RealMCPClient extends EventEmitter {
 
     // Test GitHub MCP Server
     console.log('\n🔍 Testing GitHub MCP Server...');
-    const githubConnected = await this.connectToServer(
-      'github',
-      ['npx', '@modelcontextprotocol/server-github@latest']
-    );
+    const githubConnected = await this.connectToServer('github', [
+      'npx',
+      '@modelcontextprotocol/server-github@latest',
+    ]);
     results['github'] = githubConnected;
 
     if (githubConnected) {
@@ -288,22 +295,26 @@ export class RealMCPClient extends EventEmitter {
 
     // Test TestSprite MCP Server
     console.log('\n🔍 Testing TestSprite MCP Server...');
-    const testspriteConnected = await this.connectToServer(
-      'testsprite',
-      ['npx', '@testsprite/testsprite-mcp@latest']
-    );
+    const testspriteConnected = await this.connectToServer('testsprite', [
+      'npx',
+      '@testsprite/testsprite-mcp@latest',
+    ]);
     results['testsprite'] = testspriteConnected;
 
     console.log('\n📊 REAL CONNECTIVITY TEST RESULTS:');
     console.log('=====================================');
     let realConnections = 0;
     for (const [name, connected] of Object.entries(results)) {
-      console.log(`${connected ? '✅' : '❌'} ${name}: ${connected ? 'REAL CONNECTION' : 'FAILED'}`);
+      console.log(
+        `${connected ? '✅' : '❌'} ${name}: ${connected ? 'REAL CONNECTION' : 'FAILED'}`
+      );
       if (connected) realConnections++;
     }
 
     const percentage = (realConnections / Object.keys(results).length) * 100;
-    console.log(`\n📈 Real Integration Achievement: ${realConnections}/${Object.keys(results).length} (${percentage.toFixed(1)}%)`);
+    console.log(
+      `\n📈 Real Integration Achievement: ${realConnections}/${Object.keys(results).length} (${percentage.toFixed(1)}%)`
+    );
 
     if (percentage > 0) {
       console.log('🎉 SUCCESS: Achieved real MCP server connections!');
@@ -323,7 +334,7 @@ export class RealMCPClient extends EventEmitter {
     for (const [name, connection] of this.connections) {
       status[name] = {
         connected: connection.isConnected,
-        error: connection.lastError
+        ...(connection.lastError && { error: connection.lastError }),
       };
     }
 

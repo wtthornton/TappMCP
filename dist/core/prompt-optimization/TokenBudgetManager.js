@@ -63,7 +63,7 @@ export class TokenBudgetManager {
                 approved: false,
                 allocatedTokens: { input: 0, output: 0 },
                 estimatedCost: 0,
-                reason: budgetCheck.reason,
+                reason: budgetCheck.reason || 'Budget check failed',
                 alternatives: this.generateAlternatives(request),
             };
         }

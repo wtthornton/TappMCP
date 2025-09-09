@@ -38,7 +38,14 @@
       "Bash(chmod:*)",
       "Bash(./scripts/deploy-production.sh:*)",
       "Bash(where npx)",
-      "Bash(npx.cmd @modelcontextprotocol/server-filesystem@latest:*)"
+      "Bash(npx.cmd @modelcontextprotocol/server-filesystem@latest:*)",
+      "Bash(time npx vitest run src/tools/smart-finish.test.ts --reporter=minimal)",
+      "Bash(time npx vitest run src/tools/smart-finish.test.ts --reporter=basic)",
+      "Bash(time npx vitest run:*)",
+      "Bash(find:*)",
+      "Bash(timeout 5s npx @modelcontextprotocol/server-github@latest)",
+      "Bash(timeout 5s npx @testsprite/testsprite-mcp@latest)",
+      "Bash(timeout 5s npx @playwright/mcp@latest)"
     ],
     "deny": [],
     "ask": []

@@ -149,12 +149,12 @@ export class ResourceLifecycleManager {
     // Clear intervals
     if (this.cleanupInterval) {
       clearInterval(this.cleanupInterval);
-      this.cleanupInterval = undefined;
+      this.cleanupInterval = null as any;
     }
 
     if (this.monitoringInterval) {
       clearInterval(this.monitoringInterval);
-      this.monitoringInterval = undefined;
+      this.monitoringInterval = null as any;
     }
 
     this.logger.info('Resource lifecycle management stopped', {

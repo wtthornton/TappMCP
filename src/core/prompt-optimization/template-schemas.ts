@@ -91,16 +91,20 @@ export const TemplateMetadataSchema = z.object({
   adaptationLevel: z.enum(['static', 'dynamic', 'adaptive']).default('static'),
   crossSessionCompatible: z.boolean().default(true),
   userSegments: z.array(z.string()).default([]),
-  performanceMetrics: z.object({
-    averageExecutionTime: z.number(),
-    successRate: z.number(),
-    userSatisfaction: z.number(),
-  }).optional(),
-  learningData: z.object({
-    successfulOutcomes: z.number(),
-    failedOutcomes: z.number(),
-    adaptationTriggers: z.array(z.string()),
-  }).optional(),
+  performanceMetrics: z
+    .object({
+      averageExecutionTime: z.number(),
+      successRate: z.number(),
+      userSatisfaction: z.number(),
+    })
+    .optional(),
+  learningData: z
+    .object({
+      successfulOutcomes: z.number(),
+      failedOutcomes: z.number(),
+      adaptationTriggers: z.array(z.string()),
+    })
+    .optional(),
 });
 
 export type TemplateMetadata = z.infer<typeof TemplateMetadataSchema>;

@@ -110,7 +110,7 @@ export class CodeGenerationPrompt extends MCPPrompt {
     input: CodeGenerationPromptInput,
     context?: MCPPromptContext
   ): Promise<MCPPromptResult<string>> {
-    return this.generate(input, context);
+    return this.generate(input, context) as unknown as MCPPromptResult<string>;
   }
 
   /**

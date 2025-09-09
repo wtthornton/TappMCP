@@ -253,7 +253,7 @@ export class MCPRegistry {
     stopHealthMonitoring() {
         if (this.healthCheckInterval) {
             clearInterval(this.healthCheckInterval);
-            this.healthCheckInterval = undefined;
+            this.healthCheckInterval = null;
         }
     }
     /**

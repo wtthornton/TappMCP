@@ -423,7 +423,7 @@ Explain the issue and provide step-by-step solution.
         });
         // Helper for truncating text
         Handlebars.registerHelper('truncate', function (text, length) {
-            return text.length > length ? text.substring(0, length) + '...' : text;
+            return text.length > length ? `${text.substring(0, length)}...` : text;
         });
         // Helper for optimizing based on user level
         Handlebars.registerHelper('user_optimized', function (beginnerText, advancedText, userLevel) {
@@ -738,9 +738,9 @@ Explain the issue and provide step-by-step solution.
             case 'planning':
                 return template.replace(/\bImplement\b/g, 'Plan implementation of');
             case 'testing':
-                return template + '\n\nInclude testing considerations and validation steps.';
+                return `${template}\n\nInclude testing considerations and validation steps.`;
             case 'deployment':
-                return template + '\n\nConsider deployment and production readiness.';
+                return `${template}\n\nConsider deployment and production readiness.`;
             default:
                 return template;
         }

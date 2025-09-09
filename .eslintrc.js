@@ -87,6 +87,8 @@ module.exports = {
     '*.d.ts',
     '*.config.js',
     '*.config.ts',
+    'src/**/*Old.ts',
+    'src/**/*-old.ts',
   ],
   overrides: [
     {

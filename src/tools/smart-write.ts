@@ -122,15 +122,13 @@ export const smartWriteTool: Tool = {
 // Simple execution logging
 let executionLog = {
   startTime: Date.now(),
-  duration: 0
+  duration: 0,
 };
-
-
 
 function resetExecutionLog() {
   executionLog = {
     startTime: Date.now(),
-    duration: 0
+    duration: 0,
   };
 }
 
@@ -144,12 +142,17 @@ function generateRealCode(input: { featureDescription: string; [key: string]: un
   const isHtmlRequest =
     input.featureDescription.toLowerCase().includes('html') ||
     input.featureDescription.toLowerCase().includes('page') ||
-    input.techStack?.includes('html');
+    (input as any).techStack?.includes('html');
 
   if (isHtmlRequest) {
-    return generateHtmlContent(input, featureName, role);
+    return generateHtmlContent(input, featureName, (role as string) || 'developer');
   } else {
-    return generateTypeScriptContent(input, featureName, functionName, role);
+    return generateTypeScriptContent(
+      input,
+      featureName,
+      functionName,
+      (role as string) || 'developer'
+    );
   }
 }
 
@@ -171,7 +174,12 @@ function generateHtmlContent(input: any, featureName: string, role: string) {
 }
 
 // Generate TypeScript content with role-specific behavior
-function generateTypeScriptContent(input: any, featureName: string, functionName: string, role: string) {
+function generateTypeScriptContent(
+  input: any,
+  featureName: string,
+  functionName: string,
+  role: string
+) {
   const codeType = input.codeType || 'function';
   const roleSpecificCode = getRoleSpecificCode(input, functionName, role);
   const roleSpecificTests = getRoleSpecificTests(functionName, role);
@@ -187,7 +195,7 @@ function generateTypeScriptContent(input: any, featureName: string, functionName
       path: `src/${featureName}.test.ts`,
       content: roleSpecificTests,
       type: 'test',
-    }
+    },
   ];
 
   // Add documentation for certain roles
@@ -228,7 +236,9 @@ function getRoleSpecificHtmlContent(input: any, role: string): string {
 
   switch (role) {
     case 'designer':
-      return baseContent.replace('<style>', `<style>
+      return baseContent.replace(
+        '<style>',
+        `<style>
         /* Designer Role: Focus on UX and accessibility */
         body {
           font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -257,10 +267,13 @@ function getRoleSpecificHtmlContent(input: any, role: string): string {
         @media (max-width: 768px) {
           body { padding: 20px; }
           h1 { font-size: 2rem; }
-        }`);
+        }`
+      );
 
     case 'operations-engineer':
-      return baseContent.replace('<style>', `<style>
+      return baseContent.replace(
+        '<style>',
+        `<style>
         /* Operations Role: Focus on monitoring and performance */
         body {
           font-family: 'Monaco', 'Consolas', monospace;
@@ -286,16 +299,24 @@ function getRoleSpecificHtmlContent(input: any, role: string): string {
           background: #00ff00;
           border-radius: 50%;
           margin-right: 10px;
-        }`);
+        }`
+      );
 
     case 'qa-engineer':
-      return baseContent.replace('<body>', `<body>
+      return baseContent
+        .replace(
+          '<body>',
+          `<body>
     <div class="test-results">
       <h2>Test Results</h2>
       <div class="test-pass">✓ HTML Structure Valid</div>
       <div class="test-pass">✓ CSS Valid</div>
       <div class="test-pass">✓ Accessibility Check Passed</div>
-    </div>`).replace('<style>', `<style>
+    </div>`
+        )
+        .replace(
+          '<style>',
+          `<style>
         /* QA Role: Focus on testing and validation */
         .test-results {
           background: #f8f9fa;
@@ -308,7 +329,8 @@ function getRoleSpecificHtmlContent(input: any, role: string): string {
           color: #28a745;
           margin: 5px 0;
           font-weight: bold;
-        }`);
+        }`
+        );
 
     default:
       return baseContent;
@@ -316,7 +338,7 @@ function getRoleSpecificHtmlContent(input: any, role: string): string {
 }
 
 // Get role-specific TypeScript code
-function getRoleSpecificCode(input: any, functionName: string, role: string): string {
+function getRoleSpecificCode(_input: any, functionName: string, role: string): string {
   const baseCode = `export function ${functionName}(input: string): { result: string; success: boolean } {
   try {
     if (!input || typeof input !== 'string') {

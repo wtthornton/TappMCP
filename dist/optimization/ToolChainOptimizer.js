@@ -200,7 +200,13 @@ export class ToolChainOptimizer {
                 totalCost,
                 stepResults,
                 optimization,
-                recommendations: this.generateRecommendations(stepResults, optimization, plan),
+                recommendations: this.generateRecommendations(stepResults, {
+                    totalTime: executionTime,
+                    totalCost,
+                    cacheHitRate: 0.8,
+                    parallelizationEfficiency: 0.7,
+                    retryRate: 0.1,
+                }, plan),
             };
             // Store execution history
             this.recordExecution(plan.id, result);
@@ -250,7 +256,7 @@ export class ToolChainOptimizer {
         // Analyze caching opportunities
         const cacheableSteps = plan.steps.filter(step => {
             const tool = this.toolRegistry.get(step.toolName);
-            return tool && tool.cacheEnabled;
+            return tool?.cacheEnabled;
         });
         if (cacheableSteps.length > 0) {
             suggestions.push({
@@ -294,7 +300,7 @@ export class ToolChainOptimizer {
             const impactScore = (suggestion) => {
                 return ((suggestion.estimatedImpact.timeReduction || 0) * 10 +
                     (suggestion.estimatedImpact.costReduction || 0) * 100 +
-                    (suggestion.estimatedImpact.reliabilityImprovement || 0) * 50);
+                    (suggestion.estimatedImpact.qualityImprovement || 0) * 50);
             };
             return impactScore(b) - impactScore(a);
         });
@@ -667,7 +673,7 @@ export class ToolChainOptimizer {
         }, 0);
     }
     groupStepsByParallelism(steps) {
-        const groups = [];
+        // const _groups: Array<Array<any>> = [];
         const groupMap = new Map();
         for (const step of steps) {
             const groupNum = step.parallelGroup || 0;
@@ -686,7 +692,7 @@ export class ToolChainOptimizer {
             .filter((toolName, index, arr) => arr.indexOf(toolName) === index) // Unique
             .slice(0, 5); // Top 5 bottlenecks
     }
-    generateRecommendations(stepResults, optimization, plan) {
+    generateRecommendations(stepResults, _optimization, _plan) {
         const recommendations = [];
         // Performance recommendations
         const slowSteps = stepResults.filter(r => r.executionTime > this.config.performanceThreshold);

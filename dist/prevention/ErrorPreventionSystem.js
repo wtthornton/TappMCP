@@ -311,7 +311,7 @@ export class ErrorPreventionSystem {
         // Find the location of the first match
         const location = this.findMatchLocation(codeText, regex);
         // Generate suggested fixes
-        const suggestedFixes = pattern.preventionStrategies.map((strategy, index) => ({
+        const suggestedFixes = pattern.preventionStrategies.map((strategy, _index) => ({
             fix: strategy.strategy,
             description: strategy.description,
             priority: Math.round(strategy.effectiveness * 100),
@@ -389,7 +389,7 @@ export class ErrorPreventionSystem {
         const functionName = functionMatch ? functionMatch[1] || functionMatch[2] : undefined;
         return {
             line: lineNumber,
-            function: functionName,
+            ...(functionName && { function: functionName }),
             context,
         };
     }
@@ -409,7 +409,7 @@ export class ErrorPreventionSystem {
     /**
      * Apply automatic fixes where possible
      */
-    async applyAutoFixes(predictions, context) {
+    async applyAutoFixes(predictions, _context) {
         for (const prediction of predictions) {
             const autoFixes = prediction.suggestedFixes.filter(fix => fix.autoApplicable);
             for (const fix of autoFixes) {

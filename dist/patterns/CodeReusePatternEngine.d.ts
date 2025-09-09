@@ -237,8 +237,6 @@ export declare class CodeReusePatternEngine {
     private calculateSimilarity;
     private createPatternSuggestion;
     private applyPatternToCode;
-    private extractVariableValues;
-    private parameterizePattern;
     private indexPattern;
 }
 export declare function createCodeReusePatternEngine(config?: Partial<DetectionConfig>): CodeReusePatternEngine;

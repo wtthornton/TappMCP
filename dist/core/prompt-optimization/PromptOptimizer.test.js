@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { PromptOptimizer, createPromptOptimizer, } from './PromptOptimizer';
+import { PromptOptimizer, createPromptOptimizer } from './PromptOptimizer';
 import { TokenBudgetManager } from './TokenBudgetManager';
 import { ContextAwareTemplateEngine } from './ContextAwareTemplateEngine';
 describe('PromptOptimizer', () => {

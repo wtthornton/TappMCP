@@ -326,7 +326,7 @@ export class MCPRegistry {
   stopHealthMonitoring(): void {
     if (this.healthCheckInterval) {
       clearInterval(this.healthCheckInterval);
-      this.healthCheckInterval = undefined;
+      this.healthCheckInterval = null as any;
     }
   }
 

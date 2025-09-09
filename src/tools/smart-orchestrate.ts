@@ -48,8 +48,12 @@ const SmartOrchestrateInputSchema = z.object({
     }),
   }),
   workflow: z.enum(['sdlc', 'project', 'quality', 'custom']).default('sdlc'),
-  role: z.enum(['developer', 'product-strategist', 'operations-engineer', 'designer', 'qa-engineer']).optional(),
-  orchestrationLevel: z.enum(['basic', 'standard', 'comprehensive', 'enterprise']).default('comprehensive'),
+  role: z
+    .enum(['developer', 'product-strategist', 'operations-engineer', 'designer', 'qa-engineer'])
+    .optional(),
+  orchestrationLevel: z
+    .enum(['basic', 'standard', 'comprehensive', 'enterprise'])
+    .default('comprehensive'),
   processCompliance: z.boolean().default(true),
   learningIntegration: z.boolean().default(true),
   archiveLessons: z.boolean().default(true),
@@ -183,11 +187,13 @@ function generateEnhancedWorkflowPhases(
           id: 'task_planning_1',
           name: 'Business Analysis',
           description: 'Analyze business requirements and market context',
+          type: 'analysis',
           role: 'product-strategist',
           phase: 'planning',
           dependencies: [],
           deliverables: ['business-analysis', 'requirements-doc'],
           estimatedTime: 45,
+          status: 'pending',
         },
       ],
       dependencies: [],
@@ -207,11 +213,13 @@ function generateEnhancedWorkflowPhases(
           id: 'task_dev_1',
           name: 'Implementation',
           description: 'Develop the core functionality and features',
+          type: 'development',
           role: 'developer',
           phase: 'development',
           dependencies: ['task_planning_1'],
           deliverables: ['source-code', 'unit-tests'],
           estimatedTime: 90,
+          status: 'pending',
         },
       ],
       dependencies: ['Strategic Planning'],
@@ -231,11 +239,13 @@ function generateEnhancedWorkflowPhases(
           id: 'task_qa_1',
           name: 'Quality Validation',
           description: 'Execute comprehensive testing and quality checks',
+          type: 'testing',
           role: 'qa-engineer',
           phase: 'testing',
           dependencies: ['task_dev_1'],
           deliverables: ['test-results', 'quality-report'],
           estimatedTime: 60,
+          status: 'pending',
         },
       ],
       dependencies: ['Development'],
@@ -255,11 +265,13 @@ function generateEnhancedWorkflowPhases(
           id: 'task_ops_1',
           name: 'Production Deployment',
           description: 'Deploy to production and configure monitoring',
+          type: 'deployment',
           role: 'operations-engineer',
           phase: 'deployment',
           dependencies: ['task_qa_1'],
           deliverables: ['deployment-config', 'monitoring-setup'],
           estimatedTime: 45,
+          status: 'pending',
         },
       ],
       dependencies: ['Quality Assurance'],
@@ -521,7 +533,12 @@ export async function handleSmartOrchestrate(input: unknown): Promise<{
     );
 
     // Generate next steps based on workflow result and validation
-    const nextSteps = generateNextSteps(workflowResult, businessContext, orchestrationValidation, processCompliance);
+    const nextSteps = generateNextSteps(
+      workflowResult,
+      businessContext,
+      orchestrationValidation,
+      processCompliance
+    );
 
     // Calculate enhanced technical metrics
     const responseTime = Date.now() - startTime;
@@ -658,12 +675,13 @@ function generateOrchestrationValidation(
   }>;
   recommendations: string[];
 } {
-  const workflowValidation = workflowResult.phases?.map((phase: any) => ({
-    phase: phase.name || 'Unknown Phase',
-    status: phase.success ? 'pass' : 'fail',
-    score: phase.success ? 100 : 0,
-    details: phase.success ? 'Phase completed successfully' : 'Phase failed',
-  })) || [];
+  const workflowValidation =
+    workflowResult.phases?.map((phase: any) => ({
+      phase: phase.name || 'Unknown Phase',
+      status: phase.success ? 'pass' : 'fail',
+      score: phase.success ? 100 : 0,
+      details: phase.success ? 'Phase completed successfully' : 'Phase failed',
+    })) || [];
 
   const processComplianceChecks = [
     {
@@ -674,7 +692,9 @@ function generateOrchestrationValidation(
     {
       check: 'Workflow Orchestration',
       status: workflowResult.success ? 'pass' : 'fail',
-      details: workflowResult.success ? 'Workflow orchestrated successfully' : 'Workflow orchestration failed',
+      details: workflowResult.success
+        ? 'Workflow orchestrated successfully'
+        : 'Workflow orchestration failed',
     },
     {
       check: 'Process Compliance',
@@ -684,7 +704,9 @@ function generateOrchestrationValidation(
     {
       check: 'Business Context',
       status: workflowResult.businessContext ? 'pass' : 'fail',
-      details: workflowResult.businessContext ? 'Business context preserved' : 'Business context lost',
+      details: workflowResult.businessContext
+        ? 'Business context preserved'
+        : 'Business context lost',
     },
   ];
 
@@ -726,7 +748,10 @@ function generateOrchestrationValidation(
     orchestrationLevel,
     roleSpecificOrchestration: !!role,
     workflowValidation,
-    processComplianceChecks,
+    processComplianceChecks: processComplianceChecks.map(check => ({
+      ...check,
+      status: check.status as 'warning' | 'pass' | 'fail',
+    })),
     archiveLessonsApplied,
     recommendations,
   };
@@ -749,9 +774,10 @@ function generateProcessComplianceValidation(
   const processComplianceStatus = processCompliance ?? true;
   const businessContext = !!workflowResult?.businessContext;
 
-  const overallCompliance = roleValidation && workflowOrchestration && processComplianceStatus && businessContext
-    ? 'Fully Compliant'
-    : 'Partially Compliant';
+  const overallCompliance =
+    roleValidation && workflowOrchestration && processComplianceStatus && businessContext
+      ? 'Fully Compliant'
+      : 'Partially Compliant';
 
   return {
     roleValidation,
@@ -788,32 +814,35 @@ function generateLearningIntegration(
     'Quality gate validation in orchestration',
   ];
 
-  const roleCompliance = role ? [
-    `${role} role-specific orchestration configured`,
-    'Role validation enabled in orchestration',
-    'Process compliance checklist active',
-    'Quality gates role-specific in orchestration',
-  ] : [
-    'General orchestration process enabled',
-    'Quality gates configured in orchestration',
-    'Business context requirements active',
-  ];
+  const roleCompliance = role
+    ? [
+        `${role} role-specific orchestration configured`,
+        'Role validation enabled in orchestration',
+        'Process compliance checklist active',
+        'Quality gates role-specific in orchestration',
+      ]
+    : [
+        'General orchestration process enabled',
+        'Quality gates configured in orchestration',
+        'Business context requirements active',
+      ];
 
-  const archiveLessonsApplied = archiveLessons ? [
-    'Process compliance failures prevention in orchestration',
-    'Quality gate violations prevention in orchestration',
-    'TypeScript error resolution patterns in orchestration',
-    'Role switching best practices in orchestration',
-    'Trust and accountability patterns in orchestration',
-  ] : [
-    'Basic orchestration validation only',
-  ];
+  const archiveLessonsApplied = archiveLessons
+    ? [
+        'Process compliance failures prevention in orchestration',
+        'Quality gate violations prevention in orchestration',
+        'TypeScript error resolution patterns in orchestration',
+        'Role switching best practices in orchestration',
+        'Trust and accountability patterns in orchestration',
+      ]
+    : ['Basic orchestration validation only'];
 
-  const learningImpact = learningIntegration && archiveLessons
-    ? 'High - Full learning integration with archive lessons in orchestration'
-    : learningIntegration
-    ? 'Medium - Learning integration without archive lessons in orchestration'
-    : 'Low - Basic orchestration validation only';
+  const learningImpact =
+    learningIntegration && archiveLessons
+      ? 'High - Full learning integration with archive lessons in orchestration'
+      : learningIntegration
+        ? 'Medium - Learning integration without archive lessons in orchestration'
+        : 'Low - Basic orchestration validation only';
 
   return {
     processLessons,

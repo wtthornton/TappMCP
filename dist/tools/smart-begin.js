@@ -7,8 +7,12 @@ const SmartBeginInputSchema = z.object({
     techStack: z.array(z.string()).default([]),
     targetUsers: z.array(z.string()).default([]),
     businessGoals: z.array(z.string()).optional(),
-    projectTemplate: z.enum(['mcp-server', 'web-app', 'api-service', 'full-stack', 'microservice', 'library']).optional(),
-    role: z.enum(['developer', 'product-strategist', 'operations-engineer', 'designer', 'qa-engineer']).optional(),
+    projectTemplate: z
+        .enum(['mcp-server', 'web-app', 'api-service', 'full-stack', 'microservice', 'library'])
+        .optional(),
+    role: z
+        .enum(['developer', 'product-strategist', 'operations-engineer', 'designer', 'qa-engineer'])
+        .optional(),
     qualityLevel: z.enum(['basic', 'standard', 'enterprise', 'production']).default('standard'),
     complianceRequirements: z.array(z.string()).default([]),
 });
@@ -133,7 +137,7 @@ function generateProjectStructure(_projectName, techStack, projectTemplate, role
     };
 }
 // Quality gates generator with role-specific requirements
-function generateQualityGates(techStack, role, qualityLevel) {
+function generateQualityGates(techStack, _role, _qualityLevel) {
     const baseGates = [
         {
             name: 'TypeScript Strict Mode',
@@ -202,7 +206,7 @@ function generateNextSteps(projectName, targetUsers, role) {
     return baseSteps;
 }
 // Generate project templates based on template type and role
-function generateProjectTemplates(projectTemplate, role, techStack = []) {
+function generateProjectTemplates(projectTemplate, role, _techStack = []) {
     const templates = [];
     // MCP Server template
     if (projectTemplate === 'mcp-server') {
@@ -367,7 +371,7 @@ function generateProcessCompliance(role) {
     };
 }
 // Generate learning integration from archive lessons
-function generateLearningIntegration(role, qualityLevel) {
+function generateLearningIntegration(role, _qualityLevel) {
     const processLessons = [
         'Always validate role compliance before claiming completion',
         'Run early quality checks before starting work',
@@ -380,16 +384,18 @@ function generateLearningIntegration(role, qualityLevel) {
         'Role validation pattern',
         'Process compliance enforcement',
     ];
-    const roleCompliance = role ? [
-        `${role} role-specific requirements configured`,
-        'Role validation enabled',
-        'Process compliance checklist active',
-        'Quality gates role-specific',
-    ] : [
-        'General process compliance enabled',
-        'Quality gates configured',
-        'Documentation requirements active',
-    ];
+    const roleCompliance = role
+        ? [
+            `${role} role-specific requirements configured`,
+            'Role validation enabled',
+            'Process compliance checklist active',
+            'Quality gates role-specific',
+        ]
+        : [
+            'General process compliance enabled',
+            'Quality gates configured',
+            'Documentation requirements active',
+        ];
     return {
         processLessons,
         qualityPatterns,

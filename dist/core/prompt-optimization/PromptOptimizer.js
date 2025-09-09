@@ -90,13 +90,13 @@ export class PromptOptimizer {
                     strategy: 'none',
                     qualityScore: 0,
                     reason: budgetApproval.reason || 'Budget approval failed',
-                    fallback: budgetApproval.alternatives
-                        ? {
+                    ...(budgetApproval.alternatives && {
+                        fallback: {
                             optimizedPrompt: request.originalPrompt,
                             qualityScore: 70,
                             strategy: budgetApproval.alternatives.fallbackStrategy,
-                        }
-                        : undefined,
+                        },
+                    }),
                 };
             }
             // Generate optimized template
@@ -124,7 +124,7 @@ export class PromptOptimizer {
                     optimizationTime: 50, // Mock time
                     strategyReasons: [`Applied ${strategy} strategy`],
                     contextInjected: strategy === 'context-aware',
-                    templateUsed: strategy === 'template-based' ? request.toolName : undefined,
+                    ...(strategy === 'template-based' && { templateUsed: request.toolName }),
                 },
             };
             this.optimizationHistory.push(optimizationResult);
@@ -188,7 +188,9 @@ export class PromptOptimizer {
                 optimizationTime: Date.now() - startTime,
                 strategyReasons,
                 contextInjected: appliedStrategies.includes('context-aware'),
-                templateUsed: this.getUsedTemplate(appliedStrategies) || undefined,
+                ...(this.getUsedTemplate(appliedStrategies) && {
+                    templateUsed: this.getUsedTemplate(appliedStrategies),
+                }),
             },
         };
         // Store for learning
@@ -198,7 +200,7 @@ export class PromptOptimizer {
     /**
      * Smart strategy selection based on context
      */
-    selectOptimalStrategies(prompt, context, tokenCount) {
+    selectOptimalStrategies(_prompt, context, tokenCount) {
         const strategies = [];
         // Always apply compression if over budget
         if (tokenCount > this.tokenBudget.maxTokens * 0.8) {
@@ -442,7 +444,7 @@ export class PromptOptimizer {
     simplifyForLowComplexity(prompt) {
         return prompt.replace(/\b(?:comprehensive|detailed|thorough)\b/gi, '').trim();
     }
-    enhanceForHighComplexity(prompt, context) {
+    enhanceForHighComplexity(prompt, _context) {
         if (!prompt.includes('comprehensive') && !prompt.includes('detailed')) {
             return `Please provide a comprehensive and detailed ${prompt}`;
         }
@@ -455,14 +457,14 @@ export class PromptOptimizer {
             details: prompt.length > 100 ? prompt.substring(100) : '',
         };
     }
-    applyTemplate(template, info, context) {
+    applyTemplate(template, info, _context) {
         let result = template;
         for (const [key, value] of Object.entries(info)) {
             result = result.replace(new RegExp(`\\{\\{${key}\\}\\}`, 'g'), value);
         }
         return result;
     }
-    applyHeuristicOptimization(prompt, context) {
+    applyHeuristicOptimization(prompt, _context) {
         // Apply common heuristic optimizations
         let optimized = prompt;
         // Remove excessive examples if prompt is too long
@@ -533,7 +535,7 @@ export class PromptOptimizer {
         const compressionResult = this.applyCompression(optimized);
         return compressionResult.prompt;
     }
-    applyAdaptiveOptimization(prompt, context) {
+    applyAdaptiveOptimization(prompt, _context) {
         const tokens = this.countTokens(prompt);
         if (tokens > 1000) {
             const compressionResult = this.applyCompression(prompt);
@@ -546,7 +548,7 @@ export class PromptOptimizer {
         const sentences = prompt.split('.').filter(s => s.trim().length > 20);
         return sentences.slice(0, 3).join('. ').trim();
     }
-    calculateQualityScore(original, optimized, threshold) {
+    calculateQualityScore(original, optimized, _threshold) {
         const originalTokens = this.countTokens(original);
         const optimizedTokens = this.countTokens(optimized);
         const compressionRatio = 1 - optimizedTokens / originalTokens;

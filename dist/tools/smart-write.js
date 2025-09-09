@@ -116,12 +116,12 @@ export const smartWriteTool = {
 // Simple execution logging
 let executionLog = {
     startTime: Date.now(),
-    duration: 0
+    duration: 0,
 };
 function resetExecutionLog() {
     executionLog = {
         startTime: Date.now(),
-        duration: 0
+        duration: 0,
     };
 }
 // Generate real, functional code with role-specific behavior
@@ -134,10 +134,10 @@ function generateRealCode(input) {
         input.featureDescription.toLowerCase().includes('page') ||
         input.techStack?.includes('html');
     if (isHtmlRequest) {
-        return generateHtmlContent(input, featureName, role);
+        return generateHtmlContent(input, featureName, role || 'developer');
     }
     else {
-        return generateTypeScriptContent(input, featureName, functionName, role);
+        return generateTypeScriptContent(input, featureName, functionName, role || 'developer');
     }
 }
 // Generate HTML content with role-specific focus
@@ -170,7 +170,7 @@ function generateTypeScriptContent(input, featureName, functionName, role) {
             path: `src/${featureName}.test.ts`,
             content: roleSpecificTests,
             type: 'test',
-        }
+        },
     ];
     // Add documentation for certain roles
     if (['product-strategist', 'designer'].includes(role)) {
@@ -266,13 +266,15 @@ function getRoleSpecificHtmlContent(input, role) {
           margin-right: 10px;
         }`);
         case 'qa-engineer':
-            return baseContent.replace('<body>', `<body>
+            return baseContent
+                .replace('<body>', `<body>
     <div class="test-results">
       <h2>Test Results</h2>
       <div class="test-pass">✓ HTML Structure Valid</div>
       <div class="test-pass">✓ CSS Valid</div>
       <div class="test-pass">✓ Accessibility Check Passed</div>
-    </div>`).replace('<style>', `<style>
+    </div>`)
+                .replace('<style>', `<style>
         /* QA Role: Focus on testing and validation */
         .test-results {
           background: #f8f9fa;
@@ -291,7 +293,7 @@ function getRoleSpecificHtmlContent(input, role) {
     }
 }
 // Get role-specific TypeScript code
-function getRoleSpecificCode(input, functionName, role) {
+function getRoleSpecificCode(_input, functionName, role) {
     const baseCode = `export function ${functionName}(input: string): { result: string; success: boolean } {
   try {
     if (!input || typeof input !== 'string') {

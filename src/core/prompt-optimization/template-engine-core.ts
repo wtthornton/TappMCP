@@ -5,7 +5,12 @@
  */
 
 import Handlebars from 'handlebars';
-import { TemplateContext, TemplateMetadata, UserProfile, SessionContext } from './template-schemas.js';
+import {
+  TemplateContext,
+  TemplateMetadata,
+  UserProfile,
+  SessionContext,
+} from './template-schemas.js';
 
 /**
  * Base Template Engine
@@ -24,37 +29,45 @@ export class BaseTemplateEngine {
    */
   private initializeHandlebarsHelpers(): void {
     // Equality helper
-    Handlebars.registerHelper('if_eq', function (a, b, options) {
+    Handlebars.registerHelper('if_eq', (a: any, b: any, options: any) => {
       if (a === b) {
-        return options.fn(this);
+        return options.fn(options.data.root);
       }
-      return options.inverse(this);
+      return options.inverse(options.data.root);
     });
 
     // Conditional helper
-    Handlebars.registerHelper('if_contains', function (array, value, options) {
+    Handlebars.registerHelper('if_contains', (array: any, value: any, options: any) => {
       if (Array.isArray(array) && array.includes(value)) {
-        return options.fn(this);
+        return options.fn(options.data.root);
       }
-      return options.inverse(this);
+      return options.inverse(options.data.root);
     });
 
     // User level helper
-    Handlebars.registerHelper('user_level', function (level, options) {
+    Handlebars.registerHelper('user_level', (level: any, options: any) => {
       const context = options.data.root;
       if (context.userLevel === level) {
-        return options.fn(this);
+        return options.fn(options.data.root);
       }
-      return options.inverse(this);
+      return options.inverse(options.data.root);
     });
 
     // Task type helper
-    Handlebars.registerHelper('task_type', function (type, options) {
+    Handlebars.registerHelper('task_type', (type: any, options: any) => {
       const context = options.data.root;
       if (context.taskType === type) {
-        return options.fn(this);
+        return options.fn(options.data.root);
       }
-      return options.inverse(this);
+      return options.inverse(options.data.root);
+    });
+
+    // Array length helper
+    Handlebars.registerHelper('array_length', (array: any) => {
+      if (Array.isArray(array)) {
+        return array.length;
+      }
+      return 0;
     });
   }
 

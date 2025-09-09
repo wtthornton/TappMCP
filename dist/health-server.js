@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { createServer } from 'http';
-const PORT = process.env.PORT ?? 3000;
+const PORT = process.env.HEALTH_PORT ?? 3001;
 // Health check server for Docker health checks
 const healthServer = createServer((req, res) => {
     if (req.url === '/health') {
