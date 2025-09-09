@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { describe, it, expect, beforeEach } from 'vitest';
-import { BusinessContextBroker, } from './business-context-broker';
+import { BusinessContextBroker } from './business-context-broker';
 describe('BusinessContextBroker - REAL TESTS (Expose Data Storage Theater)', () => {
     let broker;
     beforeEach(() => {

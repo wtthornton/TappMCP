@@ -29,7 +29,9 @@ import {
  * Enhanced template engine with cross-session learning and user adaptation
  */
 export class ContextAwareTemplateEngine extends BaseTemplateEngine {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private _contextPatterns: Map<string, RegExp>;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private _crossSessionLearning: CrossSessionLearningEngine;
   private performanceTracker: TemplatePerformanceTracker;
 
@@ -58,8 +60,6 @@ export class ContextAwareTemplateEngine extends BaseTemplateEngine {
       usageCount: 0,
       lastUpdated: new Date(),
       variables: ['projectName', 'projectType', 'businessContext'],
-      userLevel: 'intermediate',
-      outputFormat: 'structured',
       adaptationLevel: 'static',
       crossSessionCompatible: true,
       userSegments: ['beginner', 'intermediate', 'advanced'],
@@ -79,8 +79,6 @@ export class ContextAwareTemplateEngine extends BaseTemplateEngine {
         '{{#user_level "advanced"}}\\n' +
         'Technical requirements and constraints will be automatically analyzed.\\n' +
         '{{/user_level}}',
-      createdAt: new Date(),
-      lastUsedAt: new Date(),
     });
 
     // Smart Plan template (planning)
@@ -96,8 +94,6 @@ export class ContextAwareTemplateEngine extends BaseTemplateEngine {
       usageCount: 0,
       lastUpdated: new Date(),
       variables: ['projectName', 'scope', 'techStack'],
-      userLevel: 'intermediate',
-      outputFormat: 'structured',
       adaptationLevel: 'static',
       crossSessionCompatible: true,
       userSegments: ['intermediate', 'advanced'],
@@ -121,8 +117,6 @@ export class ContextAwareTemplateEngine extends BaseTemplateEngine {
         '{{/each}}\\n' +
         '{{/if}}\\n' +
         '{{/if_eq}}',
-      createdAt: new Date(),
-      lastUsedAt: new Date(),
     });
 
     // Smart Plan template (analysis)
@@ -138,8 +132,6 @@ export class ContextAwareTemplateEngine extends BaseTemplateEngine {
       usageCount: 0,
       lastUpdated: new Date(),
       variables: ['requirements', 'constraints', 'timeline'],
-      userLevel: 'advanced',
-      outputFormat: 'structured',
       adaptationLevel: 'dynamic',
       crossSessionCompatible: true,
       userSegments: ['advanced', 'intermediate'],
@@ -164,8 +156,6 @@ export class ContextAwareTemplateEngine extends BaseTemplateEngine {
         '{{/each}}\\n' +
         '{{/if}}\\n' +
         '{{/if_eq}}',
-      createdAt: new Date(),
-      lastUsedAt: new Date(),
     });
 
     // Smart Write template
@@ -181,8 +171,6 @@ export class ContextAwareTemplateEngine extends BaseTemplateEngine {
       usageCount: 0,
       lastUpdated: new Date(),
       variables: ['featureDescription', 'techStack'],
-      userLevel: 'intermediate',
-      outputFormat: 'code',
       adaptationLevel: 'static',
       crossSessionCompatible: true,
       userSegments: ['intermediate', 'advanced'],
@@ -198,8 +186,6 @@ export class ContextAwareTemplateEngine extends BaseTemplateEngine {
         '{{/if}}\\n' +
         '{{/if_eq}}\\n' +
         '{{/if_eq}}',
-      createdAt: new Date(),
-      lastUsedAt: new Date(),
     });
 
     // Smart Orchestrate template (planning)
@@ -215,8 +201,6 @@ export class ContextAwareTemplateEngine extends BaseTemplateEngine {
       usageCount: 0,
       lastUpdated: new Date(),
       variables: ['workflowSteps', 'resources', 'constraints'],
-      userLevel: 'advanced',
-      outputFormat: 'structured',
       adaptationLevel: 'dynamic',
       crossSessionCompatible: true,
       userSegments: ['advanced', 'intermediate'],
@@ -247,8 +231,6 @@ export class ContextAwareTemplateEngine extends BaseTemplateEngine {
         '{{/each}}\\n' +
         '{{/if}}\\n' +
         '{{/if_eq}}',
-      createdAt: new Date(),
-      lastUsedAt: new Date(),
     });
 
     // Smart Finish template (generation)
@@ -264,8 +246,6 @@ export class ContextAwareTemplateEngine extends BaseTemplateEngine {
       usageCount: 0,
       lastUpdated: new Date(),
       variables: ['completionSteps', 'qualityChecks', 'deliverables'],
-      userLevel: 'advanced',
-      outputFormat: 'code',
       adaptationLevel: 'static',
       crossSessionCompatible: true,
       userSegments: ['advanced', 'intermediate'],
@@ -296,8 +276,6 @@ export class ContextAwareTemplateEngine extends BaseTemplateEngine {
         '{{/each}}\\n' +
         '{{/if}}\\n' +
         '{{/if_eq}}',
-      createdAt: new Date(),
-      lastUsedAt: new Date(),
     });
   }
 

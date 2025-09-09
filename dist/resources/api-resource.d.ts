@@ -32,16 +32,16 @@ export declare const ApiResourceSchema: z.ZodObject<{
     }, "strip", z.ZodTypeAny, {
         type: "basic" | "bearer" | "api-key" | "oauth2";
         apiKeyHeader: string;
-        apiKey?: string | undefined;
         token?: string | undefined;
         username?: string | undefined;
         password?: string | undefined;
+        apiKey?: string | undefined;
     }, {
         type: "basic" | "bearer" | "api-key" | "oauth2";
-        apiKey?: string | undefined;
         token?: string | undefined;
         username?: string | undefined;
         password?: string | undefined;
+        apiKey?: string | undefined;
         apiKeyHeader?: string | undefined;
     }>>;
 }, "strip", z.ZodTypeAny, {
@@ -54,10 +54,10 @@ export declare const ApiResourceSchema: z.ZodObject<{
     auth?: {
         type: "basic" | "bearer" | "api-key" | "oauth2";
         apiKeyHeader: string;
-        apiKey?: string | undefined;
         token?: string | undefined;
         username?: string | undefined;
         password?: string | undefined;
+        apiKey?: string | undefined;
     } | undefined;
     headers?: Record<string, string> | undefined;
     body?: any;
@@ -72,10 +72,10 @@ export declare const ApiResourceSchema: z.ZodObject<{
     timeout?: number | undefined;
     auth?: {
         type: "basic" | "bearer" | "api-key" | "oauth2";
-        apiKey?: string | undefined;
         token?: string | undefined;
         username?: string | undefined;
         password?: string | undefined;
+        apiKey?: string | undefined;
         apiKeyHeader?: string | undefined;
     } | undefined;
     headers?: Record<string, string> | undefined;

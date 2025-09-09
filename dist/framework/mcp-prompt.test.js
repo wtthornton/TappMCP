@@ -276,7 +276,14 @@ describe('MCPPromptFactory', () => {
     });
     describe('Logger Configuration', () => {
         it('should set logger for factory', () => {
-            const mockLogger = { info: vi.fn(), error: vi.fn() };
+            const mockLogger = {
+                info: vi.fn(),
+                error: vi.fn(),
+                log: vi.fn(),
+                warn: vi.fn(),
+                debug: vi.fn(),
+                trace: vi.fn()
+            };
             MCPPromptFactory.setLogger(mockLogger);
             // Logger is set but not directly testable without implementation details
             expect(true).toBe(true); // Placeholder test

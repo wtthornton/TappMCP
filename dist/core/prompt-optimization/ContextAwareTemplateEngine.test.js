@@ -26,6 +26,7 @@ describe('ContextAwareTemplateEngine - Week 2 Enhanced', () => {
                 constraints: [],
                 preferences: {},
                 contextHistory: [],
+                sessionId: 'test-session-1',
             };
             const result = await engine.generateOptimizedTemplate(context);
             expect(result).toBeTruthy();
@@ -42,6 +43,7 @@ describe('ContextAwareTemplateEngine - Week 2 Enhanced', () => {
                 constraints: ['performance', 'security'],
                 preferences: {},
                 contextHistory: [],
+                sessionId: 'test-session-2',
             };
             const result = await engine.generateOptimizedTemplate(context);
             expect(result).toBeTruthy();
@@ -58,6 +60,7 @@ describe('ContextAwareTemplateEngine - Week 2 Enhanced', () => {
                 constraints: [],
                 preferences: {},
                 contextHistory: [],
+                sessionId: 'test-session-3',
             };
             const result = await engine.generateOptimizedTemplate(context);
             expect(result).toBeTruthy();
@@ -76,6 +79,7 @@ describe('ContextAwareTemplateEngine - Week 2 Enhanced', () => {
                 constraints: [],
                 preferences: {},
                 contextHistory: [],
+                sessionId: 'test-session-4',
             };
             const result = await engine.generateOptimizedTemplate(beginnerContext);
             expect(result).toBeTruthy();
@@ -92,6 +96,7 @@ describe('ContextAwareTemplateEngine - Week 2 Enhanced', () => {
                 constraints: [],
                 preferences: {},
                 contextHistory: [],
+                sessionId: 'test-session-5',
             };
             const result = await engine.generateOptimizedTemplate(advancedContext);
             expect(result).toBeTruthy();
@@ -110,6 +115,7 @@ describe('ContextAwareTemplateEngine - Week 2 Enhanced', () => {
                 constraints: [],
                 preferences: {},
                 contextHistory: [],
+                sessionId: 'test-session-default',
             };
             const result = await engine.generateOptimizedTemplate(immediateContext);
             expect(result).toBeTruthy();
@@ -126,6 +132,7 @@ describe('ContextAwareTemplateEngine - Week 2 Enhanced', () => {
                 constraints: [],
                 preferences: {},
                 contextHistory: [],
+                sessionId: 'test-session-default',
             };
             const result = await engine.generateOptimizedTemplate(thoroughContext);
             expect(result).toBeTruthy();
@@ -162,6 +169,7 @@ describe('ContextAwareTemplateEngine - Week 2 Enhanced', () => {
                 constraints: ['budget', 'timeline', 'resources', 'compliance'],
                 preferences: {},
                 contextHistory: [],
+                sessionId: 'test-session-default',
             };
             const result = await engine.generateOptimizedTemplate(constrainedContext);
             expect(result).toBeTruthy();
@@ -198,6 +206,9 @@ describe('ContextAwareTemplateEngine - Week 2 Enhanced', () => {
                 usageCount: 0,
                 lastUpdated: new Date(),
                 variables: ['testVar'],
+                adaptationLevel: 'static',
+                crossSessionCompatible: true,
+                userSegments: ['beginner', 'intermediate', 'advanced'],
                 template: 'Test {{testVar}} with custom template',
             };
             engine.addCustomTemplate(customTemplate);
@@ -219,6 +230,9 @@ describe('ContextAwareTemplateEngine - Week 2 Enhanced', () => {
                 usageCount: 0,
                 lastUpdated: new Date(),
                 variables: ['name', 'task'],
+                adaptationLevel: 'static',
+                crossSessionCompatible: true,
+                userSegments: ['beginner', 'intermediate', 'advanced'],
                 template: 'Hello {{name}}, please complete {{task}}',
             };
             engine.addCustomTemplate(customTemplate);
@@ -244,6 +258,7 @@ describe('ContextAwareTemplateEngine - Week 2 Enhanced', () => {
                 constraints: [],
                 preferences: {},
                 contextHistory: [],
+                sessionId: 'test-session-default',
             };
             // Generate template multiple times
             await engine.generateOptimizedTemplate(context);
@@ -273,6 +288,9 @@ describe('ContextAwareTemplateEngine - Week 2 Enhanced', () => {
                 usageCount: 0,
                 lastUpdated: new Date(),
                 variables: ['items'],
+                adaptationLevel: 'static',
+                crossSessionCompatible: true,
+                userSegments: ['beginner', 'intermediate', 'advanced'],
                 template: 'Array has {{array_length items}} items. {{#if (array_length items)}}Items exist{{else}}No items{{/if}}',
             };
             engine.addCustomTemplate(customTemplate);

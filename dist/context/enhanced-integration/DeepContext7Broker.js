@@ -383,19 +383,6 @@ export class DeepContext7Broker {
         // Rough approximation: 1 token ≈ 4 characters
         return Math.ceil(text.length / 4);
     }
-    _calculateQueryRelevance(_context, _query, _toolName) {
-        let relevance = _context.relevanceScore;
-        // Tool name match increases relevance
-        if (_context.toolName === _toolName)
-            relevance += 0.2;
-        // Content similarity (simplified keyword matching)
-        const queryWords = _query.toLowerCase().split(/\s+/);
-        const contextWords = _context.content.toLowerCase().split(/\s+/);
-        const commonWords = queryWords.filter(word => contextWords.includes(word));
-        const similarity = commonWords.length / Math.max(queryWords.length, 1);
-        relevance += similarity * 0.3;
-        return Math.min(relevance, 1.0);
-    }
     isHighValueContext(context) {
         return (context.relevanceScore > 0.8 ||
             context.persistenceLevel === 'project' ||
@@ -462,13 +449,15 @@ class ContextSuggestionEngine {
         const suggestions = [];
         // Find contexts that might be relevant to current input
         sessionContexts.forEach((context, index) => {
-            if (context.toolName === toolName && context.relevanceScore > 0.6) {
+            // Calculate relevance based on userInput similarity
+            const contextRelevance = this.calculateQueryRelevance(context, userInput, toolName);
+            if (context.toolName === toolName && contextRelevance > 0.6) {
                 suggestions.push({
                     id: `relevant_${index}`,
                     type: 'relevant_context',
                     content: `${context.content.substring(0, 200)}...`,
-                    relevanceScore: context.relevanceScore,
-                    reasoning: `Similar ${toolName} context from previous interaction`,
+                    relevanceScore: contextRelevance,
+                    reasoning: `Similar ${toolName} context from previous interaction (${Math.round(contextRelevance * 100)}% match)`,
                     suggestedAction: 'inject',
                     metadata: { originalContextId: context.id },
                 });
@@ -478,20 +467,46 @@ class ContextSuggestionEngine {
     }
     async generatePatternSuggestions(sessionContexts, toolName, workflowStage) {
         const suggestions = [];
-        // Look for workflow patterns
+        // Look for workflow patterns specific to the tool
         if (workflowStage === 'implementation' &&
-            sessionContexts.some(ctx => ctx.contextType === 'tool_output')) {
+            sessionContexts.some(ctx => ctx.contextType === 'tool_output' && ctx.toolName === toolName)) {
             suggestions.push({
-                id: 'pattern_implementation',
+                id: `pattern_implementation_${toolName}`,
                 type: 'similar_pattern',
-                content: 'Continue implementation pattern based on previous outputs',
+                content: `Continue ${toolName} implementation pattern based on previous outputs`,
                 relevanceScore: 0.7,
-                reasoning: 'Implementation workflow pattern detected',
+                reasoning: `${toolName} implementation workflow pattern detected`,
                 suggestedAction: 'reference',
-                metadata: { pattern: 'implementation_continuation' },
+                metadata: { pattern: 'implementation_continuation', toolName },
+            });
+        }
+        // Look for similar tool usage patterns
+        const toolSpecificContexts = sessionContexts.filter(ctx => ctx.toolName === toolName);
+        if (toolSpecificContexts.length > 1) {
+            suggestions.push({
+                id: `pattern_${toolName}_usage`,
+                type: 'similar_pattern',
+                content: `Similar ${toolName} usage patterns found in session`,
+                relevanceScore: 0.6,
+                reasoning: `${toolSpecificContexts.length} similar ${toolName} interactions detected`,
+                suggestedAction: 'reference',
+                metadata: { pattern: 'tool_usage_pattern', toolName, count: toolSpecificContexts.length },
             });
         }
         return suggestions;
+    }
+    calculateQueryRelevance(context, query, toolName) {
+        let relevance = context.relevanceScore;
+        // Tool name match increases relevance
+        if (context.toolName === toolName)
+            relevance += 0.2;
+        // Content similarity (simplified keyword matching)
+        const queryWords = query.toLowerCase().split(/\s+/);
+        const contextWords = context.content.toLowerCase().split(/\s+/);
+        const commonWords = queryWords.filter(word => contextWords.includes(word));
+        const similarity = commonWords.length / Math.max(queryWords.length, 1);
+        relevance += similarity * 0.3;
+        return Math.max(0, Math.min(1, relevance));
     }
     async generateWorkflowSuggestions(_sessionContexts, workflowStage) {
         const suggestions = [];

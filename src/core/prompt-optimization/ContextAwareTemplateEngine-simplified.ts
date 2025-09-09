@@ -28,14 +28,16 @@ import {
  * Enhanced template engine with cross-session learning and user adaptation
  */
 export class ContextAwareTemplateEngine extends BaseTemplateEngine {
-  private contextPatterns: Map<string, RegExp>;
-  private crossSessionLearning: CrossSessionLearningEngine;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private _contextPatterns: Map<string, RegExp>;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private _crossSessionLearning: CrossSessionLearningEngine;
   private performanceTracker: TemplatePerformanceTracker;
 
   constructor() {
     super();
-    this.contextPatterns = new Map();
-    this.crossSessionLearning = new CrossSessionLearningEngine();
+    this._contextPatterns = new Map();
+    this._crossSessionLearning = new CrossSessionLearningEngine();
     this.performanceTracker = new TemplatePerformanceTracker();
   }
 
@@ -165,7 +167,7 @@ export class ContextAwareTemplateEngine extends BaseTemplateEngine {
       tokenCount: this.estimateTokenCount(context),
       timestamp: new Date(),
       userLevel: context.userLevel,
-      sessionId: context.sessionId,
+      sessionId: context.sessionId || 'anonymous',
     });
   }
 
@@ -221,7 +223,7 @@ export class ContextAwareTemplateEngine extends BaseTemplateEngine {
  * Cross-Session Learning Engine
  */
 class CrossSessionLearningEngine {
-  async learnFromSession(sessionId: string, outcomes: Record<string, unknown>): Promise<void> {
+  async learnFromSession(_sessionId: string, _outcomes: Record<string, unknown>): Promise<void> {
     // Cross-session learning implementation
   }
 }
@@ -230,7 +232,7 @@ class CrossSessionLearningEngine {
  * Template Performance Tracker
  */
 class TemplatePerformanceTracker {
-  async recordUsage(usage: {
+  async recordUsage(_usage: {
     templateId: string;
     toolName: string;
     taskType: string;

@@ -311,7 +311,7 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         name: string;
         id: string;
         severity: "high" | "medium" | "low" | "critical";
-        category: "timeline" | "business" | "technical" | "quality" | "resource";
+        category: "timeline" | "business" | "quality" | "technical" | "resource";
         impact: "high" | "medium" | "low";
         probability: "high" | "medium" | "low";
         mitigation: string[];
@@ -320,7 +320,7 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         name: string;
         id: string;
         severity: "high" | "medium" | "low" | "critical";
-        category: "timeline" | "business" | "technical" | "quality" | "resource";
+        category: "timeline" | "business" | "quality" | "technical" | "resource";
         impact: "high" | "medium" | "low";
         probability: "high" | "medium" | "low";
         mitigation: string[];
@@ -498,16 +498,16 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         qualityImprovement: z.ZodNumber;
         costSavings: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
-        qualityImprovement: number;
         estimatedROI: number;
         timeToMarket: number;
         riskMitigation: number;
+        qualityImprovement: number;
         costSavings: number;
     }, {
-        qualityImprovement: number;
         estimatedROI: number;
         timeToMarket: number;
         riskMitigation: number;
+        qualityImprovement: number;
         costSavings: number;
     }>;
     qualityGates: z.ZodArray<z.ZodObject<{
@@ -535,10 +535,10 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
     }[];
     nextSteps: string[];
     businessValue: {
-        qualityImprovement: number;
         estimatedROI: number;
         timeToMarket: number;
         riskMitigation: number;
+        qualityImprovement: number;
         costSavings: number;
     };
     timeline: {
@@ -613,7 +613,7 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         name: string;
         id: string;
         severity: "high" | "medium" | "low" | "critical";
-        category: "timeline" | "business" | "technical" | "quality" | "resource";
+        category: "timeline" | "business" | "quality" | "technical" | "resource";
         impact: "high" | "medium" | "low";
         probability: "high" | "medium" | "low";
         mitigation: string[];
@@ -667,10 +667,10 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
     }[];
     nextSteps: string[];
     businessValue: {
-        qualityImprovement: number;
         estimatedROI: number;
         timeToMarket: number;
         riskMitigation: number;
+        qualityImprovement: number;
         costSavings: number;
     };
     timeline: {
@@ -745,7 +745,7 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         name: string;
         id: string;
         severity: "high" | "medium" | "low" | "critical";
-        category: "timeline" | "business" | "technical" | "quality" | "resource";
+        category: "timeline" | "business" | "quality" | "technical" | "resource";
         impact: "high" | "medium" | "low";
         probability: "high" | "medium" | "low";
         mitigation: string[];

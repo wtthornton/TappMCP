@@ -10,13 +10,17 @@ export class QualityScorecardGenerator {
         const complexityScore = this.calculateComplexityScore(staticResult.metrics);
         const performanceScore = this.calculatePerformanceScore(performanceMetrics);
         const businessScore = this.calculateBusinessScore(businessMetrics);
-        // Calculate overall score
-        const overallScore = Math.round((securityScore.score +
+        // Calculate overall score with security penalty for critical issues
+        let overallScore = Math.round((securityScore.score +
             coverageScore.score +
             complexityScore.score +
             performanceScore.score +
             businessScore.score) /
             5);
+        // Apply additional penalty for critical security issues
+        if (securityResult.summary.critical > 0) {
+            overallScore = Math.max(overallScore - 20, Math.min(overallScore, 65)); // Cap at D grade for critical issues
+        }
         // Generate grades
         const securityGrade = this.calculateGrade(securityScore.score);
         const coverageGrade = this.calculateGrade(coverageScore.score);
@@ -89,12 +93,12 @@ export class QualityScorecardGenerator {
      */
     calculateSecurityScore(securityResult) {
         const { critical, high, moderate, low } = securityResult.summary;
-        // Penalize based on vulnerability severity
+        // Penalize based on vulnerability severity using standard weights
         let score = 100;
-        score -= critical * 25; // -25 points per critical
-        score -= high * 15; // -15 points per high
-        score -= moderate * 5; // -5 points per moderate
-        score -= low * 1; // -1 point per low
+        score -= critical * 30; // -30 points per critical
+        score -= high * 20; // -20 points per high
+        score -= moderate * 10; // -10 points per moderate
+        score -= low * 5; // -5 points per low
         return { score: Math.max(0, Math.round(score)) };
     }
     /**
@@ -108,17 +112,31 @@ export class QualityScorecardGenerator {
      * Calculate complexity score
      */
     calculateComplexityScore(metrics) {
-        // Weight maintainability index heavily, penalize high complexity and duplication
+        // Start with maintainability index as base score
         let score = metrics.maintainability;
-        // Penalize high complexity
-        if (metrics.complexity > 10) {
+        // Reward low complexity (bonus for complexity <= 10)
+        if (metrics.complexity <= 5) {
+            score += 10; // Excellent complexity
+        }
+        else if (metrics.complexity <= 10) {
+            score += 5; // Good complexity
+        }
+        else {
+            // Penalize high complexity
             score -= (metrics.complexity - 10) * 2;
         }
-        // Penalize high duplication
-        if (metrics.duplication > 5) {
+        // Reward low duplication (bonus for duplication <= 5)
+        if (metrics.duplication <= 3) {
+            score += 5; // Excellent duplication
+        }
+        else if (metrics.duplication <= 5) {
+            score += 2; // Good duplication
+        }
+        else {
+            // Penalize high duplication
             score -= (metrics.duplication - 5) * 3;
         }
-        return { score: Math.max(0, Math.round(score)) };
+        return { score: Math.max(0, Math.min(100, Math.round(score))) };
     }
     /**
      * Calculate performance score
@@ -183,13 +201,13 @@ export class QualityScorecardGenerator {
         const recommendations = [];
         // Security recommendations
         if (securityResult.summary.critical > 0) {
-            recommendations.push('Address critical security vulnerabilities immediately');
+            recommendations.push(`Fix ${securityResult.summary.critical} critical security vulnerabilities`);
         }
         if (securityResult.summary.high > 0) {
-            recommendations.push('Fix high-severity security issues');
+            recommendations.push(`Address ${securityResult.summary.high} high security vulnerabilities`);
         }
         if (securityResult.summary.moderate > 0) {
-            recommendations.push('Review and fix moderate security issues');
+            recommendations.push(`Review and fix ${securityResult.summary.moderate} moderate security issues`);
         }
         // Coverage recommendations
         if (coverage.line < 85) {

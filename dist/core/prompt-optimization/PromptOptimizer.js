@@ -69,6 +69,7 @@ export class PromptOptimizer {
                 constraints: request.context.constraints || [],
                 preferences: request.context.preferences || {},
                 contextHistory: request.context.contextHistory || [],
+                sessionId: `optimizer_${Date.now()}`,
             };
             // Check budget approval
             const estimatedInputTokens = this.countTokens(request.originalPrompt);

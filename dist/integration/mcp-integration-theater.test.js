@@ -101,8 +101,8 @@ describe('MCP Integration Theater - EXPOSE PROTOCOL NAMING THEATER', () => {
             expect(results.length).toBe(3);
             expect(totalTime).toBeLessThan(200); // Sequential template generation
             // Each step processes independently - no MCP protocol benefits
-            results.forEach((result, index) => {
-                expect(result.result.success).toBe(true);
+            results.forEach((result, _index) => {
+                expect(result.result?.success).toBe(true);
                 expect(result.time).toBeLessThan(100); // Local template processing
             });
             console.log(`EXPOSED: MCP "distributed" workflow is sequential local template generation - ${totalTime.toFixed(2)}ms total`);
@@ -143,7 +143,7 @@ describe('MCP Integration Theater - EXPOSE PROTOCOL NAMING THEATER', () => {
                     }
                 }
                 catch (error) {
-                    result = { success: false, error: error.message };
+                    result = { success: false, error: error instanceof Error ? error.message : String(error) };
                 }
                 const caseTime = performance.now() - caseStartTime;
                 errorResults.push({ tool: testCase.tool, result, time: caseTime });
@@ -153,11 +153,11 @@ describe('MCP Integration Theater - EXPOSE PROTOCOL NAMING THEATER', () => {
             expect(errorResults.length).toBe(3);
             expect(totalErrorTime).toBeLessThan(100); // Instant local validation failures
             errorResults.forEach(errorResult => {
-                console.log('Error test result:', errorResult.tool, errorResult.result.success, errorResult.result.error);
+                console.log('Error test result:', errorResult.tool, errorResult.result?.success, errorResult.result?.error);
                 // MCP error handling is instant local processing - success or failure
                 expect(errorResult.time).toBeLessThan(50); // Local validation theater
-                if (!errorResult.result.success) {
-                    expect(errorResult.result.error).toBeDefined();
+                if (!errorResult.result?.success) {
+                    expect(errorResult.result?.error).toBeDefined();
                 }
             });
             console.log(`EXPOSED: MCP error handling is local validation theater - ${totalErrorTime.toFixed(2)}ms (no distributed recovery)`);

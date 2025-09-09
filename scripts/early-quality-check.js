@@ -5,7 +5,7 @@
  * Runs before any development work to ensure clean state
  */
 
-const { execSync } = require('child_process');
+import { execSync } from 'child_process';
 
 console.log('🔍 Early Quality Check - Preventing Issues in SDLC');
 console.log('==================================================');

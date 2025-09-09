@@ -7,7 +7,7 @@ describe('TokenBudgetManager', () => {
             costPerInputToken: 0.00003,
             costPerOutputToken: 0.00006,
         }, {
-            dailyBudget: 100,
+            dailyBudget: 0.1, // $0.10 for easier testing
             monthlyBudget: 2000,
         });
     });
@@ -88,32 +88,36 @@ describe('TokenBudgetManager', () => {
     });
     describe('budget alerts', () => {
         it('should generate warning alerts at 80% usage', async () => {
-            // Consume 80% of daily budget
+            // Consume exactly 80% of daily budget ($0.08 of $0.10)
+            // Use Math.ceil to ensure we get slightly above 80%
+            const tokens = Math.ceil((0.08 * 1000) / 0.00009);
             const request = {
                 requestId: 'alert-001',
                 toolName: 'smart_orchestrate',
-                estimatedInputTokens: 1280000000, // Should trigger 80% warning
-                estimatedOutputTokens: 640000000,
+                estimatedInputTokens: tokens,
+                estimatedOutputTokens: tokens,
                 priority: 'medium',
             };
             await budgetManager.requestBudgetApproval(request);
-            budgetManager.recordUsage('alert-001', 1280000000, 640000000);
+            budgetManager.recordUsage('alert-001', tokens, tokens);
             const alerts = budgetManager.getAlerts();
             const warningAlert = alerts.find((alert) => alert.type === 'warning');
             expect(warningAlert).toBeDefined();
             expect(warningAlert?.message).toContain('80');
         });
         it('should generate critical alerts at 95% usage', async () => {
-            // Consume 95% of daily budget
+            // Consume exactly 95% of daily budget ($0.095 of $0.10)
+            // Use Math.ceil to ensure we get slightly above 95%
+            const tokens = Math.ceil((0.095 * 1000) / 0.00009);
             const request = {
                 requestId: 'critical-001',
                 toolName: 'smart_plan',
-                estimatedInputTokens: 1520000000, // Should trigger 95% critical alert
-                estimatedOutputTokens: 760000000,
+                estimatedInputTokens: tokens,
+                estimatedOutputTokens: tokens,
                 priority: 'medium',
             };
             await budgetManager.requestBudgetApproval(request);
-            budgetManager.recordUsage('critical-001', 1520000000, 760000000);
+            budgetManager.recordUsage('critical-001', tokens, tokens);
             const alerts = budgetManager.getAlerts();
             const criticalAlert = alerts.find((alert) => alert.type === 'critical');
             expect(criticalAlert).toBeDefined();
@@ -124,7 +128,7 @@ describe('TokenBudgetManager', () => {
     describe('budget projections', () => {
         it('should calculate remaining budget correctly', () => {
             const remaining = budgetManager.getRemainingBudget();
-            expect(remaining.daily).toBe(100);
+            expect(remaining.daily).toBe(0.1); // Updated to match new budget
             expect(remaining.monthly).toBe(2000);
         });
         it('should project usage based on current patterns', async () => {

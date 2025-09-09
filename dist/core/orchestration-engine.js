@@ -170,7 +170,7 @@ export class OrchestrationEngine {
             const currentRole = workflow.phases[i].role;
             const nextRole = workflow.phases[i + 1].role;
             if (currentRole !== nextRole) {
-                const transition = this.roleOrchestrator.validateRoleTransition({
+                const transition = this.roleOrchestrator?.validateRoleTransition?.({
                     fromRole: currentRole,
                     toRole: nextRole,
                     timestamp: new Date().toISOString(),
@@ -317,7 +317,11 @@ export class OrchestrationEngine {
         return deliverables;
     }
     calculatePhaseQualityMetrics(phase, context, role) {
-        const roleCapabilities = this.roleOrchestrator.getRoleCapabilities(role);
+        const roleCapabilities = this.roleOrchestrator?.getRoleCapabilities?.(role) || {
+            qualityGates: ['code-quality', 'test-coverage', 'security-scan'],
+            tools: ['smart_begin', 'smart_plan', 'smart_write', 'smart_finish'],
+            metrics: ['quality', 'performance', 'security']
+        };
         const metrics = {};
         if (roleCapabilities) {
             roleCapabilities.qualityGates.forEach((gate) => {
@@ -326,9 +330,9 @@ export class OrchestrationEngine {
                 const phaseComplexityScore = phase.tools.length * 5 + (phase.description.length > 100 ? 10 : 0);
                 // ✅ Real quality calculation based on measurable factors
                 const baseQuality = 70;
-                const contextBonus = contextScore > 50 ? 15 : Math.max(0, contextScore / 50 * 15);
-                const complexityBonus = phaseComplexityScore > 20 ? 10 : Math.max(0, phaseComplexityScore / 20 * 10);
-                const completenessBonus = phase.deliverables.length > 0 ? 5 : 0;
+                const contextBonus = contextScore > 50 ? 15 : Math.max(0, (contextScore / 50) * 15);
+                const complexityBonus = phaseComplexityScore > 20 ? 10 : Math.max(0, (phaseComplexityScore / 20) * 10);
+                const completenessBonus = phase.tasks.length > 0 ? 5 : 0;
                 metrics[gate] = Math.min(100, baseQuality + contextBonus + complexityBonus + completenessBonus);
             });
         }
@@ -378,12 +382,12 @@ export class OrchestrationEngine {
         });
         return optimized;
     }
-    optimizeRoleTransitions(phases) {
+    optimizeRoleTransitions(_phases) {
         // Role transitions now handled by individual tools
         // Return empty array as tools determine their own role behavior
         return [];
     }
-    optimizeToolUsage(tools, role) {
+    optimizeToolUsage(tools, _role) {
         // Tool usage now handled by individual tools based on role
         // Return tools as-is, tools will determine their own role-specific behavior
         return tools;

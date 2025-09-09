@@ -377,7 +377,7 @@ export class ContextPersistenceEngine {
         // Implementation would write oldest entries to disk
         console.log('Flushing memory entries to disk...');
     }
-    async loadFromDisk(id) {
+    async loadFromDisk(_id) {
         // Implementation would load from disk storage
         return undefined;
     }

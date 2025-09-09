@@ -45,7 +45,21 @@
       "Bash(find:*)",
       "Bash(timeout 5s npx @modelcontextprotocol/server-github@latest)",
       "Bash(timeout 5s npx @testsprite/testsprite-mcp@latest)",
-      "Bash(timeout 5s npx @playwright/mcp@latest)"
+      "Bash(timeout 5s npx @playwright/mcp@latest)",
+      "Bash(timeout 5s npm start)",
+      "Bash(NODE_ENV=test npx vitest run src/server.test.ts --reporter=verbose)",
+      "Bash(NODE_ENV=test npx vitest run src/server-basic.test.ts)",
+      "Bash(NODE_ENV=test npx vitest run src/server-basic.test.ts --reporter=verbose)",
+      "Bash(set NODE_ENV=test)",
+      "Bash(NODE_ENV=test npx vitest run src/performance.test.ts)",
+      "Bash(NODE_ENV=test npx vitest run src/final-integration.test.ts --reporter=basic)",
+      "Bash(NODE_ENV=test npx vitest run src/final-integration.test.ts --reporter=default --reporter-options=\"{\"\"summary\"\": false}\")",
+      "Bash(NODE_ENV=test npx vitest run src/final-integration.test.ts)",
+      "Bash(NODE_ENV=test npx vitest run src/final-integration.test.ts --reporter=verbose)",
+      "Bash(NODE_ENV=test npx vitest run src/tools/smart-orchestrate.test.ts)",
+      "Bash(NODE_ENV=test timeout 30s npx vitest run src/tools/smart-orchestrate.test.ts --reporter=basic)",
+      "Bash(timeout 60s npm run qa:tests)",
+      "Bash(timeout 30s npm run test -- src/optimization/ToolChainOptimizer.test.ts --reporter=verbose)"
     ],
     "deny": [],
     "ask": []

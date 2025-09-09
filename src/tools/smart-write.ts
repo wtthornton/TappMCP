@@ -932,6 +932,7 @@ export async function handleSmartWrite(input: unknown): Promise<{
 
     // Create clean response
     const response = {
+      projectId: validatedInput.projectId,
       codeId,
       generatedCode,
       qualityMetrics: {

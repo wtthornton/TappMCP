@@ -71,7 +71,7 @@ export declare const RiskSchema: z.ZodObject<{
     name: string;
     id: string;
     severity: "high" | "medium" | "low" | "critical";
-    category: "timeline" | "business" | "technical" | "quality" | "resource";
+    category: "timeline" | "business" | "quality" | "technical" | "resource";
     impact: "high" | "medium" | "low";
     probability: "high" | "medium" | "low";
     mitigation: string[];
@@ -80,7 +80,7 @@ export declare const RiskSchema: z.ZodObject<{
     name: string;
     id: string;
     severity: "high" | "medium" | "low" | "critical";
-    category: "timeline" | "business" | "technical" | "quality" | "resource";
+    category: "timeline" | "business" | "quality" | "technical" | "resource";
     impact: "high" | "medium" | "low";
     probability: "high" | "medium" | "low";
     mitigation: string[];
@@ -178,5 +178,7 @@ export declare class BusinessAnalyzer {
     private extractStakeholderRequirements;
     private scoreToComplexity;
     private estimateStoryEffort;
+    private generateSpecificAcceptanceCriteria;
+    private generateSoThat;
 }
 //# sourceMappingURL=business-analyzer.d.ts.map

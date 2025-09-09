@@ -132,6 +132,7 @@ export class MCPCoordinator {
             const insights = insightsResult.status === 'fulfilled' ? insightsResult.value : [];
             const responseTime = Date.now() - startTime;
             // Performance monitoring for market intelligence
+            console.log(`Market intelligence gathered in ${responseTime}ms`);
             return { analysis, trends, insights };
         }
         catch (error) {
@@ -464,6 +465,7 @@ export class MCPCoordinator {
      */
     updatePerformanceMetrics(totalTime, resultCount) {
         // Log performance metrics for monitoring
+        console.log(`MCP Knowledge Gathering: ${resultCount} results in ${totalTime}ms`);
         // Performance monitoring for MCP knowledge gathering
     }
     /**

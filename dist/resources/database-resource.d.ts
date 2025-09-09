@@ -33,12 +33,11 @@ export declare const DatabaseResourceSchema: z.ZodObject<{
         where?: Record<string, any> | undefined;
     }>, "many">>;
 }, "strip", z.ZodTypeAny, {
-    operation: "query" | "delete" | "insert" | "update" | "transaction";
+    operation: "transaction" | "query" | "delete" | "insert" | "update";
     table: string;
     orderDirection: "ASC" | "DESC";
     data?: Record<string, any> | undefined;
     limit?: number | undefined;
-    query?: string | undefined;
     transaction?: {
         operation: "query" | "delete" | "insert" | "update";
         table: string;
@@ -46,15 +45,15 @@ export declare const DatabaseResourceSchema: z.ZodObject<{
         query?: string | undefined;
         where?: Record<string, any> | undefined;
     }[] | undefined;
+    query?: string | undefined;
     where?: Record<string, any> | undefined;
     offset?: number | undefined;
     orderBy?: string | undefined;
 }, {
-    operation: "query" | "delete" | "insert" | "update" | "transaction";
+    operation: "transaction" | "query" | "delete" | "insert" | "update";
     table: string;
     data?: Record<string, any> | undefined;
     limit?: number | undefined;
-    query?: string | undefined;
     transaction?: {
         operation: "query" | "delete" | "insert" | "update";
         table: string;
@@ -62,6 +61,7 @@ export declare const DatabaseResourceSchema: z.ZodObject<{
         query?: string | undefined;
         where?: Record<string, any> | undefined;
     }[] | undefined;
+    query?: string | undefined;
     where?: Record<string, any> | undefined;
     offset?: number | undefined;
     orderBy?: string | undefined;
@@ -84,8 +84,8 @@ export declare const DatabaseResourceResponseSchema: z.ZodObject<{
     success: boolean;
     error?: string | undefined;
     data?: Record<string, any>[] | undefined;
-    executionTime?: number | undefined;
     count?: number | undefined;
+    executionTime?: number | undefined;
     query?: string | undefined;
     affectedRows?: number | undefined;
     insertId?: number | undefined;
@@ -93,8 +93,8 @@ export declare const DatabaseResourceResponseSchema: z.ZodObject<{
     success: boolean;
     error?: string | undefined;
     data?: Record<string, any>[] | undefined;
-    executionTime?: number | undefined;
     count?: number | undefined;
+    executionTime?: number | undefined;
     query?: string | undefined;
     affectedRows?: number | undefined;
     insertId?: number | undefined;

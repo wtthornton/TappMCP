@@ -95,7 +95,7 @@ export class MCPClientManager {
                                 resolve(false);
                             }
                         }, 3000);
-                        testProcess.stdout?.on('data', (data) => {
+                        testProcess.stdout?.on('data', data => {
                             const output = data.toString();
                             if (output.includes('running on stdio') || output.includes('MCP Server')) {
                                 if (!responded) {

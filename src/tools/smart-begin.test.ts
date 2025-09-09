@@ -409,10 +409,10 @@ describe('SmartBegin - REAL TESTS (Expose Template Theater)', () => {
       expect(result.data?.technicalMetrics.complexityScore).toBe(85);
 
       // Process compliance should be basic boolean logic
-      expect(result.data?.processCompliance.roleValidation).toBe(true); // role provided
-      expect(result.data?.processCompliance.qualityGates).toBe(true); // always true
-      expect(result.data?.processCompliance.documentation).toBe(true); // always true
-      expect(result.data?.processCompliance.testing).toBe(true); // always true
+      expect((result.data as any)?.processCompliance?.roleValidation).toBe(true); // role provided
+      expect((result.data as any)?.processCompliance?.qualityGates).toBe(true); // always true
+      expect((result.data as any)?.processCompliance?.documentation).toBe(true); // always true
+      expect((result.data as any)?.processCompliance?.testing).toBe(true); // always true
 
       console.log('SmartBegin Summary:', {
         isIntelligent: false,

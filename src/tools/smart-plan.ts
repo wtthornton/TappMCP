@@ -275,32 +275,11 @@ export async function handleSmartPlan(input: unknown): Promise<{
     // Validate input
     const validatedInput = SmartPlanInputSchema.parse(input);
 
-    // Generate basic project plan
+    // Generate dynamic project plan based on input
+    const phases = generateProjectPhases(validatedInput);
+
     const projectPlan = {
-      phases: [
-        {
-          name: 'Planning and Setup',
-          description: 'Project planning, requirements gathering, and initial setup',
-          duration: 1,
-          tasks: [
-            {
-              name: 'Requirements Analysis',
-              description: 'Gather and analyze project requirements',
-              effort: 3,
-              dependencies: [],
-              deliverables: ['Requirements Document', 'User Stories'],
-            },
-          ],
-          milestones: [
-            {
-              name: 'Project Kickoff',
-              description: 'Project officially starts with team alignment',
-              date: 'Week 1',
-              criteria: ['Team assembled', 'Requirements documented'],
-            },
-          ],
-        },
-      ],
+      phases,
       resources: {
         team: [
           {
@@ -439,6 +418,171 @@ export async function handleSmartPlan(input: unknown): Promise<{
       timestamp: new Date().toISOString(),
     };
   }
+}
+
+// Generate dynamic project phases based on input
+function generateProjectPhases(input: any): Array<{
+  name: string;
+  description: string;
+  duration: number;
+  tasks: Array<{
+    name: string;
+    description: string;
+    effort: number;
+    dependencies: string[];
+    deliverables: string[];
+  }>;
+  milestones: Array<{
+    name: string;
+    description: string;
+    date: string;
+    criteria: string[];
+  }>;
+}> {
+  const phases = [];
+
+  // Always start with planning
+  phases.push({
+    name: 'Planning and Setup',
+    description: 'Project planning, requirements gathering, and initial setup',
+    duration: 1,
+    tasks: [
+      {
+        name: 'Requirements Analysis',
+        description: `Analyze requirements for ${input.projectName || 'the project'}`,
+        effort: 3,
+        dependencies: [],
+        deliverables: ['Requirements Document', 'User Stories'],
+      },
+    ],
+    milestones: [
+      {
+        name: 'Project Kickoff',
+        description: 'Project officially starts with team alignment',
+        date: 'Week 1',
+        criteria: ['Team assembled', 'Requirements documented'],
+      },
+    ],
+  });
+
+  // Add development phase based on tech stack
+  const techStack = input.techStack || [];
+  const developmentTasks = [];
+
+  if (techStack.includes('TypeScript') || techStack.includes('JavaScript')) {
+    developmentTasks.push({
+      name: 'Frontend Development',
+      description: 'Develop user interface and client-side logic',
+      effort: 5,
+      dependencies: ['Requirements Analysis'],
+      deliverables: ['UI Components', 'Client Application'],
+    });
+  }
+
+  if (techStack.includes('Node.js') || techStack.includes('Express')) {
+    developmentTasks.push({
+      name: 'Backend Development',
+      description: 'Implement server-side logic and APIs',
+      effort: 6,
+      dependencies: ['Requirements Analysis'],
+      deliverables: ['API Endpoints', 'Database Schema', 'Server Application'],
+    });
+  }
+
+  if (techStack.includes('React') || techStack.includes('Vue') || techStack.includes('Angular')) {
+    developmentTasks.push({
+      name: 'Component Development',
+      description: 'Create reusable UI components',
+      effort: 4,
+      dependencies: ['Frontend Development'],
+      deliverables: ['Component Library', 'Style Guide'],
+    });
+  }
+
+  // Default development phase if no specific tech stack
+  if (developmentTasks.length === 0) {
+    developmentTasks.push({
+      name: 'Core Development',
+      description: 'Implement core application functionality',
+      effort: 5,
+      dependencies: ['Requirements Analysis'],
+      deliverables: ['Core Features', 'Application Logic'],
+    });
+  }
+
+  phases.push({
+    name: 'Development',
+    description: `Development phase for ${input.projectName || 'the project'} using ${techStack.join(', ')}`,
+    duration: Math.max(2, Math.ceil(developmentTasks.length * 1.5)),
+    tasks: developmentTasks,
+    milestones: [
+      {
+        name: 'Development Complete',
+        description: 'Core development is finished',
+        date: `Week ${2 + Math.ceil(developmentTasks.length * 1.5)}`,
+        criteria: ['All features implemented', 'Code review completed'],
+      },
+    ],
+  });
+
+  // Add testing phase if role includes testing
+  if (input.role === 'qa-engineer' || input.qualityLevel === 'production') {
+    phases.push({
+      name: 'Testing and Quality Assurance',
+      description: 'Comprehensive testing and quality validation',
+      duration: 2,
+      tasks: [
+        {
+          name: 'Unit Testing',
+          description: 'Implement and run unit tests',
+          effort: 3,
+          dependencies: ['Core Development'],
+          deliverables: ['Test Suite', 'Coverage Report'],
+        },
+        {
+          name: 'Integration Testing',
+          description: 'Test system integration points',
+          effort: 2,
+          dependencies: ['Unit Testing'],
+          deliverables: ['Integration Test Results'],
+        },
+      ],
+      milestones: [
+        {
+          name: 'Quality Gates Passed',
+          description: 'All quality checks completed successfully',
+          date: `Week ${4 + Math.ceil(developmentTasks.length * 1.5)}`,
+          criteria: ['Test coverage >85%', 'No critical bugs'],
+        },
+      ],
+    });
+  }
+
+  // Add deployment phase
+  phases.push({
+    name: 'Deployment and Launch',
+    description: 'Deploy application and go live',
+    duration: 1,
+    tasks: [
+      {
+        name: 'Production Deployment',
+        description: 'Deploy application to production environment',
+        effort: 2,
+        dependencies: ['Development Complete'],
+        deliverables: ['Live Application', 'Deployment Documentation'],
+      },
+    ],
+    milestones: [
+      {
+        name: 'Go Live',
+        description: 'Application is live and operational',
+        date: `Week ${3 + Math.ceil(developmentTasks.length * 1.5) + (input.role === 'qa-engineer' ? 2 : 0)}`,
+        criteria: ['Application deployed', 'Monitoring active'],
+      },
+    ],
+  });
+
+  return phases;
 }
 
 // Generate detailed roadmap based on roadmap type and role

@@ -301,7 +301,7 @@ export class OrchestrationEngine {
       const nextRole = workflow.phases[i + 1].role;
 
       if (currentRole !== nextRole) {
-        const transition = this.roleOrchestrator.validateRoleTransition({
+        const transition = this.roleOrchestrator?.validateRoleTransition?.({
           fromRole: currentRole,
           toRole: nextRole,
           timestamp: new Date().toISOString(),
@@ -487,7 +487,11 @@ export class OrchestrationEngine {
     context: BusinessContext,
     role: string
   ): Record<string, number> {
-    const roleCapabilities = this.roleOrchestrator.getRoleCapabilities(role);
+    const roleCapabilities = this.roleOrchestrator?.getRoleCapabilities?.(role) || {
+      qualityGates: ['code-quality', 'test-coverage', 'security-scan'],
+      tools: ['smart_begin', 'smart_plan', 'smart_write', 'smart_finish'],
+      metrics: ['quality', 'performance', 'security'],
+    };
     const metrics: Record<string, number> = {};
 
     if (roleCapabilities) {

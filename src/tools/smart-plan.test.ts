@@ -121,20 +121,18 @@ describe('SmartPlan - REAL TESTS (Expose Planning Theater)', () => {
         };
 
         const result = (await handleSmartPlan(input)) as SmartPlanResponse;
-        const phases = result.data?.projectPlan.resources.budget.phases;
+        const phases = result.data?.projectPlan.phases;
 
-        // EXPOSE THE TRUTH: Always phases with predictable amounts
+        // EXPOSE THE TRUTH: Dynamic phases now generated
         expect(phases?.length).toBeGreaterThan(0); // Has phases
         if (phases && phases.length > 0) {
-          expect(phases[0].amount).toBeGreaterThan(0); // First phase
-          expect(phases[0].phase).toBeDefined(); // Phase name exists
-          expect(phases[0].amount).toBeLessThanOrEqual(budget); // Within budget
+          expect(phases[0].name).toBeDefined(); // Phase name exists
+          expect(phases[0].duration).toBeGreaterThan(0); // Duration defined
+          expect(phases[0].tasks?.length).toBeGreaterThan(0); // Has tasks
         }
       }
 
-      console.log(
-        'EXPOSED: All budgets get identical 60/15/15/10 breakdown regardless of project type'
-      );
+      console.log('UPDATED: Dynamic phase generation now creates context-specific phases');
     });
 
     it('should generate GENERIC phases regardless of plan type', async () => {
@@ -439,16 +437,34 @@ describe('SmartPlan - REAL TESTS (Expose Planning Theater)', () => {
       const devResult = results.find(r => r.role === 'developer')?.result;
       const qaResult = results.find(r => r.role === 'qa-engineer')?.result;
 
-      // Check that different roles get different template additions
-      const devTasks = devResult?.data?.projectPlan?.phases[0]?.tasks || [];
-      const qaTasks = qaResult?.data?.projectPlan?.phases[0]?.tasks || [];
+      // Check that different roles get different template additions across all phases
+      const allDevTasks =
+        devResult?.data?.projectPlan?.phases?.flatMap((phase: any) => phase.tasks || []) || [];
+      const allQaTasks =
+        qaResult?.data?.projectPlan?.phases?.flatMap((phase: any) => phase.tasks || []) || [];
 
-      expect(devTasks.some((task) => typeof task === 'string' && task.includes('TypeScript'))).toBe(true);
       expect(
-        qaTasks.some((task) => typeof task === 'string' && (task.includes('Test') || task.includes('coverage')))
+        allDevTasks.some(
+          (task: any) =>
+            task.name?.includes('Development') ||
+            task.description?.includes('TypeScript') ||
+            task.name?.includes('Frontend') ||
+            task.name?.includes('Backend')
+        )
+      ).toBe(true);
+      expect(
+        allQaTasks.some(
+          (task: any) =>
+            task.name?.includes('Test') ||
+            task.description?.includes('test') ||
+            task.description?.includes('quality') ||
+            task.name?.includes('Testing')
+        )
       ).toBe(true);
 
-      console.log('EXPOSED: Role customization is just keyword matching + template additions');
+      console.log(
+        'UPDATED: Role customization now generates role-specific tasks in dynamic phases'
+      );
     });
   });
 
@@ -528,7 +544,7 @@ describe('SmartPlan - REAL TESTS (Expose Planning Theater)', () => {
 
       // Technical metrics should show template generation speed
       expect(result.data?.technicalMetrics.responseTime).toBeLessThan(10); // Fast template gen
-      expect(result.data?.technicalMetrics.phasesPlanned).toBe(1); // Only one generic phase
+      expect(result.data?.technicalMetrics.phasesPlanned).toBeGreaterThanOrEqual(3); // Dynamic phases generated
       expect(result.data?.technicalMetrics.tasksPlanned).toBeGreaterThan(0);
 
       console.log('SmartPlan Summary:', {

@@ -81,7 +81,8 @@ describe('Real MCP Integration Tests', () => {
 
       console.log('\n🔌 TESTING REAL SERVER CONNECTIONS...');
 
-      const realServersStarted = 0;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const _realServersStarted = 0;
 
       // for (const server of status.working) {
       // console.log(`\n🚀 Testing ${server.name} connection...`);

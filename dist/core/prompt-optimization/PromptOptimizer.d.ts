@@ -69,7 +69,7 @@ export declare const PromptContextSchema: z.ZodObject<{
     toolName: string;
     taskComplexity: "high" | "medium" | "low";
     userHistory: string[];
-    timeConstraints: "balanced" | "thorough" | "fast";
+    timeConstraints: "thorough" | "fast" | "balanced";
     projectContext?: string | undefined;
 }, {
     toolName: string;
@@ -77,7 +77,7 @@ export declare const PromptContextSchema: z.ZodObject<{
     projectContext?: string | undefined;
     taskComplexity?: "high" | "medium" | "low" | undefined;
     userHistory?: string[] | undefined;
-    timeConstraints?: "balanced" | "thorough" | "fast" | undefined;
+    timeConstraints?: "thorough" | "fast" | "balanced" | undefined;
 }>;
 export type PromptContext = z.infer<typeof PromptContextSchema>;
 /**

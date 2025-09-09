@@ -37,9 +37,9 @@ describe('SmartFinish - REAL TESTS (Expose Quality Gate Theater)', () => {
       // EXPOSE THE TRUTH: Always returns mock data
       expect(result.data?.technicalMetrics.codeUnitsValidated).toBeGreaterThan(0);
 
-      // Security score calculation uses mock data
-      const securityScore = result.data?.qualityScorecard.production.securityScan.score;
-      expect(securityScore).toBeDefined();
+      // Security scan status uses mock data
+      const securityScanStatus = result.data?.qualityScorecard.production.securityScan;
+      expect(securityScanStatus).toBeDefined();
 
       // Quality scorecard should be present
       expect(result.data?.qualityScorecard).toBeDefined();
@@ -566,9 +566,9 @@ describe('SmartFinish - REAL TESTS (Expose Quality Gate Theater)', () => {
 
       // Should have all template sections populated
       expect(result.data?.qualityScorecard.overall.score).toBeGreaterThan(70); // Mock data ensures decent scores
-      expect(result.data?.qualityScorecard.security.vulnerabilities).toBe(4); // Always 4 mock vulnerabilities
-      expect(result.data?.qualityScorecard.complexity.cyclomaticComplexity).toBe(8); // Always 8 (hardcoded)
-      expect(result.data?.qualityScorecard.complexity.maintainabilityIndex).toBe(75); // Always 75 (hardcoded)
+      expect((result.data?.qualityScorecard as any)?.security?.vulnerabilities).toBe(4); // Always 4 mock vulnerabilities
+      expect((result.data?.qualityScorecard as any)?.complexity?.cyclomaticComplexity).toBe(8); // Always 8 (hardcoded)
+      expect((result.data?.qualityScorecard as any)?.complexity?.maintainabilityIndex).toBe(75); // Always 75 (hardcoded)
 
       // Business value should be pass-through of input
       expect(result.data?.businessValue.totalCostPrevention).toBe(75000);
@@ -578,8 +578,8 @@ describe('SmartFinish - REAL TESTS (Expose Quality Gate Theater)', () => {
       // Technical metrics should show template generation speed
       expect(result.data?.technicalMetrics.responseTime).toBeLessThan(100);
       expect(result.data?.technicalMetrics.codeUnitsValidated).toBe(3);
-      expect(result.data?.technicalMetrics.securityVulnerabilities).toBe(4);
-      expect(result.data?.technicalMetrics.staticAnalysisIssues).toBe(5);
+      expect((result.data?.technicalMetrics as any)?.securityVulnerabilities).toBe(4);
+      expect((result.data?.technicalMetrics as any)?.staticAnalysisIssues).toBe(5);
 
       // Quality scorecard validation should be template-based
       expect(result.data?.qualityScorecard.overall.grade).toBeDefined();

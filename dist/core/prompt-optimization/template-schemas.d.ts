@@ -214,8 +214,8 @@ export declare const TemplateMetadataSchema: z.ZodObject<{
     qualityScore: number;
     compressionRatio: number;
     taskType: string;
-    variables: string[];
     baseTokens: number;
+    variables: string[];
     adaptationLevel: "adaptive" | "static" | "dynamic";
     crossSessionCompatible: boolean;
     userSegments: string[];
@@ -239,8 +239,8 @@ export declare const TemplateMetadataSchema: z.ZodObject<{
     qualityScore: number;
     compressionRatio: number;
     taskType: string;
-    variables: string[];
     baseTokens: number;
+    variables: string[];
     adaptationLevel?: "adaptive" | "static" | "dynamic" | undefined;
     crossSessionCompatible?: boolean | undefined;
     userSegments?: string[] | undefined;

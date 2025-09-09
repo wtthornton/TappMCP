@@ -67,7 +67,8 @@ describe('Real MCP Integration Tests', () => {
             await mcpManager.checkServerAvailability();
             mcpManager.getIntegrationStatus();
             console.log('\n🔌 TESTING REAL SERVER CONNECTIONS...');
-            const realServersStarted = 0;
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const _realServersStarted = 0;
             // for (const server of status.working) {
             // console.log(`\n🚀 Testing ${server.name} connection...`);
             // try {
@@ -160,7 +161,7 @@ describe('Real MCP Integration Tests', () => {
     describe('Production Readiness Assessment', () => {
         it('should assess if the system is production-ready with current integration', async () => {
             await mcpManager.checkServerAvailability();
-            mcpManager.getIntegrationStatus();
+            const status = mcpManager.getIntegrationStatus();
             console.log('\n🏭 PRODUCTION READINESS ASSESSMENT');
             console.log('===================================');
             // Production readiness criteria
@@ -169,14 +170,13 @@ describe('Real MCP Integration Tests', () => {
                 requiredRealServers: ['filesystem', 'github'], // These must be real
                 maxSimulatedCritical: 1, // Maximum 1 critical simulated service
             };
-            // const realIntegrationScore = status.integrationProgress;
-            // const criticalRealServers = criteria.requiredRealServers.filter(key => {
-            //   const server = status.servers.find(s => s.key === key);
-            //   return server?.isReal;
-            // });
-            // const isProductionReady =
-            //   realIntegrationScore >= criteria.minRealIntegration &&
-            //   criticalRealServers.length === criteria.requiredRealServers.length;
+            const realIntegrationScore = status.integrationProgress;
+            const criticalRealServers = criteria.requiredRealServers.filter(key => {
+                const server = status.servers.find(s => s.key === key);
+                return server?.isReal;
+            });
+            const isProductionReady = realIntegrationScore >= criteria.minRealIntegration &&
+                criticalRealServers.length === criteria.requiredRealServers.length;
             // console.log(`📊 Integration Score: ${realIntegrationScore.toFixed(1)}% (${criteria.minRealIntegration}% required)`);
             // console.log(`📋 Critical Servers Real: ${criticalRealServers.length}/${criteria.requiredRealServers.length}`);
             // console.log(`🎯 Production Ready: ${isProductionReady ? '✅ YES' : '❌ NO'}`);

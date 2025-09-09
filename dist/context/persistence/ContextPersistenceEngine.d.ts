@@ -37,8 +37,8 @@ export declare const ContextEntrySchema: z.ZodObject<{
     sessionId: string;
     contextType: "intermediate" | "metadata" | "input" | "output";
     metadata: Record<string, any>;
-    compressed: boolean;
     tokens: number;
+    compressed: boolean;
 }, {
     content: string;
     timestamp: Date;
@@ -50,8 +50,8 @@ export declare const ContextEntrySchema: z.ZodObject<{
     version?: number | undefined;
     tags?: string[] | undefined;
     metadata?: Record<string, any> | undefined;
-    compressed?: boolean | undefined;
     tokens?: number | undefined;
+    compressed?: boolean | undefined;
 }>;
 export type ContextEntry = z.infer<typeof ContextEntrySchema>;
 /**
@@ -66,17 +66,17 @@ export declare const StorageConfigSchema: z.ZodObject<{
     storageDirectory: z.ZodDefault<z.ZodString>;
     compressionLevel: z.ZodDefault<z.ZodNumber>;
 }, "strip", z.ZodTypeAny, {
-    compressionThreshold: number;
     maxMemoryEntries: number;
     maxDiskEntries: number;
+    compressionThreshold: number;
     archiveAfterDays: number;
     autoCleanupEnabled: boolean;
     storageDirectory: string;
     compressionLevel: number;
 }, {
-    compressionThreshold?: number | undefined;
     maxMemoryEntries?: number | undefined;
     maxDiskEntries?: number | undefined;
+    compressionThreshold?: number | undefined;
     archiveAfterDays?: number | undefined;
     autoCleanupEnabled?: boolean | undefined;
     storageDirectory?: string | undefined;

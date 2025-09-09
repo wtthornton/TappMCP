@@ -143,7 +143,7 @@ class SmartMCPServer {
     }
 }
 // Start server if this file is run directly
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
     const server = new SmartMCPServer();
     server.start().catch(_error => {
         // Server startup failed

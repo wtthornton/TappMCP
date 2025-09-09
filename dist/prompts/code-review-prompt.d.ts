@@ -22,8 +22,8 @@ export declare const CodeReviewPromptSchema: z.ZodObject<{
     requirements?: string[] | undefined;
     context?: string | undefined;
     focusAreas?: string[] | undefined;
-    includeSuggestions?: boolean | undefined;
     standards?: string[] | undefined;
+    includeSuggestions?: boolean | undefined;
     includeExamples?: boolean | undefined;
 }, {
     code: string;
@@ -33,8 +33,8 @@ export declare const CodeReviewPromptSchema: z.ZodObject<{
     requirements?: string[] | undefined;
     context?: string | undefined;
     focusAreas?: string[] | undefined;
-    includeSuggestions?: boolean | undefined;
     standards?: string[] | undefined;
+    includeSuggestions?: boolean | undefined;
     includeExamples?: boolean | undefined;
 }>;
 export type CodeReviewPromptInput = z.infer<typeof CodeReviewPromptSchema>;

@@ -248,6 +248,9 @@ describe('ContextAwareTemplateEngine - Week 2 Enhanced', () => {
         usageCount: 0,
         lastUpdated: new Date(),
         variables: ['testVar'],
+        adaptationLevel: 'static' as const,
+        crossSessionCompatible: true,
+        userSegments: ['beginner', 'intermediate', 'advanced'],
         template: 'Test {{testVar}} with custom template',
       };
 
@@ -272,6 +275,9 @@ describe('ContextAwareTemplateEngine - Week 2 Enhanced', () => {
         usageCount: 0,
         lastUpdated: new Date(),
         variables: ['name', 'task'],
+        adaptationLevel: 'static' as const,
+        crossSessionCompatible: true,
+        userSegments: ['beginner', 'intermediate', 'advanced'],
         template: 'Hello {{name}}, please complete {{task}}',
       };
 
@@ -336,6 +342,9 @@ describe('ContextAwareTemplateEngine - Week 2 Enhanced', () => {
         usageCount: 0,
         lastUpdated: new Date(),
         variables: ['items'],
+        adaptationLevel: 'static' as const,
+        crossSessionCompatible: true,
+        userSegments: ['beginner', 'intermediate', 'advanced'],
         template:
           'Array has {{array_length items}} items. {{#if (array_length items)}}Items exist{{else}}No items{{/if}}',
       };

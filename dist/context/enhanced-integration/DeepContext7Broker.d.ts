@@ -261,7 +261,6 @@ export declare class DeepContext7Broker {
     private getToolContextRequirements;
     private buildContextPreamble;
     private estimateTokens;
-    private _calculateQueryRelevance;
     private isHighValueContext;
 }
 export declare function createDeepContext7Broker(config?: Partial<ContextInjectionConfig>): DeepContext7Broker;

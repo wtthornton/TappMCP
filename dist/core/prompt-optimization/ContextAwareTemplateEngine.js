@@ -6,6 +6,7 @@
  * user behavior adaptation, and deep Context7 integration.
  * Provides maximum efficiency through predictive template optimization.
  */
+import Handlebars from 'handlebars';
 import { BaseTemplateEngine } from './template-engine-core.js';
 import { TemplateContextSchema, UserProfileSchema, SessionContextSchema, TemplateMetadataSchema, TemplateEngineMetricsSchema, } from './template-schemas.js';
 /**
@@ -14,7 +15,9 @@ import { TemplateContextSchema, UserProfileSchema, SessionContextSchema, Templat
  * Enhanced template engine with cross-session learning and user adaptation
  */
 export class ContextAwareTemplateEngine extends BaseTemplateEngine {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _contextPatterns;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _crossSessionLearning;
     performanceTracker;
     constructor() {
@@ -22,6 +25,231 @@ export class ContextAwareTemplateEngine extends BaseTemplateEngine {
         this._contextPatterns = new Map();
         this._crossSessionLearning = new CrossSessionLearningEngine();
         this.performanceTracker = new TemplatePerformanceTracker();
+        this.initializeBuiltInTemplates();
+    }
+    /**
+     * Initialize built-in templates
+     */
+    initializeBuiltInTemplates() {
+        // Smart Begin template
+        this.addCustomTemplate({
+            id: 'smart_begin_basic',
+            name: 'Smart Begin Basic Template',
+            description: 'Basic generation template for smart_begin tool',
+            toolName: 'smart_begin',
+            taskType: 'generation',
+            baseTokens: 120,
+            compressionRatio: 0.25,
+            qualityScore: 85,
+            usageCount: 0,
+            lastUpdated: new Date(),
+            variables: ['projectName', 'projectType', 'businessContext'],
+            adaptationLevel: 'static',
+            crossSessionCompatible: true,
+            userSegments: ['beginner', 'intermediate', 'advanced'],
+            template: '{{#if_eq userLevel "beginner"}}\\n' +
+                'Let us start your project step by step:\\n' +
+                '{{else}}\\n' +
+                'Initialize project with these specifications:\\n' +
+                '{{/if_eq}}\\n\\n' +
+                'Project: {{projectName}}\\n' +
+                'Type: {{projectType}}\\n\\n' +
+                '{{#if businessContext}}\\n' +
+                'Business Context:\\n' +
+                '- Industry: {{businessContext.industry}}\\n' +
+                '- Target Users: {{businessContext.targetUsers}}\\n' +
+                '{{/if}}\\n\\n' +
+                '{{#user_level "advanced"}}\\n' +
+                'Technical requirements and constraints will be automatically analyzed.\\n' +
+                '{{/user_level}}',
+        });
+        // Smart Plan template (planning)
+        this.addCustomTemplate({
+            id: 'smart_plan_basic',
+            name: 'Smart Plan Basic Template',
+            description: 'Basic planning template for smart_plan tool',
+            toolName: 'smart_plan',
+            taskType: 'planning',
+            baseTokens: 150,
+            compressionRatio: 0.3,
+            qualityScore: 85,
+            usageCount: 0,
+            lastUpdated: new Date(),
+            variables: ['projectName', 'scope', 'techStack'],
+            adaptationLevel: 'static',
+            crossSessionCompatible: true,
+            userSegments: ['intermediate', 'advanced'],
+            template: '{{#if_eq taskType "planning"}}\\n' +
+                '## Project Planning\\n\\n' +
+                '{{#if_eq userLevel "beginner"}}\\n' +
+                'Here is a simple plan for your project:\\n' +
+                '{{else}}\\n' +
+                'Comprehensive project plan:\\n' +
+                '{{/if_eq}}\\n\\n' +
+                '### Scope\\n' +
+                '{{#if scope}}\\n' +
+                '- Budget: ${{scope.budget}}\\n' +
+                '- Timeline: {{scope.timeline}}\\n' +
+                '{{/if}}\\n\\n' +
+                '### Technical Stack\\n' +
+                '{{#if techStack}}\\n' +
+                '{{#each techStack}}\\n' +
+                '- {{this}}\\n' +
+                '{{/each}}\\n' +
+                '{{/if}}\\n' +
+                '{{/if_eq}}',
+        });
+        // Smart Plan template (analysis)
+        this.addCustomTemplate({
+            id: 'smart_plan_analysis',
+            name: 'Smart Plan Analysis Template',
+            description: 'Analysis template for smart_plan tool',
+            toolName: 'smart_plan',
+            taskType: 'analysis',
+            baseTokens: 200,
+            compressionRatio: 0.4,
+            qualityScore: 88,
+            usageCount: 0,
+            lastUpdated: new Date(),
+            variables: ['requirements', 'constraints', 'timeline'],
+            adaptationLevel: 'dynamic',
+            crossSessionCompatible: true,
+            userSegments: ['advanced', 'intermediate'],
+            template: '{{#if_eq taskType "analysis"}}\\n' +
+                '## Requirements Analysis\\n\\n' +
+                '{{#if_eq userLevel "beginner"}}\\n' +
+                'Analysis of your project requirements:\\n' +
+                '{{else}}\\n' +
+                'Comprehensive requirement analysis:\\n' +
+                '{{/if_eq}}\\n\\n' +
+                '### Key Requirements\\n' +
+                '{{#if requirements}}\\n' +
+                '{{#each requirements}}\\n' +
+                '- {{this}}\\n' +
+                '{{/each}}\\n' +
+                '{{/if}}\\n\\n' +
+                '### Constraints\\n' +
+                '{{#if constraints}}\\n' +
+                '{{#each constraints}}\\n' +
+                '- {{this}}\\n' +
+                '{{/each}}\\n' +
+                '{{/if}}\\n' +
+                '{{/if_eq}}',
+        });
+        // Smart Write template
+        this.addCustomTemplate({
+            id: 'smart_write_basic',
+            name: 'Smart Write Basic Template',
+            description: 'Basic generation template for smart_write tool',
+            toolName: 'smart_write',
+            taskType: 'generation',
+            baseTokens: 100,
+            compressionRatio: 0.3,
+            qualityScore: 85,
+            usageCount: 0,
+            lastUpdated: new Date(),
+            variables: ['featureDescription', 'techStack'],
+            adaptationLevel: 'static',
+            crossSessionCompatible: true,
+            userSegments: ['intermediate', 'advanced'],
+            template: '{{#if_eq taskType "generation"}}\\n' +
+                '{{#if_eq outputFormat "code"}}\\n' +
+                '// Generated code for: {{featureDescription}}\\n' +
+                '{{#if_eq userLevel "beginner"}}\\n' +
+                '// This code includes helpful comments for learning\\n' +
+                '{{/if_eq}}\\n\\n' +
+                '{{#if techStack}}\\n' +
+                '// Using: {{#each techStack}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}\\n' +
+                '{{/if}}\\n' +
+                '{{/if_eq}}\\n' +
+                '{{/if_eq}}',
+        });
+        // Smart Orchestrate template (planning)
+        this.addCustomTemplate({
+            id: 'smart_orchestrate_planning',
+            name: 'Smart Orchestrate Planning Template',
+            description: 'Planning template for smart_orchestrate tool',
+            toolName: 'smart_orchestrate',
+            taskType: 'planning',
+            baseTokens: 180,
+            compressionRatio: 0.35,
+            qualityScore: 90,
+            usageCount: 0,
+            lastUpdated: new Date(),
+            variables: ['workflowSteps', 'resources', 'constraints'],
+            adaptationLevel: 'dynamic',
+            crossSessionCompatible: true,
+            userSegments: ['advanced', 'intermediate'],
+            template: '{{#if_eq taskType "planning"}}\\n' +
+                '## Orchestration Plan\\n\\n' +
+                '{{#if_eq userLevel "beginner"}}\\n' +
+                'Simple orchestration plan:\\n' +
+                '{{else}}\\n' +
+                'Advanced orchestration strategy:\\n' +
+                '{{/if_eq}}\\n\\n' +
+                '### Workflow Steps\\n' +
+                '{{#if workflowSteps}}\\n' +
+                '{{#each workflowSteps}}\\n' +
+                '{{@index}}. {{this}}\\n' +
+                '{{/each}}\\n' +
+                '{{/if}}\\n\\n' +
+                '### Resource Requirements\\n' +
+                '{{#if resources}}\\n' +
+                '{{#each resources}}\\n' +
+                '- {{this}}\\n' +
+                '{{/each}}\\n' +
+                '{{/if}}\\n\\n' +
+                '### Constraints\\n' +
+                '{{#if constraints}}\\n' +
+                '{{#each constraints}}\\n' +
+                '- {{this}}\\n' +
+                '{{/each}}\\n' +
+                '{{/if}}\\n' +
+                '{{/if_eq}}',
+        });
+        // Smart Finish template (generation)
+        this.addCustomTemplate({
+            id: 'smart_finish_generation',
+            name: 'Smart Finish Generation Template',
+            description: 'Generation template for smart_finish tool',
+            toolName: 'smart_finish',
+            taskType: 'generation',
+            baseTokens: 140,
+            compressionRatio: 0.3,
+            qualityScore: 87,
+            usageCount: 0,
+            lastUpdated: new Date(),
+            variables: ['completionSteps', 'qualityChecks', 'deliverables'],
+            adaptationLevel: 'static',
+            crossSessionCompatible: true,
+            userSegments: ['advanced', 'intermediate'],
+            template: '{{#if_eq taskType "generation"}}\\n' +
+                '## Project Completion\\n\\n' +
+                '{{#if_eq userLevel "beginner"}}\\n' +
+                'Final steps to complete your project:\\n' +
+                '{{else}}\\n' +
+                'Advanced completion and quality validation:\\n' +
+                '{{/if_eq}}\\n\\n' +
+                '### Completion Steps\\n' +
+                '{{#if completionSteps}}\\n' +
+                '{{#each completionSteps}}\\n' +
+                '- {{this}}\\n' +
+                '{{/each}}\\n' +
+                '{{/if}}\\n\\n' +
+                '### Quality Checks\\n' +
+                '{{#if qualityChecks}}\\n' +
+                '{{#each qualityChecks}}\\n' +
+                '- {{this}}\\n' +
+                '{{/each}}\\n' +
+                '{{/if}}\\n\\n' +
+                '### Deliverables\\n' +
+                '{{#if deliverables}}\\n' +
+                '{{#each deliverables}}\\n' +
+                '- {{this}}\\n' +
+                '{{/each}}\\n' +
+                '{{/if}}\\n' +
+                '{{/if_eq}}',
+        });
     }
     /**
      * Generate optimized template based on context
@@ -41,19 +269,23 @@ export class ContextAwareTemplateEngine extends BaseTemplateEngine {
      * Get or create session context
      */
     async getOrCreateSessionContext(context) {
-        if (!context.sessionId) {
-            throw new Error('Session ID is required for context-aware template generation');
+        let { sessionId } = context;
+        // Generate a default session ID if not provided
+        if (!sessionId) {
+            sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            // Update the context with the generated session ID
+            context.sessionId = sessionId;
         }
-        let sessionContext = this.getSessionContext(context.sessionId);
+        let sessionContext = this.getSessionContext(sessionId);
         if (!sessionContext) {
             sessionContext = {
-                sessionId: context.sessionId,
+                sessionId,
                 startTime: new Date(),
                 templatesUsed: [],
                 successRate: 0,
                 contextPreservation: true,
             };
-            this.sessionMemory.set(context.sessionId, sessionContext);
+            this.sessionMemory.set(sessionId, sessionContext);
         }
         return sessionContext;
     }
@@ -82,18 +314,23 @@ export class ContextAwareTemplateEngine extends BaseTemplateEngine {
     calculateTemplateScore(template, context, userProfile) {
         let score = template.qualityScore;
         // Adjust for user level
-        if (context.userLevel === 'beginner' && template.userSegments.includes('beginner')) {
-            score += 10;
-        }
-        else if (context.userLevel === 'advanced' && template.userSegments.includes('advanced')) {
-            score += 10;
+        if (template.userSegments && Array.isArray(template.userSegments)) {
+            if (context.userLevel === 'beginner' && template.userSegments.includes('beginner')) {
+                score += 10;
+            }
+            else if (context.userLevel === 'advanced' && template.userSegments.includes('advanced')) {
+                score += 10;
+            }
         }
         // Adjust for time constraint
         if (context.timeConstraint === 'immediate' && template.adaptationLevel === 'static') {
             score += 5;
         }
         // Adjust for user profile
-        if (userProfile && template.userSegments.includes(userProfile.experienceLevel)) {
+        if (userProfile &&
+            template.userSegments &&
+            Array.isArray(template.userSegments) &&
+            template.userSegments.includes(userProfile.experienceLevel)) {
             score += 15;
         }
         return Math.min(100, score);
@@ -155,6 +392,40 @@ export class ContextAwareTemplateEngine extends BaseTemplateEngine {
         const avgQuality = templates.reduce((sum, t) => sum + t.qualityScore, 0) / templates.length;
         const usageRate = templates.filter(t => t.usageCount > 0).length / templates.length;
         return Math.round((avgQuality + usageRate * 100) / 2);
+    }
+    /**
+     * Get template by ID (alias for getTemplate for test compatibility)
+     */
+    getTemplateById(templateId) {
+        return this.getTemplate(templateId);
+    }
+    /**
+     * Render template with variables
+     */
+    renderTemplate(templateId, variables) {
+        const template = this.getTemplate(templateId);
+        if (!template) {
+            return null;
+        }
+        try {
+            const compiledTemplate = Handlebars.compile(template.template);
+            return compiledTemplate(variables);
+        }
+        catch (error) {
+            console.error(`Error rendering template ${templateId}:`, error);
+            return null;
+        }
+    }
+    /**
+     * Get usage statistics
+     */
+    getUsageStats() {
+        const stats = new Map();
+        const templates = this.getAllTemplates();
+        for (const template of templates) {
+            stats.set(template.id, template.usageCount);
+        }
+        return stats;
     }
 }
 /**

@@ -29,10 +29,12 @@ const healthServer = createServer((req, res) => {
         }));
     }
 });
-// Start health server
-healthServer.listen(Number(PORT), '0.0.0.0', () => {
-    // Health server running
-});
+// Start health server only if not in test environment
+if (process.env.NODE_ENV !== 'test' && process.env.VITEST !== 'true') {
+    healthServer.listen(Number(PORT), '0.0.0.0', () => {
+        // Health server running
+    });
+}
 // Graceful shutdown
 process.on('SIGTERM', () => {
     // SIGTERM received, shutting down health server

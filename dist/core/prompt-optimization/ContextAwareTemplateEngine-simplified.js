@@ -14,13 +14,15 @@ import { TemplateContextSchema, UserProfileSchema, SessionContextSchema, Templat
  * Enhanced template engine with cross-session learning and user adaptation
  */
 export class ContextAwareTemplateEngine extends BaseTemplateEngine {
-    contextPatterns;
-    crossSessionLearning;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _contextPatterns;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _crossSessionLearning;
     performanceTracker;
     constructor() {
         super();
-        this.contextPatterns = new Map();
-        this.crossSessionLearning = new CrossSessionLearningEngine();
+        this._contextPatterns = new Map();
+        this._crossSessionLearning = new CrossSessionLearningEngine();
         this.performanceTracker = new TemplatePerformanceTracker();
     }
     /**
@@ -113,7 +115,7 @@ export class ContextAwareTemplateEngine extends BaseTemplateEngine {
             tokenCount: this.estimateTokenCount(context),
             timestamp: new Date(),
             userLevel: context.userLevel,
-            sessionId: context.sessionId,
+            sessionId: context.sessionId || 'anonymous',
         });
     }
     /**
@@ -161,7 +163,7 @@ export class ContextAwareTemplateEngine extends BaseTemplateEngine {
  * Cross-Session Learning Engine
  */
 class CrossSessionLearningEngine {
-    async learnFromSession(sessionId, outcomes) {
+    async learnFromSession(_sessionId, _outcomes) {
         // Cross-session learning implementation
     }
 }
@@ -169,7 +171,7 @@ class CrossSessionLearningEngine {
  * Template Performance Tracker
  */
 class TemplatePerformanceTracker {
-    async recordUsage(usage) {
+    async recordUsage(_usage) {
         // Performance tracking implementation
     }
 }

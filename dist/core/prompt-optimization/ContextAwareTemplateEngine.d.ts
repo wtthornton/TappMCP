@@ -19,6 +19,10 @@ export declare class ContextAwareTemplateEngine extends BaseTemplateEngine {
     private performanceTracker;
     constructor();
     /**
+     * Initialize built-in templates
+     */
+    private initializeBuiltInTemplates;
+    /**
      * Generate optimized template based on context
      */
     generateOptimizedTemplate(context: TemplateContext, userProfile?: UserProfile): Promise<string>;
@@ -50,6 +54,20 @@ export declare class ContextAwareTemplateEngine extends BaseTemplateEngine {
      * Calculate performance score
      */
     private calculatePerformanceScore;
+    /**
+     * Get template by ID (alias for getTemplate for test compatibility)
+     */
+    getTemplateById(templateId: string): (TemplateMetadata & {
+        template: string;
+    }) | null;
+    /**
+     * Render template with variables
+     */
+    renderTemplate(templateId: string, variables: Record<string, any>): string | null;
+    /**
+     * Get usage statistics
+     */
+    getUsageStats(): Map<string, number>;
 }
 export declare function createTemplateEngine(): ContextAwareTemplateEngine;
 export { TemplateContextSchema, UserProfileSchema, SessionContextSchema, TemplateMetadataSchema, TemplateEngineMetricsSchema, type TemplateContext, type UserProfile, type SessionContext, type TemplateMetadata, type TemplateEngineMetrics, };

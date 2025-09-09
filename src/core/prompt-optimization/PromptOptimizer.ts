@@ -302,7 +302,7 @@ export class PromptOptimizer {
         strategyReasons,
         contextInjected: appliedStrategies.includes('context-aware'),
         ...(this.getUsedTemplate(appliedStrategies) && {
-          templateUsed: this.getUsedTemplate(appliedStrategies),
+          templateUsed: this.getUsedTemplate(appliedStrategies)!,
         }),
       },
     };

@@ -14,8 +14,8 @@ import { TemplateContext, TemplateMetadata, UserProfile, SessionContext, Templat
  * Enhanced template engine with cross-session learning and user adaptation
  */
 export declare class ContextAwareTemplateEngine extends BaseTemplateEngine {
-    private contextPatterns;
-    private crossSessionLearning;
+    private _contextPatterns;
+    private _crossSessionLearning;
     private performanceTracker;
     constructor();
     /**

@@ -2,6 +2,7 @@
   "name": "smart-mcp",
   "version": "0.1.0",
   "description": "AI-assisted MCP server with role-based development",
+  "type": "module",
   "main": "dist/server.js",
   "scripts": {
     "build": "tsc",

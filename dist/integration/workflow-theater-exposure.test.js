@@ -24,7 +24,8 @@ describe('Integration Workflow Theater - EXPOSE COORDINATION THEATER', () => {
             };
             // Test components in complete isolation - no coordination
             const beginResult = (await handleSmartBegin(projectInput));
-            const projectId = beginResult.data?.projectId || 'test-project-id';
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const _projectId = beginResult.data?.projectId || 'test-project-id';
             const planResult = (await handleSmartPlan({
                 projectId: 'completely-different-project', // DIFFERENT PROJECT ID!
                 planType: 'development',
@@ -93,8 +94,8 @@ describe('Integration Workflow Theater - EXPOSE COORDINATION THEATER', () => {
             expect(step2Result.success).toBe(true);
             expect(step3Result.success).toBe(true);
             // No validation of business logic consistency
-            expect(step1Result.data?.businessValue.costPrevention).not.toBe(step2Result.data?.businessValue.costPrevention);
-            expect(step2Result.data?.businessValue.costPrevention).not.toBe(step3Result.data?.businessValue.costPrevention);
+            expect(step1Result.data?.businessValue?.costPrevention).not.toBe(step2Result.data?.businessValue?.costPrevention);
+            expect(step2Result.data?.businessValue?.costPrevention).not.toBe(step3Result.data?.businessValue?.costPrevention);
             console.log('EXPOSED: No intelligent state management - accepts completely conflicting requirements across workflow');
         });
         it('should prove ORCHESTRATION FAILURES reveal lack of real integration intelligence', async () => {
@@ -202,8 +203,9 @@ describe('Integration Workflow Theater - EXPOSE COORDINATION THEATER', () => {
             console.log('Context preservation test - Write result:', writeResult.success, writeResult.error);
             // Write may fail due to validation but demonstrates no context intelligence
             // Context is not intelligently preserved or validated for consistency
-            // Each tool just uses whatever context it receives directly
-            const beginIndustry = beginResult.data?.projectStructure || {};
+            // Each tool just uses whatever context it receives directly  
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const _beginIndustry = beginResult.data?.projectStructure || {};
             const writeCode = writeResult.data?.generatedCode || '';
             // No intelligent context consistency checking
             expect(typeof writeCode).toBe('string');
@@ -258,7 +260,7 @@ describe('Integration Workflow Theater - EXPOSE COORDINATION THEATER', () => {
             expect(Math.abs(totalDuration - sequentialTime)).toBeLessThan(50); // Within 50ms margin
             console.log(`EXPOSED: End-to-end workflow is sequential template generation:
         - SmartBegin: ${beginDuration.toFixed(1)}ms (template)
-        - SmartPlan: ${planDuration.toFixed(1)}ms (template)  
+        - SmartPlan: ${planDuration.toFixed(1)}ms (template)
         - SmartWrite: ${writeDuration.toFixed(1)}ms (template)
         - SmartFinish: ${finishDuration.toFixed(1)}ms (mock tools)
         - Total: ${totalDuration.toFixed(1)}ms (no orchestration overhead)`);

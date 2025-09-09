@@ -48,6 +48,13 @@ export class BaseTemplateEngine {
             }
             return options.inverse(options.data.root);
         });
+        // Array length helper
+        Handlebars.registerHelper('array_length', (array) => {
+            if (Array.isArray(array)) {
+                return array.length;
+            }
+            return 0;
+        });
     }
     /**
      * Add a custom template
