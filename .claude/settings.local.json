@@ -62,7 +62,8 @@
       "Bash(timeout 30s npm run test -- src/optimization/ToolChainOptimizer.test.ts --reporter=verbose)",
       "Bash(NODE_ENV=test npx vitest run --coverage --reporter=basic)",
       "Bash(tar:*)",
-      "Read(//c/cursor/**)"
+      "Read(//c/cursor/**)",
+      "Bash(timeout 5s npx @modelcontextprotocol/server-filesystem@latest)"
     ],
     "deny": [],
     "ask": []
