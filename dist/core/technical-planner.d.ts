@@ -10,16 +10,16 @@ export declare const ArchitectureSchema: z.ZodObject<{
         complexity: z.ZodEnum<["low", "medium", "high"]>;
     }, "strip", z.ZodTypeAny, {
         description: string;
-        type: "database" | "service" | "backend" | "frontend" | "external";
         name: string;
         complexity: "low" | "medium" | "high";
         dependencies: string[];
+        type: "database" | "service" | "backend" | "frontend" | "external";
     }, {
         description: string;
-        type: "database" | "service" | "backend" | "frontend" | "external";
         name: string;
         complexity: "low" | "medium" | "high";
         dependencies: string[];
+        type: "database" | "service" | "backend" | "frontend" | "external";
     }>, "many">;
     patterns: z.ZodArray<z.ZodString, "many">;
     technologies: z.ZodArray<z.ZodObject<{
@@ -40,10 +40,10 @@ export declare const ArchitectureSchema: z.ZodObject<{
     constraints: string[];
     components: {
         description: string;
-        type: "database" | "service" | "backend" | "frontend" | "external";
         name: string;
         complexity: "low" | "medium" | "high";
         dependencies: string[];
+        type: "database" | "service" | "backend" | "frontend" | "external";
     }[];
     patterns: string[];
     technologies: {
@@ -55,10 +55,10 @@ export declare const ArchitectureSchema: z.ZodObject<{
     constraints: string[];
     components: {
         description: string;
-        type: "database" | "service" | "backend" | "frontend" | "external";
         name: string;
         complexity: "low" | "medium" | "high";
         dependencies: string[];
+        type: "database" | "service" | "backend" | "frontend" | "external";
     }[];
     patterns: string[];
     technologies: {
@@ -81,20 +81,20 @@ export declare const TaskSchema: z.ZodObject<{
     priority: "low" | "medium" | "high" | "critical";
     id: string;
     description: string;
-    type: "development" | "testing" | "deployment" | "documentation" | "research";
     name: string;
-    phase: string;
     dependencies: string[];
+    type: "development" | "testing" | "deployment" | "documentation" | "research";
+    phase: string;
     estimatedHours: number;
     skills: string[];
 }, {
     priority: "low" | "medium" | "high" | "critical";
     id: string;
     description: string;
-    type: "development" | "testing" | "deployment" | "documentation" | "research";
     name: string;
-    phase: string;
     dependencies: string[];
+    type: "development" | "testing" | "deployment" | "documentation" | "research";
+    phase: string;
     estimatedHours: number;
     skills: string[];
 }>;

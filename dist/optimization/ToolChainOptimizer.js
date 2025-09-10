@@ -65,7 +65,7 @@ export class ToolChainOptimizer {
             name: planDefinition.name,
             description: planDefinition.description || '',
             steps: finalSteps,
-            dependencies: Object.fromEntries(Array.from(dependencyGraph.entries()).map(([key, set]) => [key, Array.from(set)])),
+            dependencies: Object.fromEntries(Array.from(dependencyGraph.entries()).map(([key, data]) => [key, Array.from(data.dependencies)])),
             optimization: {
                 enableParallel: this.config.maxConcurrentSteps > 1, // For test compatibility
                 enableParallelization: this.config.maxConcurrentSteps > 1, // For backward compatibility
@@ -257,7 +257,10 @@ export class ToolChainOptimizer {
             const toolName = tool.tool || tool.name;
             const toolDef = this.toolRegistry.get(toolName);
             if (toolDef) {
-                graph.set(toolName, new Set(toolDef.dependencies));
+                graph.set(toolName, {
+                    dependencies: new Set(toolDef.dependencies),
+                    inputs: tool.inputs || {},
+                });
             }
         }
         return graph;
@@ -274,7 +277,8 @@ export class ToolChainOptimizer {
                 return;
             }
             temp.add(toolName);
-            const dependencies = dependencyGraph.get(toolName) || new Set();
+            const toolData = dependencyGraph.get(toolName);
+            const dependencies = toolData?.dependencies || new Set();
             // Visit dependencies first
             for (const dep of dependencies) {
                 visit(dep);
@@ -284,14 +288,14 @@ export class ToolChainOptimizer {
             sorted.push({
                 toolName,
                 stepId: this.generateStepId(),
-                inputs: {},
+                inputs: toolData?.inputs || {},
                 parallelGroup: null,
             });
         };
         // Sort tools by dependency count (fewer dependencies first) to ensure correct order
         const toolsByDepCount = Array.from(dependencyGraph.keys()).sort((a, b) => {
-            const depsA = dependencyGraph.get(a)?.size || 0;
-            const depsB = dependencyGraph.get(b)?.size || 0;
+            const depsA = dependencyGraph.get(a)?.dependencies.size || 0;
+            const depsB = dependencyGraph.get(b)?.dependencies.size || 0;
             return depsA - depsB;
         });
         for (const toolName of toolsByDepCount) {

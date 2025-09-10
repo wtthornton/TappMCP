@@ -38,12 +38,12 @@ declare const CodePatternSchema: z.ZodObject<{
         type: z.ZodString;
         description: z.ZodOptional<z.ZodString>;
     }, "strip", z.ZodTypeAny, {
-        type: string;
         name: string;
+        type: string;
         description?: string | undefined;
     }, {
-        type: string;
         name: string;
+        type: string;
         description?: string | undefined;
     }>, "many">;
     dependencies: z.ZodArray<z.ZodString, "many">;
@@ -70,17 +70,17 @@ declare const CodePatternSchema: z.ZodObject<{
     description: string;
     category: "function" | "testing" | "type" | "module" | "utility" | "class" | "control-flow" | "error-handling" | "async";
     name: string;
-    complexity: "low" | "medium" | "high";
     metrics: {
         tokensPerUse: number;
         avgComplexity: number;
         reuseOpportunities: number;
         potentialSavings: number;
     };
+    complexity: "low" | "medium" | "high";
     dependencies: string[];
     variables: {
-        type: string;
         name: string;
+        type: string;
         description?: string | undefined;
     }[];
     examples: string[];
@@ -91,17 +91,17 @@ declare const CodePatternSchema: z.ZodObject<{
     description: string;
     category: "function" | "testing" | "type" | "module" | "utility" | "class" | "control-flow" | "error-handling" | "async";
     name: string;
-    complexity: "low" | "medium" | "high";
     metrics: {
         tokensPerUse: number;
         avgComplexity: number;
         reuseOpportunities: number;
         potentialSavings: number;
     };
+    complexity: "low" | "medium" | "high";
     dependencies: string[];
     variables: {
-        type: string;
         name: string;
+        type: string;
         description?: string | undefined;
     }[];
     examples: string[];

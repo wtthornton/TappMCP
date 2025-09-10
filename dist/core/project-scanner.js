@@ -175,7 +175,8 @@ export class ProjectScanner {
     async analyzeQualityIssues(projectPath, projectStructure, detectedTechStack) {
         const issues = [];
         // Check for missing essential config files
-        if (detectedTechStack.includes('typescript') && !projectStructure.configFiles.some(f => f.includes('tsconfig'))) {
+        if (detectedTechStack.includes('typescript') &&
+            !projectStructure.configFiles.some(f => f.includes('tsconfig'))) {
             issues.push('Missing TypeScript configuration (tsconfig.json)');
         }
         if (!projectStructure.configFiles.some(f => f.includes('eslint'))) {
@@ -250,7 +251,8 @@ export class ProjectScanner {
         if (detectedTechStack.includes('nodejs') && !detectedTechStack.includes('containerization')) {
             opportunities.push('Add Docker configuration for consistent deployment');
         }
-        if (detectedTechStack.includes('typescript') && !projectStructure.files.some(f => f.includes('.d.ts'))) {
+        if (detectedTechStack.includes('typescript') &&
+            !projectStructure.files.some(f => f.includes('.d.ts'))) {
             opportunities.push('Add TypeScript declaration files for better type definitions');
         }
         // Add general improvement opportunities

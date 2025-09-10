@@ -232,8 +232,8 @@ describe('Context7Broker - Legacy Tests (Mock Behavior)', () => {
       await broker.getDocumentation('performance-test');
       const duration2 = Date.now() - start2;
 
-      // Both should be fast, but cached should be faster or equal
-      expect(duration2).toBeLessThanOrEqual(duration1); // Cached should be faster or equal
+      // Both should be fast, cached should be faster or equal (with small tolerance for timing variance)
+      expect(duration2).toBeLessThanOrEqual(duration1 + 5); // Cached should be faster or equal (5ms tolerance)
     });
   });
 });

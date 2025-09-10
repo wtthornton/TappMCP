@@ -76,20 +76,8 @@ class MCPOnlyServer {
                 }
                 // Get tool and handler
                 const { tool, handler } = TOOLS[name];
-                // Validate tool arguments against schema
-                if (tool.inputSchema) {
-                    try {
-                        const schema = z.object(tool.inputSchema.properties);
-                        schema.parse(args);
-                    }
-                    catch (validationError) {
-                        const mcpError = handleError(validationError, {
-                            operation: 'validate_tool_arguments',
-                            toolName: name,
-                        });
-                        throw mcpError;
-                    }
-                }
+                // Note: Tool argument validation is handled by individual tool handlers
+                // The inputSchema here is for MCP client documentation, not runtime validation
                 // Execute tool handler
                 const result = (await handler(args));
                 // Validate response

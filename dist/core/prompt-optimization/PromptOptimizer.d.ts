@@ -65,7 +65,7 @@ export declare const PromptContextSchema: z.ZodObject<{
     timeConstraints: z.ZodDefault<z.ZodEnum<["fast", "balanced", "thorough"]>>;
     qualityRequirements: z.ZodDefault<z.ZodEnum<["basic", "standard", "premium"]>>;
 }, "strip", z.ZodTypeAny, {
-    qualityRequirements: "basic" | "standard" | "premium";
+    qualityRequirements: "standard" | "basic" | "premium";
     toolName: string;
     taskComplexity: "low" | "medium" | "high";
     userHistory: string[];
@@ -73,7 +73,7 @@ export declare const PromptContextSchema: z.ZodObject<{
     projectContext?: string | undefined;
 }, {
     toolName: string;
-    qualityRequirements?: "basic" | "standard" | "premium" | undefined;
+    qualityRequirements?: "standard" | "basic" | "premium" | undefined;
     projectContext?: string | undefined;
     taskComplexity?: "low" | "medium" | "high" | undefined;
     userHistory?: string[] | undefined;

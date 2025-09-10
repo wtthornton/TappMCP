@@ -13,16 +13,16 @@ export declare const FileResourceSchema: z.ZodObject<{
     data: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     path: string;
-    mode: "read" | "write" | "append";
     encoding: string;
+    mode: "read" | "write" | "append";
     createIfNotExists: boolean;
     backup: boolean;
     data?: string | undefined;
     permissions?: string | undefined;
 }, {
     path: string;
-    mode?: "read" | "write" | "append" | undefined;
     encoding?: string | undefined;
+    mode?: "read" | "write" | "append" | undefined;
     data?: string | undefined;
     createIfNotExists?: boolean | undefined;
     backup?: boolean | undefined;

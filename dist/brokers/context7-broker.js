@@ -106,41 +106,35 @@ export class Context7Broker {
      * Fetch real documentation from Context7 MCP
      */
     async fetchRealDocumentation(topic, version) {
-        try {
-            // Map topic to Context7 library ID
-            const libraryId = this.mapTopicToLibraryId(topic);
-            if (!libraryId) {
-                throw new Error(`No Context7 library found for topic: ${topic}`);
-            }
-            // Note: In a real implementation, this would call the Context7 MCP tools
-            // For now, we'll simulate the structure that would come from real MCP calls
-            // This is where we would integrate with the actual MCP Context7 tools
-            const mockRealDocs = [
-                {
-                    id: `real-doc-${topic}-${Date.now()}`,
-                    title: `${topic} Real Documentation`,
-                    content: `Real documentation from Context7 for ${topic}. This contains actual external knowledge and best practices.`,
-                    url: `https://context7.com/docs/${topic}`,
-                    version: version ?? 'latest',
-                    lastUpdated: new Date(),
-                    relevanceScore: 0.95,
-                },
-                {
-                    id: `real-doc-${topic}-examples-${Date.now()}`,
-                    title: `${topic} Code Examples`,
-                    content: `Real code examples and patterns from Context7 for ${topic}. These are actual working examples from the community.`,
-                    url: `https://context7.com/examples/${topic}`,
-                    version: version ?? 'latest',
-                    lastUpdated: new Date(),
-                    relevanceScore: 0.88,
-                },
-            ];
-            return mockRealDocs;
+        // Map topic to Context7 library ID
+        const libraryId = this.mapTopicToLibraryId(topic);
+        if (!libraryId) {
+            throw new Error(`No Context7 library found for topic: ${topic}`);
         }
-        catch (error) {
-            console.error('Error fetching real Context7 documentation:', error);
-            throw error;
-        }
+        // Note: In a real implementation, this would call the Context7 MCP tools
+        // For now, we'll simulate the structure that would come from real MCP calls
+        // This is where we would integrate with the actual MCP Context7 tools
+        const mockRealDocs = [
+            {
+                id: `real-doc-${topic}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                title: `${topic} Real Documentation`,
+                content: `Real documentation from Context7 for ${topic}. This contains actual external knowledge and best practices.`,
+                url: `https://context7.com/docs/${topic}`,
+                version: version ?? 'latest',
+                lastUpdated: new Date(),
+                relevanceScore: 0.95,
+            },
+            {
+                id: `real-doc-${topic}-examples-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                title: `${topic} Code Examples`,
+                content: `Real code examples and patterns from Context7 for ${topic}. These are actual working examples from the community.`,
+                url: `https://context7.com/examples/${topic}`,
+                version: version ?? 'latest',
+                lastUpdated: new Date(),
+                relevanceScore: 0.88,
+            },
+        ];
+        return mockRealDocs;
     }
     /**
      * Map topic to Context7 library ID

@@ -2,6 +2,7 @@
 import { z } from 'zod';
 import { Context7Cache } from '../core/context7-cache.js';
 import { enhanceWithContext7 } from '../utils/context7-enhancer.js';
+import { SimpleAnalyzer } from '../core/simple-analyzer.js';
 // Input schema for smart_write tool
 const SmartWriteInputSchema = z.object({
     projectId: z.string().min(1, 'Project ID is required'),
@@ -27,10 +28,14 @@ const SmartWriteInputSchema = z.object({
         securityLevel: z.enum(['low', 'medium', 'high']).default('medium'),
     })
         .optional(),
+    // New parameter for project path to enable real analysis
+    projectPath: z.string().optional(),
     // New parameters for existing project modification
     writeMode: z.enum(['create', 'modify', 'enhance']).default('create'),
     backupOriginal: z.boolean().default(true),
-    modificationStrategy: z.enum(['in-place', 'side-by-side', 'backup-first']).default('backup-first'),
+    modificationStrategy: z
+        .enum(['in-place', 'side-by-side', 'backup-first'])
+        .default('backup-first'),
     externalSources: z
         .object({
         useContext7: z.boolean().default(true),
@@ -149,6 +154,10 @@ export const smartWriteTool = {
                 },
                 description: 'External knowledge sources to integrate',
                 default: { useContext7: true, useWebSearch: false, useMemory: false },
+            },
+            projectPath: {
+                type: 'string',
+                description: 'Path to the project for real analysis integration (optional)',
             },
         },
         required: ['projectId', 'featureDescription'],
@@ -898,6 +907,33 @@ export async function handleSmartWrite(input) {
     try {
         // Validate input
         const validatedInput = SmartWriteInputSchema.parse(input);
+        // Run real analysis if project path is provided
+        let projectAnalysis = null;
+        let realQualityMetrics = {
+            testCoverage: 80,
+            complexity: 4,
+            securityScore: 75,
+            maintainability: 85,
+        };
+        if (validatedInput.projectPath) {
+            try {
+                const simpleAnalyzer = new SimpleAnalyzer();
+                projectAnalysis = await simpleAnalyzer.runBasicAnalysis(validatedInput.projectPath, 'quick');
+                // Use real analysis results to inform code generation
+                if (projectAnalysis) {
+                    // Calculate real quality metrics based on analysis
+                    realQualityMetrics = {
+                        testCoverage: validatedInput.qualityRequirements?.testCoverage || 85,
+                        complexity: projectAnalysis.static.metrics.complexity,
+                        securityScore: Math.max(0, 100 - projectAnalysis.security.summary.critical * 20 - projectAnalysis.security.summary.high * 10),
+                        maintainability: projectAnalysis.static.metrics.maintainability,
+                    };
+                }
+            }
+            catch (error) {
+                console.warn('Project analysis failed:', error);
+            }
+        }
         // Initialize Context7 cache and enhancement if enabled
         let context7Knowledge = null;
         let context7Enhancement = null;
@@ -935,9 +971,20 @@ export async function handleSmartWrite(input) {
                 console.warn('Context7 integration failed:', error);
             }
         }
-        // Generate code
+        // Generate code with real project context
         const codeId = `code_${Date.now()}_${validatedInput.featureDescription.toLowerCase().replace(/\s+/g, '_')}`;
-        const generatedCode = generateRealCode(validatedInput);
+        // Enhance input with analysis results if available
+        const enhancedInput = {
+            ...validatedInput,
+            projectAnalysis: projectAnalysis ? {
+                techStack: projectAnalysis.project.detectedTechStack,
+                qualityIssues: projectAnalysis.project.qualityIssues,
+                recommendations: projectAnalysis.summary.recommendations,
+                securityLevel: projectAnalysis.summary.status === 'fail' ? 'high' :
+                    projectAnalysis.summary.status === 'warning' ? 'medium' : 'low'
+            } : null
+        };
+        const generatedCode = generateRealCode(enhancedInput);
         // Update execution log
         executionLog.duration = Date.now() - startTime;
         // Create clean response
@@ -945,12 +992,7 @@ export async function handleSmartWrite(input) {
             projectId: validatedInput.projectId,
             codeId,
             generatedCode,
-            qualityMetrics: {
-                testCoverage: 80,
-                complexity: 4,
-                securityScore: 75,
-                maintainability: 85,
-            },
+            qualityMetrics: realQualityMetrics,
             businessValue: {
                 timeSaved: 2.0,
                 qualityImprovement: 75,
@@ -960,8 +1002,12 @@ export async function handleSmartWrite(input) {
                 `Code ${validatedInput.writeMode === 'create' ? 'generated' : validatedInput.writeMode === 'modify' ? 'modified' : 'enhanced'} for ${validatedInput.featureDescription}`,
                 'Review and customize the generated code',
                 'Add tests to meet coverage requirements',
-                validatedInput.writeMode === 'create' ? 'Integrate into your project' : 'Test the modified code thoroughly',
-                ...(validatedInput.backupOriginal && validatedInput.writeMode !== 'create' ? ['Verify backup was created successfully'] : []),
+                validatedInput.writeMode === 'create'
+                    ? 'Integrate into your project'
+                    : 'Test the modified code thoroughly',
+                ...(validatedInput.backupOriginal && validatedInput.writeMode !== 'create'
+                    ? ['Verify backup was created successfully']
+                    : []),
             ],
             technicalMetrics: {
                 responseTime: executionLog.duration,
@@ -980,6 +1026,17 @@ export async function handleSmartWrite(input) {
                     }
                     : null,
                 cacheStats: context7Cache.getCacheStats(),
+            },
+            analysisIntegration: projectAnalysis ? {
+                analysisPerformed: true,
+                securityStatus: projectAnalysis.security.status,
+                staticStatus: projectAnalysis.static.status,
+                overallScore: projectAnalysis.summary.overallScore,
+                criticalIssues: projectAnalysis.summary.criticalIssues,
+                recommendations: projectAnalysis.summary.recommendations.slice(0, 3)
+            } : {
+                analysisPerformed: false,
+                message: 'Provide projectPath to enable real analysis'
             },
         };
         return {

@@ -105,7 +105,7 @@ export class ToolChainOptimizer {
       description: planDefinition.description || '',
       steps: finalSteps,
       dependencies: Object.fromEntries(
-        Array.from(dependencyGraph.entries()).map(([key, set]) => [key, Array.from(set)])
+        Array.from(dependencyGraph.entries()).map(([key, data]) => [key, Array.from(data.dependencies)])
       ),
       optimization: {
         enableParallel: this.config.maxConcurrentSteps > 1, // For test compatibility
@@ -330,22 +330,29 @@ export class ToolChainOptimizer {
     builtInTools.forEach(tool => this.registerTool(tool));
   }
 
-  private buildDependencyGraph(tools: Array<any>): Map<string, Set<string>> {
-    const graph = new Map<string, Set<string>>();
+  private buildDependencyGraph(
+    tools: Array<any>
+  ): Map<string, { dependencies: Set<string>; inputs: Record<string, unknown> }> {
+    const graph = new Map<string, { dependencies: Set<string>; inputs: Record<string, unknown> }>();
 
     for (const tool of tools) {
       // Handle both 'tool' and 'name' properties for backward compatibility
       const toolName = tool.tool || tool.name;
       const toolDef = this.toolRegistry.get(toolName);
       if (toolDef) {
-        graph.set(toolName, new Set(toolDef.dependencies));
+        graph.set(toolName, {
+          dependencies: new Set(toolDef.dependencies),
+          inputs: tool.inputs || {},
+        });
       }
     }
 
     return graph;
   }
 
-  private optimizeExecutionOrder(dependencyGraph: Map<string, Set<string>>): Array<any> {
+  private optimizeExecutionOrder(
+    dependencyGraph: Map<string, { dependencies: Set<string>; inputs: Record<string, unknown> }>
+  ): Array<any> {
     const sorted: Array<any> = [];
     const visited = new Set<string>();
     const temp = new Set<string>();
@@ -359,7 +366,8 @@ export class ToolChainOptimizer {
       }
 
       temp.add(toolName);
-      const dependencies = dependencyGraph.get(toolName) || new Set();
+      const toolData = dependencyGraph.get(toolName);
+      const dependencies = toolData?.dependencies || new Set();
 
       // Visit dependencies first
       for (const dep of dependencies) {
@@ -372,15 +380,15 @@ export class ToolChainOptimizer {
       sorted.push({
         toolName,
         stepId: this.generateStepId(),
-        inputs: {},
+        inputs: toolData?.inputs || {},
         parallelGroup: null,
       });
     };
 
     // Sort tools by dependency count (fewer dependencies first) to ensure correct order
     const toolsByDepCount = Array.from(dependencyGraph.keys()).sort((a, b) => {
-      const depsA = dependencyGraph.get(a)?.size || 0;
-      const depsB = dependencyGraph.get(b)?.size || 0;
+      const depsA = dependencyGraph.get(a)?.dependencies.size || 0;
+      const depsB = dependencyGraph.get(b)?.dependencies.size || 0;
       return depsA - depsB;
     });
 

@@ -35,11 +35,11 @@ export declare const TemplateContextSchema: z.ZodObject<{
         commonPatterns: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
         successfulTemplateIds: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     }, "strip", z.ZodTypeAny, {
-        preferredVerbosity?: "detailed" | "moderate" | "concise" | undefined;
+        preferredVerbosity?: "moderate" | "detailed" | "concise" | undefined;
         commonPatterns?: string[] | undefined;
         successfulTemplateIds?: string[] | undefined;
     }, {
-        preferredVerbosity?: "detailed" | "moderate" | "concise" | undefined;
+        preferredVerbosity?: "moderate" | "detailed" | "concise" | undefined;
         commonPatterns?: string[] | undefined;
         successfulTemplateIds?: string[] | undefined;
     }>>;
@@ -72,7 +72,7 @@ export declare const TemplateContextSchema: z.ZodObject<{
         complexity?: "moderate" | "complex" | "simple" | undefined;
     } | undefined;
     userBehaviorProfile?: {
-        preferredVerbosity?: "detailed" | "moderate" | "concise" | undefined;
+        preferredVerbosity?: "moderate" | "detailed" | "concise" | undefined;
         commonPatterns?: string[] | undefined;
         successfulTemplateIds?: string[] | undefined;
     } | undefined;
@@ -97,7 +97,7 @@ export declare const TemplateContextSchema: z.ZodObject<{
         complexity?: "moderate" | "complex" | "simple" | undefined;
     } | undefined;
     userBehaviorProfile?: {
-        preferredVerbosity?: "detailed" | "moderate" | "concise" | undefined;
+        preferredVerbosity?: "moderate" | "detailed" | "concise" | undefined;
         commonPatterns?: string[] | undefined;
         successfulTemplateIds?: string[] | undefined;
     } | undefined;
@@ -216,7 +216,7 @@ export declare const TemplateMetadataSchema: z.ZodObject<{
     taskType: string;
     baseTokens: number;
     variables: string[];
-    adaptationLevel: "adaptive" | "static" | "dynamic";
+    adaptationLevel: "static" | "adaptive" | "dynamic";
     crossSessionCompatible: boolean;
     userSegments: string[];
     performanceMetrics?: {
@@ -241,7 +241,7 @@ export declare const TemplateMetadataSchema: z.ZodObject<{
     taskType: string;
     baseTokens: number;
     variables: string[];
-    adaptationLevel?: "adaptive" | "static" | "dynamic" | undefined;
+    adaptationLevel?: "static" | "adaptive" | "dynamic" | undefined;
     crossSessionCompatible?: boolean | undefined;
     userSegments?: string[] | undefined;
     performanceMetrics?: {

@@ -61,7 +61,7 @@ export class ImprovementDetector {
                 recommendations: [
                     'Create tsconfig.json with strict mode enabled',
                     'Configure compiler options for better type checking',
-                    'Add TypeScript declaration files if needed'
+                    'Add TypeScript declaration files if needed',
                 ],
                 codeExamples: [
                     `{
@@ -72,8 +72,8 @@ export class ImprovementDetector {
     "outDir": "./dist",
     "rootDir": "./src"
   }
-}`
-                ]
+}`,
+                ],
             });
         }
         // Check for missing ESLint
@@ -92,8 +92,8 @@ export class ImprovementDetector {
                     'Install ESLint and appropriate plugins',
                     'Configure rules for your tech stack',
                     'Add lint script to package.json',
-                    'Set up pre-commit hooks'
-                ]
+                    'Set up pre-commit hooks',
+                ],
             });
         }
         // Check for missing Prettier
@@ -112,8 +112,8 @@ export class ImprovementDetector {
                     'Install Prettier',
                     'Configure formatting rules',
                     'Add format script to package.json',
-                    'Integrate with ESLint'
-                ]
+                    'Integrate with ESLint',
+                ],
             });
         }
         return opportunities;
@@ -135,8 +135,8 @@ export class ImprovementDetector {
                 recommendations: [
                     'Create .gitignore file with appropriate patterns',
                     'Include node_modules, .env files, build directories',
-                    'Review existing commits for sensitive data'
-                ]
+                    'Review existing commits for sensitive data',
+                ],
             });
         }
         // Check for environment files
@@ -155,8 +155,8 @@ export class ImprovementDetector {
                     'Move .env files to .gitignore',
                     'Create .env.example with dummy values',
                     'Use environment variable management tools',
-                    'Review git history for exposed secrets'
-                ]
+                    'Review git history for exposed secrets',
+                ],
             });
         }
         // Check for package.json security
@@ -177,8 +177,8 @@ export class ImprovementDetector {
                         'Run npm audit to check for vulnerabilities',
                         'Add security audit script to package.json',
                         'Set up automated security scanning',
-                        'Keep dependencies updated'
-                    ]
+                        'Keep dependencies updated',
+                    ],
                 });
             }
         }
@@ -187,7 +187,8 @@ export class ImprovementDetector {
     analyzePerformanceIssues(analysis) {
         const opportunities = [];
         // Check for missing bundler
-        if (analysis.detectedTechStack.includes('typescript') || analysis.detectedTechStack.includes('javascript')) {
+        if (analysis.detectedTechStack.includes('typescript') ||
+            analysis.detectedTechStack.includes('javascript')) {
             const hasBundler = analysis.detectedTechStack.includes('bundling') ||
                 analysis.projectStructure.configFiles.some(f => f.includes('webpack') || f.includes('vite') || f.includes('rollup'));
             if (!hasBundler && analysis.projectStructure.files.length > 20) {
@@ -205,13 +206,14 @@ export class ImprovementDetector {
                         'Choose appropriate bundler (Webpack, Vite, Rollup)',
                         'Configure build optimization',
                         'Add code splitting for large applications',
-                        'Set up asset optimization'
-                    ]
+                        'Set up asset optimization',
+                    ],
                 });
             }
         }
         // Check for missing compression
-        if (analysis.detectedTechStack.includes('nodejs') || analysis.detectedTechStack.includes('express')) {
+        if (analysis.detectedTechStack.includes('nodejs') ||
+            analysis.detectedTechStack.includes('express')) {
             const hasCompression = analysis.projectStructure.files.some(f => f.includes('compression') || f.includes('gzip'));
             if (!hasCompression) {
                 opportunities.push({
@@ -227,8 +229,8 @@ export class ImprovementDetector {
                     recommendations: [
                         'Add compression middleware',
                         'Configure gzip compression',
-                        'Set up static asset compression'
-                    ]
+                        'Set up static asset compression',
+                    ],
                 });
             }
         }
@@ -252,8 +254,8 @@ export class ImprovementDetector {
                     'Create comprehensive README.md',
                     'Include installation instructions',
                     'Add usage examples',
-                    'Document API endpoints if applicable'
-                ]
+                    'Document API endpoints if applicable',
+                ],
             });
         }
         // Check for missing package.json scripts
@@ -275,8 +277,8 @@ export class ImprovementDetector {
                         'Add test script for running tests',
                         'Add lint script for code quality',
                         'Add build script for production builds',
-                        'Consider adding start and dev scripts'
-                    ]
+                        'Consider adding start and dev scripts',
+                    ],
                 });
             }
         }
@@ -285,7 +287,8 @@ export class ImprovementDetector {
     analyzeDocumentationIssues(analysis) {
         const opportunities = [];
         // Check for missing API documentation
-        if (analysis.detectedTechStack.includes('nodejs') || analysis.detectedTechStack.includes('express')) {
+        if (analysis.detectedTechStack.includes('nodejs') ||
+            analysis.detectedTechStack.includes('express')) {
             const hasApiDocs = analysis.projectStructure.files.some(f => f.includes('swagger') || f.includes('openapi') || f.includes('api-docs'));
             if (!hasApiDocs) {
                 opportunities.push({
@@ -302,8 +305,8 @@ export class ImprovementDetector {
                         'Add Swagger/OpenAPI documentation',
                         'Document all API endpoints',
                         'Include request/response examples',
-                        'Set up interactive API explorer'
-                    ]
+                        'Set up interactive API explorer',
+                    ],
                 });
             }
         }
@@ -327,8 +330,8 @@ export class ImprovementDetector {
                     'Choose testing framework (Vitest, Jest, Mocha)',
                     'Configure test environment',
                     'Add test scripts to package.json',
-                    'Set up test coverage reporting'
-                ]
+                    'Set up test coverage reporting',
+                ],
             });
         }
         // Check for missing test files
@@ -348,8 +351,8 @@ export class ImprovementDetector {
                     'Write unit tests for core functionality',
                     'Add integration tests for API endpoints',
                     'Set up test coverage goals',
-                    'Implement continuous testing in CI/CD'
-                ]
+                    'Implement continuous testing in CI/CD',
+                ],
             });
         }
         return opportunities;
@@ -358,16 +361,16 @@ export class ImprovementDetector {
         const totalIssues = analysis.qualityIssues.length;
         const totalOpportunities = opportunities.length;
         // Calculate quality score (inverse of issues)
-        const qualityScore = Math.max(0, 100 - (totalIssues * 10));
+        const qualityScore = Math.max(0, 100 - totalIssues * 10);
         // Calculate security score
         const securityIssues = opportunities.filter(o => o.type === 'security').length;
-        const securityScore = Math.max(0, 100 - (securityIssues * 15));
+        const securityScore = Math.max(0, 100 - securityIssues * 15);
         // Calculate performance score
         const performanceIssues = opportunities.filter(o => o.type === 'performance').length;
-        const performanceScore = Math.max(0, 100 - (performanceIssues * 12));
+        const performanceScore = Math.max(0, 100 - performanceIssues * 12);
         // Calculate maintainability score
         const maintainabilityIssues = opportunities.filter(o => o.type === 'maintainability').length;
-        const maintainabilityScore = Math.max(0, 100 - (maintainabilityIssues * 8));
+        const maintainabilityScore = Math.max(0, 100 - maintainabilityIssues * 8);
         // Calculate overall score
         const overallScore = Math.round((qualityScore + securityScore + performanceScore + maintainabilityScore) / 4);
         return {
