@@ -54,6 +54,8 @@ export interface Context7BrokerConfig {
     timeout: number;
     maxRetries: number;
     enableFallback: boolean;
+    enableCache: boolean;
+    cacheExpiryHours: number;
 }
 /**
  * Context7 Broker for external knowledge integration
@@ -61,31 +63,78 @@ export interface Context7BrokerConfig {
 export declare class Context7Broker {
     private config;
     private isAvailable;
+    private cache;
     constructor(config?: Partial<Context7BrokerConfig>);
+    /**
+     * Check if Context7 MCP tools are available
+     */
+    private checkMCPAvailability;
+    /**
+     * Get cached data if available and not expired
+     */
+    private getCachedData;
+    /**
+     * Cache data with expiry
+     */
+    private setCachedData;
     /**
      * Get documentation for a specific topic
      */
     getDocumentation(topic: string, version?: string): Promise<Documentation[]>;
     /**
+     * Fetch real documentation from Context7 MCP
+     */
+    private fetchRealDocumentation;
+    /**
+     * Map topic to Context7 library ID
+     */
+    private mapTopicToLibraryId;
+    /**
      * Get code examples for a technology and pattern
      */
     getCodeExamples(technology: string, pattern: string): Promise<CodeExample[]>;
+    /**
+     * Fetch real code examples from Context7 MCP
+     */
+    private fetchRealCodeExamples;
     /**
      * Get best practices for a domain
      */
     getBestPractices(domain: string): Promise<BestPractice[]>;
     /**
+     * Fetch real best practices from Context7 MCP
+     */
+    private fetchRealBestPractices;
+    /**
      * Get troubleshooting guides for a problem
      */
     getTroubleshootingGuides(problem: string): Promise<TroubleshootingGuide[]>;
     /**
+     * Fetch real troubleshooting guides from Context7 MCP
+     */
+    private fetchRealTroubleshootingGuides;
+    /**
+     * Get knowledge for a specific topic (general method that combines all knowledge types)
+     */
+    getKnowledge(params: {
+        topic: string;
+        projectId: string;
+        priority: 'low' | 'medium' | 'high';
+    }): Promise<{
+        documentation: Documentation[];
+        codeExamples: CodeExample[];
+        bestPractices: BestPractice[];
+        troubleshootingGuides: TroubleshootingGuide[];
+        summary: string;
+    }>;
+    /**
+     * Generate a summary of the knowledge gathered
+     */
+    private generateKnowledgeSummary;
+    /**
      * Check if Context7 service is available
      */
     checkAvailability(): Promise<boolean>;
-    /**
-     * Simulate API call with configurable delay
-     */
-    private simulateAPICall;
     /**
      * Validate response time meets performance requirements
      */

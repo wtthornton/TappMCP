@@ -2,7 +2,8 @@
 
 import { z } from 'zod';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { Context7Broker } from '../brokers/context7-broker.js';
+import { Context7Cache } from '../core/context7-cache.js';
+import { enhanceWithContext7 } from '../utils/context7-enhancer.js';
 
 // Input schema for smart_write tool
 const SmartWriteInputSchema = z.object({
@@ -137,6 +138,13 @@ export const smartWriteTool: Tool = {
     required: ['projectId', 'featureDescription'],
   },
 };
+
+// Context7Cache instance for smart_write
+const context7Cache = new Context7Cache({
+  maxCacheSize: 100,
+  defaultExpiryHours: 36,
+  enableHitTracking: true,
+});
 
 // Simple execution logging
 let executionLog = {
@@ -942,16 +950,36 @@ export async function handleSmartWrite(input: unknown): Promise<{
     // Validate input
     const validatedInput = SmartWriteInputSchema.parse(input);
 
-    // Initialize Context7 broker if enabled
+    // Initialize Context7 cache and enhancement if enabled
     let context7Knowledge = null;
+    let context7Enhancement = null;
     if (validatedInput.externalSources?.useContext7) {
       try {
-        const context7Broker = new Context7Broker();
-        context7Knowledge = await context7Broker.getKnowledge({
-          topic: `${validatedInput.codeType} development best practices`,
+        const codeTopic = `${validatedInput.codeType} development best practices for ${validatedInput.targetRole} role`;
+        context7Knowledge = await context7Cache.getRelevantData({
           projectId: validatedInput.projectId,
-          priority: 'high',
+          businessRequest: codeTopic,
+          domain: validatedInput.codeType || 'general',
+          priority: validatedInput.businessContext?.priority || 'medium',
+          sources: { useContext7: true, useWebSearch: false, useMemory: false },
+          maxResults: 5,
         });
+
+        // Enhance the generated code with Context7 knowledge
+        const codeData = {
+          featureDescription: validatedInput.featureDescription,
+          targetRole: validatedInput.targetRole,
+          codeType: validatedInput.codeType,
+          techStack: validatedInput.techStack,
+        };
+        context7Enhancement = await enhanceWithContext7(codeData, codeTopic, {
+          projectId: validatedInput.projectId,
+          domain: validatedInput.codeType || 'general',
+          priority: validatedInput.businessContext?.priority || 'medium',
+          maxResults: 3,
+        });
+
+        console.log(`🔍 Context7 enhanced smart_write for: ${validatedInput.featureDescription}`);
       } catch (error) {
         console.warn('Context7 integration failed:', error);
       }
@@ -995,6 +1023,12 @@ export async function handleSmartWrite(input: unknown): Promise<{
       externalIntegration: {
         context7Status: validatedInput.externalSources?.useContext7 ? 'active' : 'disabled',
         context7Knowledge: context7Knowledge ? 'integrated' : 'not available',
+        context7Enhancement: context7Enhancement ? {
+          dataCount: context7Enhancement.enhancementMetadata.dataCount,
+          responseTime: context7Enhancement.enhancementMetadata.responseTime,
+          cacheHit: context7Enhancement.enhancementMetadata.cacheHit,
+        } : null,
+        cacheStats: context7Cache.getCacheStats(),
       },
     };
 

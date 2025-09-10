@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 import { z } from 'zod';
+import { Context7Cache } from '../core/context7-cache.js';
+import { enhanceWithContext7 } from '../utils/context7-enhancer.js';
 // Input schema for smart_begin tool
 const SmartBeginInputSchema = z.object({
     projectName: z.string().min(1, 'Project name is required'),
@@ -15,6 +17,14 @@ const SmartBeginInputSchema = z.object({
         .optional(),
     qualityLevel: z.enum(['basic', 'standard', 'enterprise', 'production']).default('standard'),
     complianceRequirements: z.array(z.string()).default([]),
+    externalSources: z
+        .object({
+        useContext7: z.boolean().default(true),
+        useWebSearch: z.boolean().default(false),
+        useMemory: z.boolean().default(false),
+    })
+        .optional()
+        .default({ useContext7: true, useWebSearch: false, useMemory: false }),
 });
 // Output schema for smart_begin tool
 const SmartBeginOutputSchema = z.object({
@@ -58,6 +68,29 @@ const SmartBeginOutputSchema = z.object({
         qualityPatterns: z.array(z.string()),
         roleCompliance: z.array(z.string()),
     }),
+    externalIntegration: z.object({
+        context7Status: z.enum(['active', 'disabled']),
+        context7Knowledge: z.enum(['integrated', 'not available']),
+        context7Enhancement: z.object({
+            dataCount: z.number(),
+            responseTime: z.number(),
+            cacheHit: z.boolean(),
+        }).nullable(),
+        cacheStats: z.object({
+            totalEntries: z.number(),
+            hitRate: z.number(),
+            missRate: z.number(),
+            averageResponseTime: z.number(),
+            memoryUsage: z.number(),
+            topHitKeys: z.array(z.string()),
+        }),
+    }),
+});
+// Global Context7Cache instance for smart_begin tool
+const context7Cache = new Context7Cache({
+    maxCacheSize: 100,
+    defaultExpiryHours: 36,
+    enableHitTracking: true,
 });
 // Tool definition
 export const smartBeginTool = {
@@ -91,6 +124,16 @@ export const smartBeginTool = {
                 type: 'array',
                 items: { type: 'string' },
                 description: 'Optional array of business goals for the project',
+            },
+            externalSources: {
+                type: 'object',
+                properties: {
+                    useContext7: { type: 'boolean', default: true },
+                    useWebSearch: { type: 'boolean', default: false },
+                    useMemory: { type: 'boolean', default: false },
+                },
+                description: 'External knowledge sources to integrate',
+                default: { useContext7: true, useWebSearch: false, useMemory: false },
             },
         },
         required: ['projectName'],
@@ -434,6 +477,39 @@ export async function handleSmartBegin(input) {
     try {
         // Validate input
         const validatedInput = SmartBeginInputSchema.parse(input);
+        // Enhanced Context7 integration with caching
+        let context7Knowledge = null;
+        let context7Enhancement = null;
+        if (validatedInput.externalSources?.useContext7) {
+            try {
+                // Get Context7 data using the cache
+                const projectTopic = `project initialization best practices for ${validatedInput.projectTemplate || 'general'} projects`;
+                context7Knowledge = await context7Cache.getRelevantData({
+                    topic: projectTopic,
+                    projectId: `proj_${Date.now()}_${validatedInput.projectName.toLowerCase().replace(/\s+/g, '_')}`,
+                    domain: validatedInput.projectTemplate || 'general',
+                    priority: 'high',
+                    maxResults: 5,
+                });
+                // Enhance the project structure with Context7 knowledge
+                const projectData = {
+                    projectName: validatedInput.projectName,
+                    techStack: validatedInput.techStack,
+                    projectTemplate: validatedInput.projectTemplate,
+                    role: validatedInput.role,
+                };
+                context7Enhancement = await enhanceWithContext7(projectData, projectTopic, {
+                    maxResults: 3,
+                    priority: 'high',
+                    domain: validatedInput.projectTemplate || 'general',
+                    enableLogging: true,
+                });
+                console.log(`🔍 Context7 enhanced smart_begin for: ${validatedInput.projectName}`);
+            }
+            catch (error) {
+                console.warn('Context7 integration failed:', error);
+            }
+        }
         // Generate project structure with templates
         const projectStructure = generateProjectStructure(validatedInput.projectName, validatedInput.techStack, validatedInput.projectTemplate, validatedInput.role);
         // Generate quality gates with role-specific requirements
@@ -465,6 +541,16 @@ export async function handleSmartBegin(input) {
             technicalMetrics,
             processCompliance,
             learningIntegration,
+            externalIntegration: {
+                context7Status: validatedInput.externalSources?.useContext7 ? 'active' : 'disabled',
+                context7Knowledge: context7Knowledge ? 'integrated' : 'not available',
+                context7Enhancement: context7Enhancement ? {
+                    dataCount: context7Enhancement.enhancementMetadata.dataCount,
+                    responseTime: context7Enhancement.enhancementMetadata.responseTime,
+                    cacheHit: context7Enhancement.enhancementMetadata.cacheHit,
+                } : null,
+                cacheStats: context7Cache.getCacheStats(),
+            },
         };
         // Validate output
         const validatedOutput = SmartBeginOutputSchema.parse(response);

@@ -2,7 +2,8 @@
 
 import { z } from 'zod';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { Context7Broker } from '../brokers/context7-broker.js';
+import { Context7Cache } from '../core/context7-cache.js';
+import { enhanceWithContext7 } from '../utils/context7-enhancer.js';
 
 // Input schema for smart_plan tool
 const SmartPlanInputSchema = z.object({
@@ -281,6 +282,13 @@ export const smartPlanTool: Tool = {
   },
 };
 
+// Context7Cache instance for smart_plan
+const context7Cache = new Context7Cache({
+  maxCacheSize: 100,
+  defaultExpiryHours: 36,
+  enableHitTracking: true,
+});
+
 // Main tool handler
 export async function handleSmartPlan(input: unknown): Promise<{
   success: boolean;
@@ -294,16 +302,36 @@ export async function handleSmartPlan(input: unknown): Promise<{
     // Validate input
     const validatedInput = SmartPlanInputSchema.parse(input);
 
-    // Initialize Context7 broker if enabled
+    // Initialize Context7 cache and enhancement if enabled
     let context7Knowledge = null;
+    let context7Enhancement = null;
     if (validatedInput.externalSources?.useContext7) {
       try {
-        const context7Broker = new Context7Broker();
-        context7Knowledge = await context7Broker.getKnowledge({
-          topic: `${validatedInput.planType} planning best practices`,
+        const planningTopic = `${validatedInput.planType} planning best practices for ${validatedInput.role || 'general'} role`;
+        context7Knowledge = await context7Cache.getRelevantData({
           projectId: validatedInput.projectId,
-          priority: 'high',
+          businessRequest: planningTopic,
+          domain: validatedInput.planType || 'general',
+          priority: validatedInput.businessContext?.goals?.length ? 'high' : 'medium',
+          sources: { useContext7: true, useWebSearch: false, useMemory: false },
+          maxResults: 5,
         });
+
+        // Enhance the project plan with Context7 knowledge
+        const planData = {
+          planType: validatedInput.planType,
+          scope: validatedInput.scope,
+          businessContext: validatedInput.businessContext,
+          qualityRequirements: validatedInput.qualityRequirements,
+        };
+        context7Enhancement = await enhanceWithContext7(planData, planningTopic, {
+          projectId: validatedInput.projectId,
+          domain: validatedInput.planType || 'general',
+          priority: validatedInput.businessContext?.goals?.length ? 'high' : 'medium',
+          maxResults: 3,
+        });
+
+        console.log(`🔍 Context7 enhanced smart_plan for: ${validatedInput.planType} planning`);
       } catch (error) {
         console.warn('Context7 integration failed:', error);
       }
@@ -439,6 +467,12 @@ export async function handleSmartPlan(input: unknown): Promise<{
       externalIntegration: {
         context7Status: validatedInput.externalSources?.useContext7 ? 'active' : 'disabled',
         context7Knowledge: context7Knowledge ? 'integrated' : 'not available',
+        context7Enhancement: context7Enhancement ? {
+          dataCount: context7Enhancement.enhancementMetadata.dataCount,
+          responseTime: context7Enhancement.enhancementMetadata.responseTime,
+          cacheHit: context7Enhancement.enhancementMetadata.cacheHit,
+        } : null,
+        cacheStats: context7Cache.getCacheStats(),
       },
     };
 

@@ -17,26 +17,26 @@ export declare const DocumentationPromptSchema: z.ZodObject<{
     contextInfo: z.ZodOptional<z.ZodString>;
     requirements: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
 }, "strip", z.ZodTypeAny, {
-    code: string;
     language: string;
+    code: string;
     docType: "function" | "api" | "module" | "class" | "readme" | "tutorial" | "guide";
     requirements?: string[] | undefined;
     style?: "markdown" | "jsdoc" | "tsdoc" | "sphinx" | "asciidoc" | "plain" | undefined;
     includeExamples?: boolean | undefined;
-    audience?: "developer" | "beginner" | "end-user" | "maintainer" | "expert" | undefined;
+    audience?: "beginner" | "developer" | "end-user" | "maintainer" | "expert" | undefined;
     includeParameters?: boolean | undefined;
     includeReturnValues?: boolean | undefined;
     includeErrors?: boolean | undefined;
     includeUsage?: boolean | undefined;
     contextInfo?: string | undefined;
 }, {
-    code: string;
     language: string;
+    code: string;
     docType: "function" | "api" | "module" | "class" | "readme" | "tutorial" | "guide";
     requirements?: string[] | undefined;
     style?: "markdown" | "jsdoc" | "tsdoc" | "sphinx" | "asciidoc" | "plain" | undefined;
     includeExamples?: boolean | undefined;
-    audience?: "developer" | "beginner" | "end-user" | "maintainer" | "expert" | undefined;
+    audience?: "beginner" | "developer" | "end-user" | "maintainer" | "expert" | undefined;
     includeParameters?: boolean | undefined;
     includeReturnValues?: boolean | undefined;
     includeErrors?: boolean | undefined;

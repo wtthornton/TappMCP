@@ -23,12 +23,12 @@ export declare const TemplateContextSchema: z.ZodObject<{
         complexity: z.ZodOptional<z.ZodEnum<["simple", "moderate", "complex"]>>;
     }, "strip", z.ZodTypeAny, {
         projectId?: string | undefined;
-        complexity?: "moderate" | "complex" | "simple" | undefined;
         domain?: string | undefined;
+        complexity?: "moderate" | "complex" | "simple" | undefined;
     }, {
         projectId?: string | undefined;
-        complexity?: "moderate" | "complex" | "simple" | undefined;
         domain?: string | undefined;
+        complexity?: "moderate" | "complex" | "simple" | undefined;
     }>>;
     userBehaviorProfile: z.ZodOptional<z.ZodObject<{
         preferredVerbosity: z.ZodOptional<z.ZodEnum<["concise", "moderate", "detailed"]>>;
@@ -48,11 +48,11 @@ export declare const TemplateContextSchema: z.ZodObject<{
         workflowStage: z.ZodOptional<z.ZodEnum<["planning", "implementation", "testing", "deployment"]>>;
         urgencyLevel: z.ZodOptional<z.ZodNumber>;
     }, "strip", z.ZodTypeAny, {
-        workflowStage?: "testing" | "deployment" | "planning" | "implementation" | undefined;
+        workflowStage?: "planning" | "testing" | "deployment" | "implementation" | undefined;
         relatedTools?: string[] | undefined;
         urgencyLevel?: number | undefined;
     }, {
-        workflowStage?: "testing" | "deployment" | "planning" | "implementation" | undefined;
+        workflowStage?: "planning" | "testing" | "deployment" | "implementation" | undefined;
         relatedTools?: string[] | undefined;
         urgencyLevel?: number | undefined;
     }>>;
@@ -68,8 +68,8 @@ export declare const TemplateContextSchema: z.ZodObject<{
     sessionId?: string | undefined;
     projectContext?: {
         projectId?: string | undefined;
-        complexity?: "moderate" | "complex" | "simple" | undefined;
         domain?: string | undefined;
+        complexity?: "moderate" | "complex" | "simple" | undefined;
     } | undefined;
     userBehaviorProfile?: {
         preferredVerbosity?: "detailed" | "moderate" | "concise" | undefined;
@@ -77,7 +77,7 @@ export declare const TemplateContextSchema: z.ZodObject<{
         successfulTemplateIds?: string[] | undefined;
     } | undefined;
     contextualFactors?: {
-        workflowStage?: "testing" | "deployment" | "planning" | "implementation" | undefined;
+        workflowStage?: "planning" | "testing" | "deployment" | "implementation" | undefined;
         relatedTools?: string[] | undefined;
         urgencyLevel?: number | undefined;
     } | undefined;
@@ -93,8 +93,8 @@ export declare const TemplateContextSchema: z.ZodObject<{
     timeConstraint?: "standard" | "immediate" | "thorough" | undefined;
     projectContext?: {
         projectId?: string | undefined;
-        complexity?: "moderate" | "complex" | "simple" | undefined;
         domain?: string | undefined;
+        complexity?: "moderate" | "complex" | "simple" | undefined;
     } | undefined;
     userBehaviorProfile?: {
         preferredVerbosity?: "detailed" | "moderate" | "concise" | undefined;
@@ -102,7 +102,7 @@ export declare const TemplateContextSchema: z.ZodObject<{
         successfulTemplateIds?: string[] | undefined;
     } | undefined;
     contextualFactors?: {
-        workflowStage?: "testing" | "deployment" | "planning" | "implementation" | undefined;
+        workflowStage?: "planning" | "testing" | "deployment" | "implementation" | undefined;
         relatedTools?: string[] | undefined;
         urgencyLevel?: number | undefined;
     } | undefined;
@@ -121,14 +121,14 @@ export declare const UserProfileSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     id: string;
     experienceLevel: "beginner" | "intermediate" | "advanced";
-    preferredStyle: "detailed" | "business" | "technical" | "concise";
+    preferredStyle: "technical" | "business" | "detailed" | "concise";
     commonTasks: string[];
     successPatterns: string[];
     lastActive: Date;
 }, {
     id: string;
     experienceLevel: "beginner" | "intermediate" | "advanced";
-    preferredStyle: "detailed" | "business" | "technical" | "concise";
+    preferredStyle: "technical" | "business" | "detailed" | "concise";
     commonTasks: string[];
     successPatterns: string[];
     lastActive: Date;
@@ -205,11 +205,11 @@ export declare const TemplateMetadataSchema: z.ZodObject<{
         adaptationTriggers: string[];
     }>>;
 }, "strip", z.ZodTypeAny, {
-    description: string;
-    name: string;
     id: string;
+    description: string;
     lastUpdated: Date;
     usageCount: number;
+    name: string;
     toolName: string;
     qualityScore: number;
     compressionRatio: number;
@@ -230,11 +230,11 @@ export declare const TemplateMetadataSchema: z.ZodObject<{
         adaptationTriggers: string[];
     } | undefined;
 }, {
-    description: string;
-    name: string;
     id: string;
+    description: string;
     lastUpdated: Date;
     usageCount: number;
+    name: string;
     toolName: string;
     qualityScore: number;
     compressionRatio: number;

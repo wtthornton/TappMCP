@@ -15,23 +15,23 @@ export declare const CodeReviewPromptSchema: z.ZodObject<{
     includeExamples: z.ZodOptional<z.ZodBoolean>;
     severity: z.ZodOptional<z.ZodEnum<["low", "medium", "high"]>>;
 }, "strip", z.ZodTypeAny, {
-    code: string;
     language: string;
-    reviewType: "security" | "maintainability" | "performance" | "comprehensive" | "readability";
-    severity?: "high" | "medium" | "low" | undefined;
-    requirements?: string[] | undefined;
+    code: string;
+    reviewType: "security" | "performance" | "maintainability" | "comprehensive" | "readability";
     context?: string | undefined;
+    severity?: "low" | "medium" | "high" | undefined;
+    requirements?: string[] | undefined;
     focusAreas?: string[] | undefined;
     standards?: string[] | undefined;
     includeSuggestions?: boolean | undefined;
     includeExamples?: boolean | undefined;
 }, {
-    code: string;
     language: string;
-    reviewType: "security" | "maintainability" | "performance" | "comprehensive" | "readability";
-    severity?: "high" | "medium" | "low" | undefined;
-    requirements?: string[] | undefined;
+    code: string;
+    reviewType: "security" | "performance" | "maintainability" | "comprehensive" | "readability";
     context?: string | undefined;
+    severity?: "low" | "medium" | "high" | undefined;
+    requirements?: string[] | undefined;
     focusAreas?: string[] | undefined;
     standards?: string[] | undefined;
     includeSuggestions?: boolean | undefined;

@@ -68,8 +68,8 @@ export declare const ApiResourceSchema: z.ZodObject<{
 }, {
     url: string;
     method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
-    params?: Record<string, string> | undefined;
     timeout?: number | undefined;
+    params?: Record<string, string> | undefined;
     auth?: {
         type: "basic" | "bearer" | "api-key" | "oauth2";
         token?: string | undefined;

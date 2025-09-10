@@ -23,7 +23,10 @@ const TOOLS = {
     smart_write: { tool: smartWriteTool, handler: handleSmartWrite },
     smart_finish: { tool: smartFinishTool, handler: handleSmartFinish },
     smart_orchestrate: { tool: smartOrchestrateTool, handler: handleSmartOrchestrate },
-    smart_converse: { tool: smartConverseTool, handler: handleSmartConverse },
+    smart_converse: {
+        tool: smartConverseTool,
+        handler: handleSmartConverse,
+    },
 };
 // Input validation schema
 const ToolInputSchema = z.object({

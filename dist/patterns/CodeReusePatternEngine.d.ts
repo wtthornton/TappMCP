@@ -65,18 +65,18 @@ declare const CodePatternSchema: z.ZodObject<{
         potentialSavings: number;
     }>;
 }, "strip", z.ZodTypeAny, {
-    description: string;
-    name: string;
-    complexity: "high" | "medium" | "low";
-    id: string;
     pattern: string;
+    id: string;
+    description: string;
+    category: "function" | "testing" | "type" | "module" | "utility" | "class" | "control-flow" | "error-handling" | "async";
+    name: string;
+    complexity: "low" | "medium" | "high";
     metrics: {
         tokensPerUse: number;
         avgComplexity: number;
         reuseOpportunities: number;
         potentialSavings: number;
     };
-    category: "function" | "type" | "testing" | "module" | "utility" | "class" | "control-flow" | "error-handling" | "async";
     dependencies: string[];
     variables: {
         type: string;
@@ -86,18 +86,18 @@ declare const CodePatternSchema: z.ZodObject<{
     examples: string[];
     abstractPattern: string;
 }, {
-    description: string;
-    name: string;
-    complexity: "high" | "medium" | "low";
-    id: string;
     pattern: string;
+    id: string;
+    description: string;
+    category: "function" | "testing" | "type" | "module" | "utility" | "class" | "control-flow" | "error-handling" | "async";
+    name: string;
+    complexity: "low" | "medium" | "high";
     metrics: {
         tokensPerUse: number;
         avgComplexity: number;
         reuseOpportunities: number;
         potentialSavings: number;
     };
-    category: "function" | "type" | "testing" | "module" | "utility" | "class" | "control-flow" | "error-handling" | "async";
     dependencies: string[];
     variables: {
         type: string;
@@ -117,19 +117,19 @@ declare const PatternSuggestionSchema: z.ZodObject<{
     rationale: z.ZodString;
     context: z.ZodRecord<z.ZodString, z.ZodUnknown>;
 }, "strip", z.ZodTypeAny, {
-    code: string;
     id: string;
-    context: Record<string, unknown>;
     confidence: number;
+    context: Record<string, unknown>;
+    code: string;
     patternId: string;
     similarity: number;
     suggestedReplacement: string;
     rationale: string;
 }, {
-    code: string;
     id: string;
-    context: Record<string, unknown>;
     confidence: number;
+    context: Record<string, unknown>;
+    code: string;
     patternId: string;
     similarity: number;
     suggestedReplacement: string;

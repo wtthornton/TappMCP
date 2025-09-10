@@ -29,14 +29,14 @@ export declare const StakeholderSchema: z.ZodObject<{
     role: string;
     name: string;
     requirements: string[];
-    influence: "high" | "medium" | "low";
-    interest: "high" | "medium" | "low";
+    influence: "low" | "medium" | "high";
+    interest: "low" | "medium" | "high";
 }, {
     role: string;
     name: string;
     requirements: string[];
-    influence: "high" | "medium" | "low";
-    interest: "high" | "medium" | "low";
+    influence: "low" | "medium" | "high";
+    interest: "low" | "medium" | "high";
 }>;
 export declare const ComplexityAssessmentSchema: z.ZodObject<{
     technical: z.ZodEnum<["low", "medium", "high", "very-high"]>;
@@ -45,16 +45,16 @@ export declare const ComplexityAssessmentSchema: z.ZodObject<{
     overall: z.ZodEnum<["low", "medium", "high", "very-high"]>;
     factors: z.ZodArray<z.ZodString, "many">;
 }, "strip", z.ZodTypeAny, {
-    business: "high" | "medium" | "low" | "very-high";
-    technical: "high" | "medium" | "low" | "very-high";
-    integration: "high" | "medium" | "low" | "very-high";
-    overall: "high" | "medium" | "low" | "very-high";
+    technical: "low" | "medium" | "high" | "very-high";
+    business: "low" | "medium" | "high" | "very-high";
+    integration: "low" | "medium" | "high" | "very-high";
+    overall: "low" | "medium" | "high" | "very-high";
     factors: string[];
 }, {
-    business: "high" | "medium" | "low" | "very-high";
-    technical: "high" | "medium" | "low" | "very-high";
-    integration: "high" | "medium" | "low" | "very-high";
-    overall: "high" | "medium" | "low" | "very-high";
+    technical: "low" | "medium" | "high" | "very-high";
+    business: "low" | "medium" | "high" | "very-high";
+    integration: "low" | "medium" | "high" | "very-high";
+    overall: "low" | "medium" | "high" | "very-high";
     factors: string[];
 }>;
 export declare const RiskSchema: z.ZodObject<{
@@ -67,22 +67,22 @@ export declare const RiskSchema: z.ZodObject<{
     severity: z.ZodEnum<["low", "medium", "high", "critical"]>;
     mitigation: z.ZodArray<z.ZodString, "many">;
 }, "strip", z.ZodTypeAny, {
-    description: string;
-    name: string;
     id: string;
-    severity: "high" | "medium" | "low" | "critical";
-    category: "timeline" | "business" | "quality" | "technical" | "resource";
-    impact: "high" | "medium" | "low";
-    probability: "high" | "medium" | "low";
+    description: string;
+    category: "technical" | "business" | "timeline" | "quality" | "resource";
+    impact: "low" | "medium" | "high";
+    name: string;
+    severity: "low" | "medium" | "high" | "critical";
+    probability: "low" | "medium" | "high";
     mitigation: string[];
 }, {
-    description: string;
-    name: string;
     id: string;
-    severity: "high" | "medium" | "low" | "critical";
-    category: "timeline" | "business" | "quality" | "technical" | "resource";
-    impact: "high" | "medium" | "low";
-    probability: "high" | "medium" | "low";
+    description: string;
+    category: "technical" | "business" | "timeline" | "quality" | "resource";
+    impact: "low" | "medium" | "high";
+    name: string;
+    severity: "low" | "medium" | "high" | "critical";
+    probability: "low" | "medium" | "high";
     mitigation: string[];
 }>;
 export declare const UserStorySchema: z.ZodObject<{
@@ -96,21 +96,21 @@ export declare const UserStorySchema: z.ZodObject<{
     priority: z.ZodEnum<["low", "medium", "high", "critical"]>;
     estimatedEffort: z.ZodNumber;
 }, "strip", z.ZodTypeAny, {
-    description: string;
-    priority: "high" | "medium" | "low" | "critical";
-    estimatedEffort: number;
+    priority: "low" | "medium" | "high" | "critical";
     id: string;
     title: string;
+    description: string;
+    estimatedEffort: number;
     asA: string;
     iWant: string;
     soThat: string;
     acceptanceCriteria: string[];
 }, {
-    description: string;
-    priority: "high" | "medium" | "low" | "critical";
-    estimatedEffort: number;
+    priority: "low" | "medium" | "high" | "critical";
     id: string;
     title: string;
+    description: string;
+    estimatedEffort: number;
     asA: string;
     iWant: string;
     soThat: string;
