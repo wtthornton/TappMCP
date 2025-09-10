@@ -1,7 +1,7 @@
 {
   "name": "smart-mcp",
-  "version": "0.1.0",
-  "description": "AI-assisted MCP server with role-based development",
+  "version": "2.0.0",
+  "description": "AI-powered development assistant with real analysis capabilities, Context7 intelligence, and comprehensive workflow orchestration",
   "type": "module",
   "main": "dist/server.js",
   "scripts": {
@@ -68,6 +68,13 @@
     "mcp",
     "ai",
     "development",
+    "assistant",
+    "analysis",
+    "context7",
+    "workflow",
+    "automation",
+    "security",
+    "validation",
     "cursor",
     "claude"
   ],

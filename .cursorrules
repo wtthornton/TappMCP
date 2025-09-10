@@ -1,11 +1,14 @@
-# Smart MCP Project - Role-Based AI Assistant Configuration
+# TappMCP - AI-Powered Development Assistant Configuration
 
-## 🎯 Project Standards Compliance
-This configuration ensures all AI assistance follows CLAUDE.md standards:
+## 🎯 Project Overview
+TappMCP is a genuine AI-powered development assistant with real analysis capabilities, Context7 intelligence, and comprehensive workflow orchestration. This configuration ensures all AI assistance follows CLAUDE.md standards:
+- **Real Analysis Integration**: SecurityScanner, StaticAnalyzer, ProjectScanner with SimpleAnalyzer coordination
+- **Context7 Intelligence**: Project-aware dynamic insights and patterns
+- **Workflow Orchestration**: Complete SDLC automation (Analysis → Context7 → Generation → Validation)
 - **Schema-locked I/O**: All tool calls use JSON Schemas
-- **Security-first**: No secrets in repo, mandatory vulnerability scanning
+- **Security-first**: Real vulnerability detection and prevention
 - **Quality standards**: ≤400 lines per turn, ≥85% test coverage
-- **Performance targets**: <100ms response time, complexity ≤10
+- **Performance targets**: <2s analysis time, <100ms response time, complexity ≤10
 
 ## 🚀 Role Switching Commands
 Use these natural language commands to switch between roles:
@@ -57,11 +60,14 @@ AI-assisted development ensuring code quality, security, and efficiency through 
 - Security scans: OSV-Scanner and Semgrep integration
 
 ### 🎯 AI Assistance Priorities
-1. **Code Generation**: TypeScript/Node.js with proper error handling
-2. **Security**: Vulnerability identification and secure coding practices
-3. **Performance**: Optimization recommendations and benchmarking
-4. **Quality**: Test case generation and coverage analysis
-5. **Architecture**: Schema-locked I/O and modular design patterns
+1. **Real Analysis**: Use SecurityScanner, StaticAnalyzer, SimpleAnalyzer for genuine insights
+2. **Context7 Intelligence**: Leverage project-aware Context7 integration for better code generation
+3. **Workflow Orchestration**: Utilize SimpleSDLCWorkflow for complete development cycles
+4. **Code Generation**: TypeScript/Node.js with real-time validation and Context7 patterns
+5. **Security**: Real vulnerability detection using CodeValidator and security patterns
+6. **Performance**: <2s analysis, parallel execution optimization
+7. **Quality**: Real metrics calculation and comprehensive test coverage
+8. **Architecture**: Schema-locked I/O and modular design patterns
 
 ### 🛠️ Code Standards
 - **TypeScript Strict**: Full strict mode compliance
