@@ -28,6 +28,10 @@ vi.mock('./tools/smart-orchestrate.js', () => ({
     smartOrchestrateTool: { name: 'smart_orchestrate', description: 'Test tool' },
     handleSmartOrchestrate: vi.fn(),
 }));
+vi.mock('./tools/smart-converse.js', () => ({
+    smartConverseTool: { name: 'smart_converse', description: 'Test tool' },
+    handleSmartConverse: vi.fn(),
+}));
 // Mock error utilities
 vi.mock('./utils/errors.js', () => ({
     handleError: vi.fn(error => ({ ...error, code: 'MOCK_ERROR' })),
@@ -78,7 +82,7 @@ describe('SmartMCPServer', () => {
             const result = await listToolsHandler();
             expect(result).toHaveProperty('tools');
             expect(Array.isArray(result.tools)).toBe(true);
-            expect(result.tools).toHaveLength(5);
+            expect(result.tools).toHaveLength(6);
         });
     });
     describe('Tool Execution', () => {

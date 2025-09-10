@@ -64,7 +64,11 @@
       "Bash(tar:*)",
       "Read(//c/cursor/**)",
       "Bash(timeout 5s npx @modelcontextprotocol/server-filesystem@latest)",
-      "Bash(NODE_ENV=test npx vitest run src/prompts/documentation-prompt.test.ts --reporter=verbose)"
+      "Bash(NODE_ENV=test npx vitest run src/prompts/documentation-prompt.test.ts --reporter=verbose)",
+      "Bash(git restore:*)",
+      "Bash(timeout:*)",
+      "Bash(npm start)",
+      "Bash(npm ci:*)"
     ],
     "deny": [],
     "ask": []

@@ -115,9 +115,9 @@ export declare const ApiResourceResponseSchema: z.ZodObject<{
     }>>;
 }, "strip", z.ZodTypeAny, {
     success: boolean;
+    error?: string | undefined;
     status?: number | undefined;
     data?: any;
-    error?: string | undefined;
     headers?: Record<string, string> | undefined;
     statusText?: string | undefined;
     executionTime?: number | undefined;
@@ -129,9 +129,9 @@ export declare const ApiResourceResponseSchema: z.ZodObject<{
     } | undefined;
 }, {
     success: boolean;
+    error?: string | undefined;
     status?: number | undefined;
     data?: any;
-    error?: string | undefined;
     headers?: Record<string, string> | undefined;
     statusText?: string | undefined;
     executionTime?: number | undefined;

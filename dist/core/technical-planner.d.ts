@@ -10,13 +10,13 @@ export declare const ArchitectureSchema: z.ZodObject<{
         complexity: z.ZodEnum<["low", "medium", "high"]>;
     }, "strip", z.ZodTypeAny, {
         description: string;
-        type: "database" | "service" | "external" | "frontend" | "backend";
+        type: "database" | "service" | "backend" | "frontend" | "external";
         name: string;
         complexity: "high" | "medium" | "low";
         dependencies: string[];
     }, {
         description: string;
-        type: "database" | "service" | "external" | "frontend" | "backend";
+        type: "database" | "service" | "backend" | "frontend" | "external";
         name: string;
         complexity: "high" | "medium" | "low";
         dependencies: string[];
@@ -40,7 +40,7 @@ export declare const ArchitectureSchema: z.ZodObject<{
     constraints: string[];
     components: {
         description: string;
-        type: "database" | "service" | "external" | "frontend" | "backend";
+        type: "database" | "service" | "backend" | "frontend" | "external";
         name: string;
         complexity: "high" | "medium" | "low";
         dependencies: string[];
@@ -55,7 +55,7 @@ export declare const ArchitectureSchema: z.ZodObject<{
     constraints: string[];
     components: {
         description: string;
-        type: "database" | "service" | "external" | "frontend" | "backend";
+        type: "database" | "service" | "backend" | "frontend" | "external";
         name: string;
         complexity: "high" | "medium" | "low";
         dependencies: string[];
@@ -154,14 +154,14 @@ export declare const DependencySchema: z.ZodObject<{
     description: string;
     type: "blocks" | "requires" | "enables" | "influences";
     id: string;
-    to: string;
     from: string;
+    to: string;
 }, {
     description: string;
     type: "blocks" | "requires" | "enables" | "influences";
     id: string;
-    to: string;
     from: string;
+    to: string;
 }>;
 export declare const TimelineSchema: z.ZodObject<{
     phases: z.ZodArray<z.ZodObject<{

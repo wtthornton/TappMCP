@@ -22,6 +22,6 @@
     "noUnusedLocals": false,
     "noUnusedParameters": true
   },
-  "include": ["src/**/*", "src/**/*.test.ts"],
-  "exclude": ["node_modules", "dist", "archived"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "archived", "src/**/*.test.ts"]
 }

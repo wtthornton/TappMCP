@@ -19,6 +19,7 @@ import { smartPlanTool, handleSmartPlan } from './tools/smart-plan.js';
 import { smartWriteTool, handleSmartWrite } from './tools/smart-write.js';
 import { smartFinishTool, handleSmartFinish } from './tools/smart-finish.js';
 import { smartOrchestrateTool, handleSmartOrchestrate } from './tools/smart-orchestrate.js';
+import { smartConverseTool, handleSmartConverse } from './tools/smart-converse.js';
 
 // Server configuration
 const SERVER_NAME = 'smart-mcp';
@@ -31,6 +32,10 @@ const TOOLS: Record<string, { tool: Tool; handler: (input: unknown) => Promise<u
   smart_write: { tool: smartWriteTool, handler: handleSmartWrite },
   smart_finish: { tool: smartFinishTool, handler: handleSmartFinish },
   smart_orchestrate: { tool: smartOrchestrateTool, handler: handleSmartOrchestrate },
+  smart_converse: {
+    tool: smartConverseTool,
+    handler: handleSmartConverse as (input: unknown) => Promise<unknown>,
+  },
 };
 
 // Input validation schema

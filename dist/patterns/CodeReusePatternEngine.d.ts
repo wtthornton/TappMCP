@@ -76,7 +76,7 @@ declare const CodePatternSchema: z.ZodObject<{
         reuseOpportunities: number;
         potentialSavings: number;
     };
-    category: "function" | "type" | "testing" | "class" | "control-flow" | "error-handling" | "async" | "module" | "utility";
+    category: "function" | "type" | "testing" | "module" | "utility" | "class" | "control-flow" | "error-handling" | "async";
     dependencies: string[];
     variables: {
         type: string;
@@ -97,7 +97,7 @@ declare const CodePatternSchema: z.ZodObject<{
         reuseOpportunities: number;
         potentialSavings: number;
     };
-    category: "function" | "type" | "testing" | "class" | "control-flow" | "error-handling" | "async" | "module" | "utility";
+    category: "function" | "type" | "testing" | "module" | "utility" | "class" | "control-flow" | "error-handling" | "async";
     dependencies: string[];
     variables: {
         type: string;

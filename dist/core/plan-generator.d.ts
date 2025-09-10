@@ -130,13 +130,13 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
             complexity: z.ZodEnum<["low", "medium", "high"]>;
         }, "strip", z.ZodTypeAny, {
             description: string;
-            type: "database" | "service" | "external" | "frontend" | "backend";
+            type: "database" | "service" | "backend" | "frontend" | "external";
             name: string;
             complexity: "high" | "medium" | "low";
             dependencies: string[];
         }, {
             description: string;
-            type: "database" | "service" | "external" | "frontend" | "backend";
+            type: "database" | "service" | "backend" | "frontend" | "external";
             name: string;
             complexity: "high" | "medium" | "low";
             dependencies: string[];
@@ -160,7 +160,7 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         constraints: string[];
         components: {
             description: string;
-            type: "database" | "service" | "external" | "frontend" | "backend";
+            type: "database" | "service" | "backend" | "frontend" | "external";
             name: string;
             complexity: "high" | "medium" | "low";
             dependencies: string[];
@@ -175,7 +175,7 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         constraints: string[];
         components: {
             description: string;
-            type: "database" | "service" | "external" | "frontend" | "backend";
+            type: "database" | "service" | "backend" | "frontend" | "external";
             name: string;
             complexity: "high" | "medium" | "low";
             dependencies: string[];
@@ -498,16 +498,16 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         qualityImprovement: z.ZodNumber;
         costSavings: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
-        timeToMarket: number;
-        qualityImprovement: number;
-        riskMitigation: number;
         estimatedROI: number;
+        timeToMarket: number;
+        riskMitigation: number;
+        qualityImprovement: number;
         costSavings: number;
     }, {
-        timeToMarket: number;
-        qualityImprovement: number;
-        riskMitigation: number;
         estimatedROI: number;
+        timeToMarket: number;
+        riskMitigation: number;
+        qualityImprovement: number;
         costSavings: number;
     }>;
     qualityGates: z.ZodArray<z.ZodObject<{
@@ -535,10 +535,10 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
     }[];
     nextSteps: string[];
     businessValue: {
-        timeToMarket: number;
-        qualityImprovement: number;
-        riskMitigation: number;
         estimatedROI: number;
+        timeToMarket: number;
+        riskMitigation: number;
+        qualityImprovement: number;
         costSavings: number;
     };
     timeline: {
@@ -622,7 +622,7 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         constraints: string[];
         components: {
             description: string;
-            type: "database" | "service" | "external" | "frontend" | "backend";
+            type: "database" | "service" | "backend" | "frontend" | "external";
             name: string;
             complexity: "high" | "medium" | "low";
             dependencies: string[];
@@ -667,10 +667,10 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
     }[];
     nextSteps: string[];
     businessValue: {
-        timeToMarket: number;
-        qualityImprovement: number;
-        riskMitigation: number;
         estimatedROI: number;
+        timeToMarket: number;
+        riskMitigation: number;
+        qualityImprovement: number;
         costSavings: number;
     };
     timeline: {
@@ -754,7 +754,7 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         constraints: string[];
         components: {
             description: string;
-            type: "database" | "service" | "external" | "frontend" | "backend";
+            type: "database" | "service" | "backend" | "frontend" | "external";
             name: string;
             complexity: "high" | "medium" | "low";
             dependencies: string[];

@@ -83,7 +83,7 @@ This is a Model Context Protocol (MCP) server built with TypeScript and Node.js.
 
 **Core Structure:**
 - `src/server.ts` - Main MCP server implementation with tool registry
-- `src/tools/` - MCP tool implementations (smart-begin, smart-plan, smart-write, smart-finish, smart-orchestrate)
+- `src/tools/` - MCP tool implementations (smart-begin, smart-plan, smart-write, smart-finish, smart-orchestrate, smart-converse)
 - `src/core/` - Core utilities and shared logic
 - `src/types/` - TypeScript type definitions
 
@@ -97,6 +97,14 @@ This is a Model Context Protocol (MCP) server built with TypeScript and Node.js.
 - Test-Driven Development (TDD) approach
 - TypeScript strict mode enabled - explicit typing required for all parameters
 - Schema-locked I/O for all tool interactions
+
+**Tools Overview:**
+- `smart_converse` - Natural language interface that converts conversations to project setup
+- `smart_begin` - Initialize projects with proper structure and quality gates
+- `smart_plan` - Generate comprehensive project plans and roadmaps
+- `smart_write` - Implement features with AI-assisted code generation
+- `smart_finish` - Complete projects with testing and documentation
+- `smart_orchestrate` - Coordinate complex multi-tool workflows
 
 ## Quality Standards
 

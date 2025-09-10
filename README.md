@@ -42,6 +42,49 @@ Complete projects with quality assurance and documentation.
 ### smart-orchestrate
 Coordinate complex multi-step workflows.
 
+### smart-converse
+Natural language interface for conversational project setup and interaction.
+
+## 💬 Smart Converse Usage
+
+The `smart_converse` tool provides a natural language interface to TappMCP:
+
+```javascript
+// Example conversations
+"I want to create a React web application called MyApp"
+"Build a Python API service with FastAPI"
+"Design a mobile application for iOS"
+"Create a TypeScript library for data processing"
+```
+
+**Supported Project Types:**
+- `web-app` - Websites, web applications, frontends
+- `api-service` - APIs, backends, REST services
+- `mobile-app` - iOS, Android, React Native apps
+- `library` - Packages, modules, SDKs, frameworks
+
+**Supported Tech Stacks:**
+- **Frontend**: React, Vue, Angular
+- **Backend**: Node.js, Python (Django/Flask/FastAPI)
+- **Language**: TypeScript, JavaScript
+- **Mobile**: React Native
+
+**Supported Roles:**
+- `developer` - Code implementation and development
+- `designer` - UI/UX design and interfaces
+- `qa-engineer` - Testing and quality assurance
+- `operations-engineer` - DevOps, deployment, CI/CD
+- `product-strategist` - Strategy and planning
+
+### Example Responses
+
+Smart Converse returns formatted responses with:
+- ✅ Project initialization confirmation
+- 📋 Detected project details and tech stack
+- 💰 Business value estimation (cost prevention, time saved)
+- 🎯 Next steps and recommendations
+- 📊 Workflow phases for implementation
+
 ## 📋 Requirements
 
 - Node.js v18+

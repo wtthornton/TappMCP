@@ -41,12 +41,12 @@ RUN mkdir -p /app/data && chown -R smartmcp:nodejs /app/data
 # Switch to non-root user
 USER smartmcp
 
-# Expose port
-EXPOSE 3000
+# Expose ports
+EXPOSE 3000 3001
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })" || exit 1
+  CMD node -e "require('http').get('http://localhost:3001/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })" || exit 1
 
 # Start the application
 CMD ["node", "dist/server.js"]

@@ -57,8 +57,8 @@ export declare const FileResourceResponseSchema: z.ZodObject<{
     error: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     success: boolean;
-    data?: string | undefined;
     error?: string | undefined;
+    data?: string | undefined;
     metadata?: {
         path: string;
         size: number;
@@ -68,8 +68,8 @@ export declare const FileResourceResponseSchema: z.ZodObject<{
     } | undefined;
 }, {
     success: boolean;
-    data?: string | undefined;
     error?: string | undefined;
+    data?: string | undefined;
     metadata?: {
         path: string;
         size: number;

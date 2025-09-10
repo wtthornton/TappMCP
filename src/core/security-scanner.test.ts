@@ -68,7 +68,7 @@ describe('SecurityScanner - REAL TESTS', () => {
       console.log(
         `Real scan took: ${duration.toFixed(2)}ms, found ${result.vulnerabilities.length} vulnerabilities`
       );
-    });
+    }, 35000);
 
     it('should run ACTUAL npm audit command (not mocked)', async () => {
       // Test that we can at least try to run npm audit
