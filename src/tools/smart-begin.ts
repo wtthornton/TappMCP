@@ -5,6 +5,9 @@ import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { Context7Broker } from '../brokers/context7-broker.js';
 import { Context7Cache } from '../core/context7-cache.js';
 import { enhanceWithContext7 } from '../utils/context7-enhancer.js';
+import { SecurityScanner } from '../core/security-scanner.js';
+import { StaticAnalyzer } from '../core/static-analyzer.js';
+import { ProjectScanner } from '../core/project-scanner.js';
 
 // Input schema for smart_begin tool
 const SmartBeginInputSchema = z.object({
@@ -218,10 +221,10 @@ export const smartBeginTool: Tool = {
 //   qualityImprovements: string[];
 // }
 
-// Simple project scanner for existing projects
+// Enhanced project scanner with real analysis integration
 async function scanExistingProject(
   projectPath: string,
-  _analysisDepth: 'quick' | 'standard' | 'deep'
+  analysisDepth: 'quick' | 'standard' | 'deep'
 ): Promise<{
   projectStructure: {
     folders: string[];
@@ -237,12 +240,109 @@ async function scanExistingProject(
   detectedTechStack: string[];
   qualityIssues: string[];
   improvementOpportunities: string[];
+  securityAnalysis?: {
+    status: 'pass' | 'fail' | 'warning';
+    vulnerabilities: Array<any>;
+    summary: {
+      total: number;
+      critical: number;
+      high: number;
+      moderate: number;
+      low: number;
+    };
+  };
+  staticAnalysis?: {
+    status: 'pass' | 'fail' | 'warning';
+    issues: Array<any>;
+    metrics: {
+      complexity: number;
+      maintainability: number;
+      duplication: number;
+    };
+  };
 }> {
-  // For now, return a basic structure - this will be enhanced in Phase 2
+  // Integrated real analysis tools
   const fs = await import('fs/promises');
   const path = await import('path');
 
   try {
+    // Initialize analyzers
+    const securityScanner = new SecurityScanner(projectPath);
+    const staticAnalyzer = new StaticAnalyzer(projectPath);
+    const projectScanner = new ProjectScanner();
+
+    // Run analysis tools in parallel for better performance
+    const [securityResult, staticResult, projectResult] = await Promise.all([
+      securityScanner.runSecurityScan().catch(err => {
+        console.warn('Security scan failed:', err);
+        return null;
+      }),
+      staticAnalyzer.runStaticAnalysis().catch(err => {
+        console.warn('Static analysis failed:', err);
+        return null;
+      }),
+      projectScanner.scanProject(projectPath, analysisDepth).catch(err => {
+        console.warn('Project scan failed:', err);
+        return null;
+      })
+    ]);
+
+    // Use ProjectScanner results as base if available
+    if (projectResult) {
+      const qualityIssues: string[] = [...projectResult.qualityIssues];
+      const improvementOpportunities: string[] = [...projectResult.improvementOpportunities];
+
+      // Add security scan results
+      if (securityResult) {
+        if (securityResult.summary.critical > 0) {
+          qualityIssues.push(`${securityResult.summary.critical} critical security vulnerabilities found`);
+        }
+        if (securityResult.summary.high > 0) {
+          qualityIssues.push(`${securityResult.summary.high} high security vulnerabilities found`);
+        }
+        securityResult.vulnerabilities.forEach(vuln => {
+          if (vuln.severity === 'critical' || vuln.severity === 'high') {
+            improvementOpportunities.push(`Fix ${vuln.severity} vulnerability in ${vuln.package}: ${vuln.description}`);
+          }
+        });
+      }
+
+      // Add static analysis results
+      if (staticResult) {
+        if (staticResult.metrics.complexity > 10) {
+          qualityIssues.push(`High complexity score: ${staticResult.metrics.complexity}`);
+          improvementOpportunities.push('Reduce code complexity for better maintainability');
+        }
+        if (staticResult.metrics.duplication > 5) {
+          qualityIssues.push(`Code duplication detected: ${staticResult.metrics.duplication}%`);
+          improvementOpportunities.push('Refactor duplicated code');
+        }
+        staticResult.issues.forEach(issue => {
+          if (issue.severity === 'error') {
+            qualityIssues.push(`${issue.rule}: ${issue.message} at ${issue.file}:${issue.line}`);
+          }
+        });
+      }
+
+      return {
+        projectStructure: projectResult.projectStructure,
+        detectedTechStack: projectResult.detectedTechStack,
+        qualityIssues,
+        improvementOpportunities,
+        ...(securityResult && { securityAnalysis: {
+          status: securityResult.status,
+          vulnerabilities: securityResult.vulnerabilities,
+          summary: securityResult.summary
+        }}),
+        ...(staticResult && { staticAnalysis: {
+          status: staticResult.status,
+          issues: staticResult.issues,
+          metrics: staticResult.metrics
+        }})
+      };
+    }
+
+    // Fallback to original implementation if ProjectScanner fails
     const entries = await fs.readdir(projectPath, { withFileTypes: true });
     const folders: string[] = [];
     const files: string[] = [];
@@ -798,11 +898,12 @@ export async function handleSmartBegin(input: unknown): Promise<{
     let detectedTechStack = validatedInput.techStack;
     let qualityIssues: string[] = [];
     let improvementOpportunities: string[] = [];
+    let scanResult: any = null;
 
     // Handle different modes
     if (validatedInput.mode === 'analyze-existing') {
-      // Scan existing project
-      const scanResult = await scanExistingProject(
+      // Scan existing project with real analysis
+      scanResult = await scanExistingProject(
         validatedInput.existingProjectPath!,
         validatedInput.analysisDepth
       );
@@ -855,18 +956,38 @@ export async function handleSmartBegin(input: unknown): Promise<{
       businessValue.qualityImprovements.push(...improvementOpportunities);
     }
 
-    // Calculate technical metrics
+    // Calculate technical metrics with real analysis data
     const responseTime = Date.now() - startTime;
+    let securityScore = 95;
+    let complexityScore = 85;
+
+    if (validatedInput.mode === 'analyze-existing' && scanResult) {
+      // Use real security analysis if available
+      if (scanResult.securityAnalysis) {
+        const { summary } = scanResult.securityAnalysis;
+        securityScore = scanResult.securityAnalysis.status === 'pass' ? 95 :
+          Math.max(60, 95 - summary.critical * 10 - summary.high * 5 - summary.moderate * 2);
+      } else {
+        // Fallback to quality issues based scoring
+        securityScore = Math.max(60, 95 - qualityIssues.length * 5);
+      }
+
+      // Use real static analysis if available
+      if (scanResult.staticAnalysis) {
+        const { metrics } = scanResult.staticAnalysis;
+        complexityScore = metrics.complexity > 10 ?
+          Math.max(50, 100 - metrics.complexity * 5) :
+          Math.max(70, 100 - metrics.complexity * 2);
+      } else {
+        // Fallback to quality issues based scoring
+        complexityScore = Math.max(50, 85 - qualityIssues.length * 3);
+      }
+    }
+
     const technicalMetrics = {
       responseTime,
-      securityScore:
-        validatedInput.mode === 'analyze-existing'
-          ? Math.max(60, 95 - qualityIssues.length * 5)
-          : 95,
-      complexityScore:
-        validatedInput.mode === 'analyze-existing'
-          ? Math.max(50, 85 - qualityIssues.length * 3)
-          : 85,
+      securityScore,
+      complexityScore,
     };
 
     // Generate process compliance validation

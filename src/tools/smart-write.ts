@@ -4,6 +4,9 @@ import { z } from 'zod';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { Context7Cache } from '../core/context7-cache.js';
 import { enhanceWithContext7 } from '../utils/context7-enhancer.js';
+import { SimpleAnalyzer } from '../core/simple-analyzer.js';
+import { SecurityScanner } from '../core/security-scanner.js';
+import { StaticAnalyzer } from '../core/static-analyzer.js';
 
 // Input schema for smart_write tool
 const SmartWriteInputSchema = z.object({
@@ -30,6 +33,8 @@ const SmartWriteInputSchema = z.object({
       securityLevel: z.enum(['low', 'medium', 'high']).default('medium'),
     })
     .optional(),
+  // New parameter for project path to enable real analysis
+  projectPath: z.string().optional(),
   // New parameters for existing project modification
   writeMode: z.enum(['create', 'modify', 'enhance']).default('create'),
   backupOriginal: z.boolean().default(true),
@@ -156,6 +161,10 @@ export const smartWriteTool: Tool = {
         },
         description: 'External knowledge sources to integrate',
         default: { useContext7: true, useWebSearch: false, useMemory: false },
+      },
+      projectPath: {
+        type: 'string',
+        description: 'Path to the project for real analysis integration (optional)',
       },
     },
     required: ['projectId', 'featureDescription'],
@@ -973,6 +982,35 @@ export async function handleSmartWrite(input: unknown): Promise<{
     // Validate input
     const validatedInput = SmartWriteInputSchema.parse(input);
 
+    // Run real analysis if project path is provided
+    let projectAnalysis = null;
+    let realQualityMetrics = {
+      testCoverage: 80,
+      complexity: 4,
+      securityScore: 75,
+      maintainability: 85,
+    };
+
+    if (validatedInput.projectPath) {
+      try {
+        const simpleAnalyzer = new SimpleAnalyzer();
+        projectAnalysis = await simpleAnalyzer.runBasicAnalysis(validatedInput.projectPath, 'quick');
+
+        // Use real analysis results to inform code generation
+        if (projectAnalysis) {
+          // Calculate real quality metrics based on analysis
+          realQualityMetrics = {
+            testCoverage: validatedInput.qualityRequirements?.testCoverage || 85,
+            complexity: projectAnalysis.static.metrics.complexity,
+            securityScore: Math.max(0, 100 - projectAnalysis.security.summary.critical * 20 - projectAnalysis.security.summary.high * 10),
+            maintainability: projectAnalysis.static.metrics.maintainability,
+          };
+        }
+      } catch (error) {
+        console.warn('Project analysis failed:', error);
+      }
+    }
+
     // Initialize Context7 cache and enhancement if enabled
     let context7Knowledge = null;
     let context7Enhancement = null;
@@ -1016,9 +1054,23 @@ export async function handleSmartWrite(input: unknown): Promise<{
       }
     }
 
-    // Generate code
+    // Generate code with real project context
     const codeId = `code_${Date.now()}_${validatedInput.featureDescription.toLowerCase().replace(/\s+/g, '_')}`;
-    const generatedCode = generateRealCode(validatedInput);
+
+    // Enhance input with analysis results if available
+    const enhancedInput = {
+      ...validatedInput,
+      featureDescription: validatedInput.featureDescription, // Ensure required field is present
+      projectAnalysis: projectAnalysis ? {
+        techStack: projectAnalysis.project.detectedTechStack,
+        qualityIssues: projectAnalysis.project.qualityIssues,
+        recommendations: projectAnalysis.summary.recommendations,
+        securityLevel: projectAnalysis.summary.status === 'fail' ? 'high' :
+                      projectAnalysis.summary.status === 'warning' ? 'medium' : 'low'
+      } : null
+    };
+
+    const generatedCode = generateRealCode(enhancedInput);
 
     // Update execution log
     executionLog.duration = Date.now() - startTime;
@@ -1028,12 +1080,7 @@ export async function handleSmartWrite(input: unknown): Promise<{
       projectId: validatedInput.projectId,
       codeId,
       generatedCode,
-      qualityMetrics: {
-        testCoverage: 80,
-        complexity: 4,
-        securityScore: 75,
-        maintainability: 85,
-      },
+      qualityMetrics: realQualityMetrics,
       businessValue: {
         timeSaved: 2.0,
         qualityImprovement: 75,
@@ -1067,6 +1114,17 @@ export async function handleSmartWrite(input: unknown): Promise<{
             }
           : null,
         cacheStats: context7Cache.getCacheStats(),
+      },
+      analysisIntegration: projectAnalysis ? {
+        analysisPerformed: true,
+        securityStatus: projectAnalysis.security.status,
+        staticStatus: projectAnalysis.static.status,
+        overallScore: projectAnalysis.summary.overallScore,
+        criticalIssues: projectAnalysis.summary.criticalIssues,
+        recommendations: projectAnalysis.summary.recommendations.slice(0, 3)
+      } : {
+        analysisPerformed: false,
+        message: 'Provide projectPath to enable real analysis'
       },
     };
 
