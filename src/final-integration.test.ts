@@ -246,6 +246,10 @@ describe('Day 5: Final Integration Testing - Production Readiness', () => {
             projectName: 'Production Readiness Test',
             techStack: ['TypeScript', 'Node.js'],
             targetUsers: ['enterprise-users'],
+            externalSources: {
+              useContext7: false,
+              useWebSearch: false,
+            },
           });
           const time = Date.now() - start;
           return {
@@ -261,6 +265,10 @@ describe('Day 5: Final Integration Testing - Production Readiness', () => {
             projectId: 'security_test',
             codeIds: ['security_validation_test'],
             validationLevel: 'enterprise',
+            externalSources: {
+              useContext7: false,
+              useWebSearch: false,
+            },
           });
           const securityScore = (result.data as any)?.qualityScorecard?.security?.score || 95;
           return { metric: 'security', score: securityScore, actual: securityScore };
@@ -289,6 +297,10 @@ describe('Day 5: Final Integration Testing - Production Readiness', () => {
               projectId: 'scalability_test',
               featureDescription: 'Concurrent load test feature',
               requirements: { language: 'TypeScript', framework: 'Node.js' },
+              externalSources: {
+                useContext7: false,
+                useWebSearch: false,
+              },
             })
           );
 
@@ -310,6 +322,10 @@ describe('Day 5: Final Integration Testing - Production Readiness', () => {
           const result = await handleSmartFinish({
             projectId: 'maintainability_test',
             codeIds: ['maintainability_validation_test'],
+            externalSources: {
+              useContext7: false,
+              useWebSearch: false,
+            },
           });
           const qualityScore = (result.data as any)?.qualityScorecard?.overall?.score || 0;
           return { metric: 'maintainability', score: qualityScore, actual: qualityScore };
@@ -461,12 +477,20 @@ describe('Day 5: Final Integration Testing - Production Readiness', () => {
       const contextResult = await handleSmartBegin({
         projectName: 'Context Test',
         techStack: ['TypeScript'],
+        externalSources: {
+          useContext7: false,
+          useWebSearch: false,
+        },
       });
       const projectId = (contextResult.data as any).projectId;
       const chainResult = await handleSmartPlan({
         projectId,
         planType: 'development',
         scope: { techStack: ['TypeScript'], timeline: { duration: 1, unit: 'week' } },
+        externalSources: {
+          useContext7: false,
+          useWebSearch: false,
+        },
       });
 
       successCriteria.toolsShareContext = contextResult.success && chainResult.success;
@@ -480,7 +504,14 @@ describe('Day 5: Final Integration Testing - Production Readiness', () => {
 
       // 4. Performance targets met (<100ms)
       const perfStart = Date.now();
-      await handleSmartBegin({ projectName: 'Perf Test', techStack: ['TypeScript'] });
+      await handleSmartBegin({
+        projectName: 'Perf Test',
+        techStack: ['TypeScript'],
+        externalSources: {
+          useContext7: false,
+          useWebSearch: false,
+        },
+      });
       const perfTime = Date.now() - perfStart;
 
       successCriteria.performanceTargetsMet = perfTime < 100;
@@ -492,6 +523,10 @@ describe('Day 5: Final Integration Testing - Production Readiness', () => {
       const bvResult = await handleSmartBegin({
         projectName: 'BV Test',
         techStack: ['TypeScript'],
+        externalSources: {
+          useContext7: false,
+          useWebSearch: false,
+        },
       });
       const businessValue = (bvResult.data as any)?.businessValue?.costPrevention || 0;
 

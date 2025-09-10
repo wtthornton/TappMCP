@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { z } from 'zod';
-import { Context7Broker } from '../brokers/context7-broker.js';
+import { Context7Cache } from '../core/context7-cache.js';
+import { enhanceWithContext7 } from '../utils/context7-enhancer.js';
 // Input schema for smart_write tool
 const SmartWriteInputSchema = z.object({
     projectId: z.string().min(1, 'Project ID is required'),
@@ -26,6 +27,10 @@ const SmartWriteInputSchema = z.object({
         securityLevel: z.enum(['low', 'medium', 'high']).default('medium'),
     })
         .optional(),
+    // New parameters for existing project modification
+    writeMode: z.enum(['create', 'modify', 'enhance']).default('create'),
+    backupOriginal: z.boolean().default(true),
+    modificationStrategy: z.enum(['in-place', 'side-by-side', 'backup-first']).default('backup-first'),
     externalSources: z
         .object({
         useContext7: z.boolean().default(true),
@@ -38,7 +43,7 @@ const SmartWriteInputSchema = z.object({
 // Tool definition
 export const smartWriteTool = {
     name: 'smart_write',
-    description: 'Generate code with role-based expertise, integrating seamlessly with smart_begin project context',
+    description: 'Generate, modify, or enhance code with role-based expertise, integrating seamlessly with smart_begin project context',
     inputSchema: {
         type: 'object',
         properties: {
@@ -118,6 +123,23 @@ export const smartWriteTool = {
                 },
                 description: 'Quality requirements for generated code',
             },
+            writeMode: {
+                type: 'string',
+                enum: ['create', 'modify', 'enhance'],
+                description: 'Mode for writing code: create new, modify existing, or enhance existing',
+                default: 'create',
+            },
+            backupOriginal: {
+                type: 'boolean',
+                description: 'Whether to backup original files before modification',
+                default: true,
+            },
+            modificationStrategy: {
+                type: 'string',
+                enum: ['in-place', 'side-by-side', 'backup-first'],
+                description: 'Strategy for modifying existing files',
+                default: 'backup-first',
+            },
             externalSources: {
                 type: 'object',
                 properties: {
@@ -132,6 +154,12 @@ export const smartWriteTool = {
         required: ['projectId', 'featureDescription'],
     },
 };
+// Context7Cache instance for smart_write
+const context7Cache = new Context7Cache({
+    maxCacheSize: 100,
+    defaultExpiryHours: 36,
+    enableHitTracking: true,
+});
 // Simple execution logging
 let executionLog = {
     startTime: Date.now(),
@@ -870,16 +898,38 @@ export async function handleSmartWrite(input) {
     try {
         // Validate input
         const validatedInput = SmartWriteInputSchema.parse(input);
-        // Initialize Context7 broker if enabled
+        // Initialize Context7 cache and enhancement if enabled
         let context7Knowledge = null;
+        let context7Enhancement = null;
         if (validatedInput.externalSources?.useContext7) {
             try {
-                const context7Broker = new Context7Broker();
-                context7Knowledge = await context7Broker.getKnowledge({
-                    topic: `${validatedInput.codeType} development best practices`,
+                const codeTopic = validatedInput.writeMode === 'create'
+                    ? `${validatedInput.codeType} development best practices for ${validatedInput.targetRole} role`
+                    : `${validatedInput.writeMode} ${validatedInput.codeType} best practices for ${validatedInput.targetRole} role`;
+                context7Knowledge = await context7Cache.getRelevantData({
                     projectId: validatedInput.projectId,
-                    priority: 'high',
+                    businessRequest: codeTopic,
+                    domain: validatedInput.codeType || 'general',
+                    priority: validatedInput.businessContext?.priority || 'medium',
+                    maxResults: 5,
                 });
+                // Enhance the generated code with Context7 knowledge
+                const codeData = {
+                    featureDescription: validatedInput.featureDescription,
+                    targetRole: validatedInput.targetRole,
+                    codeType: validatedInput.codeType,
+                    techStack: validatedInput.techStack,
+                    writeMode: validatedInput.writeMode,
+                    backupOriginal: validatedInput.backupOriginal,
+                    modificationStrategy: validatedInput.modificationStrategy,
+                };
+                context7Enhancement = await enhanceWithContext7(codeData, codeTopic, {
+                    projectId: validatedInput.projectId,
+                    domain: validatedInput.codeType || 'general',
+                    priority: validatedInput.businessContext?.priority || 'medium',
+                    maxResults: 3,
+                });
+                console.log(`🔍 Context7 enhanced smart_write for: ${validatedInput.featureDescription} (${validatedInput.writeMode})`);
             }
             catch (error) {
                 console.warn('Context7 integration failed:', error);
@@ -907,10 +957,11 @@ export async function handleSmartWrite(input) {
                 costPrevention: 4000,
             },
             nextSteps: [
-                `Code generated for ${validatedInput.featureDescription}`,
+                `Code ${validatedInput.writeMode === 'create' ? 'generated' : validatedInput.writeMode === 'modify' ? 'modified' : 'enhanced'} for ${validatedInput.featureDescription}`,
                 'Review and customize the generated code',
                 'Add tests to meet coverage requirements',
-                'Integrate into your project',
+                validatedInput.writeMode === 'create' ? 'Integrate into your project' : 'Test the modified code thoroughly',
+                ...(validatedInput.backupOriginal && validatedInput.writeMode !== 'create' ? ['Verify backup was created successfully'] : []),
             ],
             technicalMetrics: {
                 responseTime: executionLog.duration,
@@ -921,6 +972,14 @@ export async function handleSmartWrite(input) {
             externalIntegration: {
                 context7Status: validatedInput.externalSources?.useContext7 ? 'active' : 'disabled',
                 context7Knowledge: context7Knowledge ? 'integrated' : 'not available',
+                context7Enhancement: context7Enhancement
+                    ? {
+                        dataCount: context7Enhancement.enhancementMetadata.dataCount,
+                        responseTime: context7Enhancement.enhancementMetadata.responseTime,
+                        cacheHit: context7Enhancement.enhancementMetadata.cacheHit,
+                    }
+                    : null,
+                cacheStats: context7Cache.getCacheStats(),
             },
         };
         return {

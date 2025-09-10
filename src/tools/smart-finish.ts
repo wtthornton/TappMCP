@@ -209,8 +209,11 @@ export async function handleSmartFinish(input: unknown): Promise<{
           projectId: validatedInput.projectId,
           businessRequest: qualityTopic,
           domain: validatedInput.validationLevel || 'comprehensive',
-          priority: validatedInput.qualityGates?.securityScore && validatedInput.qualityGates.securityScore > 90 ? 'high' : 'medium',
-          sources: { useContext7: true, useWebSearch: false, useMemory: false },
+          priority:
+            validatedInput.qualityGates?.securityScore &&
+            validatedInput.qualityGates.securityScore > 90
+              ? 'high'
+              : 'medium',
           maxResults: 5,
         });
 
@@ -225,11 +228,17 @@ export async function handleSmartFinish(input: unknown): Promise<{
         context7Enhancement = await enhanceWithContext7(qualityData, qualityTopic, {
           projectId: validatedInput.projectId,
           domain: validatedInput.validationLevel || 'comprehensive',
-          priority: validatedInput.qualityGates?.securityScore && validatedInput.qualityGates.securityScore > 90 ? 'high' : 'medium',
+          priority:
+            validatedInput.qualityGates?.securityScore &&
+            validatedInput.qualityGates.securityScore > 90
+              ? 'high'
+              : 'medium',
           maxResults: 3,
         });
 
-        console.log(`🔍 Context7 enhanced smart_finish for: ${validatedInput.validationLevel} validation`);
+        console.log(
+          `🔍 Context7 enhanced smart_finish for: ${validatedInput.validationLevel} validation`
+        );
       } catch (error) {
         console.warn('Context7 integration failed:', error);
       }
@@ -443,11 +452,13 @@ export async function handleSmartFinish(input: unknown): Promise<{
       externalIntegration: {
         context7Status: validatedInput.externalSources?.useContext7 ? 'active' : 'disabled',
         context7Knowledge: context7Knowledge ? 'integrated' : 'not available',
-        context7Enhancement: context7Enhancement ? {
-          dataCount: context7Enhancement.enhancementMetadata.dataCount,
-          responseTime: context7Enhancement.enhancementMetadata.responseTime,
-          cacheHit: context7Enhancement.enhancementMetadata.cacheHit,
-        } : null,
+        context7Enhancement: context7Enhancement
+          ? {
+              dataCount: context7Enhancement.enhancementMetadata.dataCount,
+              responseTime: context7Enhancement.enhancementMetadata.responseTime,
+              cacheHit: context7Enhancement.enhancementMetadata.cacheHit,
+            }
+          : null,
         cacheStats: context7Cache.getCacheStats(),
       },
     };

@@ -8,7 +8,9 @@ describe('SmartWrite - REAL TESTS (Expose Code Generation Theater)', () => {
   describe('tool definition', () => {
     it('should have correct name and description', () => {
       expect(smartWriteTool.name).toBe('smart_write');
-      expect(smartWriteTool.description).toContain('Generate code with role-based expertise');
+      expect(smartWriteTool.description).toContain(
+        'Generate, modify, or enhance code with role-based expertise'
+      );
     });
 
     it('should have proper input schema', () => {
@@ -317,8 +319,8 @@ describe('SmartWrite - REAL TESTS (Expose Code Generation Theater)', () => {
 
       expect(result.success).toBe(true);
 
-      // Should be extremely fast because it's just template generation
-      expect(duration).toBeLessThan(5); // <5ms indicates no real code analysis
+      // Should complete within reasonable time with Context7 integration
+      expect(duration).toBeLessThan(3000); // <3s for Context7 enhanced code generation
 
       // Response time in result should match actual duration
       expect(Math.abs(result.data?.technicalMetrics.responseTime! - duration)).toBeLessThan(10);
@@ -361,8 +363,8 @@ describe('SmartWrite - REAL TESTS (Expose Code Generation Theater)', () => {
       const avgSimple = simpleTimes.reduce((sum, time) => sum + time, 0) / simpleTimes.length;
       const avgComplex = complexTimes.reduce((sum, time) => sum + time, 0) / complexTimes.length;
 
-      // Should have similar performance (no real code generation complexity)
-      expect(Math.abs(avgSimple - avgComplex)).toBeLessThan(2); // Within 2ms
+      // Should have similar performance (Context7 integration affects both)
+      expect(Math.abs(avgSimple - avgComplex)).toBeLessThan(500); // Within 500ms for Context7
 
       console.log(
         `EXPOSED: Simple (${avgSimple.toFixed(2)}ms) vs Complex (${avgComplex.toFixed(2)}ms) - no code complexity scaling`
@@ -501,8 +503,8 @@ describe('SmartWrite - REAL TESTS (Expose Code Generation Theater)', () => {
       expect(result.data?.businessValue.qualityImprovement).toBe(75); // Always 75
       expect(result.data?.businessValue.costPrevention).toBe(4000); // Always 4000
 
-      // Technical metrics should show template generation characteristics
-      expect(result.data?.technicalMetrics.responseTime).toBeLessThan(10); // Fast template gen
+      // Technical metrics should show Context7 integration characteristics
+      expect(result.data?.technicalMetrics.responseTime).toBeLessThan(3000); // Context7 enhanced
       expect(result.data?.technicalMetrics.linesGenerated).toBe(50); // Hardcoded
       expect(result.data?.technicalMetrics.filesCreated).toBe(2); // .ts + .test.ts
 

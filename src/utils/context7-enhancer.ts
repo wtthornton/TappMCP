@@ -78,7 +78,9 @@ export class Context7Enhancer {
       const cacheHit = this.cache.getCacheStats().hitRate > 0;
 
       if (mergedOptions.enableLogging) {
-        console.log(`🔍 Context7 enhanced: ${topic} (${context7Data.length} results, ${responseTime}ms)`);
+        console.log(
+          `🔍 Context7 enhanced: ${topic} (${context7Data.length} results, ${responseTime}ms)`
+        );
       }
 
       return {
@@ -151,7 +153,7 @@ export class Context7Enhancer {
     const mergedOptions = { ...this.options, ...options };
 
     return this.cache.getRelevantData({
-      topic,
+      businessRequest: topic,
       projectId: mergedOptions.projectId || `enhance_${Date.now()}`,
       domain: mergedOptions.domain || 'general',
       priority: mergedOptions.priority || 'medium',

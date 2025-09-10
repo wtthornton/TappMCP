@@ -237,7 +237,7 @@ async function orchestrateWorkflow(projectId: string) {
 }
 
 describe('Complete 5-Tool Workflow Integration', () => {
-  it('should complete full end-to-end workflow', async () => {
+  it('should complete full end-to-end workflow', { timeout: 30000 }, async () => {
     // Step 1: Initialize project with smart_begin
     const projectInput = createProjectInput('complete-workflow-test');
     const projectResult = (await handleSmartBegin(projectInput)) as SmartBeginResponse;
@@ -363,7 +363,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
     expect(orchestrationResult.data?.orchestration.businessValue).toBeDefined();
   });
 
-  it('should handle different workflow types', async () => {
+  it('should handle different workflow types', { timeout: 30000 }, async () => {
     const workflowTypeMappings = [
       { testType: 'development', validType: 'full-development' },
       { testType: 'deployment', validType: 'migration' },

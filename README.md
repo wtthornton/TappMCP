@@ -28,13 +28,28 @@ npm install smart-mcp
 ## 🛠️ Core Tools
 
 ### smart-begin
-Initialize projects with comprehensive planning and architecture design.
+Initialize new projects or analyze existing projects with comprehensive planning and architecture design.
+
+**New Features:**
+- **Existing Project Analysis**: Analyze existing projects to identify improvement opportunities
+- **Project Scanning**: Automatically detect tech stack, quality issues, and improvement areas
+- **Quality Assessment**: Evaluate project quality and provide actionable recommendations
 
 ### smart-plan
-Generate detailed technical implementation plans.
+Generate detailed technical implementation plans with support for existing project improvement.
+
+**New Features:**
+- **Improvement Modes**: Enhancement, refactoring, and optimization planning
+- **Quality Level Targeting**: Plan improvements to reach specific quality levels
+- **Preservation Strategies**: Maintain existing functionality while improving code
 
 ### smart-write
-Write production-ready code with best practices.
+Write, modify, or enhance production-ready code with best practices.
+
+**New Features:**
+- **Modification Modes**: Create new code, modify existing code, or enhance existing functionality
+- **Backup Strategies**: Automatic backup of original files before modification
+- **Safe Modification**: Multiple strategies for safely modifying existing code
 
 ### smart-finish
 Complete projects with quality assurance and documentation.
@@ -44,6 +59,57 @@ Coordinate complex multi-step workflows.
 
 ### smart-converse
 Natural language interface for conversational project setup and interaction.
+
+## 🔍 Existing Project Analysis
+
+TappMCP can now analyze existing projects and provide improvement recommendations:
+
+### Analyzing an Existing Project
+
+```bash
+# Use smart_begin with analyze-existing mode
+{
+  "projectName": "My Existing Project",
+  "mode": "analyze-existing",
+  "existingProjectPath": "/path/to/your/project",
+  "analysisDepth": "standard", // quick, standard, or deep
+  "role": "developer"
+}
+```
+
+### Planning Improvements
+
+```bash
+# Use smart_plan with improvement modes
+{
+  "projectId": "proj_1234567890_my_existing_project",
+  "improvementMode": "enhancement", // enhancement, refactoring, or optimization
+  "targetQualityLevel": "production",
+  "preserveExisting": true
+}
+```
+
+### Modifying Existing Code
+
+```bash
+# Use smart_write with modification modes
+{
+  "projectId": "proj_1234567890_my_existing_project",
+  "featureDescription": "Add error handling to existing API",
+  "writeMode": "enhance", // create, modify, or enhance
+  "backupOriginal": true,
+  "modificationStrategy": "backup-first"
+}
+```
+
+### Analysis Results
+
+The analysis provides:
+- **Project Structure**: Complete file and folder mapping
+- **Tech Stack Detection**: Automatically identified technologies
+- **Quality Issues**: Specific problems found in the codebase
+- **Improvement Opportunities**: Actionable recommendations
+- **Quality Scores**: Overall project health metrics
 
 ## 💬 Smart Converse Usage
 

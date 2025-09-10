@@ -21,6 +21,10 @@ const SmartBeginInputSchema = z.object({
     .optional(),
   qualityLevel: z.enum(['basic', 'standard', 'enterprise', 'production']).default('standard'),
   complianceRequirements: z.array(z.string()).default([]),
+  // New parameters for existing project analysis
+  mode: z.enum(['new-project', 'analyze-existing']).default('new-project'),
+  existingProjectPath: z.string().optional(),
+  analysisDepth: z.enum(['quick', 'standard', 'deep']).default('standard'),
   externalSources: z
     .object({
       useContext7: z.boolean().default(true),
@@ -77,14 +81,25 @@ const SmartBeginOutputSchema = z.object({
     qualityPatterns: z.array(z.string()),
     roleCompliance: z.array(z.string()),
   }),
+  // Optional analysis results for existing projects
+  analysisResults: z
+    .object({
+      detectedTechStack: z.array(z.string()),
+      qualityIssues: z.array(z.string()),
+      improvementOpportunities: z.array(z.string()),
+      analysisDepth: z.enum(['quick', 'standard', 'deep']),
+    })
+    .optional(),
   externalIntegration: z.object({
     context7Status: z.enum(['active', 'disabled']),
     context7Knowledge: z.enum(['integrated', 'not available']),
-    context7Enhancement: z.object({
-      dataCount: z.number(),
-      responseTime: z.number(),
-      cacheHit: z.boolean(),
-    }).nullable(),
+    context7Enhancement: z
+      .object({
+        dataCount: z.number(),
+        responseTime: z.number(),
+        cacheHit: z.boolean(),
+      })
+      .nullable(),
     cacheStats: z.object({
       totalEntries: z.number(),
       hitRate: z.number(),
@@ -107,13 +122,13 @@ const context7Cache = new Context7Cache({
 export const smartBeginTool: Tool = {
   name: 'smart_begin',
   description:
-    'Initialize a new project with proper structure, quality gates, and business context for non-technical users',
+    'Initialize a new project or analyze an existing project with proper structure, quality gates, and business context for non-technical users',
   inputSchema: {
     type: 'object',
     properties: {
       projectName: {
         type: 'string',
-        description: 'Name of the project to initialize',
+        description: 'Name of the project to initialize or analyze',
         minLength: 1,
       },
       description: {
@@ -137,6 +152,44 @@ export const smartBeginTool: Tool = {
         type: 'array',
         items: { type: 'string' },
         description: 'Optional array of business goals for the project',
+      },
+      projectTemplate: {
+        type: 'string',
+        enum: ['mcp-server', 'web-app', 'api-service', 'full-stack', 'microservice', 'library'],
+        description: 'Project template type',
+      },
+      role: {
+        type: 'string',
+        enum: ['developer', 'product-strategist', 'operations-engineer', 'designer', 'qa-engineer'],
+        description: 'Role for AI assistance',
+      },
+      qualityLevel: {
+        type: 'string',
+        enum: ['basic', 'standard', 'enterprise', 'production'],
+        description: 'Quality level for the project',
+        default: 'standard',
+      },
+      complianceRequirements: {
+        type: 'array',
+        items: { type: 'string' },
+        description: 'Compliance requirements for the project',
+        default: [],
+      },
+      mode: {
+        type: 'string',
+        enum: ['new-project', 'analyze-existing'],
+        description: 'Mode: create new project or analyze existing project',
+        default: 'new-project',
+      },
+      existingProjectPath: {
+        type: 'string',
+        description: 'Path to existing project (required when mode is analyze-existing)',
+      },
+      analysisDepth: {
+        type: 'string',
+        enum: ['quick', 'standard', 'deep'],
+        description: 'Depth of analysis for existing projects',
+        default: 'standard',
       },
       externalSources: {
         type: 'object',
@@ -164,6 +217,116 @@ export const smartBeginTool: Tool = {
 //   timeSaved: number;
 //   qualityImprovements: string[];
 // }
+
+// Simple project scanner for existing projects
+async function scanExistingProject(
+  projectPath: string,
+  _analysisDepth: 'quick' | 'standard' | 'deep'
+): Promise<{
+  projectStructure: {
+    folders: string[];
+    files: string[];
+    configFiles: string[];
+    templates: Array<{
+      name: string;
+      description: string;
+      path: string;
+      content: string;
+    }>;
+  };
+  detectedTechStack: string[];
+  qualityIssues: string[];
+  improvementOpportunities: string[];
+}> {
+  // For now, return a basic structure - this will be enhanced in Phase 2
+  const fs = await import('fs/promises');
+  const path = await import('path');
+
+  try {
+    const entries = await fs.readdir(projectPath, { withFileTypes: true });
+    const folders: string[] = [];
+    const files: string[] = [];
+    const configFiles: string[] = [];
+    const detectedTechStack: string[] = [];
+    const qualityIssues: string[] = [];
+    const improvementOpportunities: string[] = [];
+
+    for (const entry of entries) {
+      if (entry.isDirectory()) {
+        folders.push(entry.name);
+      } else {
+        files.push(entry.name);
+
+        // Detect tech stack from file extensions and names
+        if (entry.name === 'package.json') {
+          configFiles.push(entry.name);
+          try {
+            const packageContent = await fs.readFile(path.join(projectPath, entry.name), 'utf-8');
+            const packageJson = JSON.parse(packageContent);
+
+            if (packageJson.dependencies) {
+              if (packageJson.dependencies.typescript) detectedTechStack.push('typescript');
+              if (packageJson.dependencies.react) detectedTechStack.push('react');
+              if (packageJson.dependencies.express) detectedTechStack.push('express');
+              if (packageJson.dependencies['@modelcontextprotocol/sdk'])
+                detectedTechStack.push('mcp-server');
+            }
+          } catch (error) {
+            qualityIssues.push('Invalid package.json format');
+          }
+        }
+
+        if (entry.name.endsWith('.ts') || entry.name.endsWith('.tsx')) {
+          detectedTechStack.push('typescript');
+        }
+        if (entry.name.endsWith('.jsx') || entry.name.endsWith('.js')) {
+          detectedTechStack.push('javascript');
+        }
+        if (entry.name === 'tsconfig.json') {
+          configFiles.push(entry.name);
+        }
+        if (entry.name === '.eslintrc.json' || entry.name === '.eslintrc.js') {
+          configFiles.push(entry.name);
+        }
+        if (entry.name === 'vitest.config.ts' || entry.name === 'jest.config.js') {
+          configFiles.push(entry.name);
+        }
+      }
+    }
+
+    // Basic quality analysis
+    if (!configFiles.includes('tsconfig.json')) {
+      qualityIssues.push('Missing TypeScript configuration');
+      improvementOpportunities.push('Add TypeScript configuration for better type safety');
+    }
+
+    if (!configFiles.some(f => f.includes('eslint'))) {
+      qualityIssues.push('Missing ESLint configuration');
+      improvementOpportunities.push('Add ESLint for code quality enforcement');
+    }
+
+    if (!configFiles.some(f => f.includes('vitest') || f.includes('jest'))) {
+      qualityIssues.push('Missing test configuration');
+      improvementOpportunities.push('Add testing framework for better code reliability');
+    }
+
+    return {
+      projectStructure: {
+        folders,
+        files,
+        configFiles,
+        templates: [], // Will be populated based on analysis
+      },
+      detectedTechStack: [...new Set(detectedTechStack)], // Remove duplicates
+      qualityIssues,
+      improvementOpportunities,
+    };
+  } catch (error) {
+    throw new Error(
+      `Failed to scan project at ${projectPath}: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
 
 // Project structure generator with templates
 function generateProjectStructure(
@@ -583,15 +746,24 @@ export async function handleSmartBegin(input: unknown): Promise<{
     // Validate input
     const validatedInput = SmartBeginInputSchema.parse(input);
 
+    // Validate mode-specific requirements
+    if (validatedInput.mode === 'analyze-existing' && !validatedInput.existingProjectPath) {
+      throw new Error('existingProjectPath is required when mode is analyze-existing');
+    }
+
     // Enhanced Context7 integration with caching
     let context7Knowledge = null;
     let context7Enhancement = null;
     if (validatedInput.externalSources?.useContext7) {
       try {
         // Get Context7 data using the cache
-        const projectTopic = `project initialization best practices for ${validatedInput.projectTemplate || 'general'} projects`;
+        const projectTopic =
+          validatedInput.mode === 'analyze-existing'
+            ? `project analysis and improvement best practices for ${validatedInput.projectTemplate || 'existing'} projects`
+            : `project initialization best practices for ${validatedInput.projectTemplate || 'general'} projects`;
+
         context7Knowledge = await context7Cache.getRelevantData({
-          topic: projectTopic,
+          businessRequest: projectTopic,
           projectId: `proj_${Date.now()}_${validatedInput.projectName.toLowerCase().replace(/\s+/g, '_')}`,
           domain: validatedInput.projectTemplate || 'general',
           priority: 'high',
@@ -604,6 +776,7 @@ export async function handleSmartBegin(input: unknown): Promise<{
           techStack: validatedInput.techStack,
           projectTemplate: validatedInput.projectTemplate,
           role: validatedInput.role,
+          mode: validatedInput.mode,
         };
 
         context7Enhancement = await enhanceWithContext7(projectData, projectTopic, {
@@ -613,23 +786,44 @@ export async function handleSmartBegin(input: unknown): Promise<{
           enableLogging: true,
         });
 
-        console.log(`🔍 Context7 enhanced smart_begin for: ${validatedInput.projectName}`);
+        console.log(
+          `🔍 Context7 enhanced smart_begin for: ${validatedInput.projectName} (${validatedInput.mode})`
+        );
       } catch (error) {
         console.warn('Context7 integration failed:', error);
       }
     }
 
-    // Generate project structure with templates
-    const projectStructure = generateProjectStructure(
-      validatedInput.projectName,
-      validatedInput.techStack,
-      validatedInput.projectTemplate,
-      validatedInput.role
-    );
+    let projectStructure;
+    let detectedTechStack = validatedInput.techStack;
+    let qualityIssues: string[] = [];
+    let improvementOpportunities: string[] = [];
+
+    // Handle different modes
+    if (validatedInput.mode === 'analyze-existing') {
+      // Scan existing project
+      const scanResult = await scanExistingProject(
+        validatedInput.existingProjectPath!,
+        validatedInput.analysisDepth
+      );
+
+      projectStructure = scanResult.projectStructure;
+      detectedTechStack = scanResult.detectedTechStack;
+      qualityIssues = scanResult.qualityIssues;
+      improvementOpportunities = scanResult.improvementOpportunities;
+    } else {
+      // Generate new project structure
+      projectStructure = generateProjectStructure(
+        validatedInput.projectName,
+        validatedInput.techStack,
+        validatedInput.projectTemplate,
+        validatedInput.role
+      );
+    }
 
     // Generate quality gates with role-specific requirements
     const qualityGates = generateQualityGates(
-      validatedInput.techStack,
+      detectedTechStack,
       validatedInput.role,
       validatedInput.qualityLevel
     );
@@ -641,18 +835,38 @@ export async function handleSmartBegin(input: unknown): Promise<{
       validatedInput.role
     );
 
+    // Add mode-specific next steps
+    if (validatedInput.mode === 'analyze-existing') {
+      nextSteps.unshift(`Analyzed existing project at: ${validatedInput.existingProjectPath}`);
+      if (qualityIssues.length > 0) {
+        nextSteps.push(`Found ${qualityIssues.length} quality issues to address`);
+      }
+      if (improvementOpportunities.length > 0) {
+        nextSteps.push(`Identified ${improvementOpportunities.length} improvement opportunities`);
+      }
+    }
+
     // Calculate business value
-    const businessValue = calculateBusinessValue(
-      validatedInput.projectName,
-      validatedInput.techStack
-    );
+    const businessValue = calculateBusinessValue(validatedInput.projectName, detectedTechStack);
+
+    // Add analysis-specific business value
+    if (validatedInput.mode === 'analyze-existing') {
+      businessValue.costPrevention += qualityIssues.length * 1000; // $1K per issue prevented
+      businessValue.qualityImprovements.push(...improvementOpportunities);
+    }
 
     // Calculate technical metrics
     const responseTime = Date.now() - startTime;
     const technicalMetrics = {
       responseTime,
-      securityScore: 95, // High security score from proper setup
-      complexityScore: 85, // Good complexity management
+      securityScore:
+        validatedInput.mode === 'analyze-existing'
+          ? Math.max(60, 95 - qualityIssues.length * 5)
+          : 95,
+      complexityScore:
+        validatedInput.mode === 'analyze-existing'
+          ? Math.max(50, 85 - qualityIssues.length * 3)
+          : 85,
     };
 
     // Generate process compliance validation
@@ -677,14 +891,25 @@ export async function handleSmartBegin(input: unknown): Promise<{
       technicalMetrics,
       processCompliance,
       learningIntegration,
+      // Add analysis-specific data
+      ...(validatedInput.mode === 'analyze-existing' && {
+        analysisResults: {
+          detectedTechStack,
+          qualityIssues,
+          improvementOpportunities,
+          analysisDepth: validatedInput.analysisDepth,
+        },
+      }),
       externalIntegration: {
         context7Status: validatedInput.externalSources?.useContext7 ? 'active' : 'disabled',
         context7Knowledge: context7Knowledge ? 'integrated' : 'not available',
-        context7Enhancement: context7Enhancement ? {
-          dataCount: context7Enhancement.enhancementMetadata.dataCount,
-          responseTime: context7Enhancement.enhancementMetadata.responseTime,
-          cacheHit: context7Enhancement.enhancementMetadata.cacheHit,
-        } : null,
+        context7Enhancement: context7Enhancement
+          ? {
+              dataCount: context7Enhancement.enhancementMetadata.dataCount,
+              responseTime: context7Enhancement.enhancementMetadata.responseTime,
+              cacheHit: context7Enhancement.enhancementMetadata.cacheHit,
+            }
+          : null,
         cacheStats: context7Cache.getCacheStats(),
       },
     };

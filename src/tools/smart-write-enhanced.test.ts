@@ -56,7 +56,13 @@ describe('Enhanced Smart Write Tool', () => {
   });
 
   it('should generate role-specific code for different roles', { timeout: 30000 }, async () => {
-    const roles = ['developer', 'product-strategist', 'designer', 'qa-engineer', 'operations-engineer'];
+    const roles = [
+      'developer',
+      'product-strategist',
+      'designer',
+      'qa-engineer',
+      'operations-engineer',
+    ];
 
     for (const role of roles) {
       const input = {
@@ -72,12 +78,17 @@ describe('Enhanced Smart Write Tool', () => {
 
       if (result.data) {
         const data = result.data as any;
-        const expectedRoleName = role.split('-').map(word => {
-          // Handle special cases like "qa" -> "QA"
-          if (word.toLowerCase() === 'qa') return 'QA';
-          return word.charAt(0).toUpperCase() + word.slice(1);
-        }).join(' ');
-        expect(data.generatedCode.files[0].content).toContain(`${expectedRoleName} Role Implementation`);
+        const expectedRoleName = role
+          .split('-')
+          .map(word => {
+            // Handle special cases like "qa" -> "QA"
+            if (word.toLowerCase() === 'qa') return 'QA';
+            return word.charAt(0).toUpperCase() + word.slice(1);
+          })
+          .join(' ');
+        expect(data.generatedCode.files[0].content).toContain(
+          `${expectedRoleName} Role Implementation`
+        );
       }
     }
   });
@@ -279,7 +290,9 @@ describe('Enhanced Smart Write Tool', () => {
 
     if (result.data) {
       const data = result.data as any;
-      expect(data.generatedCode.files[0].content).toContain('Operations Engineer Role Implementation');
+      expect(data.generatedCode.files[0].content).toContain(
+        'Operations Engineer Role Implementation'
+      );
       expect(data.externalIntegration.context7Status).toBe('active');
     }
   });

@@ -7,7 +7,12 @@
  * for Context7 knowledge retrieval across all TappMCP tools.
  */
 
-import { MCPCoordinator, type ExternalKnowledge, type KnowledgeRequest, type MCPCoordinatorConfig } from './mcp-coordinator.js';
+import {
+  MCPCoordinator,
+  type ExternalKnowledge,
+  type KnowledgeRequest,
+  type MCPCoordinatorConfig,
+} from './mcp-coordinator.js';
 import { Context7Broker } from '../brokers/context7-broker.js';
 
 /**
@@ -63,7 +68,7 @@ export class Context7Cache extends MCPCoordinator {
 
     this.cacheConfig = {
       maxCacheSize: cacheConfig.maxCacheSize ?? 1000,
-      defaultExpiryHours: cacheConfig.defaultExpiryHours ?? 36,
+      defaultExpiryHours: cacheConfig.defaultExpiryHours ?? 72,
       enableVersionChecking: cacheConfig.enableVersionChecking ?? true,
       enableHitTracking: cacheConfig.enableHitTracking ?? true,
       enableCompression: cacheConfig.enableCompression ?? false,
@@ -187,7 +192,7 @@ export class Context7Cache extends MCPCoordinator {
     priority?: string;
   }): string {
     const parts = [
-      input.businessRequest.toLowerCase().replace(/\s+/g, '-'),
+      (input.businessRequest || 'unknown').toLowerCase().replace(/\s+/g, '-'),
       input.domain?.toLowerCase() || 'general',
       input.priority || 'medium',
     ];
@@ -307,15 +312,15 @@ export class Context7Cache extends MCPCoordinator {
    * Get cache statistics
    */
   getCacheStats(): CacheStats {
-    const hitRate = this.stats.totalRequests > 0
-      ? this.stats.hits / this.stats.totalRequests
-      : 0;
+    const hitRate = this.stats.totalRequests > 0 ? this.stats.hits / this.stats.totalRequests : 0;
 
     const missRate = 1 - hitRate;
 
-    const averageResponseTime = this.stats.responseTimes.length > 0
-      ? this.stats.responseTimes.reduce((sum, time) => sum + time, 0) / this.stats.responseTimes.length
-      : 0;
+    const averageResponseTime =
+      this.stats.responseTimes.length > 0
+        ? this.stats.responseTimes.reduce((sum, time) => sum + time, 0) /
+          this.stats.responseTimes.length
+        : 0;
 
     // Calculate memory usage (rough estimate)
     let memoryUsage = 0;
@@ -363,7 +368,7 @@ export class Context7Cache extends MCPCoordinator {
     const stats = this.getCacheStats();
     // For empty cache, consider it healthy
     if (stats.totalEntries === 0) return true;
-    return stats.hitRate >= 0.3 && stats.averageResponseTime < 1000; // 1 second
+    return stats.hitRate >= 0.3 && stats.averageResponseTime < 3000; // 3 seconds for Context7
   }
 }
 

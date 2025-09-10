@@ -11,7 +11,7 @@
  * - Simple logging
  */
 
-const { execSync } = require('child_process');
+import { execSync } from 'child_process';
 
 class LocalDeployer {
   constructor() {
@@ -169,11 +169,12 @@ async function main() {
   process.exit(result.success ? 0 : 1);
 }
 
-if (require.main === module) {
+// Run if this is the main module
+if (import.meta.url === `file://${process.argv[1]}`) {
   main().catch(error => {
     console.error('Deployment failed:', error);
     process.exit(1);
   });
 }
 
-module.exports = { LocalDeployer };
+export { LocalDeployer };

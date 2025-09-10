@@ -68,7 +68,21 @@
       "Bash(git restore:*)",
       "Bash(timeout:*)",
       "Bash(npm start)",
-      "Bash(npm ci:*)"
+      "Bash(npm ci:*)",
+      "Bash(NODE_ENV=test npx vitest run src/utils/context7-enhancer.test.ts --reporter=basic)",
+      "Bash(NODE_ENV=test npx vitest run src/performance.test.ts --reporter=basic)",
+      "Bash(NODE_ENV=test timeout 60s npx vitest run src/performance.test.ts --reporter=basic)",
+      "Bash(NODE_ENV=test npx vitest run src/deployment/smoke-test.test.ts --reporter=verbose)",
+      "Bash(netstat:*)",
+      "Bash(taskkill:*)",
+      "Bash(NODE_ENV=test timeout 60s npx vitest run --reporter=basic)",
+      "Bash(NODE_ENV=test timeout 60s npx vitest run src/tools/smart-write.test.ts --reporter=basic)",
+      "Bash(NODE_ENV=test timeout 30s npx vitest run src/tools/smart-begin.test.ts --reporter=basic)",
+      "Bash(NODE_ENV=test npx vitest run src/core/context7-cache.test.ts --reporter=basic)",
+      "Bash(NODE_ENV=test npx vitest run src/core/context7-cache.test.ts --reporter=verbose)",
+      "Bash(NODE_ENV=test npx vitest run src/core/context7-cache.test.ts)",
+      "Bash(NODE_ENV=test timeout 10s npx vitest run --reporter=default --reporter-options=\"{\"\"summary\"\": false}\")",
+      "Bash(cmd.exe:*)"
     ],
     "deny": [],
     "ask": []

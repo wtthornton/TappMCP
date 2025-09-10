@@ -176,43 +176,38 @@ export class Context7Broker {
    * Fetch real documentation from Context7 MCP
    */
   private async fetchRealDocumentation(topic: string, version?: string): Promise<Documentation[]> {
-    try {
-      // Map topic to Context7 library ID
-      const libraryId = this.mapTopicToLibraryId(topic);
-      if (!libraryId) {
-        throw new Error(`No Context7 library found for topic: ${topic}`);
-      }
-
-      // Note: In a real implementation, this would call the Context7 MCP tools
-      // For now, we'll simulate the structure that would come from real MCP calls
-      // This is where we would integrate with the actual MCP Context7 tools
-
-      const mockRealDocs: Documentation[] = [
-        {
-          id: `real-doc-${topic}-${Date.now()}`,
-          title: `${topic} Real Documentation`,
-          content: `Real documentation from Context7 for ${topic}. This contains actual external knowledge and best practices.`,
-          url: `https://context7.com/docs/${topic}`,
-          version: version ?? 'latest',
-          lastUpdated: new Date(),
-          relevanceScore: 0.95,
-        },
-        {
-          id: `real-doc-${topic}-examples-${Date.now()}`,
-          title: `${topic} Code Examples`,
-          content: `Real code examples and patterns from Context7 for ${topic}. These are actual working examples from the community.`,
-          url: `https://context7.com/examples/${topic}`,
-          version: version ?? 'latest',
-          lastUpdated: new Date(),
-          relevanceScore: 0.88,
-        },
-      ];
-
-      return mockRealDocs;
-    } catch (error) {
-      console.error('Error fetching real Context7 documentation:', error);
-      throw error;
+    // Map topic to Context7 library ID
+    const libraryId = this.mapTopicToLibraryId(topic);
+    if (!libraryId) {
+      throw new Error(`No Context7 library found for topic: ${topic}`);
     }
+
+    // Note: In a real implementation, this would call the Context7 MCP tools
+    // For now, we'll simulate the structure that would come from real MCP calls
+    // This is where we would integrate with the actual MCP Context7 tools
+
+    const mockRealDocs: Documentation[] = [
+      {
+        id: `real-doc-${topic}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        title: `${topic} Real Documentation`,
+        content: `Real documentation from Context7 for ${topic}. This contains actual external knowledge and best practices.`,
+        url: `https://context7.com/docs/${topic}`,
+        version: version ?? 'latest',
+        lastUpdated: new Date(),
+        relevanceScore: 0.95,
+      },
+      {
+        id: `real-doc-${topic}-examples-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        title: `${topic} Code Examples`,
+        content: `Real code examples and patterns from Context7 for ${topic}. These are actual working examples from the community.`,
+        url: `https://context7.com/examples/${topic}`,
+        version: version ?? 'latest',
+        lastUpdated: new Date(),
+        relevanceScore: 0.88,
+      },
+    ];
+
+    return mockRealDocs;
   }
 
   /**
@@ -232,12 +227,12 @@ export class Context7Broker {
       // Add more generic mappings
       'project initialization': '/websites/react_dev',
       'best practices': '/websites/react_dev',
-      'development': '/websites/react_dev',
-      'planning': '/websites/react_dev',
-      'testing': '/websites/react_dev',
-      'deployment': '/websites/react_dev',
-      'maintenance': '/websites/react_dev',
-      'migration': '/websites/react_dev',
+      development: '/websites/react_dev',
+      planning: '/websites/react_dev',
+      testing: '/websites/react_dev',
+      deployment: '/websites/react_dev',
+      maintenance: '/websites/react_dev',
+      migration: '/websites/react_dev',
     };
 
     // Try exact match first
@@ -554,12 +549,14 @@ export class Context7Broker {
 
     try {
       // Get all types of knowledge in parallel
-      const [documentation, codeExamples, bestPractices, troubleshootingGuides] = await Promise.all([
-        this.getDocumentation(topic),
-        this.getCodeExamples(topic, 'best-practices'),
-        this.getBestPractices(topic),
-        this.getTroubleshootingGuides(topic),
-      ]);
+      const [documentation, codeExamples, bestPractices, troubleshootingGuides] = await Promise.all(
+        [
+          this.getDocumentation(topic),
+          this.getCodeExamples(topic, 'best-practices'),
+          this.getBestPractices(topic),
+          this.getTroubleshootingGuides(topic),
+        ]
+      );
 
       // Generate summary based on priority and knowledge gathered
       const summary = this.generateKnowledgeSummary(topic, priority, {
@@ -599,7 +596,11 @@ export class Context7Broker {
       troubleshootingGuides: number;
     }
   ): string {
-    const totalItems = counts.documentation + counts.codeExamples + counts.bestPractices + counts.troubleshootingGuides;
+    const totalItems =
+      counts.documentation +
+      counts.codeExamples +
+      counts.bestPractices +
+      counts.troubleshootingGuides;
 
     return `Context7 knowledge gathered for ${topic} (${priority} priority): ${totalItems} total items including ${counts.documentation} documentation entries, ${counts.codeExamples} code examples, ${counts.bestPractices} best practices, and ${counts.troubleshootingGuides} troubleshooting guides.`;
   }

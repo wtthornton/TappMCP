@@ -28,7 +28,7 @@ const DEPLOYED_SERVER_CONFIG = {
     'node',
     'dist/server.js',
   ],
-  HEALTH_CHECK_URL: process.env.HEALTH_CHECK_URL || 'http://localhost:8081',
+  HEALTH_CHECK_URL: process.env.HEALTH_CHECK_URL || 'http://localhost:3001',
   CONNECTION_TIMEOUT: parseInt(process.env.CONNECTION_TIMEOUT || '10000'),
   TEST_TIMEOUT: parseInt(process.env.TEST_TIMEOUT || '30000'),
   // New option to test against deployed server endpoints instead of starting local

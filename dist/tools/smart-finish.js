@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { SecurityScanner } from '../core/security-scanner.js';
 import { StaticAnalyzer } from '../core/static-analyzer.js';
 import { QualityScorecardGenerator } from '../core/quality-scorecard.js';
+import { Context7Cache } from '../core/context7-cache.js';
+import { enhanceWithContext7 } from '../utils/context7-enhancer.js';
 // Input schema for smart_finish tool
 const SmartFinishInputSchema = z.object({
     projectId: z.string().min(1, 'Project ID is required'),
@@ -39,6 +41,14 @@ const SmartFinishInputSchema = z.object({
     processCompliance: z.boolean().default(true),
     learningIntegration: z.boolean().default(true),
     archiveLessons: z.boolean().default(true),
+    externalSources: z
+        .object({
+        useContext7: z.boolean().default(true),
+        useWebSearch: z.boolean().default(false),
+        useMemory: z.boolean().default(false),
+    })
+        .optional()
+        .default({ useContext7: true, useWebSearch: false, useMemory: false }),
 });
 // Tool definition
 export const smartFinishTool = {
@@ -147,6 +157,12 @@ export const smartFinishTool = {
         required: ['projectId', 'codeIds'],
     },
 };
+// Context7Cache instance for smart_finish
+const context7Cache = new Context7Cache({
+    maxCacheSize: 100,
+    defaultExpiryHours: 36,
+    enableHitTracking: true,
+});
 // Legacy functions removed - now using real security scanning and quality validation
 // Main tool handler
 export async function handleSmartFinish(input) {
@@ -166,6 +182,45 @@ export async function handleSmartFinish(input) {
             documentationComplete: true,
             deploymentReady: true,
         };
+        // Initialize Context7 cache and enhancement if enabled
+        let context7Knowledge = null;
+        let context7Enhancement = null;
+        if (validatedInput.externalSources?.useContext7) {
+            try {
+                const qualityTopic = `quality validation and production readiness best practices for ${validatedInput.role || 'general'} role`;
+                context7Knowledge = await context7Cache.getRelevantData({
+                    projectId: validatedInput.projectId,
+                    businessRequest: qualityTopic,
+                    domain: validatedInput.validationLevel || 'comprehensive',
+                    priority: validatedInput.qualityGates?.securityScore &&
+                        validatedInput.qualityGates.securityScore > 90
+                        ? 'high'
+                        : 'medium',
+                    maxResults: 5,
+                });
+                // Enhance the quality validation data with Context7 knowledge
+                const qualityData = {
+                    validationLevel: validatedInput.validationLevel,
+                    qualityGates: validatedInput.qualityGates,
+                    businessRequirements: businessRequirements,
+                    productionReadiness: productionReadiness,
+                    role: validatedInput.role,
+                };
+                context7Enhancement = await enhanceWithContext7(qualityData, qualityTopic, {
+                    projectId: validatedInput.projectId,
+                    domain: validatedInput.validationLevel || 'comprehensive',
+                    priority: validatedInput.qualityGates?.securityScore &&
+                        validatedInput.qualityGates.securityScore > 90
+                        ? 'high'
+                        : 'medium',
+                    maxResults: 3,
+                });
+                console.log(`🔍 Context7 enhanced smart_finish for: ${validatedInput.validationLevel} validation`);
+            }
+            catch (error) {
+                console.warn('Context7 integration failed:', error);
+            }
+        }
         // Initialize scanners
         const projectPath = process.cwd();
         const securityScanner = new SecurityScanner(projectPath);
@@ -318,6 +373,18 @@ export async function handleSmartFinish(input) {
                 productionChecksPerformed: 4,
                 validationLevel: validatedInput.validationLevel,
                 roleSpecificValidation: !!validatedInput.role,
+            },
+            externalIntegration: {
+                context7Status: validatedInput.externalSources?.useContext7 ? 'active' : 'disabled',
+                context7Knowledge: context7Knowledge ? 'integrated' : 'not available',
+                context7Enhancement: context7Enhancement
+                    ? {
+                        dataCount: context7Enhancement.enhancementMetadata.dataCount,
+                        responseTime: context7Enhancement.enhancementMetadata.responseTime,
+                        cacheHit: context7Enhancement.enhancementMetadata.cacheHit,
+                    }
+                    : null,
+                cacheStats: context7Cache.getCacheStats(),
             },
         };
         return {

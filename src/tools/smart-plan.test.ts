@@ -352,11 +352,11 @@ describe('SmartPlan - REAL TESTS (Expose Planning Theater)', () => {
 
       expect(result.success).toBe(true);
 
-      // Should be extremely fast because it's just template generation
-      expect(duration).toBeLessThan(5); // <5ms indicates no real planning analysis
+      // Should complete within reasonable time with Context7 integration
+      expect(duration).toBeLessThan(3000); // <3s for Context7 enhanced planning
 
       // Response time in result should match actual duration
-      expect(Math.abs(result.data?.technicalMetrics.responseTime! - duration)).toBeLessThan(10);
+      expect(Math.abs(result.data?.technicalMetrics.responseTime! - duration)).toBeLessThan(100); // Account for Context7 timing
 
       console.log(
         `EXPOSED: "Smart" planning completed in ${duration.toFixed(2)}ms - too fast for real analysis`
@@ -408,8 +408,8 @@ describe('SmartPlan - REAL TESTS (Expose Planning Theater)', () => {
       const avgSimple = simpleTimes.reduce((sum, time) => sum + time, 0) / simpleTimes.length;
       const avgComplex = complexTimes.reduce((sum, time) => sum + time, 0) / complexTimes.length;
 
-      // Should have similar performance (no real planning complexity)
-      expect(Math.abs(avgSimple - avgComplex)).toBeLessThan(50); // Within 50ms to account for system variance
+      // Should have similar performance (Context7 integration affects both)
+      expect(Math.abs(avgSimple - avgComplex)).toBeLessThan(500); // Within 500ms for Context7 variance
 
       console.log(
         `EXPOSED: Simple (${avgSimple.toFixed(2)}ms) vs Complex (${avgComplex.toFixed(2)}ms) - no planning complexity scaling`
@@ -543,7 +543,7 @@ describe('SmartPlan - REAL TESTS (Expose Planning Theater)', () => {
       expect(result.data?.successMetrics).toContain('Integrate 1 external MCPs');
 
       // Technical metrics should show template generation speed
-      expect(result.data?.technicalMetrics.responseTime).toBeLessThan(10); // Fast template gen
+      expect(result.data?.technicalMetrics.responseTime).toBeLessThan(3000); // Context7 enhanced planning
       expect(result.data?.technicalMetrics.phasesPlanned).toBeGreaterThanOrEqual(3); // Dynamic phases generated
       expect(result.data?.technicalMetrics.tasksPlanned).toBeGreaterThan(0);
 

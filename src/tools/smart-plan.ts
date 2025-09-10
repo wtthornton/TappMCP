@@ -71,6 +71,10 @@ const SmartPlanInputSchema = z.object({
     .default('detailed'),
   processCompliance: z.boolean().default(true),
   learningIntegration: z.boolean().default(true),
+  // New parameters for existing project improvement
+  improvementMode: z.enum(['enhancement', 'refactoring', 'optimization']).default('enhancement'),
+  targetQualityLevel: z.enum(['basic', 'standard', 'enterprise', 'production']).default('standard'),
+  preserveExisting: z.boolean().default(true),
   externalSources: z
     .object({
       useContext7: z.boolean().default(true),
@@ -85,7 +89,7 @@ const SmartPlanInputSchema = z.object({
 export const smartPlanTool: Tool = {
   name: 'smart_plan',
   description:
-    'Create comprehensive project plans with external MCP integration and resource optimization',
+    'Create comprehensive project plans with external MCP integration, resource optimization, and existing project improvement strategies',
   inputSchema: {
     type: 'object',
     properties: {
@@ -267,6 +271,23 @@ export const smartPlanTool: Tool = {
         },
         description: 'Business context for the project plan',
       },
+      improvementMode: {
+        type: 'string',
+        enum: ['enhancement', 'refactoring', 'optimization'],
+        description: 'Mode for improving existing projects',
+        default: 'enhancement',
+      },
+      targetQualityLevel: {
+        type: 'string',
+        enum: ['basic', 'standard', 'enterprise', 'production'],
+        description: 'Target quality level for improvements',
+        default: 'standard',
+      },
+      preserveExisting: {
+        type: 'boolean',
+        description: 'Whether to preserve existing functionality during improvements',
+        default: true,
+      },
       externalSources: {
         type: 'object',
         properties: {
@@ -307,13 +328,15 @@ export async function handleSmartPlan(input: unknown): Promise<{
     let context7Enhancement = null;
     if (validatedInput.externalSources?.useContext7) {
       try {
-        const planningTopic = `${validatedInput.planType} planning best practices for ${validatedInput.role || 'general'} role`;
+        const planningTopic = validatedInput.improvementMode
+          ? `${validatedInput.improvementMode} planning best practices for ${validatedInput.role || 'general'} role targeting ${validatedInput.targetQualityLevel} quality`
+          : `${validatedInput.planType} planning best practices for ${validatedInput.role || 'general'} role`;
+
         context7Knowledge = await context7Cache.getRelevantData({
           projectId: validatedInput.projectId,
           businessRequest: planningTopic,
           domain: validatedInput.planType || 'general',
           priority: validatedInput.businessContext?.goals?.length ? 'high' : 'medium',
-          sources: { useContext7: true, useWebSearch: false, useMemory: false },
           maxResults: 5,
         });
 
@@ -323,6 +346,9 @@ export async function handleSmartPlan(input: unknown): Promise<{
           scope: validatedInput.scope,
           businessContext: validatedInput.businessContext,
           qualityRequirements: validatedInput.qualityRequirements,
+          improvementMode: validatedInput.improvementMode,
+          targetQualityLevel: validatedInput.targetQualityLevel,
+          preserveExisting: validatedInput.preserveExisting,
         };
         context7Enhancement = await enhanceWithContext7(planData, planningTopic, {
           projectId: validatedInput.projectId,
@@ -331,7 +357,9 @@ export async function handleSmartPlan(input: unknown): Promise<{
           maxResults: 3,
         });
 
-        console.log(`🔍 Context7 enhanced smart_plan for: ${validatedInput.planType} planning`);
+        console.log(
+          `🔍 Context7 enhanced smart_plan for: ${validatedInput.planType} planning (${validatedInput.improvementMode || 'standard'})`
+        );
       } catch (error) {
         console.warn('Context7 integration failed:', error);
       }
@@ -467,11 +495,13 @@ export async function handleSmartPlan(input: unknown): Promise<{
       externalIntegration: {
         context7Status: validatedInput.externalSources?.useContext7 ? 'active' : 'disabled',
         context7Knowledge: context7Knowledge ? 'integrated' : 'not available',
-        context7Enhancement: context7Enhancement ? {
-          dataCount: context7Enhancement.enhancementMetadata.dataCount,
-          responseTime: context7Enhancement.enhancementMetadata.responseTime,
-          cacheHit: context7Enhancement.enhancementMetadata.cacheHit,
-        } : null,
+        context7Enhancement: context7Enhancement
+          ? {
+              dataCount: context7Enhancement.enhancementMetadata.dataCount,
+              responseTime: context7Enhancement.enhancementMetadata.responseTime,
+              cacheHit: context7Enhancement.enhancementMetadata.cacheHit,
+            }
+          : null,
         cacheStats: context7Cache.getCacheStats(),
       },
     };
@@ -513,29 +543,122 @@ function generateProjectPhases(input: any): Array<{
 }> {
   const phases = [];
 
-  // Always start with planning
-  phases.push({
-    name: 'Planning and Setup',
-    description: 'Project planning, requirements gathering, and initial setup',
-    duration: 1,
-    tasks: [
-      {
-        name: 'Requirements Analysis',
-        description: `Analyze requirements for ${input.projectName || 'the project'}`,
-        effort: 3,
-        dependencies: [],
-        deliverables: ['Requirements Document', 'User Stories'],
-      },
-    ],
-    milestones: [
-      {
-        name: 'Project Kickoff',
-        description: 'Project officially starts with team alignment',
-        date: 'Week 1',
-        criteria: ['Team assembled', 'Requirements documented'],
-      },
-    ],
-  });
+  // Handle different improvement modes
+  if (input.improvementMode === 'enhancement') {
+    phases.push({
+      name: 'Project Analysis and Enhancement Planning',
+      description: 'Analyze existing project and plan enhancements',
+      duration: 1,
+      tasks: [
+        {
+          name: 'Current State Analysis',
+          description: `Analyze current state of ${input.projectName || 'the project'}`,
+          effort: 4,
+          dependencies: [],
+          deliverables: ['Current State Report', 'Gap Analysis'],
+        },
+        {
+          name: 'Enhancement Requirements',
+          description: 'Define enhancement requirements and priorities',
+          effort: 3,
+          dependencies: ['Current State Analysis'],
+          deliverables: ['Enhancement Plan', 'Priority Matrix'],
+        },
+      ],
+      milestones: [
+        {
+          name: 'Enhancement Planning Complete',
+          description: 'Enhancement strategy is defined and approved',
+          date: 'Week 1',
+          criteria: ['Current state analyzed', 'Enhancement plan approved'],
+        },
+      ],
+    });
+  } else if (input.improvementMode === 'refactoring') {
+    phases.push({
+      name: 'Refactoring Planning and Risk Assessment',
+      description: 'Plan refactoring approach with risk mitigation',
+      duration: 1,
+      tasks: [
+        {
+          name: 'Code Quality Assessment',
+          description: `Assess code quality and identify refactoring opportunities`,
+          effort: 5,
+          dependencies: [],
+          deliverables: ['Code Quality Report', 'Refactoring Roadmap'],
+        },
+        {
+          name: 'Risk Assessment',
+          description: 'Identify and mitigate refactoring risks',
+          effort: 3,
+          dependencies: ['Code Quality Assessment'],
+          deliverables: ['Risk Matrix', 'Mitigation Plan'],
+        },
+      ],
+      milestones: [
+        {
+          name: 'Refactoring Plan Approved',
+          description: 'Refactoring strategy is defined with risk mitigation',
+          date: 'Week 1',
+          criteria: ['Code quality assessed', 'Risks identified and mitigated'],
+        },
+      ],
+    });
+  } else if (input.improvementMode === 'optimization') {
+    phases.push({
+      name: 'Performance Analysis and Optimization Planning',
+      description: 'Analyze performance bottlenecks and plan optimizations',
+      duration: 1,
+      tasks: [
+        {
+          name: 'Performance Baseline',
+          description: `Establish performance baseline for ${input.projectName || 'the project'}`,
+          effort: 4,
+          dependencies: [],
+          deliverables: ['Performance Baseline Report', 'Bottleneck Analysis'],
+        },
+        {
+          name: 'Optimization Strategy',
+          description: 'Define optimization strategy and targets',
+          effort: 3,
+          dependencies: ['Performance Baseline'],
+          deliverables: ['Optimization Plan', 'Performance Targets'],
+        },
+      ],
+      milestones: [
+        {
+          name: 'Optimization Plan Complete',
+          description: 'Optimization strategy is defined with clear targets',
+          date: 'Week 1',
+          criteria: ['Baseline established', 'Optimization plan approved'],
+        },
+      ],
+    });
+  } else {
+    // Standard planning for new projects
+    phases.push({
+      name: 'Planning and Setup',
+      description: 'Project planning, requirements gathering, and initial setup',
+      duration: 1,
+      tasks: [
+        {
+          name: 'Requirements Analysis',
+          description: `Analyze requirements for ${input.projectName || 'the project'}`,
+          effort: 3,
+          dependencies: [],
+          deliverables: ['Requirements Document', 'User Stories'],
+        },
+      ],
+      milestones: [
+        {
+          name: 'Project Kickoff',
+          description: 'Project officially starts with team alignment',
+          date: 'Week 1',
+          criteria: ['Team assembled', 'Requirements documented'],
+        },
+      ],
+    });
+  }
 
   // Add development phase based on tech stack
   const techStack = input.techStack || [];

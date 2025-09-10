@@ -89,7 +89,13 @@ describe('Enhanced Smart Finish Tool', () => {
   });
 
   it('should validate different roles', { timeout: 30000 }, async () => {
-    const roles = ['developer', 'product-strategist', 'operations-engineer', 'designer', 'qa-engineer'];
+    const roles = [
+      'developer',
+      'product-strategist',
+      'operations-engineer',
+      'designer',
+      'qa-engineer',
+    ];
 
     for (const role of roles) {
       const input = {

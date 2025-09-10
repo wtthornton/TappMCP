@@ -190,8 +190,8 @@ describe('OrchestrationEngine', () => {
 
     it('should generate unique transition IDs', async () => {
       const transition1 = await engine.switchRole('role1', 'role2', sampleBusinessContext);
-      // Add a small delay to ensure different timestamps
-      await new Promise(resolve => setTimeout(resolve, 1));
+      // Add a delay to ensure different timestamps
+      await new Promise(resolve => setTimeout(resolve, 10));
       const transition2 = await engine.switchRole('role1', 'role2', sampleBusinessContext);
 
       expect(transition1.transitionId).not.toBe(transition2.transitionId);

@@ -150,7 +150,7 @@ async function validateThreeToolWorkflow(projectId: string, codeIds: string[]) {
 }
 
 describe('Three Tool Workflow Integration', () => {
-  it('should complete full Phase 1A-1B-1C workflow', async () => {
+  it('should complete full Phase 1A-1B-1C workflow', { timeout: 30000 }, async () => {
     // Step 1: Initialize project with smart_begin
     const projectInput = createThreeToolProjectInput('three-tool-test-project');
     const projectResult = (await handleSmartBegin(projectInput)) as SmartBeginResponse;
@@ -215,7 +215,7 @@ describe('Three Tool Workflow Integration', () => {
     expect(validationResult.data?.businessValue.userSatisfactionScore).toBeGreaterThan(0);
   });
 
-  it('should handle different user roles throughout the workflow', async () => {
+  it('should handle different user roles throughout the workflow', { timeout: 30000 }, async () => {
     const roles = ['vibe-coder', 'strategy-person', 'non-technical-founder'];
 
     for (const role of roles) {

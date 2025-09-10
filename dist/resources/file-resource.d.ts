@@ -21,9 +21,9 @@ export declare const FileResourceSchema: z.ZodObject<{
     permissions?: string | undefined;
 }, {
     path: string;
-    data?: string | undefined;
     mode?: "read" | "write" | "append" | undefined;
     encoding?: string | undefined;
+    data?: string | undefined;
     createIfNotExists?: boolean | undefined;
     backup?: boolean | undefined;
     permissions?: string | undefined;

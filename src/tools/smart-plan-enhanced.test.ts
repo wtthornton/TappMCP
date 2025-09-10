@@ -95,7 +95,13 @@ describe('Enhanced Smart Plan Tool', () => {
   });
 
   it('should generate role-specific plans', { timeout: 30000 }, async () => {
-    const roles = ['developer', 'product-strategist', 'operations-engineer', 'designer', 'qa-engineer'];
+    const roles = [
+      'developer',
+      'product-strategist',
+      'operations-engineer',
+      'designer',
+      'qa-engineer',
+    ];
 
     for (const role of roles) {
       const input = {

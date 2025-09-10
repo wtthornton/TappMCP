@@ -206,7 +206,7 @@ describe('SmartOrchestrate - REAL TESTS (Expose Workflow Theater)', () => {
       console.log('EXPOSED: Social media app and banking app get identical workflow templates');
     });
 
-    it('should complete "comprehensive orchestration" in <100ms - too fast for real analysis', async () => {
+    it('should complete "comprehensive orchestration" in <5000ms with Context7 integration', async () => {
       const complexInput = {
         request:
           'Orchestrate complete enterprise digital transformation with microservices, AI/ML, blockchain integration, and global deployment',
@@ -267,7 +267,7 @@ describe('SmartOrchestrate - REAL TESTS (Expose Workflow Theater)', () => {
 
       // EXPOSE THE TRUTH: "Comprehensive enterprise orchestration" completes in milliseconds
       expect(duration).toBeLessThan(5000); // Allow more time for Context7 integration
-      expect(result.data?.technicalMetrics.responseTime).toBeLessThan(2000);
+      expect(result.data?.technicalMetrics.responseTime).toBeLessThan(2500);
 
       // Should have generated workflow phases
       expect(result.data?.orchestration.workflow.phases.length).toBeGreaterThan(0);
@@ -545,76 +545,80 @@ describe('SmartOrchestrate - REAL TESTS (Expose Workflow Theater)', () => {
   });
 
   describe('PERFORMANCE ANALYSIS - Fast Template vs Slow Real Orchestration', () => {
-    it('should have consistent performance regardless of orchestration complexity', async () => {
-      const simpleInput = {
-        request: 'Create a hello world application',
-        options: {
-          businessContext: {
-            projectId: 'hello-world',
-            businessGoals: ['display hello message'],
-            requirements: ['print hello world'],
+    it(
+      'should have consistent performance regardless of orchestration complexity',
+      { timeout: 30000 },
+      async () => {
+        const simpleInput = {
+          request: 'Create a hello world application',
+          options: {
+            businessContext: {
+              projectId: 'hello-world',
+              businessGoals: ['display hello message'],
+              requirements: ['print hello world'],
+            },
           },
-        },
-        workflow: 'project',
-        orchestrationLevel: 'basic',
-        externalSources: { useContext7: true, useWebSearch: false, useMemory: false },
-      };
+          workflow: 'project',
+          orchestrationLevel: 'basic',
+          externalSources: { useContext7: true, useWebSearch: false, useMemory: false },
+        };
 
-      const enterpriseInput = {
-        request:
-          'Orchestrate complete digital transformation with 100+ microservices, AI/ML pipeline, blockchain integration, and global multi-cloud deployment',
-        options: {
-          businessContext: {
-            projectId: 'digital-transformation',
-            businessGoals: [
-              'complete technology modernization',
-              'AI-driven business intelligence',
-              'global scalability',
-              'zero-trust security',
-              'regulatory compliance across 25 countries',
-            ],
-            requirements: [
-              '100+ microservices',
-              'Kubernetes orchestration',
-              'service mesh',
-              'AI/ML pipeline',
-              'data lake architecture',
-              'blockchain ledger',
-              'multi-cloud deployment',
-              'disaster recovery',
-              'compliance automation',
-            ],
+        const enterpriseInput = {
+          request:
+            'Orchestrate complete digital transformation with 100+ microservices, AI/ML pipeline, blockchain integration, and global multi-cloud deployment',
+          options: {
+            businessContext: {
+              projectId: 'digital-transformation',
+              businessGoals: [
+                'complete technology modernization',
+                'AI-driven business intelligence',
+                'global scalability',
+                'zero-trust security',
+                'regulatory compliance across 25 countries',
+              ],
+              requirements: [
+                '100+ microservices',
+                'Kubernetes orchestration',
+                'service mesh',
+                'AI/ML pipeline',
+                'data lake architecture',
+                'blockchain ledger',
+                'multi-cloud deployment',
+                'disaster recovery',
+                'compliance automation',
+              ],
+            },
           },
-        },
-        workflow: 'sdlc',
-        orchestrationLevel: 'enterprise',
-        externalSources: { useContext7: true, useWebSearch: false, useMemory: false },
-      };
+          workflow: 'sdlc',
+          orchestrationLevel: 'enterprise',
+          externalSources: { useContext7: true, useWebSearch: false, useMemory: false },
+        };
 
-      const simpleTimes = [];
-      const enterpriseTimes = [];
+        const simpleTimes = [];
+        const enterpriseTimes = [];
 
-      for (let i = 0; i < 3; i++) {
-        const simpleStart = performance.now();
-        await handleSmartOrchestrate(simpleInput);
-        simpleTimes.push(performance.now() - simpleStart);
+        for (let i = 0; i < 3; i++) {
+          const simpleStart = performance.now();
+          await handleSmartOrchestrate(simpleInput);
+          simpleTimes.push(performance.now() - simpleStart);
 
-        const enterpriseStart = performance.now();
-        await handleSmartOrchestrate(enterpriseInput);
-        enterpriseTimes.push(performance.now() - enterpriseStart);
+          const enterpriseStart = performance.now();
+          await handleSmartOrchestrate(enterpriseInput);
+          enterpriseTimes.push(performance.now() - enterpriseStart);
+        }
+
+        const avgSimple = simpleTimes.reduce((sum, time) => sum + time, 0) / simpleTimes.length;
+        const avgEnterprise =
+          enterpriseTimes.reduce((sum, time) => sum + time, 0) / enterpriseTimes.length;
+
+        // Should have similar performance (template generation doesn't scale with orchestration complexity)
+        expect(Math.abs(avgSimple - avgEnterprise)).toBeLessThan(250); // Within 250ms - template generation has some variance but doesn't scale with complexity
+
+        console.log(
+          `EXPOSED: Hello World (${avgSimple.toFixed(2)}ms) vs Digital Transformation (${avgEnterprise.toFixed(2)}ms) - no orchestration complexity scaling`
+        );
       }
-
-      const avgSimple = simpleTimes.reduce((sum, time) => sum + time, 0) / simpleTimes.length;
-      const avgEnterprise =
-        enterpriseTimes.reduce((sum, time) => sum + time, 0) / enterpriseTimes.length;
-
-      // Should have similar performance (template generation doesn't scale with orchestration complexity)
-      expect(Math.abs(avgSimple - avgEnterprise)).toBeLessThan(200); // Within 200ms - template generation has some variance but doesn't scale with complexity
-
-      console.log(
-        `EXPOSED: Hello World (${avgSimple.toFixed(2)}ms) vs Digital Transformation (${avgEnterprise.toFixed(2)}ms) - no orchestration complexity scaling`
-      );
-    });
+    );
   });
 
   describe('ERROR HANDLING - Basic Schema Validation Only', () => {

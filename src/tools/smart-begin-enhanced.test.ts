@@ -211,7 +211,9 @@ describe('Enhanced Smart Begin Tool', () => {
         const data = result.data as any;
         expect(data.businessValue.costPrevention).toBeGreaterThan(10000);
         expect(data.businessValue.timeSaved).toBe(2.5);
-        expect(data.businessValue.qualityImprovements).toContain('Production-ready project structure');
+        expect(data.businessValue.qualityImprovements).toContain(
+          'Production-ready project structure'
+        );
       }
     });
   });

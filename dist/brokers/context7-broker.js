@@ -159,12 +159,12 @@ export class Context7Broker {
             // Add more generic mappings
             'project initialization': '/websites/react_dev',
             'best practices': '/websites/react_dev',
-            'development': '/websites/react_dev',
-            'planning': '/websites/react_dev',
-            'testing': '/websites/react_dev',
-            'deployment': '/websites/react_dev',
-            'maintenance': '/websites/react_dev',
-            'migration': '/websites/react_dev',
+            development: '/websites/react_dev',
+            planning: '/websites/react_dev',
+            testing: '/websites/react_dev',
+            deployment: '/websites/react_dev',
+            maintenance: '/websites/react_dev',
+            migration: '/websites/react_dev',
         };
         // Try exact match first
         if (topicMap[topic.toLowerCase()]) {
@@ -471,7 +471,10 @@ export class Context7Broker {
      * Generate a summary of the knowledge gathered
      */
     generateKnowledgeSummary(topic, priority, counts) {
-        const totalItems = counts.documentation + counts.codeExamples + counts.bestPractices + counts.troubleshootingGuides;
+        const totalItems = counts.documentation +
+            counts.codeExamples +
+            counts.bestPractices +
+            counts.troubleshootingGuides;
         return `Context7 knowledge gathered for ${topic} (${priority} priority): ${totalItems} total items including ${counts.documentation} documentation entries, ${counts.codeExamples} code examples, ${counts.bestPractices} best practices, and ${counts.troubleshootingGuides} troubleshooting guides.`;
     }
     /**

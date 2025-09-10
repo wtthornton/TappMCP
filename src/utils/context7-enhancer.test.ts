@@ -11,7 +11,7 @@ import {
   enhanceWithContext7,
   enhanceText,
   enhanceObject,
-  enhanceArray
+  enhanceArray,
 } from './context7-enhancer.js';
 
 describe('Context7Enhancer', () => {
