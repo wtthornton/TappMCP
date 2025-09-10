@@ -1,2 +1,18 @@
 .archives/
 .knowledge/
+
+# Compiled JavaScript files
+src/**/*.js
+src/**/*.js.map
+src/**/*.d.ts
+src/**/*.d.ts.map
+dist/
+
+# Logs
+logs/
+
+# Vibe standalone module
+src/vibe/
+
+# Local settings
+.claude/settings.local.json
