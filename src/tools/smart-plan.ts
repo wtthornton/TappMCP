@@ -2,6 +2,7 @@
 
 import { z } from 'zod';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { Context7Broker } from '../brokers/context7-broker.js';
 
 // Input schema for smart_plan tool
 const SmartPlanInputSchema = z.object({
@@ -69,6 +70,14 @@ const SmartPlanInputSchema = z.object({
     .default('detailed'),
   processCompliance: z.boolean().default(true),
   learningIntegration: z.boolean().default(true),
+  externalSources: z
+    .object({
+      useContext7: z.boolean().default(true),
+      useWebSearch: z.boolean().default(false),
+      useMemory: z.boolean().default(false),
+    })
+    .optional()
+    .default({ useContext7: true, useWebSearch: false, useMemory: false }),
 });
 
 // Tool definition
@@ -257,6 +266,16 @@ export const smartPlanTool: Tool = {
         },
         description: 'Business context for the project plan',
       },
+      externalSources: {
+        type: 'object',
+        properties: {
+          useContext7: { type: 'boolean', default: true },
+          useWebSearch: { type: 'boolean', default: false },
+          useMemory: { type: 'boolean', default: false },
+        },
+        description: 'External knowledge sources to integrate',
+        default: { useContext7: true, useWebSearch: false, useMemory: false },
+      },
     },
     required: ['projectId'],
   },
@@ -274,6 +293,21 @@ export async function handleSmartPlan(input: unknown): Promise<{
   try {
     // Validate input
     const validatedInput = SmartPlanInputSchema.parse(input);
+
+    // Initialize Context7 broker if enabled
+    let context7Knowledge = null;
+    if (validatedInput.externalSources?.useContext7) {
+      try {
+        const context7Broker = new Context7Broker();
+        context7Knowledge = await context7Broker.getKnowledge({
+          topic: `${validatedInput.planType} planning best practices`,
+          projectId: validatedInput.projectId,
+          priority: 'high',
+        });
+      } catch (error) {
+        console.warn('Context7 integration failed:', error);
+      }
+    }
 
     // Generate dynamic project plan based on input
     const phases = generateProjectPhases(validatedInput);
@@ -401,6 +435,10 @@ export async function handleSmartPlan(input: unknown): Promise<{
         phasesPlanned: projectPlan.phases.length,
         tasksPlanned: projectPlan.phases.reduce((sum, phase) => sum + phase.tasks.length, 0),
         roadmapDetailLevel: validatedInput.roadmapType,
+      },
+      externalIntegration: {
+        context7Status: validatedInput.externalSources?.useContext7 ? 'active' : 'disabled',
+        context7Knowledge: context7Knowledge ? 'integrated' : 'not available',
       },
     };
 

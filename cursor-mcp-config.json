@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "smart-mcp": {
+      "command": "docker",
+      "args": [
+        "exec", "-i",
+        "tappmcp-smart-mcp-1",
+        "node", "dist/mcp-only-server.js"
+      ],
+      "cwd": "C:\\cursor\\TappMCP",
+      "env": {}
+    }
+  }
+}

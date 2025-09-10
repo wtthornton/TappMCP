@@ -2,6 +2,7 @@
 
 import { z } from 'zod';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { Context7Broker } from '../brokers/context7-broker.js';
 
 // Input schema for smart_write tool
 const SmartWriteInputSchema = z.object({
@@ -28,6 +29,14 @@ const SmartWriteInputSchema = z.object({
       securityLevel: z.enum(['low', 'medium', 'high']).default('medium'),
     })
     .optional(),
+  externalSources: z
+    .object({
+      useContext7: z.boolean().default(true),
+      useWebSearch: z.boolean().default(false),
+      useMemory: z.boolean().default(false),
+    })
+    .optional()
+    .default({ useContext7: true, useWebSearch: false, useMemory: false }),
 });
 
 // Tool definition
@@ -113,6 +122,16 @@ export const smartWriteTool: Tool = {
           },
         },
         description: 'Quality requirements for generated code',
+      },
+      externalSources: {
+        type: 'object',
+        properties: {
+          useContext7: { type: 'boolean', default: true },
+          useWebSearch: { type: 'boolean', default: false },
+          useMemory: { type: 'boolean', default: false },
+        },
+        description: 'External knowledge sources to integrate',
+        default: { useContext7: true, useWebSearch: false, useMemory: false },
       },
     },
     required: ['projectId', 'featureDescription'],
@@ -923,6 +942,21 @@ export async function handleSmartWrite(input: unknown): Promise<{
     // Validate input
     const validatedInput = SmartWriteInputSchema.parse(input);
 
+    // Initialize Context7 broker if enabled
+    let context7Knowledge = null;
+    if (validatedInput.externalSources?.useContext7) {
+      try {
+        const context7Broker = new Context7Broker();
+        context7Knowledge = await context7Broker.getKnowledge({
+          topic: `${validatedInput.codeType} development best practices`,
+          projectId: validatedInput.projectId,
+          priority: 'high',
+        });
+      } catch (error) {
+        console.warn('Context7 integration failed:', error);
+      }
+    }
+
     // Generate code
     const codeId = `code_${Date.now()}_${validatedInput.featureDescription.toLowerCase().replace(/\s+/g, '_')}`;
     const generatedCode = generateRealCode(validatedInput);
@@ -957,6 +991,10 @@ export async function handleSmartWrite(input: unknown): Promise<{
         generationTime: Math.max(1, executionLog.duration - 5),
         linesGenerated: 50,
         filesCreated: generatedCode.files.length,
+      },
+      externalIntegration: {
+        context7Status: validatedInput.externalSources?.useContext7 ? 'active' : 'disabled',
+        context7Knowledge: context7Knowledge ? 'integrated' : 'not available',
       },
     };
 

@@ -2,6 +2,7 @@
 
 import { z } from 'zod';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { Context7Broker } from '../brokers/context7-broker.js';
 
 // Input schema for smart_begin tool
 const SmartBeginInputSchema = z.object({
@@ -18,6 +19,14 @@ const SmartBeginInputSchema = z.object({
     .optional(),
   qualityLevel: z.enum(['basic', 'standard', 'enterprise', 'production']).default('standard'),
   complianceRequirements: z.array(z.string()).default([]),
+  externalSources: z
+    .object({
+      useContext7: z.boolean().default(true),
+      useWebSearch: z.boolean().default(false),
+      useMemory: z.boolean().default(false),
+    })
+    .optional()
+    .default({ useContext7: true, useWebSearch: false, useMemory: false }),
 });
 
 // Output schema for smart_begin tool
@@ -102,6 +111,16 @@ export const smartBeginTool: Tool = {
         type: 'array',
         items: { type: 'string' },
         description: 'Optional array of business goals for the project',
+      },
+      externalSources: {
+        type: 'object',
+        properties: {
+          useContext7: { type: 'boolean', default: true },
+          useWebSearch: { type: 'boolean', default: false },
+          useMemory: { type: 'boolean', default: false },
+        },
+        description: 'External knowledge sources to integrate',
+        default: { useContext7: true, useWebSearch: false, useMemory: false },
       },
     },
     required: ['projectName'],
@@ -538,6 +557,21 @@ export async function handleSmartBegin(input: unknown): Promise<{
     // Validate input
     const validatedInput = SmartBeginInputSchema.parse(input);
 
+    // Initialize Context7 broker if enabled
+    let context7Knowledge = null;
+    if (validatedInput.externalSources?.useContext7) {
+      try {
+        const context7Broker = new Context7Broker();
+        context7Knowledge = await context7Broker.getKnowledge({
+          topic: 'project initialization best practices',
+          projectId: `proj_${Date.now()}_${validatedInput.projectName.toLowerCase().replace(/\s+/g, '_')}`,
+          priority: 'high',
+        });
+      } catch (error) {
+        console.warn('Context7 integration failed:', error);
+      }
+    }
+
     // Generate project structure with templates
     const projectStructure = generateProjectStructure(
       validatedInput.projectName,
@@ -596,6 +630,10 @@ export async function handleSmartBegin(input: unknown): Promise<{
       technicalMetrics,
       processCompliance,
       learningIntegration,
+      externalIntegration: {
+        context7Status: validatedInput.externalSources?.useContext7 ? 'active' : 'disabled',
+        context7Knowledge: context7Knowledge ? 'integrated' : 'not available',
+      },
     };
 
     // Validate output

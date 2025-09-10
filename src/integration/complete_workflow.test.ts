@@ -210,7 +210,7 @@ async function orchestrateWorkflow(projectId: string) {
     },
     workflow: 'sdlc',
     externalSources: {
-      useContext7: false,
+      useContext7: true,
       useWebSearch: false,
       useMemory: false,
     },
@@ -345,7 +345,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
       },
       workflow: 'sdlc',
       externalSources: {
-        useContext7: false,
+        useContext7: true,
         useWebSearch: false,
         useMemory: false,
       },
@@ -429,7 +429,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
         },
         workflow: workflowType === 'full-development' ? 'sdlc' : 'project',
         externalSources: {
-          useContext7: false,
+          useContext7: true,
           useWebSearch: false,
           useMemory: false,
         },
@@ -516,7 +516,7 @@ describe('Complete 5-Tool Workflow Integration', () => {
       },
       workflow: 'sdlc',
       externalSources: {
-        useContext7: false,
+        useContext7: true,
         useWebSearch: false,
         useMemory: false,
       },

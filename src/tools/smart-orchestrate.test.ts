@@ -33,7 +33,7 @@ describe('SmartOrchestrate - REAL TESTS (Expose Workflow Theater)', () => {
           },
         },
         workflow: 'sdlc',
-        externalSources: { useContext7: false, useWebSearch: false, useMemory: false },
+        externalSources: { useContext7: true, useWebSearch: false, useMemory: false },
       };
 
       const enterpriseInput = {
@@ -61,7 +61,7 @@ describe('SmartOrchestrate - REAL TESTS (Expose Workflow Theater)', () => {
           },
         },
         workflow: 'sdlc',
-        externalSources: { useContext7: false, useWebSearch: false, useMemory: false },
+        externalSources: { useContext7: true, useWebSearch: false, useMemory: false },
       };
 
       const simpleResult = (await handleSmartOrchestrate(simpleInput)) as SmartOrchestrateResponse;
@@ -105,7 +105,7 @@ describe('SmartOrchestrate - REAL TESTS (Expose Workflow Theater)', () => {
           },
         },
         workflow: 'project',
-        externalSources: { useContext7: false, useWebSearch: false, useMemory: false },
+        externalSources: { useContext7: true, useWebSearch: false, useMemory: false },
       };
 
       const highValueInput = {
@@ -128,7 +128,7 @@ describe('SmartOrchestrate - REAL TESTS (Expose Workflow Theater)', () => {
           },
         },
         workflow: 'sdlc',
-        externalSources: { useContext7: false, useWebSearch: false, useMemory: false },
+        externalSources: { useContext7: true, useWebSearch: false, useMemory: false },
       };
 
       const lowResult = (await handleSmartOrchestrate(lowValueInput)) as SmartOrchestrateResponse;
@@ -165,7 +165,7 @@ describe('SmartOrchestrate - REAL TESTS (Expose Workflow Theater)', () => {
           },
         },
         workflow: 'sdlc',
-        externalSources: { useContext7: false, useWebSearch: false, useMemory: false },
+        externalSources: { useContext7: true, useWebSearch: false, useMemory: false },
       };
 
       const mobileAppInput = {
@@ -178,7 +178,7 @@ describe('SmartOrchestrate - REAL TESTS (Expose Workflow Theater)', () => {
           },
         },
         workflow: 'sdlc',
-        externalSources: { useContext7: false, useWebSearch: false, useMemory: false },
+        externalSources: { useContext7: true, useWebSearch: false, useMemory: false },
       };
 
       const webResult = (await handleSmartOrchestrate(webAppInput)) as SmartOrchestrateResponse;
@@ -246,7 +246,7 @@ describe('SmartOrchestrate - REAL TESTS (Expose Workflow Theater)', () => {
         },
         workflow: 'sdlc',
         orchestrationLevel: 'enterprise',
-        externalSources: { useContext7: false, useWebSearch: false, useMemory: false },
+        externalSources: { useContext7: true, useWebSearch: false, useMemory: false },
       };
 
       const startTime = performance.now();
@@ -254,7 +254,7 @@ describe('SmartOrchestrate - REAL TESTS (Expose Workflow Theater)', () => {
       const duration = performance.now() - startTime;
 
       // EXPOSE THE TRUTH: Either way, completes very fast (template validation or generation)
-      expect(duration).toBeLessThan(1200); // Allow more time for real analysis
+      expect(duration).toBeLessThan(5000); // Allow more time for Context7 integration
 
       if (!result.success) {
         // Still exposes theatrical aspect - even validation errors happen instantly
@@ -266,7 +266,7 @@ describe('SmartOrchestrate - REAL TESTS (Expose Workflow Theater)', () => {
       }
 
       // EXPOSE THE TRUTH: "Comprehensive enterprise orchestration" completes in milliseconds
-      expect(duration).toBeLessThan(1200); // Allow more time for complex orchestration analysis
+      expect(duration).toBeLessThan(5000); // Allow more time for Context7 integration
       expect(result.data?.technicalMetrics.responseTime).toBeLessThan(2000);
 
       // Should have generated workflow phases
@@ -289,7 +289,7 @@ describe('SmartOrchestrate - REAL TESTS (Expose Workflow Theater)', () => {
           },
         },
         workflow: 'sdlc',
-        externalSources: { useContext7: false, useWebSearch: false, useMemory: false },
+        externalSources: { useContext7: true, useWebSearch: false, useMemory: false },
       };
 
       const complexInput = {
@@ -313,7 +313,7 @@ describe('SmartOrchestrate - REAL TESTS (Expose Workflow Theater)', () => {
           },
         },
         workflow: 'sdlc',
-        externalSources: { useContext7: false, useWebSearch: false, useMemory: false },
+        externalSources: { useContext7: true, useWebSearch: false, useMemory: false },
       };
 
       const minimalResult = (await handleSmartOrchestrate(
@@ -353,7 +353,7 @@ describe('SmartOrchestrate - REAL TESTS (Expose Workflow Theater)', () => {
           },
         },
         workflow: 'sdlc',
-        externalSources: { useContext7: false, useWebSearch: false, useMemory: false },
+        externalSources: { useContext7: true, useWebSearch: false, useMemory: false },
       };
 
       // Run the same input 3 times
@@ -402,7 +402,7 @@ describe('SmartOrchestrate - REAL TESTS (Expose Workflow Theater)', () => {
           },
         },
         workflow: 'sdlc',
-        externalSources: { useContext7: false, useWebSearch: false, useMemory: false },
+        externalSources: { useContext7: true, useWebSearch: false, useMemory: false },
       };
 
       const designInput = {
@@ -415,7 +415,7 @@ describe('SmartOrchestrate - REAL TESTS (Expose Workflow Theater)', () => {
           },
         },
         workflow: 'sdlc',
-        externalSources: { useContext7: false, useWebSearch: false, useMemory: false },
+        externalSources: { useContext7: true, useWebSearch: false, useMemory: false },
       };
 
       const backendResult = (await handleSmartOrchestrate(
@@ -465,7 +465,7 @@ describe('SmartOrchestrate - REAL TESTS (Expose Workflow Theater)', () => {
           },
         },
         workflow: 'sdlc',
-        externalSources: { useContext7: false, useWebSearch: false, useMemory: false },
+        externalSources: { useContext7: true, useWebSearch: false, useMemory: false },
       };
 
       const result = (await handleSmartOrchestrate(input)) as SmartOrchestrateResponse;
@@ -518,7 +518,7 @@ describe('SmartOrchestrate - REAL TESTS (Expose Workflow Theater)', () => {
           },
         },
         workflow: 'sdlc',
-        externalSources: { useContext7: false, useWebSearch: false, useMemory: false },
+        externalSources: { useContext7: true, useWebSearch: false, useMemory: false },
       };
 
       const result = (await handleSmartOrchestrate(input)) as SmartOrchestrateResponse;
@@ -557,7 +557,7 @@ describe('SmartOrchestrate - REAL TESTS (Expose Workflow Theater)', () => {
         },
         workflow: 'project',
         orchestrationLevel: 'basic',
-        externalSources: { useContext7: false, useWebSearch: false, useMemory: false },
+        externalSources: { useContext7: true, useWebSearch: false, useMemory: false },
       };
 
       const enterpriseInput = {
@@ -588,7 +588,7 @@ describe('SmartOrchestrate - REAL TESTS (Expose Workflow Theater)', () => {
         },
         workflow: 'sdlc',
         orchestrationLevel: 'enterprise',
-        externalSources: { useContext7: false, useWebSearch: false, useMemory: false },
+        externalSources: { useContext7: true, useWebSearch: false, useMemory: false },
       };
 
       const simpleTimes = [];
@@ -684,7 +684,7 @@ describe('SmartOrchestrate - REAL TESTS (Expose Workflow Theater)', () => {
         processCompliance: true,
         learningIntegration: true,
         archiveLessons: true,
-        externalSources: { useContext7: false, useWebSearch: false, useMemory: false },
+        externalSources: { useContext7: true, useWebSearch: false, useMemory: false },
       };
 
       const result = (await handleSmartOrchestrate(input)) as SmartOrchestrateResponse;
