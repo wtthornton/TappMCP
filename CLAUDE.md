@@ -33,6 +33,19 @@ npm run build
 npm start
 ```
 
+### Docker Deployment
+```bash
+# Build and deploy production container
+docker build -t smart-mcp:latest .
+docker run -d --name smart-mcp -p 3000:3000 -p 3001:3001 -v smart-mcp-data:/app/data smart-mcp:latest
+
+# Health check
+curl http://localhost:3001/health
+
+# Run smoke test to verify deployment
+NODE_ENV=test npx vitest run src/deployment/smoke-test.test.ts
+```
+
 ### Testing
 ```bash
 # Run all tests
@@ -102,9 +115,16 @@ This is a Model Context Protocol (MCP) server built with TypeScript and Node.js.
 - `smart_converse` - Natural language interface that converts conversations to project setup
 - `smart_begin` - Initialize projects with proper structure and quality gates
 - `smart_plan` - Generate comprehensive project plans and roadmaps
-- `smart_write` - Implement features with AI-assisted code generation
+- `smart_write` - Implement features with Advanced Context7 Cache and Unified Code Intelligence
 - `smart_finish` - Complete projects with testing and documentation
 - `smart_orchestrate` - Coordinate complex multi-tool workflows
+- `smart_vibe` - Full VibeTapp natural language interface for Cursor integration
+
+**Advanced Features:**
+- **Advanced Context7 Cache**: Enterprise-grade caching with compression, analytics, and monitoring
+- **Unified Code Intelligence**: Multi-category intelligence engines (Frontend, Backend, DevOps, Mobile)
+- **Health Monitoring**: HTTP endpoints on port 3001 for Docker health checks
+- **Production Ready**: Full containerization with comprehensive smoke testing
 
 ## Quality Standards
 
@@ -171,7 +191,62 @@ The project implements 6 specialized AI roles. When working on this codebase:
 - **Development**: Windows with Bash (WSL, Git Bash, or similar)
 - **Runtime**: Linux (via Docker containers)
 - **Node.js**: v18 or higher required
-- **Health Check**: Server includes health endpoint on port 3000 for Docker
+- **Health Check**: Server includes health endpoints on port 3001 for Docker
+- **Ports**: 3000 (MCP), 3001 (Health), with proper container networking
+
+### Cursor MCP Integration
+
+**Configuration Options:**
+
+1. **Direct Connection** (Development):
+```json
+{
+  "mcpServers": {
+    "smart-mcp": {
+      "command": "node",
+      "args": ["dist/server.js"],
+      "cwd": "C:\\cursor\\TappMCP",
+      "env": {
+        "NODE_ENV": "production",
+        "HEALTH_PORT": "3001"
+      },
+      "stdio": true
+    }
+  }
+}
+```
+
+2. **Docker Container Connection** (Production):
+```json
+{
+  "mcpServers": {
+    "smart-mcp-container": {
+      "command": "docker",
+      "args": ["exec", "-i", "smart-mcp", "node", "dist/server.js"],
+      "env": {
+        "NODE_ENV": "production"
+      },
+      "stdio": true
+    }
+  }
+}
+```
+
+3. **NPM Package Connection**:
+```json
+{
+  "mcpServers": {
+    "smart-mcp-npm": {
+      "command": "npx",
+      "args": ["smart-mcp"],
+      "env": {
+        "NODE_ENV": "production"
+      },
+      "stdio": true
+    }
+  }
+}
+```
 
 ### Data Structure and Performance Patterns
 

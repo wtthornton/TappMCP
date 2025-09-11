@@ -232,7 +232,7 @@ export class AdvancedContext7Cache extends EventEmitter {
     await this.storeInCache(
       this.codeGenerationCache,
       cacheKey,
-      result,
+      result as string,
       codeType,
       technology,
       processingTime
@@ -493,7 +493,8 @@ export class AdvancedContext7Cache extends EventEmitter {
    */
   private updateUsageStats(codeType: string, technology: string): void {
     this.analytics.codeTypeUsage[codeType] = (this.analytics.codeTypeUsage[codeType] || 0) + 1;
-    this.analytics.technologyPopularity[technology] = (this.analytics.technologyPopularity[technology] || 0) + 1;
+    this.analytics.technologyPopularity[technology] =
+      (this.analytics.technologyPopularity[technology] || 0) + 1;
   }
 
   /**
@@ -518,13 +519,12 @@ export class AdvancedContext7Cache extends EventEmitter {
    * Find entry across all caches
    */
   private findEntryInCaches(key: string): CacheEntry<any> | undefined {
-    const result = (
+    const result =
       this.codeGenerationCache.get(key) ||
       this.technologyInsightsCache.get(key) ||
       this.analysisCache.get(key) ||
       this.validationCache.get(key) ||
-      (this.config.enableSharing && this.sharedCache.get(key))
-    );
+      (this.config.enableSharing && this.sharedCache.get(key));
     return result ? result : undefined;
   }
 
@@ -536,7 +536,7 @@ export class AdvancedContext7Cache extends EventEmitter {
     let totalCompressed = 0;
 
     const processCache = (cache: LRUCache<string, CacheEntry<any>>) => {
-      cache.forEach((entry) => {
+      cache.forEach(entry => {
         if (entry.compressed) {
           totalCompressed += entry.size;
           totalOriginal += entry.size * 3; // Estimate original size
@@ -559,7 +559,7 @@ export class AdvancedContext7Cache extends EventEmitter {
     let count = 0;
 
     const processCache = (cache: LRUCache<string, CacheEntry<any>>) => {
-      cache.forEach((entry) => {
+      cache.forEach(entry => {
         totalTime += entry.metadata.processingTime;
         count++;
       });
@@ -670,7 +670,8 @@ export class AdvancedContext7Cache extends EventEmitter {
       console.log('[AdvancedContext7Cache] Analytics Report:', {
         hitRate: this.analytics.cacheEfficiency.hitRate.toFixed(2) + '%',
         compressionRatio: this.analytics.cacheEfficiency.compressionRatio.toFixed(2) + '%',
-        memoryUsage: (this.analytics.performanceMetrics.memoryUsage / 1024 / 1024).toFixed(2) + 'MB',
+        memoryUsage:
+          (this.analytics.performanceMetrics.memoryUsage / 1024 / 1024).toFixed(2) + 'MB',
         totalRequests: this.analytics.performanceMetrics.totalRequests,
       });
     }
@@ -682,7 +683,7 @@ export class AdvancedContext7Cache extends EventEmitter {
   private calculateMemoryUsage(): number {
     const calculateCacheMemory = (cache: LRUCache<string, CacheEntry<any>>) => {
       let size = 0;
-      cache.forEach((entry) => {
+      cache.forEach(entry => {
         size += entry.size + 200; // Add overhead estimate
       });
       return size;
@@ -860,8 +861,8 @@ export class AdvancedContext7Cache extends EventEmitter {
         metadata: {
           processingTime: 0,
           quality: 75,
-          popularity: 1
-        }
+          popularity: 1,
+        },
       };
 
       switch (pattern.operation) {

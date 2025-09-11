@@ -1,9 +1,97 @@
 # TappMCP API Reference - Enhanced with Real AI Intelligence
 
 ## 🎯 Overview
-TappMCP provides a complete set of AI-powered development tools with **real analysis capabilities**, **Context7 intelligence**, and **comprehensive workflow orchestration**. All tools have been enhanced with genuine AI intelligence replacing hardcoded templates.
+TappMCP provides a complete set of AI-powered development tools with **real analysis capabilities**, **Advanced Context7 Cache**, **Unified Code Intelligence**, and **comprehensive workflow orchestration**. All tools have been enhanced with genuine AI intelligence replacing hardcoded templates.
+
+## 🔄 Docker Health Endpoints
+
+For containerized deployments, TappMCP provides health monitoring endpoints:
+
+### Health Check Endpoint
+```bash
+GET http://localhost:3001/health
+```
+
+**Response:**
+```json
+{
+  "status": "healthy",
+  "timestamp": "2025-09-11T05:52:55.374Z",
+  "uptime": 14.170468918,
+  "memory": {
+    "rss": 59060224,
+    "heapTotal": 11780096,
+    "heapUsed": 10283744,
+    "external": 2321801,
+    "arrayBuffers": 106619
+  },
+  "version": "0.1.0"
+}
+```
+
+### Readiness Check Endpoint
+```bash
+GET http://localhost:3001/ready
+```
+
+**Response:**
+```json
+{
+  "status": "ready",
+  "timestamp": "2025-09-11T05:52:59.704Z"
+}
+```
 
 ## 🧠 Core AI Components
+
+### AdvancedContext7Cache
+Enterprise-grade caching system with compression, analytics, and monitoring.
+
+```typescript
+interface AdvancedCacheOptions {
+  enableCompression?: boolean;
+  enableAnalytics?: boolean;
+  enableMonitoring?: boolean;
+  enableCacheSharing?: boolean;
+  maxCacheSize?: number;
+  cacheWarmupStrategy?: 'eager' | 'lazy' | 'intelligent';
+}
+
+// Enterprise caching with advanced features
+const cachedResult = await advancedContext7Cache.getOrGenerateCodeCache(
+  cacheKey,
+  generator,
+  codeType,
+  technology
+);
+```
+
+### UnifiedCodeIntelligenceEngine
+Multi-category intelligence engine with specialized processors.
+
+```typescript
+interface CodeIntelligenceResult {
+  code: string;
+  category: string;
+  technology: string;
+  qualityScore: number;
+  insights: Context7Insights;
+  metadata: {
+    processingTime: number;
+    engineUsed: string;
+    context7Insights: number;
+    cacheStats: CacheStats;
+  };
+}
+
+// Multi-category code intelligence
+const result = await unifiedEngine.generateIntelligentCode({
+  featureDescription: "React login component",
+  targetRole: "developer",
+  techStack: ["react", "typescript"],
+  quality: "enterprise"
+});
+```
 
 ### SimpleAnalyzer
 Unified analysis engine coordinating SecurityScanner, StaticAnalyzer, and ProjectScanner.
@@ -23,16 +111,23 @@ const analysis = await simpleAnalyzer.runBasicAnalysis(projectPath, 'standard');
 ```
 
 ### Context7ProjectAnalyzer
-Project-aware Context7 integration with dynamic topic generation.
+Project-aware Context7 integration with dynamic topic generation and quality metrics.
 
 ```typescript
 interface Context7Data {
-  topics: Context7Topic[];
-  patterns: Context7Pattern[];
-  enhancementMetadata: Context7Metadata;
+  insights: {
+    patterns: string[];
+    recommendations: string[];
+    qualityMetrics: {
+      overall: number;
+      [key: string]: any;
+    };
+  };
+  projectContext?: any;
+  technologyInsights?: any;
 }
 
-// Project-aware Context7 intelligence
+// Project-aware Context7 intelligence with quality metrics
 const context7Data = await context7ProjectAnalyzer.getProjectAwareContext(analysis);
 ```
 

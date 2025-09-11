@@ -16,7 +16,7 @@ describe('PerformanceCache', () => {
   });
 
   afterEach(() => {
-    cache.clear();
+    cache.clearCache();
   });
 
   describe('Code Generation Caching', () => {
@@ -83,7 +83,7 @@ describe('PerformanceCache', () => {
       await smallCache.cacheCodeGeneration(requests[0], generator);
       expect(callCount).toBe(4);
 
-      smallCache.clear();
+      smallCache.clearCache();
     });
   });
 
@@ -228,7 +228,7 @@ describe('PerformanceCache', () => {
       expect(stats.codeGenerationCacheSize).toBeGreaterThan(0);
 
       // Clear and verify
-      cache.clear();
+      cache.clearCache();
       stats = cache.getStats();
       expect(stats.codeGenerationCacheSize).toBe(0);
       expect(stats.technologyInsightsCacheSize).toBe(0);
@@ -268,7 +268,9 @@ describe('PerformanceCache', () => {
         throw new Error('Generation failed');
       };
 
-      await expect(cache.cacheCodeGeneration(request, errorGenerator)).rejects.toThrow('Generation failed');
+      await expect(cache.cacheCodeGeneration(request, errorGenerator)).rejects.toThrow(
+        'Generation failed'
+      );
 
       // Error should not be cached
       let callCount = 0;
@@ -288,16 +290,20 @@ describe('PerformanceCache', () => {
       const generator = async () => 'result';
 
       // Should not throw, might fall back to no caching
-      await expect(cache.cacheTechnologyInsights('test', invalidData, generator)).resolves.toBe('result');
+      await expect(cache.cacheTechnologyInsights('test', invalidData, generator)).resolves.toBe(
+        'result'
+      );
     });
   });
 
   describe('Performance Characteristics', () => {
     it('should have reasonable performance for cache operations', async () => {
-      const requests = Array(100).fill(null).map((_, i) => ({
-        featureDescription: `Component ${i}`,
-        techStack: ['React'],
-      }));
+      const requests = Array(100)
+        .fill(null)
+        .map((_, i) => ({
+          featureDescription: `Component ${i}`,
+          techStack: ['React'],
+        }));
 
       const generator = async () => 'generated code';
 
@@ -352,9 +358,9 @@ describe('PerformanceCache', () => {
       };
 
       // Multiple concurrent requests for the same item
-      const promises = Array(10).fill(null).map(() =>
-        cache.cacheCodeGeneration(request, generator)
-      );
+      const promises = Array(10)
+        .fill(null)
+        .map(() => cache.cacheCodeGeneration(request, generator));
 
       const results = await Promise.all(promises);
 
@@ -380,19 +386,11 @@ describe('PerformanceCache', () => {
         );
 
         operations.push(
-          cache.cacheTechnologyInsights(
-            `key-${i % 3}`,
-            { data: i },
-            async () => ({ insight: i })
-          )
+          cache.cacheTechnologyInsights(`key-${i % 3}`, { data: i }, async () => ({ insight: i }))
         );
 
         operations.push(
-          cache.cacheCodeAnalysis(
-            `code-${i % 3}`,
-            'JavaScript',
-            async () => `Analysis ${i}`
-          )
+          cache.cacheCodeAnalysis(`code-${i % 3}`, 'JavaScript', async () => `Analysis ${i}`)
         );
       }
 

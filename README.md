@@ -4,6 +4,7 @@ AI-powered MCP server with real analysis capabilities, Context7 intelligence, an
 
 ## 🚀 Quick Start
 
+### Development
 ```bash
 # Install dependencies
 npm ci
@@ -19,6 +20,47 @@ npm run dev
 
 # Build for production
 npm run build && npm start
+```
+
+### Docker Production Deployment
+```bash
+# Build and deploy production container
+docker build -t smart-mcp:latest .
+docker run -d --name smart-mcp -p 3000:3000 -p 3001:3001 -v smart-mcp-data:/app/data smart-mcp:latest
+
+# Health check
+curl http://localhost:3001/health
+
+# Run smoke test to verify deployment
+NODE_ENV=test npx vitest run src/deployment/smoke-test.test.ts
+```
+
+### Cursor MCP Integration
+Add to your Cursor MCP configuration:
+```json
+{
+  "mcpServers": {
+    "smart-mcp": {
+      "command": "npx",
+      "args": ["smart-mcp"],
+      "env": {
+        "NODE_ENV": "production"
+      }
+    }
+  }
+}
+```
+
+Or connect to deployed container:
+```json
+{
+  "mcpServers": {
+    "smart-mcp": {
+      "command": "node",
+      "args": ["-e", "require('child_process').spawn('docker', ['exec', '-i', 'smart-mcp', 'node', 'dist/server.js'], {stdio: 'inherit'})"]
+    }
+  }
+}
 ```
 
 ## 🎵 Vibe Coder Experience
@@ -55,7 +97,7 @@ npm install smart-mcp
 Initialize projects with real vulnerability detection, complexity analysis, and project scanning.
 
 ### smart_write
-Generate code with Context7 intelligence and real-time validation.
+Generate code with Context7 intelligence, Advanced Context7 Cache, and real-time validation.
 
 ### smart_finish
 Complete projects with genuine quality gates and test coverage analysis.
@@ -71,12 +113,15 @@ Natural language interface for Cursor - full vibe coder experience with context 
 
 ## 🎯 Key Features
 
+- **Advanced Context7 Cache**: Enterprise-grade caching with compression, analytics, and monitoring
+- **Unified Code Intelligence**: Multi-category intelligence engines (Frontend, Backend, DevOps, Mobile)
 - **Real Analysis**: SecurityScanner, StaticAnalyzer, ProjectScanner integration
-- **Context7 Intelligence**: Project-aware dynamic insights
+- **Context7 Intelligence**: Project-aware dynamic insights with quality metrics
 - **Schema-locked I/O**: All tools use JSON Schema validation
 - **Quality Gates**: ≥85% test coverage, complexity ≤10
 - **Security First**: Real vulnerability detection and prevention
 - **Performance**: <100ms response time, <2s analysis
+- **Docker Ready**: Production containerization with health checks
 
 ## 📊 Quality Standards
 

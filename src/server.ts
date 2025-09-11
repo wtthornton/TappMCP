@@ -10,8 +10,8 @@ import {
 import { z } from 'zod';
 import { handleError, getErrorMessage } from './utils/errors.js';
 
-// Import health server for Docker health checks (only when not in stdio mode)
-if (process.env.NODE_ENV === 'production' && process.env.HEALTH_PORT) {
+// Import health server for Docker health checks (skip only for tests)
+if (process.env.NODE_ENV !== 'test' && process.env.VITEST !== 'true') {
   import('./health-server.js');
 }
 

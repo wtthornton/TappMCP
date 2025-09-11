@@ -349,7 +349,10 @@ export abstract class BaseCategoryIntelligenceEngine implements CategoryIntellig
     return trends;
   }
 
-  protected extractSecurityConsiderations(recommendations: string[], _technology: string): string[] {
+  protected extractSecurityConsiderations(
+    recommendations: string[],
+    _technology: string
+  ): string[] {
     const security: string[] = [];
 
     // Extract security-related recommendations
@@ -403,7 +406,10 @@ export abstract class BaseCategoryIntelligenceEngine implements CategoryIntellig
     return code;
   }
 
-  protected async applyPerformanceOptimization(code: string, _performance: string): Promise<string> {
+  protected async applyPerformanceOptimization(
+    code: string,
+    _performance: string
+  ): Promise<string> {
     // Base implementation - override in specific engines
     return code;
   }

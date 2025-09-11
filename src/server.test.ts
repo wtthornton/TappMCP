@@ -100,7 +100,7 @@ describe('SmartMCPServer', () => {
 
       expect(result).toHaveProperty('tools');
       expect(Array.isArray(result.tools)).toBe(true);
-      expect(result.tools).toHaveLength(6);
+      expect(result.tools).toHaveLength(7);
     });
   });
 

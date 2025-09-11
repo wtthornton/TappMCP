@@ -151,7 +151,7 @@ export class Context7ProjectAnalyzer {
                   .getRelevantData({
                     businessRequest: topic,
                     projectId: projectAnalysis.projectPath,
-                    domain: projectAnalysis.project.detectedTechStack[0] || 'general',
+                    domain: projectAnalysis.project?.detectedTechStack?.[0] || 'general',
                     priority: 'high',
                     maxResults: 8, // Increased for richer insights
                   })
@@ -183,7 +183,9 @@ export class Context7ProjectAnalyzer {
                 metadata: {
                   totalResults: mergedData.length,
                   fetchTime,
-                  cacheHits: Math.round(this.context7Cache.getCacheStats().hitRate * validResults.length),
+                  cacheHits: Math.round(
+                    this.context7Cache.getCacheStats().hitRate * validResults.length
+                  ),
                 },
               };
             }
@@ -237,8 +239,20 @@ export class Context7ProjectAnalyzer {
   private generateDynamicTopics(analysis: BasicAnalysis): string[] {
     const topics: string[] = [];
 
+    // Add null safety checks
+    if (!analysis?.project) {
+      console.warn(
+        '[Context7ProjectAnalyzer] Analysis project data missing, using fallback topics'
+      );
+      return [
+        'general code quality improvement',
+        'modern development best practices',
+        'security fundamentals',
+      ];
+    }
+
     // Tech stack specific topics
-    if (analysis.project.detectedTechStack.length > 0) {
+    if (analysis.project.detectedTechStack && analysis.project.detectedTechStack.length > 0) {
       const primaryTech = analysis.project.detectedTechStack[0];
       topics.push(`advanced patterns for ${primaryTech} applications`);
       topics.push(
@@ -247,16 +261,16 @@ export class Context7ProjectAnalyzer {
       topics.push(`performance optimization for ${primaryTech}`);
     }
 
-    // Quality issue specific topics
-    if (analysis.static.issues.length > 0) {
+    // Quality issue specific topics (with null safety)
+    if (analysis.static?.issues && analysis.static.issues.length > 0) {
       const issueTypes = [...new Set(analysis.static.issues.map(i => i.severity))];
       topics.push(`solutions for ${issueTypes.join(' and ')} code quality issues`);
     }
 
-    // Security specific topics
-    if (analysis.security.vulnerabilities.length > 0) {
+    // Security specific topics (with null safety)
+    if (analysis.security?.vulnerabilities && analysis.security.vulnerabilities.length > 0) {
       topics.push(
-        `vulnerability remediation for ${analysis.security.summary.critical} critical and ${analysis.security.summary.high} high severity issues`
+        `vulnerability remediation for ${analysis.security.summary?.critical || 0} critical and ${analysis.security.summary?.high || 0} high severity issues`
       );
 
       // Get unique vulnerability types
@@ -266,29 +280,31 @@ export class Context7ProjectAnalyzer {
       }
     }
 
-    // Complexity and maintainability topics
-    if (analysis.static.metrics.complexity > 10) {
+    // Complexity and maintainability topics (with null safety)
+    if (analysis.static?.metrics?.complexity && analysis.static.metrics.complexity > 10) {
       topics.push('refactoring strategies for high complexity code');
       topics.push('design patterns for maintainable architecture');
     }
 
-    // Duplication topics
-    if (analysis.static.metrics.duplication > 5) {
+    // Duplication topics (with null safety)
+    if (analysis.static?.metrics?.duplication && analysis.static.metrics.duplication > 5) {
       topics.push('code reuse patterns and DRY principles');
     }
 
-    // Project structure topics
+    // Project structure topics (with null safety)
     if (
+      analysis.project.projectStructure?.configFiles &&
       !analysis.project.projectStructure.configFiles.includes('tsconfig.json') &&
-      analysis.project.detectedTechStack.includes('typescript')
+      analysis.project.detectedTechStack?.includes('typescript')
     ) {
       topics.push('TypeScript migration best practices');
     }
 
-    // Testing topics
-    const hasTests = analysis.project.projectStructure.folders.some(
-      f => f.includes('test') || f.includes('spec')
-    );
+    // Testing topics (with null safety)
+    const hasTests =
+      analysis.project.projectStructure?.folders?.some(
+        f => f.includes('test') || f.includes('spec')
+      ) || false;
     if (!hasTests) {
       topics.push('test-driven development implementation strategies');
     }
@@ -531,41 +547,61 @@ export class Context7ProjectAnalyzer {
   /**
    * Determine primary project category based on analysis
    */
-  private determineProjectCategory(analysis: BasicAnalysis): 'frontend' | 'backend' | 'database' | 'devops' | 'mobile' | 'datascience' | 'generic' {
+  private determineProjectCategory(
+    analysis: BasicAnalysis
+  ): 'frontend' | 'backend' | 'database' | 'devops' | 'mobile' | 'datascience' | 'generic' {
     const techStack = analysis.project.detectedTechStack.map(t => t.toLowerCase());
     const projectStructure = analysis.project.projectStructure;
 
     // Frontend indicators
-    if (techStack.some(t => ['react', 'vue', 'angular', 'svelte', 'html', 'css'].includes(t)) ||
-        projectStructure.configFiles.some(f => ['webpack.config.js', 'vite.config.js', '.babelrc'].includes(f))) {
+    if (
+      techStack.some(t => ['react', 'vue', 'angular', 'svelte', 'html', 'css'].includes(t)) ||
+      projectStructure.configFiles.some(f =>
+        ['webpack.config.js', 'vite.config.js', '.babelrc'].includes(f)
+      )
+    ) {
       return 'frontend';
     }
 
     // Backend indicators
-    if (techStack.some(t => ['nodejs', 'express', 'fastify', 'python', 'django', 'flask', 'java', 'spring'].includes(t)) ||
-        projectStructure.configFiles.some(f => ['server.js', 'app.py', 'main.go'].includes(f))) {
+    if (
+      techStack.some(t =>
+        ['nodejs', 'express', 'fastify', 'python', 'django', 'flask', 'java', 'spring'].includes(t)
+      ) ||
+      projectStructure.configFiles.some(f => ['server.js', 'app.py', 'main.go'].includes(f))
+    ) {
       return 'backend';
     }
 
     // Database indicators
-    if (techStack.some(t => ['postgresql', 'mysql', 'mongodb', 'redis', 'sql'].includes(t)) ||
-        projectStructure.folders.some(f => ['migrations', 'seeds', 'models'].includes(f))) {
+    if (
+      techStack.some(t => ['postgresql', 'mysql', 'mongodb', 'redis', 'sql'].includes(t)) ||
+      projectStructure.folders.some(f => ['migrations', 'seeds', 'models'].includes(f))
+    ) {
       return 'database';
     }
 
     // DevOps indicators
-    if (projectStructure.configFiles.some(f => ['Dockerfile', 'docker-compose.yml', '.github', 'Jenkinsfile', 'terraform'].includes(f))) {
+    if (
+      projectStructure.configFiles.some(f =>
+        ['Dockerfile', 'docker-compose.yml', '.github', 'Jenkinsfile', 'terraform'].includes(f)
+      )
+    ) {
       return 'devops';
     }
 
     // Mobile indicators
-    if (techStack.some(t => ['react-native', 'flutter', 'ionic', 'xamarin'].includes(t)) ||
-        projectStructure.configFiles.some(f => ['android', 'ios', 'metro.config.js'].includes(f))) {
+    if (
+      techStack.some(t => ['react-native', 'flutter', 'ionic', 'xamarin'].includes(t)) ||
+      projectStructure.configFiles.some(f => ['android', 'ios', 'metro.config.js'].includes(f))
+    ) {
       return 'mobile';
     }
 
     // Data science indicators
-    if (techStack.some(t => ['jupyter', 'pandas', 'numpy', 'scikit-learn', 'tensorflow'].includes(t))) {
+    if (
+      techStack.some(t => ['jupyter', 'pandas', 'numpy', 'scikit-learn', 'tensorflow'].includes(t))
+    ) {
       return 'datascience';
     }
 
@@ -585,24 +621,44 @@ export class Context7ProjectAnalyzer {
 
     // Add quality metrics
     const qualityMetrics = {
-      overall: Math.max(0, 100 - (projectAnalysis.summary.criticalIssues * 10) - (projectAnalysis.static.metrics.complexity * 2)),
+      overall: Math.max(
+        0,
+        100 -
+          projectAnalysis.summary.criticalIssues * 10 -
+          projectAnalysis.static.metrics.complexity * 2
+      ),
       complexity: projectAnalysis.static.metrics.complexity,
       maintainability: Math.max(0, 100 - projectAnalysis.static.metrics.duplication * 5),
-      security: Math.max(0, 100 - (projectAnalysis.security.summary.critical * 25) - (projectAnalysis.security.summary.high * 10)),
+      security: Math.max(
+        0,
+        100 -
+          projectAnalysis.security.summary.critical * 25 -
+          projectAnalysis.security.summary.high * 10
+      ),
     };
 
     // Generate domain-specific insights
-    const domainSpecific = await this.generateDomainSpecificInsights(projectAnalysis, primaryCategory, context7Data);
+    const domainSpecific = await this.generateDomainSpecificInsights(
+      projectAnalysis,
+      primaryCategory,
+      context7Data
+    );
     const frameworkPatterns = await this.generateFrameworkPatterns(projectAnalysis, context7Data);
     const securityInsights = await this.generateSecurityInsights(projectAnalysis, context7Data);
-    const performanceInsights = await this.generatePerformanceInsights(projectAnalysis, context7Data);
+    const performanceInsights = await this.generatePerformanceInsights(
+      projectAnalysis,
+      context7Data
+    );
 
     // Generate category-specific insights
     let categorySpecificInsights = {};
     switch (primaryCategory) {
       case 'frontend':
         categorySpecificInsights = {
-          accessibilityInsights: await this.generateAccessibilityInsights(projectAnalysis, context7Data),
+          accessibilityInsights: await this.generateAccessibilityInsights(
+            projectAnalysis,
+            context7Data
+          ),
           seoInsights: await this.generateSEOInsights(projectAnalysis, context7Data),
         };
         break;
@@ -639,7 +695,11 @@ export class Context7ProjectAnalyzer {
   ): Promise<DomainSpecificInsights> {
     const categoryMap = {
       frontend: {
-        specializedPatterns: ['Component composition patterns', 'State management patterns', 'Rendering optimization'],
+        specializedPatterns: [
+          'Component composition patterns',
+          'State management patterns',
+          'Rendering optimization',
+        ],
         industryStandards: ['W3C Web Standards', 'ECMAScript specifications', 'CSS specifications'],
         compliance: ['WCAG 2.1 AA', 'W3C HTML5', 'Core Web Vitals'],
         bestPracticesForDomain: ['Semantic HTML', 'Progressive enhancement', 'Mobile-first design'],
@@ -653,7 +713,11 @@ export class Context7ProjectAnalyzer {
         commonPitfalls: ['SQL injection', 'Authentication bypass', 'Data exposure'],
       },
       database: {
-        specializedPatterns: ['Query optimization patterns', 'Schema design patterns', 'Indexing strategies'],
+        specializedPatterns: [
+          'Query optimization patterns',
+          'Schema design patterns',
+          'Indexing strategies',
+        ],
         industryStandards: ['SQL standards', 'ACID compliance', 'CAP theorem'],
         compliance: ['Data protection', 'Audit requirements', 'Backup standards'],
         bestPracticesForDomain: ['Normalization', 'Query optimization', 'Security'],
@@ -667,8 +731,16 @@ export class Context7ProjectAnalyzer {
         commonPitfalls: ['Manual deployments', 'Configuration drift', 'Security gaps'],
       },
       mobile: {
-        specializedPatterns: ['Mobile architecture patterns', 'Performance patterns', 'Offline patterns'],
-        industryStandards: ['Platform guidelines', 'App store requirements', 'Performance standards'],
+        specializedPatterns: [
+          'Mobile architecture patterns',
+          'Performance patterns',
+          'Offline patterns',
+        ],
+        industryStandards: [
+          'Platform guidelines',
+          'App store requirements',
+          'Performance standards',
+        ],
         compliance: ['Platform policies', 'Privacy requirements', 'Accessibility'],
         bestPracticesForDomain: ['Battery optimization', 'Network efficiency', 'User experience'],
         commonPitfalls: ['Memory issues', 'Battery drain', 'Network inefficiency'],
@@ -694,7 +766,10 @@ export class Context7ProjectAnalyzer {
   /**
    * Generate framework-specific patterns
    */
-  private async generateFrameworkPatterns(analysis: BasicAnalysis, _context7Data: any[]): Promise<FrameworkPatterns | undefined> {
+  private async generateFrameworkPatterns(
+    analysis: BasicAnalysis,
+    _context7Data: any[]
+  ): Promise<FrameworkPatterns | undefined> {
     const primaryTech = analysis.project.detectedTechStack[0];
     if (!primaryTech) return undefined;
 
@@ -728,13 +803,19 @@ export class Context7ProjectAnalyzer {
   /**
    * Generate security insights
    */
-  private async generateSecurityInsights(analysis: BasicAnalysis, _context7Data: any[]): Promise<SecurityInsights> {
+  private async generateSecurityInsights(
+    analysis: BasicAnalysis,
+    _context7Data: any[]
+  ): Promise<SecurityInsights> {
     const vulnerabilities = analysis.security.vulnerabilities;
     const criticalCount = analysis.security.summary.critical;
     const highCount = analysis.security.summary.high;
 
     return {
-      threatModel: criticalCount > 0 ? ['High-risk vulnerabilities', 'Immediate threats'] : ['Standard threats'],
+      threatModel:
+        criticalCount > 0
+          ? ['High-risk vulnerabilities', 'Immediate threats']
+          : ['Standard threats'],
       vulnerabilityTypes: [...new Set(vulnerabilities.map(v => v.severity))],
       mitigationStrategies: [
         'Input validation',
@@ -744,40 +825,34 @@ export class Context7ProjectAnalyzer {
       ],
       complianceFrameworks: ['OWASP Top 10', 'NIST Cybersecurity Framework'],
       securityTools: ['Security scanners', 'Dependency checkers', 'Static analysis'],
-      auditRecommendations: criticalCount > 0 ? ['Immediate security audit required'] : ['Regular security reviews'],
+      auditRecommendations:
+        criticalCount > 0 ? ['Immediate security audit required'] : ['Regular security reviews'],
     };
   }
 
   /**
    * Generate performance insights
    */
-  private async generatePerformanceInsights(analysis: BasicAnalysis, _context7Data: any[]): Promise<PerformanceInsights> {
+  private async generatePerformanceInsights(
+    analysis: BasicAnalysis,
+    _context7Data: any[]
+  ): Promise<PerformanceInsights> {
     const complexity = analysis.static.metrics.complexity;
     const hasPerformanceIssues = complexity > 15;
 
     return {
-      bottleneckTypes: hasPerformanceIssues ? ['High complexity', 'Potential algorithmic issues'] : ['Standard complexity'],
+      bottleneckTypes: hasPerformanceIssues
+        ? ['High complexity', 'Potential algorithmic issues']
+        : ['Standard complexity'],
       optimizationTechniques: [
         'Algorithm optimization',
         'Caching strategies',
         'Database optimization',
         'Code splitting',
       ],
-      monitoringStrategies: [
-        'Performance metrics',
-        'Error tracking',
-        'User experience monitoring',
-      ],
-      scalingPatterns: [
-        'Horizontal scaling',
-        'Load balancing',
-        'Caching layers',
-      ],
-      cacheStrategies: [
-        'Memory caching',
-        'Database caching',
-        'CDN caching',
-      ],
+      monitoringStrategies: ['Performance metrics', 'Error tracking', 'User experience monitoring'],
+      scalingPatterns: ['Horizontal scaling', 'Load balancing', 'Caching layers'],
+      cacheStrategies: ['Memory caching', 'Database caching', 'CDN caching'],
       loadBalancing: [
         'Application load balancers',
         'Database read replicas',
@@ -789,7 +864,10 @@ export class Context7ProjectAnalyzer {
   /**
    * Generate accessibility insights (for frontend)
    */
-  private async generateAccessibilityInsights(_analysis: BasicAnalysis, _context7Data: any[]): Promise<AccessibilityInsights> {
+  private async generateAccessibilityInsights(
+    _analysis: BasicAnalysis,
+    _context7Data: any[]
+  ): Promise<AccessibilityInsights> {
     return {
       wcagLevel: 'AA',
       requiredPatterns: [
@@ -803,11 +881,7 @@ export class Context7ProjectAnalyzer {
         'Screen reader testing',
         'Keyboard navigation testing',
       ],
-      assistiveTechnologies: [
-        'Screen readers',
-        'Voice control',
-        'Switch navigation',
-      ],
+      assistiveTechnologies: ['Screen readers', 'Voice control', 'Switch navigation'],
       complianceChecks: [
         'Color contrast ratios',
         'Alternative text for images',
@@ -825,7 +899,10 @@ export class Context7ProjectAnalyzer {
   /**
    * Generate SEO insights (for frontend)
    */
-  private async generateSEOInsights(_analysis: BasicAnalysis, _context7Data: any[]): Promise<SEOInsights> {
+  private async generateSEOInsights(
+    _analysis: BasicAnalysis,
+    _context7Data: any[]
+  ): Promise<SEOInsights> {
     return {
       technicalSEO: [
         'Meta tags optimization',
@@ -833,26 +910,10 @@ export class Context7ProjectAnalyzer {
         'XML sitemaps',
         'Robots.txt configuration',
       ],
-      structuredData: [
-        'JSON-LD markup',
-        'Schema.org vocabulary',
-        'Rich snippets',
-      ],
-      performanceFactors: [
-        'Core Web Vitals',
-        'Page speed optimization',
-        'Mobile responsiveness',
-      ],
-      contentOptimization: [
-        'Semantic HTML structure',
-        'Heading hierarchy',
-        'Image optimization',
-      ],
-      crawlabilityPatterns: [
-        'Internal linking',
-        'URL structure',
-        'Navigation optimization',
-      ],
+      structuredData: ['JSON-LD markup', 'Schema.org vocabulary', 'Rich snippets'],
+      performanceFactors: ['Core Web Vitals', 'Page speed optimization', 'Mobile responsiveness'],
+      contentOptimization: ['Semantic HTML structure', 'Heading hierarchy', 'Image optimization'],
+      crawlabilityPatterns: ['Internal linking', 'URL structure', 'Navigation optimization'],
       mobileOptimization: [
         'Mobile-first design',
         'Touch-friendly interfaces',
@@ -864,7 +925,10 @@ export class Context7ProjectAnalyzer {
   /**
    * Generate mobile insights
    */
-  private async generateMobileInsights(analysis: BasicAnalysis, _context7Data: any[]): Promise<MobileInsights> {
+  private async generateMobileInsights(
+    analysis: BasicAnalysis,
+    _context7Data: any[]
+  ): Promise<MobileInsights> {
     const primaryTech = analysis.project.detectedTechStack[0];
 
     return {
@@ -879,69 +943,28 @@ export class Context7ProjectAnalyzer {
         'Efficient algorithms',
         'Resource cleanup',
       ],
-      networkOptimization: [
-        'Data compression',
-        'Offline capabilities',
-        'Caching strategies',
-      ],
-      uxPatterns: [
-        'Touch gestures',
-        'Navigation patterns',
-        'Loading states',
-      ],
-      nativeIntegration: [
-        'Platform APIs',
-        'Native modules',
-        'Hardware features',
-      ],
-      performancePatterns: [
-        'Lazy loading',
-        'Image optimization',
-        'Bundle splitting',
-      ],
+      networkOptimization: ['Data compression', 'Offline capabilities', 'Caching strategies'],
+      uxPatterns: ['Touch gestures', 'Navigation patterns', 'Loading states'],
+      nativeIntegration: ['Platform APIs', 'Native modules', 'Hardware features'],
+      performancePatterns: ['Lazy loading', 'Image optimization', 'Bundle splitting'],
     };
   }
 
   /**
    * Generate DevOps insights
    */
-  private async generateDevOpsInsights(_analysis: BasicAnalysis, _context7Data: any[]): Promise<DevOpsInsights> {
+  private async generateDevOpsInsights(
+    _analysis: BasicAnalysis,
+    _context7Data: any[]
+  ): Promise<DevOpsInsights> {
     return {
-      deploymentPatterns: [
-        'Blue-green deployment',
-        'Rolling updates',
-        'Canary releases',
-      ],
-      cicdOptimization: [
-        'Pipeline efficiency',
-        'Test automation',
-        'Build optimization',
-      ],
-      containerization: [
-        'Docker best practices',
-        'Multi-stage builds',
-        'Security scanning',
-      ],
-      orchestration: [
-        'Kubernetes deployment',
-        'Service mesh',
-        'Auto-scaling',
-      ],
-      monitoring: [
-        'Application metrics',
-        'Infrastructure monitoring',
-        'Log aggregation',
-      ],
-      securityScanning: [
-        'Vulnerability scanning',
-        'Compliance checking',
-        'Secret management',
-      ],
-      infrastructureAsCode: [
-        'Terraform patterns',
-        'Ansible playbooks',
-        'GitOps workflows',
-      ],
+      deploymentPatterns: ['Blue-green deployment', 'Rolling updates', 'Canary releases'],
+      cicdOptimization: ['Pipeline efficiency', 'Test automation', 'Build optimization'],
+      containerization: ['Docker best practices', 'Multi-stage builds', 'Security scanning'],
+      orchestration: ['Kubernetes deployment', 'Service mesh', 'Auto-scaling'],
+      monitoring: ['Application metrics', 'Infrastructure monitoring', 'Log aggregation'],
+      securityScanning: ['Vulnerability scanning', 'Compliance checking', 'Secret management'],
+      infrastructureAsCode: ['Terraform patterns', 'Ansible playbooks', 'GitOps workflows'],
     };
   }
 
@@ -972,10 +995,13 @@ export class Context7ProjectAnalyzer {
         'Optimize for maintainability',
         'Follow security best practices',
       ],
-      techStackSpecific: analysis.project.detectedTechStack.reduce((acc, tech) => {
-        acc[tech] = [`Follow ${tech} best practices`, 'Review official documentation'];
-        return acc;
-      }, {} as Record<string, string[]>),
+      techStackSpecific: analysis.project.detectedTechStack.reduce(
+        (acc, tech) => {
+          acc[tech] = [`Follow ${tech} best practices`, 'Review official documentation'];
+          return acc;
+        },
+        {} as Record<string, string[]>
+      ),
       qualityMetrics: {
         overall: 70,
         complexity: analysis.static.metrics.complexity,

@@ -154,7 +154,7 @@ export class DatabaseIntelligenceEngine extends BaseCategoryIntelligenceEngine {
   /**
    * Validate database code
    */
-  async validateCode(code: string, technology: string): Promise<ValidationResult> {
+  async validateCode(code: string, _technology: string): Promise<ValidationResult> {
     const errors: string[] = [];
     const warnings: string[] = [];
     const suggestions: string[] = [];
@@ -232,8 +232,8 @@ export class DatabaseIntelligenceEngine extends BaseCategoryIntelligenceEngine {
 
   private async analyzeDatabaseQuality(
     code: string,
-    technology: string,
-    insights: any
+    _technology: string,
+    _insights: any
   ): Promise<QualityAnalysis> {
     const issues: string[] = [];
     const suggestions: string[] = [];
@@ -264,8 +264,8 @@ export class DatabaseIntelligenceEngine extends BaseCategoryIntelligenceEngine {
 
   private async analyzeMaintainability(
     code: string,
-    technology: string,
-    insights: any
+    _technology: string,
+    _insights: any
   ): Promise<MaintainabilityAnalysis> {
     // Basic maintainability analysis (to be expanded in Phase 2)
     let score = 85;
@@ -294,8 +294,8 @@ export class DatabaseIntelligenceEngine extends BaseCategoryIntelligenceEngine {
 
   private async analyzePerformance(
     code: string,
-    technology: string,
-    insights: any
+    _technology: string,
+    _insights: any
   ): Promise<PerformanceAnalysis> {
     const bottlenecks: string[] = [];
     const optimizations: string[] = [];
@@ -334,8 +334,8 @@ export class DatabaseIntelligenceEngine extends BaseCategoryIntelligenceEngine {
 
   private async analyzeSecurity(
     code: string,
-    technology: string,
-    insights: any
+    _technology: string,
+    _insights: any
   ): Promise<SecurityAnalysis> {
     const vulnerabilities: string[] = [];
     const recommendations: string[] = [];
@@ -374,7 +374,7 @@ export class DatabaseIntelligenceEngine extends BaseCategoryIntelligenceEngine {
   private async analyzeQueryOptimization(
     code: string,
     technology: string,
-    insights: any
+    _insights: any
   ): Promise<QueryOptimizationAnalysis> {
     const indexUsage: string[] = [];
     const queryPatterns: string[] = [];
@@ -621,8 +621,8 @@ export class DatabaseIntelligenceEngine extends BaseCategoryIntelligenceEngine {
 
   private async analyzeDataIntegrity(
     code: string,
-    technology: string,
-    insights: any
+    _technology: string,
+    _insights: any
   ): Promise<DataIntegrityAnalysis> {
     const constraints: string[] = [];
     const relationships: string[] = [];
@@ -1763,7 +1763,7 @@ COMMIT;`;
     }
   }
 
-  private addOptimizationFeatures(code: string, technology: string): string {
+  private addOptimizationFeatures(code: string, _technology: string): string {
     // Add optimization features if not present
     if (!code.includes('INDEX') && code.includes('WHERE')) {
       // Indexes already included in templates
@@ -1772,7 +1772,7 @@ COMMIT;`;
     return code;
   }
 
-  private addIntegrityConstraints(code: string, technology: string): string {
+  private addIntegrityConstraints(code: string, _technology: string): string {
     // Add integrity constraints if not present
     if (!code.includes('FOREIGN KEY') && code.includes('_id')) {
       // Foreign keys already included in templates
@@ -1781,18 +1781,18 @@ COMMIT;`;
     return code;
   }
 
-  private optimizeQueries(code: string, technology: string): string {
+  private optimizeQueries(code: string, _technology: string): string {
     // Query optimizations
     code = code.replace(/SELECT\s+\*/gi, 'SELECT /* specify columns */');
     return code;
   }
 
-  private optimizeIndexes(code: string, technology: string): string {
+  private optimizeIndexes(code: string, _technology: string): string {
     // Index optimizations
     return code;
   }
 
-  private optimizeConstraints(code: string, technology: string): string {
+  private optimizeConstraints(code: string, _technology: string): string {
     // Constraint optimizations
     return code;
   }

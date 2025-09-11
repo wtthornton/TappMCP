@@ -1,21 +1,38 @@
-# Deployment Guide
+# TappMCP Deployment Guide
 
-## Production Deployment
+## 🚀 Production Deployment with Docker
 
-### Docker Deployment
+TappMCP is designed for production deployment using Docker containers with comprehensive health monitoring and smoke testing.
+
+### Prerequisites
+
+- Docker installed and running
+- Node.js 18+ (for development)
+- Git (for source code)
+
+### Quick Production Deployment
 
 ```bash
-# Build Docker image
-npm run docker:build
+# 1. Clone repository
+git clone <repository-url>
+cd TappMCP
 
-# Run with Docker Compose
-docker-compose up -d
+# 2. Build production container
+docker build -t smart-mcp:latest .
 
-# Check health
-npm run deploy:health
+# 3. Deploy container
+docker run -d \
+  --name smart-mcp \
+  -p 3000:3000 \
+  -p 3001:3001 \
+  -v smart-mcp-data:/app/data \
+  smart-mcp:latest
 
-# View logs
-npm run deploy:logs
+# 4. Verify deployment
+curl http://localhost:3001/health
+
+# 5. Run comprehensive smoke test
+NODE_ENV=test npx vitest run src/deployment/smoke-test.test.ts
 ```
 
 ### Docker Compose Configuration
@@ -23,18 +40,29 @@ npm run deploy:logs
 ```yaml
 version: '3.8'
 services:
-  tappmcp:
+  smart-mcp:
     build: .
+    container_name: smart-mcp
     ports:
       - "3000:3000"
+      - "3001:3001"
     environment:
       NODE_ENV: production
-      PORT: 3000
+      HEALTH_PORT: 3001
+    volumes:
+      - smart-mcp-data:/app/data
+      - smart-mcp-logs:/app/logs
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"]
       interval: 30s
-      timeout: 3s
+      timeout: 10s
+      start_period: 30s
       retries: 3
+    restart: unless-stopped
+
+volumes:
+  smart-mcp-data:
+  smart-mcp-logs:
 ```
 
 ### Manual Deployment
@@ -53,30 +81,87 @@ npm start
 
 ## Environment Variables
 
-```bash
-NODE_ENV=production     # Environment mode
-PORT=3000              # Server port
-LOG_LEVEL=info         # Logging level
-MAX_WORKERS=4          # Worker processes
-```
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `NODE_ENV` | `production` | Runtime environment |
+| `HEALTH_PORT` | `3001` | Health check port |
 
 ## Health Monitoring
 
-Health endpoint available at:
-```
-GET http://localhost:3000/health
+TappMCP provides comprehensive health monitoring endpoints:
+
+### Health Check Endpoint
+```bash
+GET http://localhost:3001/health
 ```
 
-Response:
+**Healthy Response:**
 ```json
 {
   "status": "healthy",
-  "uptime": 123456,
+  "timestamp": "2025-09-11T05:52:55.374Z",
+  "uptime": 14.170468918,
   "memory": {
-    "used": 52428800,
-    "total": 134217728
+    "rss": 59060224,
+    "heapTotal": 11780096,
+    "heapUsed": 10283744,
+    "external": 2321801,
+    "arrayBuffers": 106619
   },
-  "timestamp": "2025-01-09T10:00:00Z"
+  "version": "0.1.0"
+}
+```
+
+### Readiness Check Endpoint
+```bash
+GET http://localhost:3001/ready
+```
+
+**Ready Response:**
+```json
+{
+  "status": "ready",
+  "timestamp": "2025-09-11T05:52:59.704Z"
+}
+```
+
+### MCP Client Integration
+
+#### Cursor Integration
+
+Add to Cursor MCP configuration:
+
+**Direct Connection:**
+```json
+{
+  "mcpServers": {
+    "smart-mcp": {
+      "command": "node",
+      "args": ["dist/server.js"],
+      "cwd": "/path/to/TappMCP",
+      "env": {
+        "NODE_ENV": "production",
+        "HEALTH_PORT": "3001"
+      },
+      "stdio": true
+    }
+  }
+}
+```
+
+**Docker Container Connection:**
+```json
+{
+  "mcpServers": {
+    "smart-mcp-container": {
+      "command": "docker",
+      "args": ["exec", "-i", "smart-mcp", "node", "dist/server.js"],
+      "env": {
+        "NODE_ENV": "production"
+      },
+      "stdio": true
+    }
+  }
 }
 ```
 

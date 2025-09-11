@@ -6,8 +6,12 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { UnifiedCodeIntelligenceEngine, CodeGenerationRequest } from './UnifiedCodeIntelligenceEngine.js';
+import {
+  UnifiedCodeIntelligenceEngine,
+  CodeGenerationRequest,
+} from './UnifiedCodeIntelligenceEngine.js';
 import { Context7Data } from './CategoryIntelligenceEngine.js';
+import { globalErrorHandler } from './ErrorHandling.js';
 
 // Mock the performance cache and error handler
 vi.mock('./PerformanceCache.js', () => ({
@@ -15,7 +19,35 @@ vi.mock('./PerformanceCache.js', () => ({
     cacheCodeGeneration: vi.fn().mockImplementation((request, fn) => fn()),
     cacheTechnologyInsights: vi.fn().mockImplementation((key, data, fn) => fn()),
     cacheCodeAnalysis: vi.fn().mockImplementation((code, tech, fn) => fn()),
-  }
+  },
+}));
+
+vi.mock('./AdvancedContext7Cache.js', () => ({
+  globalAdvancedContext7Cache: {
+    cacheCodeGeneration: vi
+      .fn()
+      .mockImplementation(
+        async (request, generator, codeType = 'generic', technology = 'unknown') => {
+          const result = await generator();
+          return result;
+        }
+      ),
+    cacheTechnologyInsights: vi.fn().mockImplementation(async (key, context, generator) => {
+      const result = await generator();
+      return result;
+    }),
+    cacheCodeAnalysis: vi.fn().mockImplementation(async (code, tech, generator) => {
+      const result = await generator();
+      return result;
+    }),
+    getStats: vi.fn().mockReturnValue({
+      totalRequests: 0,
+      cacheHits: 0,
+      cacheMisses: 0,
+      averageResponseTime: 0,
+      memoryUsage: 0,
+    }),
+  },
 }));
 
 vi.mock('./ErrorHandling.js', () => ({
@@ -23,7 +55,15 @@ vi.mock('./ErrorHandling.js', () => ({
     executeContext7Operation: vi.fn().mockImplementation((fn, fallback) => fn()),
     executeAnalysisOperation: vi.fn().mockImplementation((type, fn, fallback) => fn()),
     executeGenerationOperation: vi.fn().mockImplementation((fn, fallback) => fn()),
-  }
+    getErrorStats: vi.fn().mockReturnValue({
+      totalErrors: 0,
+      errorsByType: {},
+      errorsBySeverity: {},
+      errorsByComponent: {},
+      circuitBreakerStates: {},
+      recentErrors: [],
+    }),
+  },
 }));
 
 // Mock Context7ProjectAnalyzer
@@ -79,7 +119,7 @@ vi.mock('./QualityAssuranceEngine.js', () => ({
 // Mock CodeOptimizationEngine
 vi.mock('./CodeOptimizationEngine.js', () => ({
   CodeOptimizationEngine: vi.fn().mockImplementation(() => ({
-    optimize: vi.fn().mockImplementation((code) => Promise.resolve(code + '\n// Optimized')),
+    optimize: vi.fn().mockImplementation(code => Promise.resolve(code + '\n// Optimized')),
   })),
 }));
 
@@ -92,7 +132,7 @@ describe('UnifiedCodeIntelligenceEngine', () => {
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    // Keep mocks active - only clear call history
   });
 
   describe('Initialization', () => {
@@ -312,9 +352,11 @@ describe('UnifiedCodeIntelligenceEngine', () => {
 
   describe('Error Handling and Resilience', () => {
     it('should handle Context7 failures gracefully', async () => {
-      // Mock Context7 failure
-      const mockContext7Analyzer = engine['context7Analyzer'] as any;
-      mockContext7Analyzer.getProjectAwareContext.mockRejectedValueOnce(new Error('Context7 unavailable'));
+      // Mock Context7 failure at the errorHandler level
+      vi.mocked(globalErrorHandler.executeContext7Operation).mockImplementationOnce(
+        (operation, fallback) =>
+          fallback ? fallback() : Promise.reject(new Error('Context7 unavailable'))
+      );
 
       const request: CodeGenerationRequest = {
         featureDescription: 'Create component with Context7 failure',
@@ -487,9 +529,7 @@ describe('UnifiedCodeIntelligenceEngine', () => {
         },
       ];
 
-      const results = await Promise.all(
-        requests.map(request => engine.generateCode(request))
-      );
+      const results = await Promise.all(requests.map(request => engine.generateCode(request)));
 
       expect(results).toHaveLength(3);
       expect(results[0].category).toBe('frontend');

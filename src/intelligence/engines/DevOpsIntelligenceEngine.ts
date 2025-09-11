@@ -251,7 +251,7 @@ export class DevOpsIntelligenceEngine extends BaseCategoryIntelligenceEngine {
   /**
    * Get DevOps anti-patterns to avoid
    */
-  async getAntiPatterns(technology: string, context: Context7Data): Promise<string[]> {
+  async getAntiPatterns(_technology: string, _context: Context7Data): Promise<string[]> {
     return [
       'Running containers as root user',
       'Using latest tags in production',
@@ -327,10 +327,7 @@ export class DevOpsIntelligenceEngine extends BaseCategoryIntelligenceEngine {
    * Generate DevOps-optimized code with best practices
    */
   async generateCode(request: CodeGenerationRequest, context: Context7Data): Promise<string> {
-    const insights = await this.getTechnologyInsights(
-      request.techStack?.[0] || 'docker',
-      context
-    );
+    const insights = await this.getTechnologyInsights(request.techStack?.[0] || 'docker', context);
 
     const codeType = this.detectDevOpsCodeType(request.featureDescription);
 
@@ -355,8 +352,8 @@ export class DevOpsIntelligenceEngine extends BaseCategoryIntelligenceEngine {
    */
   private async analyzeContainerization(
     code: string,
-    technology: string,
-    insights: TechnologyInsights
+    _technology: string,
+    _insights: TechnologyInsights
   ): Promise<ContainerizationAnalysis> {
     const analysis: ContainerizationAnalysis = {
       dockerBestPractices: {
@@ -389,11 +386,11 @@ export class DevOpsIntelligenceEngine extends BaseCategoryIntelligenceEngine {
     analysis.dockerBestPractices.score = this.calculateBooleanScore(analysis.dockerBestPractices);
     analysis.imageCompliance.score = this.calculateBooleanScore(analysis.imageCompliance);
     analysis.buildOptimization.score = this.calculateBooleanScore(analysis.buildOptimization);
-    analysis.overall = (
-      analysis.dockerBestPractices.score +
-      analysis.imageCompliance.score +
-      analysis.buildOptimization.score
-    ) / 3;
+    analysis.overall =
+      (analysis.dockerBestPractices.score +
+        analysis.imageCompliance.score +
+        analysis.buildOptimization.score) /
+      3;
 
     // Generate recommendations
     analysis.recommendations = this.generateContainerizationRecommendations(analysis);
@@ -406,8 +403,8 @@ export class DevOpsIntelligenceEngine extends BaseCategoryIntelligenceEngine {
    */
   private async analyzeOrchestration(
     code: string,
-    technology: string,
-    insights: TechnologyInsights
+    _technology: string,
+    _insights: TechnologyInsights
   ): Promise<OrchestrationAnalysis> {
     const analysis: OrchestrationAnalysis = {
       kubernetesPatterns: {
@@ -440,11 +437,11 @@ export class DevOpsIntelligenceEngine extends BaseCategoryIntelligenceEngine {
     analysis.kubernetesPatterns.score = this.calculateBooleanScore(analysis.kubernetesPatterns);
     analysis.deploymentStrategies.score = this.calculateBooleanScore(analysis.deploymentStrategies);
     analysis.scalingPatterns.score = this.calculateBooleanScore(analysis.scalingPatterns);
-    analysis.overall = (
-      analysis.kubernetesPatterns.score +
-      analysis.deploymentStrategies.score +
-      analysis.scalingPatterns.score
-    ) / 3;
+    analysis.overall =
+      (analysis.kubernetesPatterns.score +
+        analysis.deploymentStrategies.score +
+        analysis.scalingPatterns.score) /
+      3;
 
     // Generate recommendations
     analysis.recommendations = this.generateOrchestrationRecommendations(analysis);
@@ -457,8 +454,8 @@ export class DevOpsIntelligenceEngine extends BaseCategoryIntelligenceEngine {
    */
   private async analyzeCICD(
     code: string,
-    technology: string,
-    insights: TechnologyInsights
+    _technology: string,
+    _insights: TechnologyInsights
   ): Promise<CICDAnalysis> {
     const analysis: CICDAnalysis = {
       pipelineOptimization: {
@@ -490,12 +487,14 @@ export class DevOpsIntelligenceEngine extends BaseCategoryIntelligenceEngine {
     // Calculate scores
     analysis.pipelineOptimization.score = this.calculateBooleanScore(analysis.pipelineOptimization);
     analysis.securityIntegration.score = this.calculateBooleanScore(analysis.securityIntegration);
-    analysis.monitoringIntegration.score = this.calculateBooleanScore(analysis.monitoringIntegration);
-    analysis.overall = (
-      analysis.pipelineOptimization.score +
-      analysis.securityIntegration.score +
-      analysis.monitoringIntegration.score
-    ) / 3;
+    analysis.monitoringIntegration.score = this.calculateBooleanScore(
+      analysis.monitoringIntegration
+    );
+    analysis.overall =
+      (analysis.pipelineOptimization.score +
+        analysis.securityIntegration.score +
+        analysis.monitoringIntegration.score) /
+      3;
 
     // Generate recommendations
     analysis.recommendations = this.generateCICDRecommendations(analysis);
@@ -508,8 +507,8 @@ export class DevOpsIntelligenceEngine extends BaseCategoryIntelligenceEngine {
    */
   private async analyzeInfrastructure(
     code: string,
-    technology: string,
-    insights: TechnologyInsights
+    _technology: string,
+    _insights: TechnologyInsights
   ): Promise<InfrastructureAnalysis> {
     const analysis: InfrastructureAnalysis = {
       iacPatterns: {
@@ -543,11 +542,11 @@ export class DevOpsIntelligenceEngine extends BaseCategoryIntelligenceEngine {
     analysis.iacPatterns.score = this.calculateBooleanScore(analysis.iacPatterns);
     analysis.securityHardening.score = this.calculateBooleanScore(analysis.securityHardening);
     analysis.costOptimization.score = this.calculateBooleanScore(analysis.costOptimization);
-    analysis.overall = (
-      analysis.iacPatterns.score +
-      analysis.securityHardening.score +
-      analysis.costOptimization.score
-    ) / 3;
+    analysis.overall =
+      (analysis.iacPatterns.score +
+        analysis.securityHardening.score +
+        analysis.costOptimization.score) /
+      3;
 
     // Generate recommendations
     analysis.recommendations = this.generateInfrastructureRecommendations(analysis);
@@ -560,8 +559,8 @@ export class DevOpsIntelligenceEngine extends BaseCategoryIntelligenceEngine {
    */
   private async analyzeReliability(
     code: string,
-    technology: string,
-    insights: TechnologyInsights
+    _technology: string,
+    _insights: TechnologyInsights
   ): Promise<ReliabilityAnalysis> {
     const analysis: ReliabilityAnalysis = {
       monitoringObservability: {
@@ -591,14 +590,16 @@ export class DevOpsIntelligenceEngine extends BaseCategoryIntelligenceEngine {
     };
 
     // Calculate scores
-    analysis.monitoringObservability.score = this.calculateBooleanScore(analysis.monitoringObservability);
+    analysis.monitoringObservability.score = this.calculateBooleanScore(
+      analysis.monitoringObservability
+    );
     analysis.disasterRecovery.score = this.calculateBooleanScore(analysis.disasterRecovery);
     analysis.incidentResponse.score = this.calculateBooleanScore(analysis.incidentResponse);
-    analysis.overall = (
-      analysis.monitoringObservability.score +
-      analysis.disasterRecovery.score +
-      analysis.incidentResponse.score
-    ) / 3;
+    analysis.overall =
+      (analysis.monitoringObservability.score +
+        analysis.disasterRecovery.score +
+        analysis.incidentResponse.score) /
+      3;
 
     // Generate recommendations
     analysis.recommendations = this.generateReliabilityRecommendations(analysis);
@@ -609,7 +610,10 @@ export class DevOpsIntelligenceEngine extends BaseCategoryIntelligenceEngine {
   /**
    * Generate Dockerfile with best practices
    */
-  private generateDockerfile(request: CodeGenerationRequest, insights: TechnologyInsights): string {
+  private generateDockerfile(
+    request: CodeGenerationRequest,
+    _insights: TechnologyInsights
+  ): string {
     const baseImage = this.selectOptimalBaseImage(request);
     const packages = this.determineRequiredPackages(request);
 
@@ -656,7 +660,10 @@ CMD ["npm", "start"]`;
   /**
    * Generate Kubernetes manifests with best practices
    */
-  private generateKubernetesManifests(request: CodeGenerationRequest, insights: TechnologyInsights): string {
+  private generateKubernetesManifests(
+    request: CodeGenerationRequest,
+    _insights: TechnologyInsights
+  ): string {
     const appName = this.extractAppName(request);
 
     return `---
@@ -769,7 +776,10 @@ spec:
   /**
    * Generate Terraform configuration with best practices
    */
-  private generateTerraformConfiguration(request: CodeGenerationRequest, insights: TechnologyInsights): string {
+  private generateTerraformConfiguration(
+    _request: CodeGenerationRequest,
+    _insights: TechnologyInsights
+  ): string {
     return `# Configure Terraform and required providers
 terraform {
   required_version = ">= 1.0"
@@ -929,7 +939,10 @@ output "private_subnet_ids" {
   /**
    * Generate CI/CD pipeline configuration
    */
-  private generateCICDPipeline(request: CodeGenerationRequest, insights: TechnologyInsights): string {
+  private generateCICDPipeline(
+    _request: CodeGenerationRequest,
+    _insights: TechnologyInsights
+  ): string {
     return `# GitHub Actions CI/CD Pipeline
 name: CI/CD Pipeline
 
@@ -1126,7 +1139,7 @@ jobs:
     return 'alpine:latest';
   }
 
-  private determineRequiredPackages(request: CodeGenerationRequest): string[] {
+  private determineRequiredPackages(_request: CodeGenerationRequest): string[] {
     return ['curl', 'wget']; // Basic packages
   }
 
@@ -1136,7 +1149,7 @@ jobs:
 
   // Placeholder implementations for analysis methods
   private checkBaseImageSecurity = (code: string) => /alpine|distroless/.test(code);
-  private checkVulnerabilityScanning = (code: string) => false; // Requires external tools
+  private checkVulnerabilityScanning = (_code: string) => false; // Requires external tools
   private checkMinimalImages = (code: string) => /alpine|scratch|distroless/.test(code);
   private checkTagStrategy = (code: string) => !/latest/.test(code);
   private checkCacheStrategy = (code: string) => /COPY package.*json/.test(code);
@@ -1153,7 +1166,8 @@ jobs:
   private checkBlueGreenDeployment = (code: string) => /blue.*green|BlueGreen/.test(code);
   private checkCanaryDeployment = (code: string) => /canary|Canary/.test(code);
   private checkRollbackStrategy = (code: string) => /rollback|revisionHistoryLimit/.test(code);
-  private checkHorizontalPodAutoscaling = (code: string) => /HorizontalPodAutoscaler|hpa/.test(code);
+  private checkHorizontalPodAutoscaling = (code: string) =>
+    /HorizontalPodAutoscaler|hpa/.test(code);
   private checkVerticalPodAutoscaling = (code: string) => /VerticalPodAutoscaler|vpa/.test(code);
   private checkClusterAutoscaling = (code: string) => /cluster.autoscaler/.test(code);
   private checkResourceLimits = (code: string) => /limits:|requests:/.test(code);
@@ -1272,7 +1286,10 @@ jobs:
     return recommendations;
   }
 
-  private generateGenericDevOpsCode(request: CodeGenerationRequest, insights: TechnologyInsights): string {
+  private generateGenericDevOpsCode(
+    _request: CodeGenerationRequest,
+    _insights: TechnologyInsights
+  ): string {
     return `# DevOps Configuration
 # This is a generic DevOps configuration template
 # Please customize based on your specific requirements
@@ -1312,7 +1329,10 @@ volumes:
   postgres_data:`;
   }
 
-  private generateMonitoringConfiguration(request: CodeGenerationRequest, insights: TechnologyInsights): string {
+  private generateMonitoringConfiguration(
+    _request: CodeGenerationRequest,
+    _insights: TechnologyInsights
+  ): string {
     return `# Prometheus Configuration
 global:
   scrape_interval: 15s
@@ -1510,9 +1530,18 @@ groups:
     // Add non-root user if not present
     if (!optimized.includes('USER ') && !optimized.includes('adduser')) {
       const lines = optimized.split('\n');
-      const insertIndex = lines.findIndex(line => line.startsWith('EXPOSE') || line.startsWith('CMD'));
+      const insertIndex = lines.findIndex(
+        line => line.startsWith('EXPOSE') || line.startsWith('CMD')
+      );
       if (insertIndex > 0) {
-        lines.splice(insertIndex, 0, '', '# Create non-root user', 'RUN adduser -D -s /bin/sh appuser', 'USER appuser');
+        lines.splice(
+          insertIndex,
+          0,
+          '',
+          '# Create non-root user',
+          'RUN adduser -D -s /bin/sh appuser',
+          'USER appuser'
+        );
         optimized = lines.join('\n');
       }
     }

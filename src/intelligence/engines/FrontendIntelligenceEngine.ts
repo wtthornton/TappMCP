@@ -230,7 +230,7 @@ export class FrontendIntelligenceEngine extends BaseCategoryIntelligenceEngine {
   private async analyzeFrontendQuality(
     code: string,
     technology: string,
-    insights: any
+    _insights: any
   ): Promise<QualityAnalysis> {
     const issues: string[] = [];
     const suggestions: string[] = [];
@@ -400,9 +400,9 @@ export class FrontendIntelligenceEngine extends BaseCategoryIntelligenceEngine {
   }
 
   private async analyzeMaintainability(
-    code: string,
-    technology: string,
-    insights: any
+    _code: string,
+    _technology: string,
+    _insights: any
   ): Promise<MaintainabilityAnalysis> {
     // Basic maintainability analysis (to be expanded in Phase 2)
     return {
@@ -417,7 +417,7 @@ export class FrontendIntelligenceEngine extends BaseCategoryIntelligenceEngine {
   private async analyzePerformance(
     code: string,
     technology: string,
-    insights: any
+    _insights: any
   ): Promise<PerformanceAnalysis> {
     const bottlenecks: string[] = [];
     const optimizations: string[] = [];
@@ -580,8 +580,8 @@ export class FrontendIntelligenceEngine extends BaseCategoryIntelligenceEngine {
 
   private async analyzeSecurity(
     code: string,
-    technology: string,
-    insights: any
+    _technology: string,
+    _insights: any
   ): Promise<SecurityAnalysis> {
     const vulnerabilities: string[] = [];
     const recommendations: string[] = [];
@@ -609,8 +609,8 @@ export class FrontendIntelligenceEngine extends BaseCategoryIntelligenceEngine {
 
   private async analyzeAccessibility(
     code: string,
-    technology: string,
-    insights: any
+    _technology: string,
+    _insights: any
   ): Promise<AccessibilityAnalysis> {
     const issues: string[] = [];
     const improvements: string[] = [];
@@ -762,7 +762,11 @@ export class FrontendIntelligenceEngine extends BaseCategoryIntelligenceEngine {
     };
   }
 
-  private async analyzeSEO(code: string, technology: string, insights: any): Promise<SEOAnalysis> {
+  private async analyzeSEO(
+    code: string,
+    _technology: string,
+    _insights: any
+  ): Promise<SEOAnalysis> {
     let score = 70;
 
     const hasTitle = code.includes('<title>');
@@ -1995,7 +1999,7 @@ if (typeof document !== 'undefined') {
     }
   }
 
-  private addAccessibilityFeatures(code: string, technology: string): string {
+  private addAccessibilityFeatures(code: string, _technology: string): string {
     // Add accessibility features if missing
     if (!code.includes('aria-')) {
       // Add basic ARIA attributes
@@ -2030,7 +2034,7 @@ if (typeof document !== 'undefined') {
     return code;
   }
 
-  private optimizePerformance(code: string, technology: string): string {
+  private optimizePerformance(code: string, _technology: string): string {
     // Performance optimizations
     if (code.includes('document.write')) {
       code = code.replace(/document\.write/g, '// document.write removed for performance');

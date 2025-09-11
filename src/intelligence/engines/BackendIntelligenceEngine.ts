@@ -141,6 +141,13 @@ export class BackendIntelligenceEngine extends BaseCategoryIntelligenceEngine {
     const warnings: string[] = [];
     const suggestions: string[] = [];
 
+    // Technology-specific validation
+    if (technology.toLowerCase().includes('node')) {
+      if (code.includes('require(') && !code.includes('express-validator')) {
+        suggestions.push('Consider using express-validator for input validation');
+      }
+    }
+
     // Security validation
     if (code.includes('eval(') || code.includes('exec(')) {
       errors.push('Dangerous eval/exec usage detected');
@@ -215,8 +222,8 @@ export class BackendIntelligenceEngine extends BaseCategoryIntelligenceEngine {
 
   private async analyzeBackendQuality(
     code: string,
-    technology: string,
-    insights: any
+    _technology: string,
+    _insights: any
   ): Promise<QualityAnalysis> {
     const issues: string[] = [];
     const suggestions: string[] = [];
@@ -246,9 +253,9 @@ export class BackendIntelligenceEngine extends BaseCategoryIntelligenceEngine {
   }
 
   private async analyzeMaintainability(
-    code: string,
-    technology: string,
-    insights: any
+    _code: string,
+    _technology: string,
+    _insights: any
   ): Promise<MaintainabilityAnalysis> {
     // Basic maintainability analysis (to be expanded in Phase 2)
     return {
@@ -262,8 +269,8 @@ export class BackendIntelligenceEngine extends BaseCategoryIntelligenceEngine {
 
   private async analyzePerformance(
     code: string,
-    technology: string,
-    insights: any
+    _technology: string,
+    _insights: any
   ): Promise<PerformanceAnalysis> {
     const bottlenecks: string[] = [];
     const optimizations: string[] = [];
@@ -297,7 +304,7 @@ export class BackendIntelligenceEngine extends BaseCategoryIntelligenceEngine {
   private async analyzeSecurity(
     code: string,
     technology: string,
-    insights: any
+    _insights: any
   ): Promise<SecurityAnalysis> {
     const vulnerabilities: string[] = [];
     const recommendations: string[] = [];
@@ -516,7 +523,7 @@ export class BackendIntelligenceEngine extends BaseCategoryIntelligenceEngine {
   private async analyzeScalability(
     code: string,
     technology: string,
-    insights: any
+    _insights: any
   ): Promise<ScalabilityAnalysis> {
     const patterns: string[] = [];
     const bottlenecks: string[] = [];
@@ -709,8 +716,8 @@ export class BackendIntelligenceEngine extends BaseCategoryIntelligenceEngine {
 
   private async analyzeReliability(
     code: string,
-    technology: string,
-    insights: any
+    _technology: string,
+    _insights: any
   ): Promise<ReliabilityAnalysis> {
     const improvements: string[] = [];
     let score = 80;
@@ -1757,7 +1764,7 @@ if __name__ == "__main__":
     return code;
   }
 
-  private addPerformanceOptimizations(code: string, technology: string): string {
+  private addPerformanceOptimizations(code: string, _technology: string): string {
     // Add performance optimizations
     if (!code.includes('cache') && !code.includes('Cache')) {
       // Could add caching recommendations
@@ -1766,17 +1773,17 @@ if __name__ == "__main__":
     return code;
   }
 
-  private optimizePerformance(code: string, technology: string): string {
+  private optimizePerformance(code: string, _technology: string): string {
     // Performance optimizations
     return code;
   }
 
-  private optimizeSecurity(code: string, technology: string): string {
+  private optimizeSecurity(code: string, _technology: string): string {
     // Security optimizations
     return code;
   }
 
-  private optimizeScalability(code: string, technology: string): string {
+  private optimizeScalability(code: string, _technology: string): string {
     // Scalability optimizations
     return code;
   }

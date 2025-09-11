@@ -211,10 +211,22 @@ export class MobileIntelligenceEngine extends BaseCategoryIntelligenceEngine {
     const security = await this.analyzeMobileSecurity(code, technology, insights);
 
     // Mobile-specific analysis
-    const mobilePerformance = await this.analyzeMobileSpecificPerformance(code, technology, insights);
+    const mobilePerformance = await this.analyzeMobileSpecificPerformance(
+      code,
+      technology,
+      insights
+    );
     const userExperience = await this.analyzeMobileUserExperience(code, technology, insights);
-    const platformIntegration = await this.analyzeMobilePlatformIntegration(code, technology, insights);
-    const mobileSecurityDetailed = await this.analyzeMobileSecurityDetailed(code, technology, insights);
+    const platformIntegration = await this.analyzeMobilePlatformIntegration(
+      code,
+      technology,
+      insights
+    );
+    const mobileSecurityDetailed = await this.analyzeMobileSecurityDetailed(
+      code,
+      technology,
+      insights
+    );
 
     return {
       quality,
@@ -266,7 +278,7 @@ export class MobileIntelligenceEngine extends BaseCategoryIntelligenceEngine {
   /**
    * Get mobile development anti-patterns
    */
-  async getAntiPatterns(technology: string, context: Context7Data): Promise<string[]> {
+  async getAntiPatterns(_technology: string, _context: Context7Data): Promise<string[]> {
     return [
       'Blocking the main thread with heavy operations',
       'Not optimizing images for different screen densities',
@@ -421,24 +433,40 @@ export class MobileIntelligenceEngine extends BaseCategoryIntelligenceEngine {
     };
 
     // Calculate statuses and generate recommendations
-    analysis.appStartupTime.status = analysis.appStartupTime.measurement <= analysis.appStartupTime.target ? 'good' : 'needs-improvement';
-    analysis.memoryUsage.status = analysis.memoryUsage.measurement <= analysis.memoryUsage.target ? 'good' : 'needs-improvement';
+    analysis.appStartupTime.status =
+      analysis.appStartupTime.measurement <= analysis.appStartupTime.target
+        ? 'good'
+        : 'needs-improvement';
+    analysis.memoryUsage.status =
+      analysis.memoryUsage.measurement <= analysis.memoryUsage.target
+        ? 'good'
+        : 'needs-improvement';
 
     if (analysis.appStartupTime.status !== 'good') {
-      analysis.appStartupTime.optimizations.push('Reduce bundle size', 'Implement lazy loading', 'Optimize initialization code');
+      analysis.appStartupTime.optimizations.push(
+        'Reduce bundle size',
+        'Implement lazy loading',
+        'Optimize initialization code'
+      );
     }
 
     if (analysis.memoryUsage.status !== 'good') {
-      analysis.memoryUsage.optimizations.push('Optimize image sizes', 'Implement memory pooling', 'Remove memory leaks');
+      analysis.memoryUsage.optimizations.push(
+        'Optimize image sizes',
+        'Implement memory pooling',
+        'Remove memory leaks'
+      );
     }
 
-    analysis.overall = (
-      (analysis.appStartupTime.status === 'good' ? 100 : 70) +
-      (analysis.memoryUsage.status === 'good' ? 100 : 70) +
-      analysis.batteryEfficiency.score +
-      analysis.networkEfficiency.score +
-      analysis.renderingPerformance.fps > 55 ? 100 : 70
-    ) / 5;
+    analysis.overall =
+      ((analysis.appStartupTime.status === 'good' ? 100 : 70) +
+        (analysis.memoryUsage.status === 'good' ? 100 : 70) +
+        analysis.batteryEfficiency.score +
+        analysis.networkEfficiency.score +
+        analysis.renderingPerformance.fps >
+      55
+        ? 100
+        : 70) / 5;
 
     analysis.recommendations = this.generatePerformanceRecommendations(analysis);
 
@@ -456,9 +484,12 @@ export class MobileIntelligenceEngine extends BaseCategoryIntelligenceEngine {
     const analysis: MobileUserExperienceAnalysis = {
       touchInteractions: {
         responsiveness: this.analyzeTouchResponsiveness(code),
-        gestureSupport: code.includes('gesture') || code.includes('Gesture') || code.includes('onSwipe'),
-        feedbackMechanisms: code.includes('Haptic') || code.includes('vibrat') || code.includes('feedback'),
-        accessibility: code.includes('accessible') || code.includes('aria-') || code.includes('semantics'),
+        gestureSupport:
+          code.includes('gesture') || code.includes('Gesture') || code.includes('onSwipe'),
+        feedbackMechanisms:
+          code.includes('Haptic') || code.includes('vibrat') || code.includes('feedback'),
+        accessibility:
+          code.includes('accessible') || code.includes('aria-') || code.includes('semantics'),
         score: 0,
       },
       accessibility: {
@@ -471,22 +502,29 @@ export class MobileIntelligenceEngine extends BaseCategoryIntelligenceEngine {
         score: 0,
       },
       responsiveDesign: {
-        multipleScreenSizes: code.includes('Dimensions') || code.includes('MediaQuery') || code.includes('breakpoint'),
-        orientationSupport: code.includes('orientation') || code.includes('landscape') || code.includes('portrait'),
-        densityIndependence: code.includes('dp') || code.includes('dip') || code.includes('PixelRatio'),
-        safeAreaHandling: code.includes('SafeArea') || code.includes('safeArea') || code.includes('EdgeInsets'),
+        multipleScreenSizes:
+          code.includes('Dimensions') || code.includes('MediaQuery') || code.includes('breakpoint'),
+        orientationSupport:
+          code.includes('orientation') || code.includes('landscape') || code.includes('portrait'),
+        densityIndependence:
+          code.includes('dp') || code.includes('dip') || code.includes('PixelRatio'),
+        safeAreaHandling:
+          code.includes('SafeArea') || code.includes('safeArea') || code.includes('EdgeInsets'),
         score: 0,
       },
       offlineExperience: {
-        offlineCapabilities: code.includes('offline') || code.includes('NetInfo') || code.includes('connectivity'),
+        offlineCapabilities:
+          code.includes('offline') || code.includes('NetInfo') || code.includes('connectivity'),
         dataSync: code.includes('sync') || code.includes('queue') || code.includes('background'),
         caching: code.includes('cache') || code.includes('AsyncStorage') || code.includes('SQLite'),
         errorHandling: code.includes('try') && code.includes('catch') && code.includes('network'),
         score: 0,
       },
       platformConsistency: {
-        materialDesign: code.includes('Material') || code.includes('FAB') || code.includes('Snackbar'),
-        humanInterfaceGuidelines: code.includes('NavigationBar') || code.includes('TabBar') || code.includes('iOS'),
+        materialDesign:
+          code.includes('Material') || code.includes('FAB') || code.includes('Snackbar'),
+        humanInterfaceGuidelines:
+          code.includes('NavigationBar') || code.includes('TabBar') || code.includes('iOS'),
         platformSpecificFeatures: code.includes('Platform.OS') || code.includes('Platform.select'),
         score: 0,
       },
@@ -501,13 +539,13 @@ export class MobileIntelligenceEngine extends BaseCategoryIntelligenceEngine {
     analysis.offlineExperience.score = this.calculateBooleanScore(analysis.offlineExperience);
     analysis.platformConsistency.score = this.calculateBooleanScore(analysis.platformConsistency);
 
-    analysis.overall = (
-      analysis.touchInteractions.score +
-      analysis.accessibility.score +
-      analysis.responsiveDesign.score +
-      analysis.offlineExperience.score +
-      analysis.platformConsistency.score
-    ) / 5;
+    analysis.overall =
+      (analysis.touchInteractions.score +
+        analysis.accessibility.score +
+        analysis.responsiveDesign.score +
+        analysis.offlineExperience.score +
+        analysis.platformConsistency.score) /
+      5;
 
     analysis.recommendations = this.generateUXRecommendations(analysis);
 
@@ -525,23 +563,33 @@ export class MobileIntelligenceEngine extends BaseCategoryIntelligenceEngine {
     const analysis: MobilePlatformIntegrationAnalysis = {
       nativeFeatures: {
         camera: code.includes('camera') || code.includes('Camera') || code.includes('ImagePicker'),
-        geolocation: code.includes('geolocation') || code.includes('GPS') || code.includes('location'),
-        pushNotifications: code.includes('notification') || code.includes('push') || code.includes('FCM'),
-        biometrics: code.includes('biometric') || code.includes('FaceID') || code.includes('TouchID'),
-        deviceStorage: code.includes('AsyncStorage') || code.includes('SQLite') || code.includes('Realm'),
+        geolocation:
+          code.includes('geolocation') || code.includes('GPS') || code.includes('location'),
+        pushNotifications:
+          code.includes('notification') || code.includes('push') || code.includes('FCM'),
+        biometrics:
+          code.includes('biometric') || code.includes('FaceID') || code.includes('TouchID'),
+        deviceStorage:
+          code.includes('AsyncStorage') || code.includes('SQLite') || code.includes('Realm'),
         contacts: code.includes('contact') || code.includes('AddressBook'),
-        calendar: code.includes('calendar') || code.includes('event') || code.includes('CalendarKit'),
+        calendar:
+          code.includes('calendar') || code.includes('event') || code.includes('CalendarKit'),
         score: 0,
       },
       platformAPIs: {
-        iosIntegration: code.includes('iOS') || code.includes('swift') || code.includes('objective-c'),
-        androidIntegration: code.includes('android') || code.includes('kotlin') || code.includes('java'),
-        crossPlatformCompatibility: code.includes('Platform.OS') || code.includes('Platform.select'),
-        apiVersionSupport: code.includes('API') && (code.includes('version') || code.includes('SDK')),
+        iosIntegration:
+          code.includes('iOS') || code.includes('swift') || code.includes('objective-c'),
+        androidIntegration:
+          code.includes('android') || code.includes('kotlin') || code.includes('java'),
+        crossPlatformCompatibility:
+          code.includes('Platform.OS') || code.includes('Platform.select'),
+        apiVersionSupport:
+          code.includes('API') && (code.includes('version') || code.includes('SDK')),
         score: 0,
       },
       appStoreOptimization: {
-        metadata: code.includes('metadata') || code.includes('Info.plist') || code.includes('manifest'),
+        metadata:
+          code.includes('metadata') || code.includes('Info.plist') || code.includes('manifest'),
         screenshots: code.includes('screenshot') || code.includes('preview'),
         description: code.includes('description') || code.includes('summary'),
         keywords: code.includes('keyword') || code.includes('tag'),
@@ -565,12 +613,12 @@ export class MobileIntelligenceEngine extends BaseCategoryIntelligenceEngine {
     analysis.appStoreOptimization.score = this.calculateBooleanScore(analysis.appStoreOptimization);
     analysis.deepLinking.score = this.calculateBooleanScore(analysis.deepLinking);
 
-    analysis.overall = (
-      analysis.nativeFeatures.score +
-      analysis.platformAPIs.score +
-      analysis.appStoreOptimization.score +
-      analysis.deepLinking.score
-    ) / 4;
+    analysis.overall =
+      (analysis.nativeFeatures.score +
+        analysis.platformAPIs.score +
+        analysis.appStoreOptimization.score +
+        analysis.deepLinking.score) /
+      4;
 
     analysis.recommendations = this.generatePlatformRecommendations(analysis);
 
@@ -588,23 +636,28 @@ export class MobileIntelligenceEngine extends BaseCategoryIntelligenceEngine {
     const analysis: MobileSecurityAnalysis = {
       dataProtection: {
         encryption: code.includes('encrypt') || code.includes('crypto') || code.includes('AES'),
-        secureStorage: code.includes('Keychain') || code.includes('Keystore') || code.includes('SecureStore'),
-        keyManagement: code.includes('key') && (code.includes('management') || code.includes('rotation')),
+        secureStorage:
+          code.includes('Keychain') || code.includes('Keystore') || code.includes('SecureStore'),
+        keyManagement:
+          code.includes('key') && (code.includes('management') || code.includes('rotation')),
         dataTransmission: code.includes('https') || code.includes('TLS') || code.includes('SSL'),
         score: 0,
       },
       authentication: {
-        biometric: code.includes('biometric') || code.includes('FaceID') || code.includes('TouchID'),
+        biometric:
+          code.includes('biometric') || code.includes('FaceID') || code.includes('TouchID'),
         multiFactor: code.includes('MFA') || code.includes('2FA') || code.includes('multi-factor'),
         oauth: code.includes('OAuth') || code.includes('OIDC') || code.includes('JWT'),
-        sessionManagement: code.includes('session') && (code.includes('timeout') || code.includes('refresh')),
+        sessionManagement:
+          code.includes('session') && (code.includes('timeout') || code.includes('refresh')),
         score: 0,
       },
       networkSecurity: {
         certificatePinning: code.includes('pinning') || code.includes('certificate'),
-        tlsConfiguration: code.includes('TLS') || code.includes('SSL') && code.includes('config'),
+        tlsConfiguration: code.includes('TLS') || (code.includes('SSL') && code.includes('config')),
         apiSecurity: code.includes('API') && (code.includes('auth') || code.includes('token')),
-        manInTheMiddleProtection: code.includes('MITM') || code.includes('certificate') && code.includes('validation'),
+        manInTheMiddleProtection:
+          code.includes('MITM') || (code.includes('certificate') && code.includes('validation')),
         score: 0,
       },
       codeProtection: {
@@ -615,7 +668,8 @@ export class MobileIntelligenceEngine extends BaseCategoryIntelligenceEngine {
         score: 0,
       },
       privacyCompliance: {
-        gdprCompliance: code.includes('GDPR') || code.includes('privacy') && code.includes('consent'),
+        gdprCompliance:
+          code.includes('GDPR') || (code.includes('privacy') && code.includes('consent')),
         ccpaCompliance: code.includes('CCPA') || code.includes('california'),
         dataMinimization: code.includes('minimal') && code.includes('data'),
         consentManagement: code.includes('consent') && code.includes('manage'),
@@ -632,13 +686,13 @@ export class MobileIntelligenceEngine extends BaseCategoryIntelligenceEngine {
     analysis.codeProtection.score = this.calculateBooleanScore(analysis.codeProtection);
     analysis.privacyCompliance.score = this.calculateBooleanScore(analysis.privacyCompliance);
 
-    analysis.overall = (
-      analysis.dataProtection.score +
-      analysis.authentication.score +
-      analysis.networkSecurity.score +
-      analysis.codeProtection.score +
-      analysis.privacyCompliance.score
-    ) / 5;
+    analysis.overall =
+      (analysis.dataProtection.score +
+        analysis.authentication.score +
+        analysis.networkSecurity.score +
+        analysis.codeProtection.score +
+        analysis.privacyCompliance.score) /
+      5;
 
     analysis.recommendations = this.generateSecurityRecommendations(analysis);
 
@@ -651,7 +705,7 @@ export class MobileIntelligenceEngine extends BaseCategoryIntelligenceEngine {
   private generateReactNativeComponent(
     request: CodeGenerationRequest,
     _insights: TechnologyInsights,
-    platform: string
+    _platform: string
   ): string {
     const componentName = this.extractComponentName(request.featureDescription);
 
@@ -815,7 +869,7 @@ export default ${componentName};`;
   private generateFlutterWidget(
     request: CodeGenerationRequest,
     _insights: TechnologyInsights,
-    platform: string
+    _platform: string
   ): string {
     const widgetName = this.extractComponentName(request.featureDescription);
 
@@ -1005,7 +1059,10 @@ class _${widgetName}State extends State<${widgetName}>
         'Optimize build methods to avoid unnecessary rebuilds',
         'Use Platform.is for platform-specific code',
       ];
-    } else if (technology.toLowerCase().includes('swift') || technology.toLowerCase().includes('ios')) {
+    } else if (
+      technology.toLowerCase().includes('swift') ||
+      technology.toLowerCase().includes('ios')
+    ) {
       return [
         'Follow Human Interface Guidelines',
         'Use Auto Layout for responsive design',
@@ -1013,7 +1070,10 @@ class _${widgetName}State extends State<${widgetName}>
         'Use SwiftUI for modern UI development',
         'Follow iOS app lifecycle patterns',
       ];
-    } else if (technology.toLowerCase().includes('kotlin') || technology.toLowerCase().includes('android')) {
+    } else if (
+      technology.toLowerCase().includes('kotlin') ||
+      technology.toLowerCase().includes('android')
+    ) {
       return [
         'Follow Material Design guidelines',
         'Use ConstraintLayout for complex layouts',
@@ -1040,8 +1100,10 @@ class _${widgetName}State extends State<${widgetName}>
     if (lower.includes('component') || lower.includes('screen')) return 'react-native-component';
     if (lower.includes('widget') || lower.includes('flutter')) return 'flutter-widget';
     if (lower.includes('navigation') || lower.includes('route')) return 'navigation';
-    if (lower.includes('api') || lower.includes('fetch') || lower.includes('request')) return 'api-integration';
-    if (lower.includes('state') || lower.includes('redux') || lower.includes('context')) return 'state-management';
+    if (lower.includes('api') || lower.includes('fetch') || lower.includes('request'))
+      return 'api-integration';
+    if (lower.includes('state') || lower.includes('redux') || lower.includes('context'))
+      return 'state-management';
     return 'generic';
   }
 
@@ -1055,7 +1117,10 @@ class _${widgetName}State extends State<${widgetName}>
   private extractComponentName(description: string): string {
     // Extract a reasonable component name from description
     const words = description.split(' ').filter(word => /^[A-Za-z]+$/.test(word));
-    const name = words.slice(0, 2).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('');
+    const name = words
+      .slice(0, 2)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join('');
     return name || 'MobileComponent';
   }
 
@@ -1235,19 +1300,17 @@ class _${widgetName}State extends State<${widgetName}>
     let optimized = code;
 
     // Add React.memo for functional components
-    if (optimized.includes('const ') && optimized.includes(': React.FC') && !optimized.includes('React.memo')) {
-      optimized = optimized.replace(
-        /export default (\w+);$/m,
-        'export default React.memo($1);'
-      );
+    if (
+      optimized.includes('const ') &&
+      optimized.includes(': React.FC') &&
+      !optimized.includes('React.memo')
+    ) {
+      optimized = optimized.replace(/export default (\w+);$/m, 'export default React.memo($1);');
     }
 
     // Add removeClippedSubviews to ScrollView
     if (optimized.includes('<ScrollView') && !optimized.includes('removeClippedSubviews')) {
-      optimized = optimized.replace(
-        /<ScrollView/g,
-        '<ScrollView removeClippedSubviews={true}'
-      );
+      optimized = optimized.replace(/<ScrollView/g, '<ScrollView removeClippedSubviews={true}');
     }
 
     return optimized;
@@ -1286,10 +1349,14 @@ class _${widgetName}State extends State<${widgetName}>
       recommendations.push('Optimize app startup time with lazy loading and bundle splitting');
     }
     if (analysis.memoryUsage.status !== 'good') {
-      recommendations.push('Reduce memory usage by optimizing images and implementing memory pooling');
+      recommendations.push(
+        'Reduce memory usage by optimizing images and implementing memory pooling'
+      );
     }
     if (analysis.batteryEfficiency.score < 80) {
-      recommendations.push('Improve battery efficiency by reducing background tasks and location requests');
+      recommendations.push(
+        'Improve battery efficiency by reducing background tasks and location requests'
+      );
     }
     if (!analysis.networkEfficiency.caching) {
       recommendations.push('Implement caching strategies to reduce network requests');
@@ -1337,7 +1404,9 @@ class _${widgetName}State extends State<${widgetName}>
       recommendations.push('Enhance authentication with biometric and multi-factor options');
     }
     if (analysis.networkSecurity.score < 80) {
-      recommendations.push('Improve network security with certificate pinning and TLS configuration');
+      recommendations.push(
+        'Improve network security with certificate pinning and TLS configuration'
+      );
     }
 
     return recommendations;
@@ -1345,9 +1414,9 @@ class _${widgetName}State extends State<${widgetName}>
 
   // Code generation helpers
   private generateNavigationCode(
-    request: CodeGenerationRequest,
+    _request: CodeGenerationRequest,
     _insights: TechnologyInsights,
-    platform: string
+    _platform: string
   ): string {
     return `// Navigation configuration for mobile app
 import { NavigationContainer } from '@react-navigation/native';
@@ -1382,9 +1451,9 @@ export function AppNavigator() {
   }
 
   private generateAPIIntegrationCode(
-    request: CodeGenerationRequest,
+    _request: CodeGenerationRequest,
     _insights: TechnologyInsights,
-    platform: string
+    _platform: string
   ): string {
     return `// Mobile API integration with error handling and caching
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -1444,9 +1513,9 @@ export const apiService = new APIService();`;
   }
 
   private generateStateManagementCode(
-    request: CodeGenerationRequest,
+    _request: CodeGenerationRequest,
     _insights: TechnologyInsights,
-    platform: string
+    _platform: string
   ): string {
     return `// Mobile state management with Context API
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
@@ -1515,9 +1584,9 @@ export function useAppState() {
   }
 
   private generateGenericMobileCode(
-    request: CodeGenerationRequest,
+    _request: CodeGenerationRequest,
     _insights: TechnologyInsights,
-    platform: string
+    _platform: string
   ): string {
     return `// Generic mobile utility code
 import { Platform, Dimensions, StatusBar } from 'react-native';

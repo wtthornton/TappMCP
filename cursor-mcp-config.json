@@ -1,14 +1,34 @@
 {
   "mcp.servers": {
-    "tappmcp": {
+    "smart-mcp": {
       "command": "node",
       "args": ["dist/server.js"],
       "cwd": "C:\\cursor\\TappMCP",
       "env": {
-        "NODE_ENV": "production"
+        "NODE_ENV": "production",
+        "HEALTH_PORT": "3001"
       },
       "stdio": true
+    },
+    "smart-mcp-container": {
+      "command": "docker",
+      "args": ["exec", "-i", "smart-mcp", "node", "dist/server.js"],
+      "env": {
+        "NODE_ENV": "production"
+      },
+      "stdio": true,
+      "description": "Connect to deployed Docker container"
+    },
+    "smart-mcp-npm": {
+      "command": "npx",
+      "args": ["smart-mcp"],
+      "env": {
+        "NODE_ENV": "production"
+      },
+      "stdio": true,
+      "description": "Use via NPM package"
     }
   },
-  "mcp.enabled": true
+  "mcp.enabled": true,
+  "mcp.defaultServer": "smart-mcp"
 }

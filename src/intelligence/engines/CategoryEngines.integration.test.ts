@@ -597,9 +597,9 @@ const testFunction = () => {
       const startTime = Date.now();
 
       // Run 10 concurrent requests
-      const promises = Array(10).fill(null).map(() =>
-        frontendEngine.generateCode(request, mockContext7Data)
-      );
+      const promises = Array(10)
+        .fill(null)
+        .map(() => frontendEngine.generateCode(request, mockContext7Data));
 
       const results = await Promise.all(promises);
       const endTime = Date.now();
@@ -616,17 +616,27 @@ const testFunction = () => {
     it('should handle large code analysis efficiently', async () => {
       const largeCode = `
 // Large code sample
-${Array(100).fill(null).map((_, i) => `
+${Array(100)
+  .fill(null)
+  .map(
+    (_, i) => `
 const function${i} = () => {
   const data = { id: ${i}, value: 'test${i}' };
   return data;
-};`).join('\n')}
+};`
+  )
+  .join('\n')}
 
 class LargeClass {
-  ${Array(50).fill(null).map((_, i) => `
+  ${Array(50)
+    .fill(null)
+    .map(
+      (_, i) => `
   method${i}() {
     return this.function${i}();
-  }`).join('\n')}
+  }`
+    )
+    .join('\n')}
 }`;
 
       const startTime = Date.now();

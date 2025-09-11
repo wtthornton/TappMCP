@@ -41,7 +41,8 @@ describe('End-to-End Code Generation Pipeline', () => {
         {
           name: 'frontend-component',
           request: {
-            featureDescription: 'Create a React user dashboard with authentication, data visualization, and responsive design',
+            featureDescription:
+              'Create a React user dashboard with authentication, data visualization, and responsive design',
             techStack: ['React', 'TypeScript', 'Material-UI'],
             role: 'frontend-developer',
             quality: 'production',
@@ -50,7 +51,8 @@ describe('End-to-End Code Generation Pipeline', () => {
         {
           name: 'backend-api',
           request: {
-            featureDescription: 'Create a Node.js REST API for user management with JWT authentication, rate limiting, and data validation',
+            featureDescription:
+              'Create a Node.js REST API for user management with JWT authentication, rate limiting, and data validation',
             techStack: ['Node.js', 'Express', 'TypeScript'],
             role: 'backend-developer',
             quality: 'production',
@@ -59,7 +61,8 @@ describe('End-to-End Code Generation Pipeline', () => {
         {
           name: 'database-schema',
           request: {
-            featureDescription: 'Create a PostgreSQL database schema for user management with roles, permissions, and audit logging',
+            featureDescription:
+              'Create a PostgreSQL database schema for user management with roles, permissions, and audit logging',
             techStack: ['PostgreSQL'],
             role: 'database-developer',
             quality: 'production',
@@ -68,7 +71,8 @@ describe('End-to-End Code Generation Pipeline', () => {
         {
           name: 'docker-deployment',
           request: {
-            featureDescription: 'Create Docker containers and docker-compose setup for the full-stack application with production best practices',
+            featureDescription:
+              'Create Docker containers and docker-compose setup for the full-stack application with production best practices',
             techStack: ['Docker', 'docker-compose'],
             role: 'devops-engineer',
             quality: 'production',
@@ -104,10 +108,16 @@ describe('End-to-End Code Generation Pipeline', () => {
       expect(results).toHaveLength(4);
 
       // Verify categories are correct
-      expect(results.find(r => r.component === 'frontend-component')?.result.category).toBe('frontend');
+      expect(results.find(r => r.component === 'frontend-component')?.result.category).toBe(
+        'frontend'
+      );
       expect(results.find(r => r.component === 'backend-api')?.result.category).toBe('backend');
-      expect(results.find(r => r.component === 'database-schema')?.result.category).toBe('database');
-      expect(results.find(r => r.component === 'docker-deployment')?.result.category).toBe('devops');
+      expect(results.find(r => r.component === 'database-schema')?.result.category).toBe(
+        'database'
+      );
+      expect(results.find(r => r.component === 'docker-deployment')?.result.category).toBe(
+        'devops'
+      );
 
       // Verify quality scores are reasonable for production code
       results.forEach(({ result }) => {
@@ -120,7 +130,8 @@ describe('End-to-End Code Generation Pipeline', () => {
         {
           name: 'react-native-app',
           request: {
-            featureDescription: 'Create a React Native app with navigation, authentication, offline storage, and push notifications',
+            featureDescription:
+              'Create a React Native app with navigation, authentication, offline storage, and push notifications',
             techStack: ['React Native', 'TypeScript'],
             role: 'mobile-developer',
             quality: 'production',
@@ -129,7 +140,8 @@ describe('End-to-End Code Generation Pipeline', () => {
         {
           name: 'flutter-widget',
           request: {
-            featureDescription: 'Create a Flutter widget for user profile with form validation, image picker, and platform-specific styling',
+            featureDescription:
+              'Create a Flutter widget for user profile with form validation, image picker, and platform-specific styling',
             techStack: ['Flutter', 'Dart'],
             role: 'mobile-developer',
             quality: 'production',
@@ -205,7 +217,8 @@ describe('End-to-End Code Generation Pipeline', () => {
 
     it('should optimize code through multiple passes', async () => {
       const request = {
-        featureDescription: 'Create a complex data processing component with charts and real-time updates',
+        featureDescription:
+          'Create a complex data processing component with charts and real-time updates',
         techStack: ['React', 'TypeScript', 'D3.js'],
         role: 'senior-developer',
         quality: 'production',
@@ -233,7 +246,8 @@ describe('End-to-End Code Generation Pipeline', () => {
         {
           name: 'user-service',
           request: {
-            featureDescription: 'Create a user management microservice with CRUD operations, authentication, and database integration',
+            featureDescription:
+              'Create a user management microservice with CRUD operations, authentication, and database integration',
             techStack: ['Node.js', 'Express', 'MongoDB'],
             role: 'backend-developer',
             quality: 'production',
@@ -242,7 +256,8 @@ describe('End-to-End Code Generation Pipeline', () => {
         {
           name: 'auth-service',
           request: {
-            featureDescription: 'Create an authentication microservice with JWT tokens, refresh tokens, and rate limiting',
+            featureDescription:
+              'Create an authentication microservice with JWT tokens, refresh tokens, and rate limiting',
             techStack: ['Node.js', 'Express', 'Redis'],
             role: 'backend-developer',
             quality: 'production',
@@ -251,7 +266,8 @@ describe('End-to-End Code Generation Pipeline', () => {
         {
           name: 'api-gateway',
           request: {
-            featureDescription: 'Create an API gateway with request routing, load balancing, and monitoring',
+            featureDescription:
+              'Create an API gateway with request routing, load balancing, and monitoring',
             techStack: ['Node.js', 'Express'],
             role: 'backend-developer',
             quality: 'production',
@@ -285,7 +301,8 @@ describe('End-to-End Code Generation Pipeline', () => {
         {
           name: 'dockerfile',
           request: {
-            featureDescription: 'Create a multi-stage Dockerfile for Node.js application with security best practices',
+            featureDescription:
+              'Create a multi-stage Dockerfile for Node.js application with security best practices',
             techStack: ['Docker'],
             role: 'devops-engineer',
             quality: 'production',
@@ -294,7 +311,8 @@ describe('End-to-End Code Generation Pipeline', () => {
         {
           name: 'kubernetes-manifests',
           request: {
-            featureDescription: 'Create Kubernetes deployment manifests with auto-scaling, health checks, and monitoring',
+            featureDescription:
+              'Create Kubernetes deployment manifests with auto-scaling, health checks, and monitoring',
             techStack: ['Kubernetes'],
             role: 'devops-engineer',
             quality: 'production',
@@ -303,7 +321,8 @@ describe('End-to-End Code Generation Pipeline', () => {
         {
           name: 'ci-cd-pipeline',
           request: {
-            featureDescription: 'Create GitHub Actions CI/CD pipeline with testing, security scanning, and deployment',
+            featureDescription:
+              'Create GitHub Actions CI/CD pipeline with testing, security scanning, and deployment',
             techStack: ['GitHub Actions'],
             role: 'devops-engineer',
             quality: 'production',
@@ -312,7 +331,8 @@ describe('End-to-End Code Generation Pipeline', () => {
         {
           name: 'terraform-infrastructure',
           request: {
-            featureDescription: 'Create Terraform configuration for AWS infrastructure with VPC, EKS, and RDS',
+            featureDescription:
+              'Create Terraform configuration for AWS infrastructure with VPC, EKS, and RDS',
             techStack: ['Terraform', 'AWS'],
             role: 'devops-engineer',
             quality: 'production',
@@ -411,17 +431,17 @@ describe('End-to-End Code Generation Pipeline', () => {
 
   describe('Performance and Scalability', () => {
     it('should handle concurrent code generation requests', async () => {
-      const requests = Array(5).fill(null).map((_, i) => ({
-        featureDescription: `Create a component for feature ${i}`,
-        techStack: ['React', 'TypeScript'],
-        role: 'developer',
-        quality: 'development',
-      }));
+      const requests = Array(5)
+        .fill(null)
+        .map((_, i) => ({
+          featureDescription: `Create a component for feature ${i}`,
+          techStack: ['React', 'TypeScript'],
+          role: 'developer',
+          quality: 'development',
+        }));
 
       const startTime = Date.now();
-      const results = await Promise.all(
-        requests.map(request => engine.generateCode(request))
-      );
+      const results = await Promise.all(requests.map(request => engine.generateCode(request)));
       const endTime = Date.now();
 
       expect(results).toHaveLength(5);
@@ -435,12 +455,14 @@ describe('End-to-End Code Generation Pipeline', () => {
     });
 
     it('should maintain quality under load', async () => {
-      const loadTestRequests = Array(10).fill(null).map((_, i) => ({
-        featureDescription: `Create a production-ready component ${i} with all best practices`,
-        techStack: ['React', 'TypeScript'],
-        role: 'senior-developer',
-        quality: 'production',
-      }));
+      const loadTestRequests = Array(10)
+        .fill(null)
+        .map((_, i) => ({
+          featureDescription: `Create a production-ready component ${i} with all best practices`,
+          techStack: ['React', 'TypeScript'],
+          role: 'senior-developer',
+          quality: 'production',
+        }));
 
       const results = await Promise.all(
         loadTestRequests.map(request => engine.generateCode(request))
@@ -453,7 +475,8 @@ describe('End-to-End Code Generation Pipeline', () => {
       });
 
       // Calculate average quality
-      const averageQuality = results.reduce((sum, result) => sum + result.qualityScore.overall, 0) / results.length;
+      const averageQuality =
+        results.reduce((sum, result) => sum + result.qualityScore.overall, 0) / results.length;
       expect(averageQuality).toBeGreaterThan(75);
     });
   });
@@ -461,7 +484,8 @@ describe('End-to-End Code Generation Pipeline', () => {
   describe('Integration with External Tools', () => {
     it('should generate code that passes basic validation', async () => {
       const request = {
-        featureDescription: 'Create a TypeScript React component with proper types and error handling',
+        featureDescription:
+          'Create a TypeScript React component with proper types and error handling',
         techStack: ['React', 'TypeScript'],
         role: 'developer',
         quality: 'production',

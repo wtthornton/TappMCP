@@ -35,8 +35,8 @@ RUN npm ci --only=production && npm cache clean --force
 # Copy built application from builder stage
 COPY --from=builder --chown=smartmcp:nodejs /app/dist ./dist
 
-# Create data directory with proper permissions
-RUN mkdir -p /app/data && chown -R smartmcp:nodejs /app/data
+# Create data and logs directories with proper permissions
+RUN mkdir -p /app/data /app/logs && chown -R smartmcp:nodejs /app/data /app/logs
 
 # Switch to non-root user
 USER smartmcp

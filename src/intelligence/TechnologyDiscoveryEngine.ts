@@ -36,7 +36,7 @@ export class TechnologyDiscoveryEngine {
   /**
    * Discover available technologies from Context7
    */
-  async discoverAvailableTechnologies(context7Data: Context7Data): Promise<TechnologyMap> {
+  async discoverAvailableTechnologies(_context7Data: Context7Data): Promise<TechnologyMap> {
     // Check cache first
     const cachedKey = 'all-technologies';
     const now = Date.now();

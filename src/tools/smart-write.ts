@@ -1416,6 +1416,7 @@ export async function handleSmartWrite(input: unknown): Promise<{
     const enhancedInput = {
       ...validatedInput,
       featureDescription: validatedInput.featureDescription, // Ensure required field is present
+      targetRole: validatedInput.targetRole, // Ensure required field is present
       projectAnalysis: projectAnalysis
         ? {
             techStack: projectAnalysis.project.detectedTechStack,

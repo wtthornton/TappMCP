@@ -127,7 +127,7 @@ export class GenericIntelligenceEngine extends BaseCategoryIntelligenceEngine {
   /**
    * Validate code using general quality checks
    */
-  async validateCode(code: string, technology: string): Promise<ValidationResult> {
+  async validateCode(code: string, _technology: string): Promise<ValidationResult> {
     const errors: string[] = [];
     const warnings: string[] = [];
     const suggestions: string[] = [];
@@ -203,7 +203,7 @@ export class GenericIntelligenceEngine extends BaseCategoryIntelligenceEngine {
 
   private async analyzeGenericQuality(
     code: string,
-    technology: string,
+    _technology: string,
     insights: TechnologyInsights
   ): Promise<QualityAnalysis> {
     const issues: string[] = [];
@@ -238,8 +238,8 @@ export class GenericIntelligenceEngine extends BaseCategoryIntelligenceEngine {
 
   private async analyzeMaintainability(
     code: string,
-    technology: string,
-    insights: TechnologyInsights
+    _technology: string,
+    _insights: TechnologyInsights
   ): Promise<MaintainabilityAnalysis> {
     const lines = code.split('\n');
     const functionCount = (code.match(/function\s+\w+/g) || []).length;
@@ -275,7 +275,7 @@ export class GenericIntelligenceEngine extends BaseCategoryIntelligenceEngine {
 
   private async analyzePerformance(
     code: string,
-    technology: string,
+    _technology: string,
     insights: TechnologyInsights
   ): Promise<PerformanceAnalysis> {
     const bottlenecks: string[] = [];
@@ -307,7 +307,7 @@ export class GenericIntelligenceEngine extends BaseCategoryIntelligenceEngine {
 
   private async analyzeSecurity(
     code: string,
-    technology: string,
+    _technology: string,
     insights: TechnologyInsights
   ): Promise<SecurityAnalysis> {
     const vulnerabilities: string[] = [];

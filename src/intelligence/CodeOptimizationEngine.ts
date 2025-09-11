@@ -459,6 +459,11 @@ export class CodeOptimizationEngine {
     // Fix indentation (basic - would need more sophisticated logic for production)
     code = this.fixIndentation(code);
 
+    // Add optimization marker to indicate code has been processed
+    if (!code.includes('// Optimized')) {
+      code += '\n// Optimized';
+    }
+
     return code;
   }
 

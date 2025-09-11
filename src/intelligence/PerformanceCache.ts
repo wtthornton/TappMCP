@@ -13,6 +13,7 @@ export interface CacheConfig {
   maxAge: number; // in milliseconds
   enableCompression: boolean;
   enableStats: boolean;
+  maxCodeGenerations?: number; // Optional specific size for code generation cache
 }
 
 export interface CacheStats {
@@ -22,6 +23,11 @@ export interface CacheStats {
   totalRequests: number;
   totalSize: number;
   averageProcessingTime: number;
+  codeGenerationCacheSize: number;
+  technologyInsightsCacheSize: number;
+  codeAnalysisCacheSize: number;
+  validationCacheSize: number;
+  estimatedMemoryUsage: number;
 }
 
 export interface CacheEntry<T> {
@@ -43,6 +49,9 @@ export class PerformanceCache {
 
   private stats: CacheStats;
   private config: CacheConfig;
+
+  // Track pending operations to prevent concurrent duplicate work
+  private pendingOperations: Map<string, Promise<any>> = new Map();
 
   constructor(config: Partial<CacheConfig> = {}) {
     this.config = {
@@ -68,7 +77,7 @@ export class PerformanceCache {
     });
 
     this.codeGenerationCache = new LRUCache({
-      max: this.config.maxSize,
+      max: config.maxCodeGenerations || this.config.maxSize,
       ttl: this.config.maxAge,
       allowStale: false,
       updateAgeOnGet: true,
@@ -88,6 +97,11 @@ export class PerformanceCache {
       totalRequests: 0,
       totalSize: 0,
       averageProcessingTime: 0,
+      codeGenerationCacheSize: 0,
+      technologyInsightsCacheSize: 0,
+      codeAnalysisCacheSize: 0,
+      validationCacheSize: 0,
+      estimatedMemoryUsage: 0,
     };
   }
 
@@ -107,7 +121,14 @@ export class PerformanceCache {
       params: additionalParams,
     };
 
-    return createHash('sha256').update(JSON.stringify(input)).digest('hex').substring(0, 32); // Use first 32 chars for key
+    try {
+      return createHash('sha256').update(JSON.stringify(input)).digest('hex').substring(0, 32); // Use first 32 chars for key
+    } catch (error) {
+      // Handle circular references by creating a fallback key
+      const fallbackKey = `${this.hashCode(JSON.stringify({ codeHash: input.codeHash, technology: input.technology, timestamp: Date.now() }))}`;
+      console.warn('[PerformanceCache] Circular reference detected, using fallback key generation');
+      return createHash('sha256').update(fallbackKey).digest('hex').substring(0, 32);
+    }
   }
 
   /**
@@ -229,11 +250,34 @@ export class PerformanceCache {
       return cached.data;
     }
 
+    // Check if this operation is already pending
+    const existingOperation = this.pendingOperations.get(cacheKey);
+    if (existingOperation) {
+      return await existingOperation;
+    }
+
     if (this.config.enableStats) {
       this.stats.misses++;
       this.stats.totalRequests++;
     }
 
+    // Create and track the pending operation
+    const operation = this.executeGeneration(cacheKey, request, generationFunction);
+    this.pendingOperations.set(cacheKey, operation);
+
+    try {
+      const result = await operation;
+      return result;
+    } finally {
+      this.pendingOperations.delete(cacheKey);
+    }
+  }
+
+  private async executeGeneration(
+    cacheKey: string,
+    request: any,
+    generationFunction: () => Promise<string>
+  ): Promise<string> {
     const startTime = Date.now();
     const result = await generationFunction();
     const processingTime = Date.now() - startTime;
@@ -352,6 +396,11 @@ export class PerformanceCache {
       totalRequests: 0,
       totalSize: 0,
       averageProcessingTime: 0,
+      codeGenerationCacheSize: 0,
+      technologyInsightsCacheSize: 0,
+      codeAnalysisCacheSize: 0,
+      validationCacheSize: 0,
+      estimatedMemoryUsage: 0,
     };
 
     console.log('[PerformanceCache] All caches cleared');
@@ -361,13 +410,24 @@ export class PerformanceCache {
    * Get cache statistics
    */
   getStats(): CacheStats {
+    const totalSize =
+      this.codeAnalysisCache.size +
+      this.technologyInsightsCache.size +
+      this.codeGenerationCache.size +
+      this.validationCache.size;
+
+    // Estimate memory usage (rough calculation)
+    const avgEntrySize = 1024; // Assume 1KB per entry on average
+    const estimatedMemoryUsage = totalSize * avgEntrySize;
+
     return {
       ...this.stats,
-      totalSize:
-        this.codeAnalysisCache.size +
-        this.technologyInsightsCache.size +
-        this.codeGenerationCache.size +
-        this.validationCache.size,
+      totalSize,
+      codeGenerationCacheSize: this.codeGenerationCache.size,
+      technologyInsightsCacheSize: this.technologyInsightsCache.size,
+      codeAnalysisCacheSize: this.codeAnalysisCache.size,
+      validationCacheSize: this.validationCache.size,
+      estimatedMemoryUsage,
     };
   }
 

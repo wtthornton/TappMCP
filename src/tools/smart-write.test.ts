@@ -1,8 +1,55 @@
 #!/usr/bin/env node
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { handleSmartWrite, smartWriteTool } from './smart-write';
 import type { SmartWriteResponse } from '../types/tool-responses';
+
+// Mock external dependencies to prevent timeouts and real API calls
+vi.mock('https', () => ({
+  default: {
+    request: vi.fn().mockImplementation((_options, callback) => {
+      const response = {
+        on: vi.fn().mockImplementation((event, handler) => {
+          if (event === 'data') {
+            handler(
+              JSON.stringify({
+                success: true,
+                data: ['Mocked API response'],
+                metadata: { cached: false, fetchTime: 10 },
+              })
+            );
+          }
+          if (event === 'end') {
+            handler();
+          }
+        }),
+        statusCode: 200,
+      };
+      callback(response);
+      return {
+        on: vi.fn(),
+        write: vi.fn(),
+        end: vi.fn(),
+      };
+    }),
+  },
+}));
+
+// Mock node fetch if used
+vi.mock('node-fetch', () => ({
+  default: vi.fn().mockResolvedValue({
+    ok: true,
+    json: vi.fn().mockResolvedValue({
+      success: true,
+      data: ['Mocked fetch response'],
+      metadata: { fetchTime: 5 },
+    }),
+  }),
+}));
+
+// Set timeout environment variable to prevent real API calls
+process.env.CONTEXT7_TIMEOUT = '100';
+process.env.NODE_ENV = 'test';
 
 describe('SmartWrite - REAL TESTS (Expose Code Generation Theater)', () => {
   describe('tool definition', () => {
