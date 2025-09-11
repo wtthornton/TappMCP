@@ -45,7 +45,10 @@ export class SimpleAnalyzer {
   /**
    * Run comprehensive basic analysis using multiple tools
    */
-  async runBasicAnalysis(projectPath: string, analysisDepth: 'quick' | 'standard' | 'deep' = 'standard'): Promise<BasicAnalysis> {
+  async runBasicAnalysis(
+    projectPath: string,
+    analysisDepth: 'quick' | 'standard' | 'deep' = 'standard'
+  ): Promise<BasicAnalysis> {
     const startTime = Date.now();
 
     // Initialize analyzers if not already done
@@ -67,8 +70,8 @@ export class SimpleAnalyzer {
             critical: 0,
             high: 0,
             moderate: 0,
-            low: 0
-          }
+            low: 0,
+          },
         } as SecurityScanResult;
       }),
       this.staticAnalyzer.runStaticAnalysis().catch(err => {
@@ -82,13 +85,13 @@ export class SimpleAnalyzer {
             total: 0,
             error: 0,
             warning: 0,
-            info: 0
+            info: 0,
           },
           metrics: {
             complexity: 0,
             maintainability: 80,
-            duplication: 0
-          }
+            duplication: 0,
+          },
         } as StaticAnalysisResult;
       }),
       this.projectScanner.scanProject(projectPath, analysisDepth).catch(err => {
@@ -99,19 +102,19 @@ export class SimpleAnalyzer {
             folders: [],
             files: [],
             configFiles: [],
-            templates: []
+            templates: [],
           },
           detectedTechStack: [],
           qualityIssues: [],
           improvementOpportunities: [],
           projectMetadata: {
             name: 'unknown',
-            version: '0.0.0'
+            version: '0.0.0',
           },
           analysisDepth,
-          analysisTimestamp: new Date().toISOString()
+          analysisTimestamp: new Date().toISOString(),
         } as ProjectAnalysis;
-      })
+      }),
     ]);
 
     const analysisTime = Date.now() - startTime;
@@ -125,7 +128,7 @@ export class SimpleAnalyzer {
       security: securityResult,
       static: staticResult,
       project: projectResult,
-      summary
+      summary,
     };
   }
 
@@ -164,7 +167,7 @@ export class SimpleAnalyzer {
       criticalIssues,
       qualityIssues,
       recommendations,
-      status
+      status,
     };
   }
 
@@ -229,7 +232,9 @@ export class SimpleAnalyzer {
 
     // Security recommendations
     if (security.summary.critical > 0) {
-      recommendations.push(`Fix ${security.summary.critical} critical security vulnerabilities immediately`);
+      recommendations.push(
+        `Fix ${security.summary.critical} critical security vulnerabilities immediately`
+      );
     }
     if (security.summary.high > 0) {
       recommendations.push(`Address ${security.summary.high} high-priority security issues`);
@@ -250,14 +255,20 @@ export class SimpleAnalyzer {
     }
 
     // Project structure recommendations
-    if (!project.projectStructure.configFiles.includes('tsconfig.json') &&
-        project.detectedTechStack.includes('typescript')) {
+    if (
+      !project.projectStructure.configFiles.includes('tsconfig.json') &&
+      project.detectedTechStack.includes('typescript')
+    ) {
       recommendations.push('Add TypeScript configuration for better type safety');
     }
     if (!project.projectStructure.configFiles.some(f => f.includes('eslint'))) {
       recommendations.push('Add ESLint configuration for consistent code quality');
     }
-    if (!project.projectStructure.configFiles.some(f => f.includes('test') || f.includes('jest') || f.includes('vitest'))) {
+    if (
+      !project.projectStructure.configFiles.some(
+        f => f.includes('test') || f.includes('jest') || f.includes('vitest')
+      )
+    ) {
       recommendations.push('Set up a testing framework for better code reliability');
     }
 

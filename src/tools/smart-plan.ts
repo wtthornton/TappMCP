@@ -358,7 +358,7 @@ export async function handleSmartPlan(input: unknown): Promise<{
         });
 
         console.log(
-          `🔍 Context7 enhanced smart_plan for: ${validatedInput.planType} planning (${validatedInput.improvementMode || 'standard'})`
+          `Context7 enhanced smart_plan for: ${validatedInput.planType} planning (${validatedInput.improvementMode || 'standard'})`
         );
       } catch (error) {
         console.warn('Context7 integration failed:', error);

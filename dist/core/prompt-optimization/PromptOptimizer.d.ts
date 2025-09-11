@@ -27,12 +27,12 @@ export declare const TokenBudgetSchema: z.ZodObject<{
         examples: z.ZodDefault<z.ZodNumber>;
     }, "strip", z.ZodTypeAny, {
         context: number;
-        instructions: number;
         examples: number;
+        instructions: number;
     }, {
         context?: number | undefined;
-        instructions?: number | undefined;
         examples?: number | undefined;
+        instructions?: number | undefined;
     }>>;
 }, "strip", z.ZodTypeAny, {
     maxTokens: number;
@@ -40,8 +40,8 @@ export declare const TokenBudgetSchema: z.ZodObject<{
     compressionTarget: number;
     priorityAllocation: {
         context: number;
-        instructions: number;
         examples: number;
+        instructions: number;
     };
 }, {
     maxTokens?: number | undefined;
@@ -49,8 +49,8 @@ export declare const TokenBudgetSchema: z.ZodObject<{
     compressionTarget?: number | undefined;
     priorityAllocation?: {
         context?: number | undefined;
-        instructions?: number | undefined;
         examples?: number | undefined;
+        instructions?: number | undefined;
     } | undefined;
 }>;
 export type TokenBudget = z.infer<typeof TokenBudgetSchema>;

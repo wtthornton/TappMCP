@@ -284,7 +284,7 @@ async function scanExistingProject(
       projectScanner.scanProject(projectPath, analysisDepth).catch(err => {
         console.warn('Project scan failed:', err);
         return null;
-      })
+      }),
     ]);
 
     // Use ProjectScanner results as base if available
@@ -295,14 +295,18 @@ async function scanExistingProject(
       // Add security scan results
       if (securityResult) {
         if (securityResult.summary.critical > 0) {
-          qualityIssues.push(`${securityResult.summary.critical} critical security vulnerabilities found`);
+          qualityIssues.push(
+            `${securityResult.summary.critical} critical security vulnerabilities found`
+          );
         }
         if (securityResult.summary.high > 0) {
           qualityIssues.push(`${securityResult.summary.high} high security vulnerabilities found`);
         }
         securityResult.vulnerabilities.forEach(vuln => {
           if (vuln.severity === 'critical' || vuln.severity === 'high') {
-            improvementOpportunities.push(`Fix ${vuln.severity} vulnerability in ${vuln.package}: ${vuln.description}`);
+            improvementOpportunities.push(
+              `Fix ${vuln.severity} vulnerability in ${vuln.package}: ${vuln.description}`
+            );
           }
         });
       }
@@ -329,16 +333,20 @@ async function scanExistingProject(
         detectedTechStack: projectResult.detectedTechStack,
         qualityIssues,
         improvementOpportunities,
-        ...(securityResult && { securityAnalysis: {
-          status: securityResult.status,
-          vulnerabilities: securityResult.vulnerabilities,
-          summary: securityResult.summary
-        }}),
-        ...(staticResult && { staticAnalysis: {
-          status: staticResult.status,
-          issues: staticResult.issues,
-          metrics: staticResult.metrics
-        }})
+        ...(securityResult && {
+          securityAnalysis: {
+            status: securityResult.status,
+            vulnerabilities: securityResult.vulnerabilities,
+            summary: securityResult.summary,
+          },
+        }),
+        ...(staticResult && {
+          staticAnalysis: {
+            status: staticResult.status,
+            issues: staticResult.issues,
+            metrics: staticResult.metrics,
+          },
+        }),
       };
     }
 
@@ -887,7 +895,7 @@ export async function handleSmartBegin(input: unknown): Promise<{
         });
 
         console.log(
-          `🔍 Context7 enhanced smart_begin for: ${validatedInput.projectName} (${validatedInput.mode})`
+          `Context7 enhanced smart_begin for: ${validatedInput.projectName} (${validatedInput.mode})`
         );
       } catch (error) {
         console.warn('Context7 integration failed:', error);
@@ -965,8 +973,10 @@ export async function handleSmartBegin(input: unknown): Promise<{
       // Use real security analysis if available
       if (scanResult.securityAnalysis) {
         const { summary } = scanResult.securityAnalysis;
-        securityScore = scanResult.securityAnalysis.status === 'pass' ? 95 :
-          Math.max(60, 95 - summary.critical * 10 - summary.high * 5 - summary.moderate * 2);
+        securityScore =
+          scanResult.securityAnalysis.status === 'pass'
+            ? 95
+            : Math.max(60, 95 - summary.critical * 10 - summary.high * 5 - summary.moderate * 2);
       } else {
         // Fallback to quality issues based scoring
         securityScore = Math.max(60, 95 - qualityIssues.length * 5);
@@ -975,9 +985,10 @@ export async function handleSmartBegin(input: unknown): Promise<{
       // Use real static analysis if available
       if (scanResult.staticAnalysis) {
         const { metrics } = scanResult.staticAnalysis;
-        complexityScore = metrics.complexity > 10 ?
-          Math.max(50, 100 - metrics.complexity * 5) :
-          Math.max(70, 100 - metrics.complexity * 2);
+        complexityScore =
+          metrics.complexity > 10
+            ? Math.max(50, 100 - metrics.complexity * 5)
+            : Math.max(70, 100 - metrics.complexity * 2);
       } else {
         // Fallback to quality issues based scoring
         complexityScore = Math.max(50, 85 - qualityIssues.length * 3);

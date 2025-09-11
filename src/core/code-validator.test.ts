@@ -27,9 +27,10 @@ describe('CodeValidator', () => {
   describe('validateGeneratedCode', () => {
     it('should validate secure, high-quality code successfully', async () => {
       const goodCode = {
-        files: [{
-          path: 'src/utils.ts',
-          content: `#!/usr/bin/env node
+        files: [
+          {
+            path: 'src/utils.ts',
+            content: `#!/usr/bin/env node
 
 export function validateInput(input: string): boolean {
   if (!input || typeof input !== 'string') {
@@ -49,8 +50,9 @@ export function processData(data: unknown): { success: boolean; result?: any } {
     return { success: false };
   }
 }`,
-          type: 'function'
-        }]
+            type: 'function',
+          },
+        ],
       };
 
       // Mock successful security and static analysis
@@ -59,7 +61,7 @@ export function processData(data: unknown): { success: boolean; result?: any } {
 
       vi.mocked(SecurityScanner).prototype.runSecurityScan = vi.fn().mockResolvedValue({
         vulnerabilities: [],
-        summary: { total: 0, critical: 0, high: 0, moderate: 0, low: 0 }
+        summary: { total: 0, critical: 0, high: 0, moderate: 0, low: 0 },
       });
 
       vi.mocked(StaticAnalyzer).prototype.runStaticAnalysis = vi.fn().mockResolvedValue({
@@ -67,8 +69,8 @@ export function processData(data: unknown): { success: boolean; result?: any } {
         metrics: {
           complexity: 3,
           maintainability: 90,
-          duplication: 0
-        }
+          duplication: 0,
+        },
       });
 
       const result = await validator.validateGeneratedCode(goodCode);
@@ -82,9 +84,10 @@ export function processData(data: unknown): { success: boolean; result?: any } {
 
     it('should detect security vulnerabilities in code', async () => {
       const vulnerableCode = {
-        files: [{
-          path: 'src/vulnerable.ts',
-          content: `#!/usr/bin/env node
+        files: [
+          {
+            path: 'src/vulnerable.ts',
+            content: `#!/usr/bin/env node
 
 const API_KEY = "hardcoded-secret-key";
 
@@ -96,8 +99,9 @@ export function executeCode(userInput: string) {
 export function renderHTML(content: string) {
   document.getElementById('content').innerHTML = content;
 }`,
-          type: 'function'
-        }]
+            type: 'function',
+          },
+        ],
       };
 
       const { SecurityScanner } = await import('./security-scanner.js');
@@ -106,7 +110,7 @@ export function renderHTML(content: string) {
       // Mock external scanners to return empty results so we test internal pattern detection
       vi.mocked(SecurityScanner).prototype.runSecurityScan = vi.fn().mockResolvedValue({
         vulnerabilities: [],
-        summary: { total: 0, critical: 0, high: 0, moderate: 0, low: 0 }
+        summary: { total: 0, critical: 0, high: 0, moderate: 0, low: 0 },
       });
 
       vi.mocked(StaticAnalyzer).prototype.runStaticAnalysis = vi.fn().mockResolvedValue({
@@ -114,8 +118,8 @@ export function renderHTML(content: string) {
         metrics: {
           complexity: 5,
           maintainability: 70,
-          duplication: 0
-        }
+          duplication: 0,
+        },
       });
 
       const result = await validator.validateGeneratedCode(vulnerableCode);
@@ -138,14 +142,17 @@ export function renderHTML(content: string) {
       expect(xssIssue).toBeDefined();
       expect(xssIssue?.severity).toBe('medium');
 
-      expect(result.recommendations).toContain('🚨 CRITICAL: Fix 1 critical security issues immediately');
+      expect(result.recommendations).toContain(
+        '🚨 CRITICAL: Fix 1 critical security issues immediately'
+      );
     });
 
     it('should detect code quality issues', async () => {
       const poorQualityCode = {
-        files: [{
-          path: 'src/poor-quality.ts',
-          content: `#!/usr/bin/env node
+        files: [
+          {
+            path: 'src/poor-quality.ts',
+            content: `#!/usr/bin/env node
 
 export function complexFunction(data: any): any {
   console.log("Debug: processing data");
@@ -168,8 +175,9 @@ export function complexFunction(data: any): any {
 
   return result;
 }`,
-          type: 'function'
-        }]
+            type: 'function',
+          },
+        ],
       };
 
       const { SecurityScanner } = await import('./security-scanner.js');
@@ -177,7 +185,7 @@ export function complexFunction(data: any): any {
 
       vi.mocked(SecurityScanner).prototype.runSecurityScan = vi.fn().mockResolvedValue({
         vulnerabilities: [],
-        summary: { total: 0, critical: 0, high: 0, moderate: 0, low: 0 }
+        summary: { total: 0, critical: 0, high: 0, moderate: 0, low: 0 },
       });
 
       vi.mocked(StaticAnalyzer).prototype.runStaticAnalysis = vi.fn().mockResolvedValue({
@@ -185,8 +193,8 @@ export function complexFunction(data: any): any {
         metrics: {
           complexity: 15,
           maintainability: 40,
-          duplication: 5
-        }
+          duplication: 5,
+        },
       });
 
       const result = await validator.validateGeneratedCode(poorQualityCode);
@@ -206,11 +214,15 @@ export function complexFunction(data: any): any {
       expect(nestedIssue).toBeDefined();
 
       // Should detect missing error handling
-      const errorHandlingIssue = result.quality.issues.find(i => i.message.includes('error handling'));
+      const errorHandlingIssue = result.quality.issues.find(i =>
+        i.message.includes('error handling')
+      );
       expect(errorHandlingIssue).toBeDefined();
 
       expect(result.quality.metrics.complexity).toBe(15);
-      expect(result.recommendations).toContain('📊 Reduce complexity from 15 to improve maintainability');
+      expect(result.recommendations).toContain(
+        '📊 Reduce complexity from 15 to improve maintainability'
+      );
     });
 
     it('should handle validation failures gracefully', async () => {
@@ -218,15 +230,21 @@ export function complexFunction(data: any): any {
       const { StaticAnalyzer } = await import('./static-analyzer.js');
 
       // Mock failures
-      vi.mocked(SecurityScanner).prototype.runSecurityScan = vi.fn().mockRejectedValue(new Error('Scanner failed'));
-      vi.mocked(StaticAnalyzer).prototype.runStaticAnalysis = vi.fn().mockRejectedValue(new Error('Analysis failed'));
+      vi.mocked(SecurityScanner).prototype.runSecurityScan = vi
+        .fn()
+        .mockRejectedValue(new Error('Scanner failed'));
+      vi.mocked(StaticAnalyzer).prototype.runStaticAnalysis = vi
+        .fn()
+        .mockRejectedValue(new Error('Analysis failed'));
 
       const testCode = {
-        files: [{
-          path: 'src/test.ts',
-          content: 'export const test = "hello";',
-          type: 'function'
-        }]
+        files: [
+          {
+            path: 'src/test.ts',
+            content: 'export const test = "hello";',
+            type: 'function',
+          },
+        ],
       };
 
       const result = await validator.validateGeneratedCode(testCode);
@@ -234,7 +252,9 @@ export function complexFunction(data: any): any {
       expect(result.isValid).toBe(false);
       expect(result.security.status).toBe('warning');
       expect(result.quality.status).toBe('warning');
-      expect(result.recommendations).toContain('Manual code review recommended due to validation failure');
+      expect(result.recommendations).toContain(
+        'Manual code review recommended due to validation failure'
+      );
     });
   });
 
@@ -245,7 +265,7 @@ export function complexFunction(data: any): any {
 
       vi.mocked(SecurityScanner).prototype.runSecurityScan = vi.fn().mockResolvedValue({
         vulnerabilities: [],
-        summary: { total: 0, critical: 0, high: 0, moderate: 0, low: 0 }
+        summary: { total: 0, critical: 0, high: 0, moderate: 0, low: 0 },
       });
 
       vi.mocked(StaticAnalyzer).prototype.runStaticAnalysis = vi.fn().mockResolvedValue({
@@ -253,8 +273,8 @@ export function complexFunction(data: any): any {
         metrics: {
           complexity: 2,
           maintainability: 85,
-          duplication: 0
-        }
+          duplication: 0,
+        },
       });
 
       const simpleCode = 'export const greeting = "Hello, World!";';
@@ -272,7 +292,7 @@ export function complexFunction(data: any): any {
 
       vi.mocked(SecurityScanner).prototype.runSecurityScan = vi.fn().mockResolvedValue({
         vulnerabilities: [],
-        summary: { total: 0, critical: 0, high: 0, moderate: 0, low: 0 }
+        summary: { total: 0, critical: 0, high: 0, moderate: 0, low: 0 },
       });
 
       vi.mocked(StaticAnalyzer).prototype.runStaticAnalysis = vi.fn().mockResolvedValue({
@@ -280,8 +300,8 @@ export function complexFunction(data: any): any {
         metrics: {
           complexity: 5,
           maintainability: 60,
-          duplication: 0
-        }
+          duplication: 0,
+        },
       });
 
       const badCode = 'const secret = "api-key-12345"; eval(userInput);';
@@ -310,7 +330,7 @@ export function add(a: number, b: number): number {
 export function multiply(a: number, b: number): number {
   return a * b;
 }`,
-            type: 'function'
+            type: 'function',
           },
           {
             path: 'src/utils.test.ts',
@@ -323,9 +343,9 @@ describe('utils', () => {
     expect(add(2, 3)).toBe(5);
   });
 });`,
-            type: 'test'
-          }
-        ]
+            type: 'test',
+          },
+        ],
       };
 
       const { SecurityScanner } = await import('./security-scanner.js');
@@ -333,7 +353,7 @@ describe('utils', () => {
 
       vi.mocked(SecurityScanner).prototype.runSecurityScan = vi.fn().mockResolvedValue({
         vulnerabilities: [],
-        summary: { total: 0, critical: 0, high: 0, moderate: 0, low: 0 }
+        summary: { total: 0, critical: 0, high: 0, moderate: 0, low: 0 },
       });
 
       vi.mocked(StaticAnalyzer).prototype.runStaticAnalysis = vi.fn().mockResolvedValue({
@@ -341,8 +361,8 @@ describe('utils', () => {
         metrics: {
           complexity: 2,
           maintainability: 90,
-          duplication: 0
-        }
+          duplication: 0,
+        },
       });
 
       const result = await validator.validateGeneratedCode(testableCode);
@@ -367,9 +387,9 @@ function processWithSideEffects() {
 }
 
 processWithSideEffects();`,
-            type: 'function'
-          }
-        ]
+            type: 'function',
+          },
+        ],
       };
 
       const { SecurityScanner } = await import('./security-scanner.js');
@@ -377,7 +397,7 @@ processWithSideEffects();`,
 
       vi.mocked(SecurityScanner).prototype.runSecurityScan = vi.fn().mockResolvedValue({
         vulnerabilities: [],
-        summary: { total: 0, critical: 0, high: 0, moderate: 0, low: 0 }
+        summary: { total: 0, critical: 0, high: 0, moderate: 0, low: 0 },
       });
 
       vi.mocked(StaticAnalyzer).prototype.runStaticAnalysis = vi.fn().mockResolvedValue({
@@ -385,8 +405,8 @@ processWithSideEffects();`,
         metrics: {
           complexity: 3,
           maintainability: 60,
-          duplication: 0
-        }
+          duplication: 0,
+        },
       });
 
       const result = await validator.validateGeneratedCode(untestedCode);

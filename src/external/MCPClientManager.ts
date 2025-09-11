@@ -92,7 +92,7 @@ export class MCPClientManager {
     const knownWorkingServers = new Set(['filesystem', 'github', 'testsprite', 'playwright']);
 
     for (const [key, server] of this.servers) {
-      console.log(`🔍 Checking ${server.name}...`);
+      // Checking server availability
 
       if (server.fallbackBroker === 'Context7Broker') {
         // We know Context7 package doesn't exist

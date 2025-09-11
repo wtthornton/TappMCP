@@ -1,68 +1,146 @@
 #!/usr/bin/env node
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { spawn } from 'child_process';
+import { writeFileSync } from 'fs';
+import { join } from 'path';
 
 /**
- * MCP HTML Generation Test: Real Web Page Creation
+ * MCP Stdio Test: Real Web Page Creation
  *
- * This test connects to the deployed TappMCP Docker container and tests
- * the actual MCP server's ability to generate HTML code.
+ * This test connects to the deployed TappMCP Docker container via stdio
+ * and tests the actual MCP server's ability to generate HTML code.
  *
  * Test Prompt: "Create me an HTML page that has a header, a footer, and says
  * 'I'm the best' in the body. Make sure it produces that code for you."
  */
 
-// MCP Client configuration
-const MCP_CONFIG = {
-  serverUrl: 'http://localhost:8080', // TappMCP Docker container port
-  timeout: 30000, // 30 second timeout
-  retries: 3,
-};
+// MCP Client for stdio communication
+class MCPClient {
+  private process: any = null;
+  private messageId = 0;
+  private pendingRequests = new Map<number, { resolve: Function; reject: Function }>();
 
-// MCP Tool call function
-async function callMCPTool(
-  toolName: string,
-  input: any
-): Promise<{
-  success: boolean;
-  data?: any;
-  error?: string;
-}> {
-  try {
+  async connect() {
+    return new Promise<void>((resolve, reject) => {
+      // Connect to the MCP server via stdio
+      this.process = spawn('node', ['dist/server.js'], {
+        stdio: ['pipe', 'pipe', 'pipe'],
+        cwd: process.cwd(),
+      });
+
+      this.process.stdout.on('data', (data: Buffer) => {
+        try {
+          const lines = data
+            .toString()
+            .split('\n')
+            .filter(line => line.trim());
+          for (const line of lines) {
+            const message = JSON.parse(line);
+            this.handleMessage(message);
+          }
+        } catch (error) {
+          console.error('Error parsing MCP response:', error);
+        }
+      });
+
+      this.process.stderr.on('data', (data: Buffer) => {
+        console.error('MCP stderr:', data.toString());
+      });
+
+      this.process.on('close', (code: number) => {
+        console.log(`MCP process exited with code ${code}`);
+      });
+
+      this.process.on('error', (error: Error) => {
+        console.error('MCP process error:', error);
+        reject(error);
+      });
+
+      // Initialize MCP connection
+      setTimeout(() => {
+        this.sendMessage({
+          jsonrpc: '2.0',
+          id: this.messageId++,
+          method: 'initialize',
+          params: {
+            protocolVersion: '2024-11-05',
+            capabilities: {
+              tools: {},
+            },
+            clientInfo: {
+              name: 'test-client',
+              version: '1.0.0',
+            },
+          },
+        })
+          .then(() => {
+            resolve();
+          })
+          .catch(reject);
+      }, 1000);
+    });
+  }
+
+  private handleMessage(message: any) {
+    if (message.id && this.pendingRequests.has(message.id)) {
+      const { resolve, reject } = this.pendingRequests.get(message.id)!;
+      this.pendingRequests.delete(message.id);
+
+      if (message.error) {
+        reject(new Error(message.error.message || 'MCP Error'));
+      } else {
+        resolve(message.result);
+      }
+    }
+  }
+
+  private sendMessage(message: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const id = this.messageId++;
+      message.id = id;
+
+      this.pendingRequests.set(id, { resolve, reject });
+
+      this.process.stdin.write(`${JSON.stringify(message)}\n`);
+
+      // Timeout after 30 seconds
+      setTimeout(() => {
+        if (this.pendingRequests.has(id)) {
+          this.pendingRequests.delete(id);
+          reject(new Error('Request timeout'));
+        }
+      }, 30000);
+    });
+  }
+
+  async callTool(toolName: string, arguments_: any): Promise<any> {
     console.log(`🔧 Calling MCP Tool: ${toolName}`);
-    console.log(`📝 Input:`, JSON.stringify(input, null, 2));
+    console.log(`📝 Arguments:`, JSON.stringify(arguments_, null, 2));
 
-    const response = await fetch(`${MCP_CONFIG.serverUrl}/mcp/${toolName}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+    const result = await this.sendMessage({
+      jsonrpc: '2.0',
+      method: 'tools/call',
+      params: {
+        name: toolName,
+        arguments: arguments_,
       },
-      body: JSON.stringify(input),
-      signal: AbortSignal.timeout(MCP_CONFIG.timeout),
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const result = await response.json();
     console.log(`✅ MCP Response:`, JSON.stringify(result, null, 2));
+    return result;
+  }
 
-    return {
-      success: result.success || false,
-      data: result.data,
-      error: result.error,
-    };
-  } catch (error) {
-    console.error(`❌ MCP Tool Call Failed:`, error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    };
+  async disconnect() {
+    if (this.process) {
+      this.process.kill();
+      this.process = null;
+    }
   }
 }
 
-describe('MCP HTML Generation Test: Real Web Page Creation', () => {
+describe('MCP Stdio HTML Generation Test', () => {
+  let mcpClient: MCPClient;
   let projectId: string;
   let generatedCode: any;
   let testResults: {
@@ -89,10 +167,16 @@ describe('MCP HTML Generation Test: Real Web Page Creation', () => {
       accessibility: false,
       performance: false,
     };
+
+    mcpClient = new MCPClient();
   });
 
-  afterAll(() => {
-    console.log('\n=== MCP HTML GENERATION TEST RESULTS ===');
+  afterAll(async () => {
+    if (mcpClient) {
+      await mcpClient.disconnect();
+    }
+
+    console.log('\n=== MCP STDIO HTML GENERATION TEST RESULTS ===');
     console.log('MCP Connection:', testResults.mcpConnection ? '✅ PASS' : '❌ FAIL');
     console.log(
       'Project Initialization:',
@@ -117,23 +201,13 @@ describe('MCP HTML Generation Test: Real Web Page Creation', () => {
     );
   });
 
-  it('should connect to deployed MCP server', async () => {
-    console.log('\n🧪 Testing: MCP Server Connection');
+  it('should connect to MCP server via stdio', async () => {
+    console.log('\n🧪 Testing: MCP Stdio Connection');
 
     try {
-      // Test basic connectivity
-      const response = await fetch(`${MCP_CONFIG.serverUrl}/health`, {
-        method: 'GET',
-        signal: AbortSignal.timeout(5000),
-      });
-
-      if (response.ok) {
-        console.log('✅ MCP Server is running and accessible');
-        testResults.mcpConnection = true;
-      } else {
-        console.log('❌ MCP Server responded with error:', response.status);
-        testResults.mcpConnection = false;
-      }
+      await mcpClient.connect();
+      console.log('✅ MCP Server connected via stdio');
+      testResults.mcpConnection = true;
     } catch (error) {
       console.log('❌ MCP Server connection failed:', error);
       testResults.mcpConnection = false;
@@ -142,10 +216,10 @@ describe('MCP HTML Generation Test: Real Web Page Creation', () => {
     expect(testResults.mcpConnection).toBe(true);
   });
 
-  it('should initialize project via MCP', async () => {
+  it('should initialize project via MCP stdio', async () => {
     console.log('\n🧪 Testing: MCP Project Initialization');
 
-    const beginResult = await callMCPTool('smart_begin', {
+    const beginResult = await mcpClient.callTool('smart_begin', {
       projectName: 'HTML Page Generator',
       description: 'Simple HTML page with header, footer, and body content',
       techStack: ['html', 'css', 'javascript'],
@@ -153,12 +227,17 @@ describe('MCP HTML Generation Test: Real Web Page Creation', () => {
       businessGoals: ['create simple web page', 'learn HTML basics', 'build portfolio'],
     });
 
-    expect(beginResult.success).toBe(true);
-    expect(beginResult.data).toBeDefined();
-    testResults.projectInitialization = beginResult.success;
+    // Parse MCP response structure
+    const responseData = beginResult.content?.[0]?.text;
+    expect(responseData).toBeDefined();
 
-    if (beginResult.success && beginResult.data) {
-      const data = beginResult.data as any;
+    const parsedData = JSON.parse(responseData);
+    expect(parsedData.success).toBe(true);
+    expect(parsedData.data).toBeDefined();
+    testResults.projectInitialization = parsedData.success;
+
+    if (parsedData.success && parsedData.data) {
+      const data = parsedData.data as any;
       projectId = data.projectId;
 
       console.log(`✅ Project initialized via MCP: ${data.projectId}`);
@@ -170,12 +249,12 @@ describe('MCP HTML Generation Test: Real Web Page Creation', () => {
     }
   });
 
-  it('should generate HTML page via MCP', async () => {
+  it('should generate HTML page via MCP stdio', async () => {
     console.log('\n🧪 Testing: MCP HTML Page Generation');
 
     expect(projectId).toBeDefined();
 
-    const writeResult = await callMCPTool('smart_write', {
+    const writeResult = await mcpClient.callTool('smart_write', {
       projectId,
       featureDescription:
         'Create me an HTML page that has a header, a footer, and says "I\'m the best" in the body',
@@ -194,12 +273,17 @@ describe('MCP HTML Generation Test: Real Web Page Creation', () => {
       },
     });
 
-    expect(writeResult.success).toBe(true);
-    expect(writeResult.data).toBeDefined();
-    testResults.htmlGeneration = writeResult.success;
+    // Parse MCP response structure
+    const responseData = writeResult.content?.[0]?.text;
+    expect(responseData).toBeDefined();
 
-    if (writeResult.success && writeResult.data) {
-      const data = writeResult.data as any;
+    const parsedData = JSON.parse(responseData);
+    expect(parsedData.success).toBe(true);
+    expect(parsedData.data).toBeDefined();
+    testResults.htmlGeneration = parsedData.success;
+
+    if (parsedData.success && parsedData.data) {
+      const data = parsedData.data as any;
       generatedCode = data.generatedCode;
 
       console.log(`✅ HTML page generated via MCP`);
@@ -310,6 +394,11 @@ describe('MCP HTML Generation Test: Real Web Page Creation', () => {
 
       console.log(`   - File Size: ${fileSize} characters`);
       console.log(`   - Is Lightweight: ${isLightweight ? '✅' : '❌'}`);
+
+      // Save the generated HTML file for inspection
+      const htmlPath = join(process.cwd(), 'generated-html-test.html');
+      writeFileSync(htmlPath, htmlFile.content);
+      console.log(`💾 Generated HTML saved to: ${htmlPath}`);
     } else {
       console.log('❌ No HTML file found in MCP generated code');
       testResults.structure = false;
@@ -317,12 +406,12 @@ describe('MCP HTML Generation Test: Real Web Page Creation', () => {
     }
   });
 
-  it('should document MCP test results', async () => {
-    console.log('\n🧪 Testing: MCP Results Documentation');
+  it('should document MCP stdio test results', async () => {
+    console.log('\n🧪 Testing: MCP Stdio Results Documentation');
 
     // Document all results for analysis (no pass/fail)
-    console.log('📊 MCP HTML Generation Analysis Summary:');
-    console.log('   - MCP Connection: Connected to deployed Docker container');
+    console.log('📊 MCP Stdio HTML Generation Analysis Summary:');
+    console.log('   - MCP Connection: Connected to deployed MCP server via stdio');
     console.log('   - Project initialization: Via MCP smart_begin tool');
     console.log('   - HTML generation: Via MCP smart_write tool');
     console.log('   - Code quality: Analysis of MCP-generated HTML');

@@ -65,7 +65,10 @@ export class ToolChainOptimizer {
             name: planDefinition.name,
             description: planDefinition.description || '',
             steps: finalSteps,
-            dependencies: Object.fromEntries(Array.from(dependencyGraph.entries()).map(([key, data]) => [key, Array.from(data.dependencies)])),
+            dependencies: Object.fromEntries(Array.from(dependencyGraph.entries()).map(([key, data]) => [
+                key,
+                Array.from(data.dependencies),
+            ])),
             optimization: {
                 enableParallel: this.config.maxConcurrentSteps > 1, // For test compatibility
                 enableParallelization: this.config.maxConcurrentSteps > 1, // For backward compatibility

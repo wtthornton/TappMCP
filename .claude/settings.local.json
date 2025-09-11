@@ -98,7 +98,16 @@
       "Bash(NODE_ENV=test npx vitest run src/tools/smart-finish.test.ts --reporter=basic)",
       "Bash(NODE_ENV=test npx vitest run --reporter=default --reporter-options=\"{\"\"summary\"\": false}\" src/core/simple-analyzer.test.ts src/core/context7-project-analyzer.test.ts src/core/code-validator.test.ts)",
       "Bash(NODE_ENV=test npx vitest run src/core/simple-analyzer.test.ts src/core/context7-project-analyzer.test.ts src/core/code-validator.test.ts)",
-      "Bash(NODE_ENV=test npx vitest run src/tools/smart-begin.test.ts src/tools/smart-write.test.ts)"
+      "Bash(NODE_ENV=test npx vitest run src/tools/smart-begin.test.ts src/tools/smart-write.test.ts)",
+      "Bash(mv:*)",
+      "Bash(/dev/null)",
+      "Bash(NODE_ENV=test npx vitest run src/tools/smart-write.test.ts --reporter=basic -t \"should generate ROLE-BASED TEMPLATES\")",
+      "Bash(NODE_ENV=test npx vitest run src/tools/smart-write.test.ts --reporter=basic -t \"should generate ROLE-BASED TEMPLATES\" --timeout=15000)",
+      "Bash(NODE_ENV=test npx vitest run src/intelligence/UnifiedCodeIntelligenceEngine.test.ts --reporter=basic)",
+      "Bash(NODE_ENV=test npx vitest run src/intelligence/UnifiedCodeIntelligenceEngine.test.ts --reporter=default --reporter-options='{\"\"summary\"\": false}' --timeout=15000)",
+      "Bash(NODE_ENV=test timeout 30s npx vitest run src/intelligence/UnifiedCodeIntelligenceEngine.test.ts)",
+      "Bash(NODE_ENV=test timeout 30s npx vitest run src/intelligence/UnifiedCodeIntelligenceEngine.test.ts -t \"should have all required category engines registered\")",
+      "Bash(NODE_ENV=test timeout 60s npm run test)"
     ],
     "deny": [],
     "ask": []

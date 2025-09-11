@@ -62,7 +62,7 @@ export class CodeValidator {
    */
   async validateGeneratedCode(
     generatedCode: GeneratedCode,
-    projectPath?: string
+    _projectPath?: string
   ): Promise<CodeValidationResult> {
     const startTime = Date.now();
 
@@ -73,7 +73,7 @@ export class CodeValidator {
       // Run validation in parallel
       const [securityResult, qualityResult] = await Promise.all([
         this.validateSecurity(tempValidationDir, generatedCode),
-        this.validateQuality(tempValidationDir, generatedCode)
+        this.validateQuality(tempValidationDir, generatedCode),
       ]);
 
       // Calculate overall score and recommendations
@@ -91,9 +91,8 @@ export class CodeValidator {
         security: securityResult,
         quality: qualityResult,
         recommendations,
-        overallScore
+        overallScore,
       };
-
     } catch (error) {
       console.warn('Code validation failed:', error);
 
@@ -102,17 +101,25 @@ export class CodeValidator {
         validationTime: Date.now() - startTime,
         security: {
           status: 'warning',
-          issues: [{ type: 'vulnerability', severity: 'medium', message: 'Validation failed - manual review required' }],
-          score: 50
+          issues: [
+            {
+              type: 'vulnerability',
+              severity: 'medium',
+              message: 'Validation failed - manual review required',
+            },
+          ],
+          score: 50,
         },
         quality: {
           status: 'warning',
-          issues: [{ type: 'syntax', severity: 'warning', message: 'Could not validate code quality' }],
+          issues: [
+            { type: 'syntax', severity: 'warning', message: 'Could not validate code quality' },
+          ],
           metrics: { complexity: 0, maintainability: 50, testability: 50 },
-          score: 50
+          score: 50,
         },
         recommendations: ['Manual code review recommended due to validation failure'],
-        overallScore: 50
+        overallScore: 50,
       };
     }
   }
@@ -141,10 +148,13 @@ export class CodeValidator {
         const packageJson = {
           name: 'temp-validation',
           version: '1.0.0',
-          dependencies: generatedCode.dependencies.reduce((acc, dep) => {
-            acc[dep] = '*';
-            return acc;
-          }, {} as Record<string, string>)
+          dependencies: generatedCode.dependencies.reduce(
+            (acc, dep) => {
+              acc[dep] = '*';
+              return acc;
+            },
+            {} as Record<string, string>
+          ),
         };
 
         await fs.writeFile(
@@ -164,7 +174,10 @@ export class CodeValidator {
   /**
    * Validate security of generated code
    */
-  private async validateSecurity(tempDir: string, generatedCode: GeneratedCode): Promise<CodeValidationResult['security']> {
+  private async validateSecurity(
+    tempDir: string,
+    generatedCode: GeneratedCode
+  ): Promise<CodeValidationResult['security']> {
     try {
       const securityScanner = new SecurityScanner(tempDir);
       const result = await securityScanner.runSecurityScan();
@@ -175,11 +188,14 @@ export class CodeValidator {
       const allIssues = [
         ...result.vulnerabilities.map(vuln => ({
           type: 'vulnerability' as const,
-          severity: vuln.severity,
+          severity:
+            vuln.severity === 'moderate'
+              ? 'medium'
+              : (vuln.severity as 'critical' | 'high' | 'medium' | 'low'),
           message: `${vuln.package}: ${vuln.description}`,
-          fix: vuln.fix
+          ...(vuln.fix && { fix: vuln.fix }),
         })),
-        ...codeIssues
+        ...codeIssues,
       ];
 
       const score = this.calculateSecurityScore(allIssues);
@@ -188,15 +204,16 @@ export class CodeValidator {
       return {
         status,
         issues: allIssues,
-        score
+        score,
       };
-
     } catch (error) {
       console.warn('Security validation failed:', error);
       return {
         status: 'warning',
-        issues: [{ type: 'vulnerability', severity: 'medium', message: 'Security validation incomplete' }],
-        score: 60
+        issues: [
+          { type: 'vulnerability', severity: 'medium', message: 'Security validation incomplete' },
+        ],
+        score: 60,
       };
     }
   }
@@ -204,7 +221,10 @@ export class CodeValidator {
   /**
    * Validate code quality
    */
-  private async validateQuality(tempDir: string, generatedCode: GeneratedCode): Promise<CodeValidationResult['quality']> {
+  private async validateQuality(
+    tempDir: string,
+    generatedCode: GeneratedCode
+  ): Promise<CodeValidationResult['quality']> {
     try {
       const staticAnalyzer = new StaticAnalyzer(tempDir);
       const result = await staticAnalyzer.runStaticAnalysis();
@@ -219,9 +239,9 @@ export class CodeValidator {
           message: issue.message,
           line: issue.line,
           column: issue.column,
-          fix: issue.fix
+          fix: issue.fix,
         })),
-        ...codeIssues
+        ...codeIssues,
       ];
 
       const score = this.calculateQualityScore(result.metrics, allIssues);
@@ -233,18 +253,17 @@ export class CodeValidator {
         metrics: {
           complexity: result.metrics.complexity,
           maintainability: result.metrics.maintainability,
-          testability: this.calculateTestability(generatedCode)
+          testability: this.calculateTestability(generatedCode),
         },
-        score
+        score,
       };
-
     } catch (error) {
       console.warn('Quality validation failed:', error);
       return {
         status: 'warning',
         issues: [{ type: 'syntax', severity: 'warning', message: 'Quality validation incomplete' }],
         metrics: { complexity: 0, maintainability: 50, testability: 50 },
-        score: 60
+        score: 60,
       };
     }
   }
@@ -252,13 +271,15 @@ export class CodeValidator {
   /**
    * Analyze code for security patterns
    */
-  private async analyzeCodeSecurityPatterns(generatedCode: GeneratedCode): Promise<Array<{
-    type: 'vulnerability' | 'pattern' | 'dependency';
-    severity: 'critical' | 'high' | 'medium' | 'low';
-    message: string;
-    line?: number;
-    fix?: string;
-  }>> {
+  private async analyzeCodeSecurityPatterns(generatedCode: GeneratedCode): Promise<
+    Array<{
+      type: 'vulnerability' | 'pattern' | 'dependency';
+      severity: 'critical' | 'high' | 'medium' | 'low';
+      message: string;
+      line?: number;
+      fix?: string;
+    }>
+  > {
     const issues: Array<{
       type: 'vulnerability' | 'pattern' | 'dependency';
       severity: 'critical' | 'high' | 'medium' | 'low';
@@ -278,7 +299,7 @@ export class CodeValidator {
             severity: 'high',
             message: 'Dangerous use of eval() or Function() constructor',
             line: index + 1,
-            fix: 'Use safer alternatives like JSON.parse() or specific parsing libraries'
+            fix: 'Use safer alternatives like JSON.parse() or specific parsing libraries',
           });
         }
 
@@ -288,17 +309,21 @@ export class CodeValidator {
             severity: 'medium',
             message: 'Potential XSS vulnerability with innerHTML',
             line: index + 1,
-            fix: 'Use textContent or properly sanitize HTML content'
+            fix: 'Use textContent or properly sanitize HTML content',
           });
         }
 
-        if (line.match(/password.*=.*['"][^'"]+['"]/i) || line.match(/api.*key.*=.*['"][^'"]+['"]/i) || line.match(/secret.*=.*['"][^'"]+['"]/i)) {
+        if (
+          line.match(/password.*=.*['"][^'"]+['"]/i) ||
+          line.match(/api.*key.*=.*['"][^'"]+['"]/i) ||
+          line.match(/secret.*=.*['"][^'"]+['"]/i)
+        ) {
           issues.push({
             type: 'vulnerability',
             severity: 'critical',
             message: 'Hardcoded credentials detected',
             line: index + 1,
-            fix: 'Use environment variables or secure configuration management'
+            fix: 'Use environment variables or secure configuration management',
           });
         }
 
@@ -308,7 +333,7 @@ export class CodeValidator {
             severity: 'low',
             message: 'Debug console.log statement in production code',
             line: index + 1,
-            fix: 'Remove console.log or use proper logging framework'
+            fix: 'Remove console.log or use proper logging framework',
           });
         }
       });
@@ -320,13 +345,15 @@ export class CodeValidator {
   /**
    * Analyze code for quality patterns
    */
-  private async analyzeCodeQualityPatterns(generatedCode: GeneratedCode): Promise<Array<{
-    type: 'syntax' | 'complexity' | 'style' | 'logic';
-    severity: 'error' | 'warning' | 'info';
-    message: string;
-    line?: number;
-    fix?: string;
-  }>> {
+  private async analyzeCodeQualityPatterns(generatedCode: GeneratedCode): Promise<
+    Array<{
+      type: 'syntax' | 'complexity' | 'style' | 'logic';
+      severity: 'error' | 'warning' | 'info';
+      message: string;
+      line?: number;
+      fix?: string;
+    }>
+  > {
     const issues: Array<{
       type: 'syntax' | 'complexity' | 'style' | 'logic';
       severity: 'error' | 'warning' | 'info';
@@ -346,7 +373,7 @@ export class CodeValidator {
             severity: 'info',
             message: 'Line too long (>120 characters)',
             line: index + 1,
-            fix: 'Break long lines for better readability'
+            fix: 'Break long lines for better readability',
           });
         }
 
@@ -356,30 +383,36 @@ export class CodeValidator {
             severity: 'warning',
             message: 'Use of "any" type reduces type safety',
             line: index + 1,
-            fix: 'Use specific types or unknown instead of any'
+            fix: 'Use specific types or unknown instead of any',
           });
         }
 
         // Check for deeply nested blocks (complexity)
         const indentation = line.match(/^(\s*)/)?.[1]?.length || 0;
-        if (indentation > 24) { // More than 6 levels of indentation (4 spaces each)
+        if (indentation > 24) {
+          // More than 6 levels of indentation (4 spaces each)
           issues.push({
             type: 'complexity',
             severity: 'warning',
             message: 'Deeply nested code block',
             line: index + 1,
-            fix: 'Extract nested logic into separate functions'
+            fix: 'Extract nested logic into separate functions',
           });
         }
 
         // Check for missing error handling in async functions
-        if (line.includes('await ') && !lines.slice(Math.max(0, index - 5), index + 5).some(l => l.includes('try') || l.includes('catch'))) {
+        if (
+          line.includes('await ') &&
+          !lines
+            .slice(Math.max(0, index - 5), index + 5)
+            .some(l => l.includes('try') || l.includes('catch'))
+        ) {
           issues.push({
             type: 'logic',
             severity: 'warning',
             message: 'Async operation without error handling',
             line: index + 1,
-            fix: 'Wrap await operations in try-catch blocks'
+            fix: 'Wrap await operations in try-catch blocks',
           });
         }
       });
@@ -394,11 +427,15 @@ export class CodeValidator {
   private calculateTestability(generatedCode: GeneratedCode): number {
     let score = 100;
 
-    const hasTests = generatedCode.files.some(f => f.path.includes('.test.') || f.path.includes('.spec.'));
+    const hasTests = generatedCode.files.some(
+      f => f.path.includes('.test.') || f.path.includes('.spec.')
+    );
     if (!hasTests) score -= 20;
 
     // Check for testable patterns
-    const codeFiles = generatedCode.files.filter(f => f.type !== 'test' && f.type !== 'documentation');
+    const codeFiles = generatedCode.files.filter(
+      f => f.type !== 'test' && f.type !== 'documentation'
+    );
     for (const file of codeFiles) {
       // Functions should be exported for testability
       if (!file.content.includes('export')) score -= 15;
@@ -425,10 +462,18 @@ export class CodeValidator {
 
     for (const issue of issues) {
       switch (issue.severity) {
-        case 'critical': score -= 25; break;
-        case 'high': score -= 15; break;
-        case 'medium': score -= 8; break;
-        case 'low': score -= 3; break;
+        case 'critical':
+          score -= 25;
+          break;
+        case 'high':
+          score -= 15;
+          break;
+        case 'medium':
+          score -= 8;
+          break;
+        case 'low':
+          score -= 3;
+          break;
       }
     }
 
@@ -443,9 +488,15 @@ export class CodeValidator {
 
     for (const issue of issues) {
       switch (issue.severity) {
-        case 'error': score -= 15; break;
-        case 'warning': score -= 8; break;
-        case 'info': score -= 3; break;
+        case 'error':
+          score -= 15;
+          break;
+        case 'warning':
+          score -= 8;
+          break;
+        case 'info':
+          score -= 3;
+          break;
       }
     }
 
@@ -460,7 +511,9 @@ export class CodeValidator {
   /**
    * Determine security status
    */
-  private determineSecurityStatus(issues: Array<{ severity: string }>): 'pass' | 'fail' | 'warning' {
+  private determineSecurityStatus(
+    issues: Array<{ severity: string }>
+  ): 'pass' | 'fail' | 'warning' {
     const hasCritical = issues.some(i => i.severity === 'critical');
     const hasHigh = issues.some(i => i.severity === 'high');
 
@@ -472,7 +525,10 @@ export class CodeValidator {
   /**
    * Determine quality status
    */
-  private determineQualityStatus(issues: Array<{ severity: string }>, metrics: any): 'pass' | 'fail' | 'warning' {
+  private determineQualityStatus(
+    issues: Array<{ severity: string }>,
+    metrics: any
+  ): 'pass' | 'fail' | 'warning' {
     const hasErrors = issues.some(i => i.severity === 'error');
     const hasWarnings = issues.filter(i => i.severity === 'warning').length;
 
@@ -495,10 +551,14 @@ export class CodeValidator {
     const highSecurity = security.issues.filter(i => i.severity === 'high');
 
     if (criticalSecurity.length > 0) {
-      recommendations.push(`🚨 CRITICAL: Fix ${criticalSecurity.length} critical security issues immediately`);
+      recommendations.push(
+        `🚨 CRITICAL: Fix ${criticalSecurity.length} critical security issues immediately`
+      );
     }
     if (highSecurity.length > 0) {
-      recommendations.push(`⚠️ Address ${highSecurity.length} high-priority security vulnerabilities`);
+      recommendations.push(
+        `⚠️ Address ${highSecurity.length} high-priority security vulnerabilities`
+      );
     }
 
     // Quality recommendations
@@ -509,7 +569,9 @@ export class CodeValidator {
       recommendations.push(`🔧 Fix ${qualityErrors.length} code quality errors`);
     }
     if (quality.metrics.complexity >= 15) {
-      recommendations.push(`📊 Reduce complexity from ${quality.metrics.complexity} to improve maintainability`);
+      recommendations.push(
+        `📊 Reduce complexity from ${quality.metrics.complexity} to improve maintainability`
+      );
     }
     if (quality.metrics.testability < 70) {
       recommendations.push(`🧪 Improve testability (current: ${quality.metrics.testability}%)`);
@@ -542,13 +604,18 @@ export class CodeValidator {
   /**
    * Quick validation for simple code snippets
    */
-  async quickValidate(code: string, type = 'typescript'): Promise<{ isValid: boolean; issues: string[]; score: number }> {
+  async quickValidate(
+    code: string,
+    type = 'typescript'
+  ): Promise<{ isValid: boolean; issues: string[]; score: number }> {
     const generatedCode: GeneratedCode = {
-      files: [{
-        path: `temp.${type === 'typescript' ? 'ts' : 'js'}`,
-        content: code,
-        type
-      }]
+      files: [
+        {
+          path: `temp.${type === 'typescript' ? 'ts' : 'js'}`,
+          content: code,
+          type,
+        },
+      ],
     };
 
     const result = await this.validateGeneratedCode(generatedCode);
@@ -557,9 +624,9 @@ export class CodeValidator {
       isValid: result.isValid,
       issues: [
         ...result.security.issues.map(i => `Security: ${i.message}`),
-        ...result.quality.issues.map(i => `Quality: ${i.message}`)
+        ...result.quality.issues.map(i => `Quality: ${i.message}`),
       ].slice(0, 10),
-      score: result.overallScore
+      score: result.overallScore,
     };
   }
 }

@@ -68,7 +68,7 @@ declare const CodePatternSchema: z.ZodObject<{
     pattern: string;
     id: string;
     description: string;
-    category: "function" | "testing" | "type" | "module" | "utility" | "class" | "control-flow" | "error-handling" | "async";
+    category: "function" | "testing" | "type" | "async" | "module" | "error-handling" | "utility" | "class" | "control-flow";
     name: string;
     metrics: {
         tokensPerUse: number;
@@ -78,18 +78,18 @@ declare const CodePatternSchema: z.ZodObject<{
     };
     complexity: "low" | "medium" | "high";
     dependencies: string[];
+    examples: string[];
     variables: {
         name: string;
         type: string;
         description?: string | undefined;
     }[];
-    examples: string[];
     abstractPattern: string;
 }, {
     pattern: string;
     id: string;
     description: string;
-    category: "function" | "testing" | "type" | "module" | "utility" | "class" | "control-flow" | "error-handling" | "async";
+    category: "function" | "testing" | "type" | "async" | "module" | "error-handling" | "utility" | "class" | "control-flow";
     name: string;
     metrics: {
         tokensPerUse: number;
@@ -99,12 +99,12 @@ declare const CodePatternSchema: z.ZodObject<{
     };
     complexity: "low" | "medium" | "high";
     dependencies: string[];
+    examples: string[];
     variables: {
         name: string;
         type: string;
         description?: string | undefined;
     }[];
-    examples: string[];
     abstractPattern: string;
 }>;
 declare const PatternSuggestionSchema: z.ZodObject<{

@@ -115,7 +115,10 @@ export class ApiResource extends MCPResource {
             const validatedConfig = this.schema.parse(config);
             // Check rate limiting
             if (validatedConfig.rateLimit) {
-                await this.checkRateLimit(validatedConfig.url, validatedConfig.rateLimit);
+                await this.checkRateLimit(validatedConfig.url, {
+                    requests: validatedConfig.rateLimit.requests || 100,
+                    window: validatedConfig.rateLimit.window || 60000,
+                });
             }
             // Execute request with retries
             const result = await this.executeWithRetries(validatedConfig, startTime);

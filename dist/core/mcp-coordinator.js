@@ -463,9 +463,9 @@ export class MCPCoordinator {
     /**
      * Update performance metrics
      */
-    updatePerformanceMetrics(totalTime, resultCount) {
+    updatePerformanceMetrics(_totalTime, _resultCount) {
         // Log performance metrics for monitoring
-        console.log(`MCP Knowledge Gathering: ${resultCount} results in ${totalTime}ms`);
+        // MCP Knowledge Gathering completed
         // Performance monitoring for MCP knowledge gathering
     }
     /**

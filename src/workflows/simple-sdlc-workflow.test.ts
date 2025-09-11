@@ -16,7 +16,76 @@ describe('SimpleSDLCWorkflow', () => {
   let workflow: SimpleSDLCWorkflow;
   const testProjectPath = './test-project';
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    // Set up mocks before creating workflow instance
+    const { SimpleAnalyzer } = await import('../core/simple-analyzer.js');
+    const { Context7ProjectAnalyzer } = await import('../core/context7-project-analyzer.js');
+    const { CodeValidator } = await import('../core/code-validator.js');
+
+    // Mock SimpleAnalyzer
+    vi.mocked(SimpleAnalyzer).prototype.runBasicAnalysis = vi.fn().mockResolvedValue({
+      projectPath: testProjectPath,
+      summary: {
+        overallScore: 85,
+      },
+      security: {
+        summary: {
+          total: 0,
+          critical: 0,
+          high: 0,
+          moderate: 0,
+          low: 0,
+        },
+        vulnerabilities: [],
+      },
+      static: {
+        metrics: {
+          complexity: 80,
+          maintainability: 80,
+          testability: 80,
+        },
+        issues: [],
+      },
+      project: {
+        detectedTechStack: ['typescript', 'node'],
+        projectStructure: {
+          files: ['src/index.ts', 'package.json'],
+          directories: ['src'],
+        },
+      },
+    });
+
+    // Mock Context7ProjectAnalyzer
+    vi.mocked(Context7ProjectAnalyzer).prototype.getProjectAwareContext = vi
+      .fn()
+      .mockResolvedValue({
+        topics: [],
+        data: [],
+      });
+
+    // Mock CodeValidator
+    vi.mocked(CodeValidator).prototype.validateGeneratedCode = vi.fn().mockResolvedValue({
+      isValid: true,
+      validationTime: 100,
+      overallScore: 95,
+      security: {
+        status: 'pass',
+        score: 98,
+        issues: [],
+      },
+      quality: {
+        status: 'pass',
+        score: 95,
+        issues: [],
+        metrics: {
+          complexity: 8,
+          maintainability: 85,
+          testability: 75,
+        },
+      },
+      recommendations: [],
+    });
+
     workflow = new SimpleSDLCWorkflow(testProjectPath);
   });
 
@@ -34,19 +103,34 @@ describe('SimpleSDLCWorkflow', () => {
       // Create mocks before importing
       const mockRunBasicAnalysis = vi.fn().mockResolvedValue({
         projectPath: testProjectPath,
-        overallScore: 85,
-        security: {
-          score: 90,
-          issues: []
+        summary: {
+          overallScore: 85,
         },
-        quality: {
-          score: 80,
-          issues: []
+        security: {
+          summary: {
+            total: 0,
+            critical: 0,
+            high: 0,
+            moderate: 0,
+            low: 0,
+          },
+          vulnerabilities: [],
+        },
+        static: {
+          metrics: {
+            complexity: 80,
+            maintainability: 80,
+            testability: 80,
+          },
+          issues: [],
         },
         project: {
-          technologies: ['typescript', 'node'],
-          estimatedSize: 500000
-        }
+          detectedTechStack: ['typescript', 'node'],
+          projectStructure: {
+            files: Array.from({ length: 150 }, (_, i) => `src/file${i}.ts`),
+            directories: ['src', 'tests', 'docs'],
+          },
+        },
       });
 
       // Mock the modules
@@ -56,14 +140,12 @@ describe('SimpleSDLCWorkflow', () => {
 
       vi.mocked(SimpleAnalyzer).prototype.runBasicAnalysis = mockRunBasicAnalysis;
 
-      vi.mocked(Context7ProjectAnalyzer).prototype.getProjectAwareContext = vi.fn().mockResolvedValue({
-        topics: [
-          { title: 'Best Practices', content: 'Use TypeScript for type safety' }
-        ],
-        patterns: [
-          { type: 'best_practice', content: 'Follow clean code principles' }
-        ]
-      });
+      vi.mocked(Context7ProjectAnalyzer).prototype.getProjectAwareContext = vi
+        .fn()
+        .mockResolvedValue({
+          topics: [{ title: 'Best Practices', content: 'Use TypeScript for type safety' }],
+          patterns: [{ type: 'best_practice', content: 'Follow clean code principles' }],
+        });
 
       vi.mocked(CodeValidator).prototype.validateGeneratedCode = vi.fn().mockResolvedValue({
         isValid: true,
@@ -71,7 +153,7 @@ describe('SimpleSDLCWorkflow', () => {
         security: {
           status: 'pass',
           score: 92,
-          issues: []
+          issues: [],
         },
         quality: {
           status: 'pass',
@@ -79,22 +161,22 @@ describe('SimpleSDLCWorkflow', () => {
           metrics: {
             complexity: 5,
             maintainability: 90,
-            testability: 80
-          }
+            testability: 80,
+          },
         },
-        recommendations: []
+        recommendations: [],
       });
 
       const request = {
         description: 'User Authentication Service',
-        features: ['login', 'logout', 'registration']
+        features: ['login', 'logout', 'registration'],
       };
 
       const options: Partial<WorkflowOptions> = {
         userRole: 'developer',
         qualityLevel: 'standard',
         enableContext7: true,
-        enableValidation: true
+        enableValidation: true,
       };
 
       const result = await workflow.executeWorkflow(testProjectPath, request, options);
@@ -124,14 +206,16 @@ describe('SimpleSDLCWorkflow', () => {
         quality: { score: 85, issues: [] },
         project: {
           technologies: ['typescript', 'vitest'],
-          estimatedSize: 300000
-        }
+          estimatedSize: 300000,
+        },
       });
 
-      vi.mocked(Context7ProjectAnalyzer).prototype.getProjectAwareContext = vi.fn().mockResolvedValue({
-        topics: [],
-        patterns: []
-      });
+      vi.mocked(Context7ProjectAnalyzer).prototype.getProjectAwareContext = vi
+        .fn()
+        .mockResolvedValue({
+          topics: [],
+          data: [],
+        });
 
       vi.mocked(CodeValidator).prototype.validateGeneratedCode = vi.fn().mockResolvedValue({
         isValid: true,
@@ -140,19 +224,19 @@ describe('SimpleSDLCWorkflow', () => {
         quality: {
           status: 'pass',
           score: 85,
-          metrics: { complexity: 3, maintainability: 95, testability: 90 }
+          metrics: { complexity: 3, maintainability: 95, testability: 90 },
         },
-        recommendations: []
+        recommendations: [],
       });
 
       const request = {
         description: 'Payment Processing',
-        features: ['credit-card', 'paypal', 'refunds']
+        features: ['credit-card', 'paypal', 'refunds'],
       };
 
       const options: Partial<WorkflowOptions> = {
         userRole: 'qa-engineer',
-        qualityLevel: 'enterprise'
+        qualityLevel: 'enterprise',
       };
 
       const result = await workflow.executeWorkflow(testProjectPath, request, options);
@@ -176,19 +260,42 @@ describe('SimpleSDLCWorkflow', () => {
 
       vi.mocked(SimpleAnalyzer).prototype.runBasicAnalysis = vi.fn().mockResolvedValue({
         projectPath: testProjectPath,
-        overallScore: 85,
-        security: { score: 88, issues: [] },
-        quality: { score: 82, issues: [] },
+        summary: {
+          overallScore: 85,
+        },
+        security: {
+          summary: {
+            total: 0,
+            critical: 0,
+            high: 0,
+            moderate: 0,
+            low: 0,
+          },
+          vulnerabilities: [],
+        },
+        static: {
+          metrics: {
+            complexity: 82,
+            maintainability: 82,
+            testability: 82,
+          },
+          issues: [],
+        },
         project: {
-          technologies: ['node', 'express', 'docker'],
-          estimatedSize: 1500000 // Large project
-        }
+          detectedTechStack: ['node', 'express', 'docker'],
+          projectStructure: {
+            files: Array.from({ length: 150 }, (_, i) => `src/file${i}.ts`),
+            directories: ['src', 'tests', 'docs'],
+          },
+        },
       });
 
-      vi.mocked(Context7ProjectAnalyzer).prototype.getProjectAwareContext = vi.fn().mockResolvedValue({
-        topics: [],
-        patterns: []
-      });
+      vi.mocked(Context7ProjectAnalyzer).prototype.getProjectAwareContext = vi
+        .fn()
+        .mockResolvedValue({
+          topics: [],
+          data: [],
+        });
 
       vi.mocked(CodeValidator).prototype.validateGeneratedCode = vi.fn().mockResolvedValue({
         isValid: true,
@@ -197,22 +304,24 @@ describe('SimpleSDLCWorkflow', () => {
         quality: {
           status: 'pass',
           score: 82,
-          metrics: { complexity: 8, maintainability: 85, testability: 75 }
+          metrics: { complexity: 8, maintainability: 85, testability: 75 },
         },
-        recommendations: []
+        recommendations: [],
       });
 
       const request = {
         description: 'API Gateway',
-        features: ['routing', 'rate-limiting', 'authentication']
+        features: ['routing', 'rate-limiting', 'authentication'],
       };
 
       const options: Partial<WorkflowOptions> = {
         userRole: 'operations-engineer',
-        qualityLevel: 'enterprise'
+        qualityLevel: 'enterprise',
       };
 
-      const result = await workflow.executeWorkflow(testProjectPath, request, options);
+      // Create a new workflow instance after setting up the mock
+      const deploymentWorkflow = new SimpleSDLCWorkflow(testProjectPath);
+      const result = await deploymentWorkflow.executeWorkflow(testProjectPath, request, options);
 
       expect(result.success).toBe(true);
       expect(result.generatedCode!.files).toHaveLength(2); // Main implementation + deployment config
@@ -239,18 +348,18 @@ describe('SimpleSDLCWorkflow', () => {
         quality: { score: 86, issues: [] },
         project: {
           technologies: ['react', 'typescript'],
-          estimatedSize: 800000
-        }
+          estimatedSize: 800000,
+        },
       });
 
-      vi.mocked(Context7ProjectAnalyzer).prototype.getProjectAwareContext = vi.fn().mockResolvedValue({
-        topics: [
-          { title: 'Business Logic', content: 'Focus on user experience and conversion rates' }
-        ],
-        patterns: [
-          { type: 'business_pattern', content: 'Implement analytics tracking' }
-        ]
-      });
+      vi.mocked(Context7ProjectAnalyzer).prototype.getProjectAwareContext = vi
+        .fn()
+        .mockResolvedValue({
+          topics: [
+            { title: 'Business Logic', content: 'Focus on user experience and conversion rates' },
+          ],
+          patterns: [{ type: 'business_pattern', content: 'Implement analytics tracking' }],
+        });
 
       vi.mocked(CodeValidator).prototype.validateGeneratedCode = vi.fn().mockResolvedValue({
         isValid: true,
@@ -259,19 +368,19 @@ describe('SimpleSDLCWorkflow', () => {
         quality: {
           status: 'pass',
           score: 86,
-          metrics: { complexity: 6, maintainability: 88, testability: 82 }
+          metrics: { complexity: 6, maintainability: 88, testability: 82 },
         },
-        recommendations: []
+        recommendations: [],
       });
 
       const request = {
         description: 'Customer Dashboard',
-        features: ['analytics', 'reporting', 'user-management']
+        features: ['analytics', 'reporting', 'user-management'],
       };
 
       const options: Partial<WorkflowOptions> = {
         userRole: 'product-strategist',
-        qualityLevel: 'standard'
+        qualityLevel: 'standard',
       };
 
       const result = await workflow.executeWorkflow(testProjectPath, request, options);
@@ -288,19 +397,22 @@ describe('SimpleSDLCWorkflow', () => {
     });
 
     it('should handle analysis phase failure gracefully', async () => {
-      // Mock analysis failure
+      // Mock analysis failure - override the beforeEach mock
       const { SimpleAnalyzer } = await import('../core/simple-analyzer.js');
 
-      vi.mocked(SimpleAnalyzer).prototype.runBasicAnalysis = vi.fn().mockRejectedValue(
-        new Error('Analysis scanner failed')
-      );
+      vi.mocked(SimpleAnalyzer).prototype.runBasicAnalysis = vi
+        .fn()
+        .mockRejectedValue(new Error('Analysis scanner failed'));
+
+      // Create a new workflow instance after setting up the failure mock
+      const failureWorkflow = new SimpleSDLCWorkflow(testProjectPath);
 
       const request = {
         description: 'Test Service',
-        features: ['basic-functionality']
+        features: ['basic-functionality'],
       };
 
-      const result = await workflow.executeWorkflow(testProjectPath, request);
+      const result = await failureWorkflow.executeWorkflow(testProjectPath, request);
 
       expect(result.success).toBe(false);
       expect(result.phases.analysis.success).toBe(false);
@@ -320,8 +432,8 @@ describe('SimpleSDLCWorkflow', () => {
         quality: { score: 75, issues: [] },
         project: {
           technologies: ['javascript'],
-          estimatedSize: 200000
-        }
+          estimatedSize: 200000,
+        },
       });
 
       vi.mocked(CodeValidator).prototype.validateGeneratedCode = vi.fn().mockResolvedValue({
@@ -331,19 +443,19 @@ describe('SimpleSDLCWorkflow', () => {
         quality: {
           status: 'pass',
           score: 75,
-          metrics: { complexity: 4, maintainability: 80, testability: 70 }
+          metrics: { complexity: 4, maintainability: 80, testability: 70 },
         },
-        recommendations: []
+        recommendations: [],
       });
 
       const request = {
         description: 'Simple Service',
-        features: ['basic']
+        features: ['basic'],
       };
 
       const options: Partial<WorkflowOptions> = {
         enableContext7: false,
-        enableValidation: true
+        enableValidation: true,
       };
 
       const result = await workflow.executeWorkflow(testProjectPath, request, options);
@@ -361,28 +473,51 @@ describe('SimpleSDLCWorkflow', () => {
 
       vi.mocked(SimpleAnalyzer).prototype.runBasicAnalysis = vi.fn().mockResolvedValue({
         projectPath: testProjectPath,
-        overallScore: 85,
-        security: { score: 88, issues: [] },
-        quality: { score: 82, issues: [] },
+        summary: {
+          overallScore: 85,
+        },
+        security: {
+          summary: {
+            total: 0,
+            critical: 0,
+            high: 0,
+            moderate: 0,
+            low: 0,
+          },
+          vulnerabilities: [],
+        },
+        static: {
+          metrics: {
+            complexity: 82,
+            maintainability: 82,
+            testability: 82,
+          },
+          issues: [],
+        },
         project: {
-          technologies: ['typescript'],
-          estimatedSize: 400000
-        }
+          detectedTechStack: ['typescript'],
+          projectStructure: {
+            files: ['src/index.ts', 'package.json'],
+            directories: ['src'],
+          },
+        },
       });
 
-      vi.mocked(Context7ProjectAnalyzer).prototype.getProjectAwareContext = vi.fn().mockResolvedValue({
-        topics: [],
-        patterns: []
-      });
+      vi.mocked(Context7ProjectAnalyzer).prototype.getProjectAwareContext = vi
+        .fn()
+        .mockResolvedValue({
+          topics: [],
+          data: [],
+        });
 
       const request = {
         description: 'Basic Service',
-        features: ['core']
+        features: ['core'],
       };
 
       const options: Partial<WorkflowOptions> = {
         enableContext7: true,
-        enableValidation: false
+        enableValidation: false,
       };
 
       const result = await workflow.executeWorkflow(testProjectPath, request, options);
@@ -407,14 +542,16 @@ describe('SimpleSDLCWorkflow', () => {
         quality: { score: 88, issues: [] },
         project: {
           technologies: ['typescript'],
-          estimatedSize: 600000
-        }
+          estimatedSize: 600000,
+        },
       });
 
-      vi.mocked(Context7ProjectAnalyzer).prototype.getProjectAwareContext = vi.fn().mockResolvedValue({
-        topics: [],
-        patterns: []
-      });
+      vi.mocked(Context7ProjectAnalyzer).prototype.getProjectAwareContext = vi
+        .fn()
+        .mockResolvedValue({
+          topics: [],
+          data: [],
+        });
 
       vi.mocked(CodeValidator).prototype.validateGeneratedCode = vi.fn().mockResolvedValue({
         isValid: true,
@@ -423,20 +560,20 @@ describe('SimpleSDLCWorkflow', () => {
         quality: {
           status: 'pass',
           score: 88,
-          metrics: { complexity: 3, maintainability: 92, testability: 85 }
+          metrics: { complexity: 3, maintainability: 92, testability: 85 },
         },
-        recommendations: []
+        recommendations: [],
       });
 
       const request = {
         description: 'Feature Service',
-        features: ['feature1', 'feature2']
+        features: ['feature1', 'feature2'],
       };
 
       const options: Partial<WorkflowOptions> = {
         userRole: 'developer',
         generateTests: true,
-        generateDocumentation: true
+        generateDocumentation: true,
       };
 
       const result = await workflow.executeWorkflow(testProjectPath, request, options);
@@ -464,14 +601,16 @@ describe('SimpleSDLCWorkflow', () => {
         quality: { score: 92, issues: [] },
         project: {
           technologies: ['typescript'],
-          estimatedSize: 500000
-        }
+          estimatedSize: 500000,
+        },
       });
 
-      vi.mocked(Context7ProjectAnalyzer).prototype.getProjectAwareContext = vi.fn().mockResolvedValue({
-        topics: [],
-        patterns: []
-      });
+      vi.mocked(Context7ProjectAnalyzer).prototype.getProjectAwareContext = vi
+        .fn()
+        .mockResolvedValue({
+          topics: [],
+          data: [],
+        });
 
       vi.mocked(CodeValidator).prototype.validateGeneratedCode = vi.fn().mockResolvedValue({
         isValid: true,
@@ -480,13 +619,13 @@ describe('SimpleSDLCWorkflow', () => {
         quality: {
           status: 'pass',
           score: 92,
-          metrics: { complexity: 2, maintainability: 95, testability: 90 }
+          metrics: { complexity: 2, maintainability: 95, testability: 90 },
         },
-        recommendations: []
+        recommendations: [],
       });
 
       const request = {
-        description: 'High Quality Service'
+        description: 'High Quality Service',
       };
 
       const result = await workflow.executeWorkflow(testProjectPath, request);

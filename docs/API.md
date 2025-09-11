@@ -293,6 +293,60 @@ Coordinate complex multi-step workflows with role-based orchestration.
 }
 ```
 
+### smart-vibe 🎵 Natural Language Interface
+Full VibeTapp natural language interface for Cursor integration with context management, role switching, and rich responses.
+
+**Input:**
+```typescript
+{
+  command: string;  // Natural language command (e.g., "make me a todo app", "check my code")
+  options?: {
+    role?: 'developer' | 'designer' | 'qa-engineer' | 'operations-engineer' | 'product-strategist';
+    quality?: 'basic' | 'standard' | 'enterprise' | 'production';
+    verbosity?: 'minimal' | 'standard' | 'detailed';
+    mode?: 'basic' | 'advanced' | 'power';
+  };
+}
+```
+
+**Output:**
+```typescript
+{
+  content: Array<{
+    type: 'text';
+    text: string; // Formatted response with emojis, markdown, and rich content
+  }>;
+  isError?: boolean;
+}
+```
+
+**Examples:**
+```typescript
+// Project creation
+smart_vibe "make me a React todo app with TypeScript"
+
+// Code generation
+smart_vibe "write a login function" { role: "developer", quality: "enterprise" }
+
+// Quality checking
+smart_vibe "check my code quality" { role: "qa-engineer", verbosity: "detailed" }
+
+// Code improvement
+smart_vibe "improve this function" { role: "developer", quality: "production" }
+
+// Deployment
+smart_vibe "ship my app" { role: "operations-engineer" }
+```
+
+**Features:**
+- **Natural Language Processing**: Converts plain English to tool calls
+- **Context Management**: Maintains state across multiple calls
+- **Role Switching**: Automatically applies role-based configurations
+- **Rich Responses**: Formatted with emojis, markdown, and next steps
+- **Error Handling**: User-friendly error messages with suggestions
+- **Tool Orchestration**: Automatically calls appropriate smart tools
+- **Learning Content**: Provides tips and best practices
+
 ## Error Handling
 
 All tools return standardized error responses:

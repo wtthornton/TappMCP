@@ -33,12 +33,12 @@ export declare const ContextEntrySchema: z.ZodObject<{
     version: number;
     content: string;
     timestamp: Date;
+    metadata: Record<string, any>;
+    compressed: boolean;
     toolName: string;
     sessionId: string;
     contextType: "intermediate" | "metadata" | "input" | "output";
-    metadata: Record<string, any>;
     tokens: number;
-    compressed: boolean;
 }, {
     id: string;
     content: string;
@@ -50,8 +50,8 @@ export declare const ContextEntrySchema: z.ZodObject<{
     tags?: string[] | undefined;
     version?: number | undefined;
     metadata?: Record<string, any> | undefined;
-    tokens?: number | undefined;
     compressed?: boolean | undefined;
+    tokens?: number | undefined;
 }>;
 export type ContextEntry = z.infer<typeof ContextEntrySchema>;
 /**
@@ -66,17 +66,17 @@ export declare const StorageConfigSchema: z.ZodObject<{
     storageDirectory: z.ZodDefault<z.ZodString>;
     compressionLevel: z.ZodDefault<z.ZodNumber>;
 }, "strip", z.ZodTypeAny, {
+    compressionThreshold: number;
     maxMemoryEntries: number;
     maxDiskEntries: number;
-    compressionThreshold: number;
     archiveAfterDays: number;
     autoCleanupEnabled: boolean;
     storageDirectory: string;
     compressionLevel: number;
 }, {
+    compressionThreshold?: number | undefined;
     maxMemoryEntries?: number | undefined;
     maxDiskEntries?: number | undefined;
-    compressionThreshold?: number | undefined;
     archiveAfterDays?: number | undefined;
     autoCleanupEnabled?: boolean | undefined;
     storageDirectory?: string | undefined;
@@ -115,11 +115,11 @@ export declare const SearchQuerySchema: z.ZodObject<{
     tags?: string[] | undefined;
     startDate?: Date | undefined;
     endDate?: Date | undefined;
+    limit?: number | undefined;
     toolName?: string | undefined;
     sessionId?: string | undefined;
     contextType?: "intermediate" | "metadata" | "input" | "output" | undefined;
     textSearch?: string | undefined;
-    limit?: number | undefined;
     sortBy?: "priority" | "timestamp" | "relevance" | "tokens" | undefined;
     sortOrder?: "asc" | "desc" | undefined;
 }>;

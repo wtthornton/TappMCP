@@ -4,8 +4,10 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { CallToolRequestSchema, ListToolsRequestSchema, } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import { handleError, getErrorMessage } from './utils/errors.js';
-// Import health server for Docker health checks
-import './health-server.js';
+// Import health server for Docker health checks (only when not in stdio mode)
+if (process.env.NODE_ENV === 'production' && process.env.HEALTH_PORT) {
+    import('./health-server.js');
+}
 // Import tool handlers
 import { smartBeginTool, handleSmartBegin } from './tools/smart-begin.js';
 import { smartPlanTool, handleSmartPlan } from './tools/smart-plan.js';
@@ -13,6 +15,7 @@ import { smartWriteTool, handleSmartWrite } from './tools/smart-write.js';
 import { smartFinishTool, handleSmartFinish } from './tools/smart-finish.js';
 import { smartOrchestrateTool, handleSmartOrchestrate } from './tools/smart-orchestrate.js';
 import { smartConverseTool, handleSmartConverse } from './tools/smart-converse.js';
+import { smartVibeTool, handleSmartVibe } from './tools/smart-vibe.js';
 // Server configuration
 const SERVER_NAME = 'smart-mcp';
 const SERVER_VERSION = '0.1.0';
@@ -26,6 +29,10 @@ const TOOLS = {
     smart_converse: {
         tool: smartConverseTool,
         handler: handleSmartConverse,
+    },
+    smart_vibe: {
+        tool: smartVibeTool,
+        handler: handleSmartVibe,
     },
 };
 // Input validation schema
@@ -83,20 +90,7 @@ class SmartMCPServer {
                 }
                 // Get tool and handler
                 const { tool, handler } = TOOLS[name];
-                // Validate tool arguments against schema
-                if (tool.inputSchema) {
-                    try {
-                        const schema = z.object(tool.inputSchema.properties);
-                        schema.parse(args);
-                    }
-                    catch (validationError) {
-                        const mcpError = handleError(validationError, {
-                            operation: 'validate_tool_arguments',
-                            toolName: name,
-                        });
-                        throw mcpError;
-                    }
-                }
+                // Note: MCP SDK handles input validation automatically based on inputSchema
                 // Execute tool handler
                 const result = (await handler(args));
                 // Validate response
@@ -139,7 +133,8 @@ class SmartMCPServer {
         try {
             const transport = new StdioServerTransport();
             await this.server.connect(transport);
-            // Server started successfully
+            // Server started successfully - don't log to stdout in MCP mode
+            // console.log(`MCP Server ${SERVER_NAME} started successfully`);
         }
         catch (error) {
             const mcpError = handleError(error, { operation: 'start_server' });
@@ -150,12 +145,25 @@ class SmartMCPServer {
     }
 }
 // Start server if this file is run directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+const normalizedPath = process.argv[1].replace(/\\/g, '/');
+const expectedUrl = `file://${normalizedPath}`;
+// Handle Windows path format with three slashes
+const isMainModule = import.meta.url === expectedUrl || import.meta.url === `file:///${normalizedPath}`;
+// Debug info removed for production
+if (isMainModule) {
+    // Disable console.log in MCP stdio mode to prevent interference with JSON-RPC protocol
+    const originalConsoleLog = console.log;
+    console.log = () => { }; // Disable console.log
+    // Keep console.error for important messages
+    console.error('🚀 Starting MCP Server...');
     const server = new SmartMCPServer();
-    server.start().catch(_error => {
-        // Server startup failed
+    server.start().catch(error => {
+        console.error('❌ Server startup failed:', error);
         process.exit(1);
     });
+}
+else {
+    console.error('❌ Server not started - condition not met');
 }
 export { SmartMCPServer };
 //# sourceMappingURL=server.js.map

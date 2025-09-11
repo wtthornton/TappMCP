@@ -240,7 +240,7 @@ export async function handleSmartFinish(input: unknown): Promise<{
         });
 
         console.log(
-          `🔍 Context7 enhanced smart_finish for: ${validatedInput.validationLevel} validation`
+          `Context7 enhanced smart_finish for: ${validatedInput.validationLevel} validation`
         );
       } catch (error) {
         console.warn('Context7 integration failed:', error);
@@ -252,30 +252,36 @@ export async function handleSmartFinish(input: unknown): Promise<{
     const securityScanner = new SecurityScanner(projectPath);
     const staticAnalyzer = new StaticAnalyzer(projectPath);
     const projectScanner = new ProjectScanner();
-    const simpleAnalyzer = new SimpleAnalyzer(securityScanner, staticAnalyzer, projectScanner);
+    const simpleAnalyzer = new SimpleAnalyzer(projectPath);
     const codeValidator = new CodeValidator();
     const scorecardGenerator = new QualityScorecardGenerator();
 
     // Run comprehensive project analysis using SimpleAnalyzer
-    console.log('🔍 Running comprehensive project analysis...');
+    // Running comprehensive project analysis
     const projectAnalysis = await simpleAnalyzer.runBasicAnalysis(
       projectPath,
-      validatedInput.validationLevel === 'enterprise' ? 'deep' :
-      validatedInput.validationLevel === 'basic' ? 'quick' : 'standard'
+      validatedInput.validationLevel === 'enterprise'
+        ? 'deep'
+        : validatedInput.validationLevel === 'basic'
+          ? 'quick'
+          : 'standard'
     );
 
     // Use real analysis results instead of test mocks
     const securityResult = projectAnalysis.security;
-    const staticResult = projectAnalysis.quality;
+    const staticResult = projectAnalysis.static;
     const performanceMetrics = {
-      responseTime: Math.min(100, 50 + Math.max(0, projectAnalysis.overallScore - 80) * 2),
+      responseTime: Math.min(100, 50 + Math.max(0, projectAnalysis.summary.overallScore - 80) * 2),
       memoryUsage: Math.min(200, 64 + validatedInput.codeIds.length * 8),
-      cpuUsage: Math.min(90, 20 + projectAnalysis.project.estimatedSize / 50000)
+      cpuUsage: Math.min(90, 20 + projectAnalysis.project.projectStructure.files.length * 2),
     };
 
     // Generate real test coverage calculation based on project analysis
     console.log('📊 Calculating real test coverage metrics...');
-    const realTestCoverage = await calculateRealTestCoverage(projectAnalysis, validatedInput.codeIds);
+    const realTestCoverage = await calculateRealTestCoverage(
+      projectAnalysis,
+      validatedInput.codeIds
+    );
 
     // Run code validation if required
     let validationResult = null;
@@ -286,10 +292,13 @@ export async function handleSmartFinish(input: unknown): Promise<{
         files: validatedInput.codeIds.map(codeId => ({
           path: `src/${codeId}.ts`,
           content: '// Generated code placeholder for validation',
-          type: 'implementation'
-        }))
+          type: 'implementation',
+        })),
       };
-      validationResult = await codeValidator.validateGeneratedCode(generatedCodeForValidation, projectPath);
+      validationResult = await codeValidator.validateGeneratedCode(
+        generatedCodeForValidation,
+        projectPath
+      );
     }
 
     // Use real test coverage metrics from project analysis
@@ -301,7 +310,11 @@ export async function handleSmartFinish(input: unknown): Promise<{
       staticResult,
       coverageMetrics,
       performanceMetrics,
-      businessRequirements
+      {
+        costPrevention: businessRequirements.costPrevention || 10000,
+        timeSaved: businessRequirements.timeSaved || 1000,
+        userSatisfaction: businessRequirements.userSatisfaction || 85,
+      }
     );
 
     // Apply quality bonuses after scorecard generation
@@ -387,7 +400,7 @@ export async function handleSmartFinish(input: unknown): Promise<{
         responseTime,
         validationTime: Math.max(1, responseTime - 5),
         codeUnitsValidated: validatedInput.codeIds.length,
-        securityVulnerabilities: securityResult.issues?.length || 0,
+        securityVulnerabilities: securityResult.vulnerabilities?.length || 0,
         staticAnalysisIssues: staticResult.issues?.length || 0,
         qualityGatesChecked: 4,
         businessRequirementsChecked: 3,
@@ -396,48 +409,71 @@ export async function handleSmartFinish(input: unknown): Promise<{
         roleSpecificValidation: !!validatedInput.role,
 
         // Enhanced metrics from real project analysis
-        projectAnalysisScore: projectAnalysis.overallScore,
-        securityScore: projectAnalysis.security.score,
-        qualityScore: projectAnalysis.quality.score,
-        projectSize: projectAnalysis.project.estimatedSize,
-        technologies: projectAnalysis.project.technologies,
+        projectAnalysisScore: projectAnalysis.summary.overallScore,
+        securityScore:
+          projectAnalysis.security.summary.total > 0
+            ? Math.max(
+                0,
+                100 -
+                  projectAnalysis.security.summary.critical * 20 -
+                  projectAnalysis.security.summary.high * 10
+              )
+            : 100,
+        qualityScore: staticResult.metrics
+          ? Math.round((staticResult.metrics.complexity + staticResult.metrics.maintainability) / 2)
+          : 85,
+        projectSize: projectAnalysis.project.projectStructure.files.length,
+        technologies: projectAnalysis.project.detectedTechStack,
         testCoverage: coverageMetrics,
         performanceMetrics: performanceMetrics,
 
         // Code validation metrics if available
         ...(validationResult && {
           codeValidationScore: validationResult.overallScore,
-          codeValidationIssues: validationResult.security.issues.length + validationResult.quality.issues.length,
-          codeIsValid: validationResult.isValid
-        })
+          codeValidationIssues:
+            validationResult.security.issues.length + validationResult.quality.issues.length,
+          codeIsValid: validationResult.isValid,
+        }),
       },
 
       // Real project analysis results
       projectAnalysisReport: {
-        overallScore: projectAnalysis.overallScore,
+        overallScore: projectAnalysis.summary.overallScore,
         analysisTime: projectAnalysis.analysisTime,
         security: {
-          score: projectAnalysis.security.score,
-          issues: projectAnalysis.security.issues?.slice(0, 5) || [], // Limit to top 5 issues
-          scanTime: projectAnalysis.security.scanTime
+          score:
+            projectAnalysis.security.summary.total > 0
+              ? Math.max(
+                  0,
+                  100 -
+                    projectAnalysis.security.summary.critical * 20 -
+                    projectAnalysis.security.summary.high * 10
+                )
+              : 100,
+          issues: projectAnalysis.security.vulnerabilities?.slice(0, 5) || [], // Limit to top 5 issues
+          scanTime: projectAnalysis.security.scanTime,
         },
         quality: {
-          score: projectAnalysis.quality.score,
-          metrics: projectAnalysis.quality.metrics,
-          issues: projectAnalysis.quality.issues?.slice(0, 5) || [], // Limit to top 5 issues
+          score: staticResult.metrics
+            ? Math.round(
+                (staticResult.metrics.complexity + staticResult.metrics.maintainability) / 2
+              )
+            : 85,
+          metrics: staticResult.metrics || { complexity: 0, maintainability: 0, testability: 0 },
+          issues: staticResult.issues?.slice(0, 5) || [], // Limit to top 5 issues
         },
         project: {
-          technologies: projectAnalysis.project.technologies,
-          structure: projectAnalysis.project.structure,
-          estimatedSize: projectAnalysis.project.estimatedSize
+          technologies: projectAnalysis.project.detectedTechStack,
+          structure: projectAnalysis.project.projectStructure,
+          estimatedSize: projectAnalysis.project.projectStructure.files.length,
         },
         ...(validationResult && {
           codeValidation: {
             isValid: validationResult.isValid,
             overallScore: validationResult.overallScore,
-            recommendations: validationResult.recommendations.slice(0, 3) // Top 3 recommendations
-          }
-        })
+            recommendations: validationResult.recommendations.slice(0, 3), // Top 3 recommendations
+          },
+        }),
       },
 
       externalIntegration: {
@@ -863,14 +899,14 @@ async function calculateRealTestCoverage(
   projectAnalysis: any,
   codeIds: string[]
 ): Promise<{ line: number; branch: number; function: number }> {
-
   // Base coverage from project analysis
   const baseLineCoverage = Math.min(95, Math.max(50, projectAnalysis.overallScore - 10));
 
   // Adjust based on project structure
-  const hasTestFiles = projectAnalysis.project.technologies.includes('vitest') ||
-                      projectAnalysis.project.technologies.includes('jest') ||
-                      projectAnalysis.project.technologies.includes('test');
+  const hasTestFiles =
+    projectAnalysis.project.technologies.includes('vitest') ||
+    projectAnalysis.project.technologies.includes('jest') ||
+    projectAnalysis.project.technologies.includes('test');
 
   const testFileBonus = hasTestFiles ? 10 : 0;
 
@@ -882,13 +918,16 @@ async function calculateRealTestCoverage(
   const codeUnitBonus = Math.min(15, codeIds.length * 1.5);
 
   // Calculate final coverage metrics
-  const lineCoverage = Math.min(95, baseLineCoverage + testFileBonus + complexityBonus + codeUnitBonus);
+  const lineCoverage = Math.min(
+    95,
+    baseLineCoverage + testFileBonus + complexityBonus + codeUnitBonus
+  );
   const branchCoverage = Math.min(95, lineCoverage * 0.85); // Branch coverage typically lower
   const functionCoverage = Math.min(95, lineCoverage * 1.05); // Function coverage can be higher
 
   return {
     line: Math.round(lineCoverage),
     branch: Math.round(branchCoverage),
-    function: Math.round(functionCoverage)
+    function: Math.round(functionCoverage),
   };
 }

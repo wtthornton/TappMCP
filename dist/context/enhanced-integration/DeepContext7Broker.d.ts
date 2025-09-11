@@ -31,14 +31,14 @@ export declare const ContextEntrySchema: z.ZodObject<{
         workflowStage: z.ZodOptional<z.ZodString>;
     }, "strip", z.ZodTypeAny, {
         projectId?: string | undefined;
-        tokenCount?: number | undefined;
         qualityScore?: number | undefined;
+        tokenCount?: number | undefined;
         userLevel?: string | undefined;
         workflowStage?: string | undefined;
     }, {
         projectId?: string | undefined;
-        tokenCount?: number | undefined;
         qualityScore?: number | undefined;
+        tokenCount?: number | undefined;
         userLevel?: string | undefined;
         workflowStage?: string | undefined;
     }>>;
@@ -77,11 +77,11 @@ export declare const ContextEntrySchema: z.ZodObject<{
     sessionId: string;
     contextType: "user_query" | "system_response" | "tool_output" | "error_context" | "workflow_state";
     relevanceScore: number;
-    persistenceLevel: "project" | "user" | "session" | "global";
+    persistenceLevel: "project" | "session" | "user" | "global";
     metadata?: {
         projectId?: string | undefined;
-        tokenCount?: number | undefined;
         qualityScore?: number | undefined;
+        tokenCount?: number | undefined;
         userLevel?: string | undefined;
         workflowStage?: string | undefined;
     } | undefined;
@@ -105,8 +105,8 @@ export declare const ContextEntrySchema: z.ZodObject<{
     relevanceScore: number;
     metadata?: {
         projectId?: string | undefined;
-        tokenCount?: number | undefined;
         qualityScore?: number | undefined;
+        tokenCount?: number | undefined;
         userLevel?: string | undefined;
         workflowStage?: string | undefined;
     } | undefined;
@@ -115,7 +115,7 @@ export declare const ContextEntrySchema: z.ZodObject<{
         targetContextId: string;
         strength: number;
     }[] | undefined;
-    persistenceLevel?: "project" | "user" | "session" | "global" | undefined;
+    persistenceLevel?: "project" | "session" | "user" | "global" | undefined;
     compressionInfo?: {
         originalLength: number;
         compressedLength: number;

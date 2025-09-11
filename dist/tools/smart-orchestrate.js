@@ -349,7 +349,10 @@ export async function handleSmartOrchestrate(input) {
                 : [request],
             stakeholders: options.businessContext.stakeholders,
             constraints: options.businessContext.constraints,
-            success: options.businessContext.success,
+            success: {
+                metrics: options.businessContext.success?.metrics || [],
+                criteria: options.businessContext.success?.criteria || [],
+            },
             timestamp: new Date().toISOString(),
             version: 1,
         };

@@ -64,11 +64,7 @@ export class SimpleSDLCWorkflow {
     this.staticAnalyzer = new StaticAnalyzer(projectPath);
     this.projectScanner = new ProjectScanner();
 
-    this.simpleAnalyzer = new SimpleAnalyzer(
-      this.securityScanner,
-      this.staticAnalyzer,
-      this.projectScanner
-    );
+    this.simpleAnalyzer = new SimpleAnalyzer(projectPath);
     this.context7Analyzer = new Context7ProjectAnalyzer();
     this.codeValidator = new CodeValidator();
   }
@@ -79,13 +75,15 @@ export class SimpleSDLCWorkflow {
   async executeWorkflow(
     projectPath: string,
     request: { description: string; features?: string[] },
-    options: Partial<WorkflowOptions> = {}
+    _options: Partial<WorkflowOptions> = {}
   ): Promise<WorkflowResult> {
     const startTime = Date.now();
-    const workflowOptions = this.getDefaultOptions(options);
+    const workflowOptions = this.getDefaultOptions(_options);
 
     console.log(`🚀 Starting Simple SDLC Workflow for: ${request.description}`);
-    console.log(`📋 User Role: ${workflowOptions.userRole}, Quality: ${workflowOptions.qualityLevel}`);
+    console.log(
+      `📋 User Role: ${workflowOptions.userRole}, Quality: ${workflowOptions.qualityLevel}`
+    );
 
     const result: WorkflowResult = {
       success: false,
@@ -93,15 +91,15 @@ export class SimpleSDLCWorkflow {
         analysis: { success: false, duration: 0 },
         context7: { success: false, duration: 0 },
         codeGeneration: { success: false, duration: 0 },
-        validation: { success: false, duration: 0 }
+        validation: { success: false, duration: 0 },
       },
       recommendations: [],
       totalTime: 0,
       businessValue: {
         timeSaved: 0,
         qualityImprovement: 0,
-        riskReduction: 0
-      }
+        riskReduction: 0,
+      },
     };
 
     try {
@@ -116,7 +114,10 @@ export class SimpleSDLCWorkflow {
 
       // Phase 2: Context7 Intelligence (optional)
       if (workflowOptions.enableContext7) {
-        result.phases.context7 = await this.executeContext7Phase(result.phases.analysis.data!, workflowOptions);
+        result.phases.context7 = await this.executeContext7Phase(
+          result.phases.analysis.data!,
+          workflowOptions
+        );
         context7Data = result.phases.context7.data;
       } else {
         result.phases.context7 = { success: true, duration: 0, data: null };
@@ -154,11 +155,12 @@ export class SimpleSDLCWorkflow {
       result.success = this.allPhasesSuccessful(result.phases);
       result.totalTime = Date.now() - startTime;
 
-      console.log(result.success ? '✅ Workflow completed successfully!' : '⚠️ Workflow completed with issues');
+      console.log(
+        result.success ? '✅ Workflow completed successfully!' : '⚠️ Workflow completed with issues'
+      );
       console.log(`⏱️ Total time: ${result.totalTime}ms`);
 
       return result;
-
     } catch (error) {
       console.error('❌ Workflow failed:', error);
       result.totalTime = Date.now() - startTime;
@@ -172,30 +174,35 @@ export class SimpleSDLCWorkflow {
    */
   private async executeAnalysisPhase(
     projectPath: string,
-    options: WorkflowOptions
+    _options: WorkflowOptions
   ): Promise<WorkflowPhaseResult> {
     const phaseStart = Date.now();
 
     try {
-      console.log('🔍 Phase 1: Analyzing project structure and quality...');
+      // Phase 1: Analyzing project structure and quality
 
-      const analysis = await this.simpleAnalyzer.runBasicAnalysis(projectPath, options.analysisDepth);
+      const analysis = await this.simpleAnalyzer.runBasicAnalysis(
+        projectPath,
+        _options.analysisDepth
+      );
 
       const duration = Date.now() - phaseStart;
       console.log(`✅ Analysis completed in ${duration}ms`);
-      console.log(`📊 Project Score: ${analysis.overallScore}% | Security: ${analysis.security.score}% | Quality: ${analysis.quality.score}%`);
+      console.log(
+        `📊 Project Score: ${analysis.summary.overallScore}% | Security: ${analysis.security.summary.total > 0 ? Math.max(0, 100 - analysis.security.summary.critical * 20 - analysis.security.summary.high * 10) : 100}% | Quality: ${analysis.static.metrics ? Math.round((analysis.static.metrics.complexity + analysis.static.metrics.maintainability) / 2) : 85}%`
+      );
 
       return {
         success: true,
         duration,
-        data: analysis
+        data: analysis,
       };
     } catch (error) {
       console.error('❌ Analysis phase failed:', error);
       return {
         success: false,
         duration: Date.now() - phaseStart,
-        error: error instanceof Error ? error.message : 'Analysis failed'
+        error: error instanceof Error ? error.message : 'Analysis failed',
       };
     }
   }
@@ -205,7 +212,7 @@ export class SimpleSDLCWorkflow {
    */
   private async executeContext7Phase(
     analysis: BasicAnalysis,
-    options: WorkflowOptions
+    _options: WorkflowOptions
   ): Promise<WorkflowPhaseResult> {
     const phaseStart = Date.now();
 
@@ -216,19 +223,21 @@ export class SimpleSDLCWorkflow {
 
       const duration = Date.now() - phaseStart;
       console.log(`✅ Context7 data gathered in ${duration}ms`);
-      console.log(`🔗 Topics: ${context7Data.topics.length}, Patterns: ${context7Data.patterns.length}`);
+      console.log(
+        `🔗 Topics: ${context7Data.topics.length}, Data points: ${context7Data.data.length}`
+      );
 
       return {
         success: true,
         duration,
-        data: context7Data
+        data: context7Data,
       };
     } catch (error) {
       console.error('❌ Context7 phase failed:', error);
       return {
         success: false,
         duration: Date.now() - phaseStart,
-        error: error instanceof Error ? error.message : 'Context7 analysis failed'
+        error: error instanceof Error ? error.message : 'Context7 analysis failed',
       };
     }
   }
@@ -240,7 +249,7 @@ export class SimpleSDLCWorkflow {
     request: { description: string; features?: string[] },
     analysis: BasicAnalysis,
     context7Data: Context7Data | undefined,
-    options: WorkflowOptions
+    _options: WorkflowOptions
   ): Promise<WorkflowPhaseResult> {
     const phaseStart = Date.now();
 
@@ -252,7 +261,7 @@ export class SimpleSDLCWorkflow {
         request,
         analysis,
         context7Data,
-        options
+        _options
       );
 
       const duration = Date.now() - phaseStart;
@@ -262,14 +271,14 @@ export class SimpleSDLCWorkflow {
       return {
         success: true,
         duration,
-        data: generatedCode
+        data: generatedCode,
       };
     } catch (error) {
       console.error('❌ Code generation phase failed:', error);
       return {
         success: false,
         duration: Date.now() - phaseStart,
-        error: error instanceof Error ? error.message : 'Code generation failed'
+        error: error instanceof Error ? error.message : 'Code generation failed',
       };
     }
   }
@@ -280,7 +289,7 @@ export class SimpleSDLCWorkflow {
   private async executeValidationPhase(
     generatedCode: GeneratedCode,
     projectPath: string,
-    options: WorkflowOptions
+    _options: WorkflowOptions
   ): Promise<WorkflowPhaseResult> {
     const phaseStart = Date.now();
 
@@ -292,19 +301,21 @@ export class SimpleSDLCWorkflow {
       const duration = Date.now() - phaseStart;
       const statusSymbol = validation.isValid ? '✅' : '⚠️';
       console.log(`${statusSymbol} Validation completed in ${duration}ms`);
-      console.log(`📊 Overall Score: ${validation.overallScore}% | Security: ${validation.security.score}% | Quality: ${validation.quality.score}%`);
+      console.log(
+        `📊 Overall Score: ${validation.overallScore}% | Security: ${validation.security.score}% | Quality: ${validation.quality.score}%`
+      );
 
       return {
         success: true,
         duration,
-        data: validation
+        data: validation,
       };
     } catch (error) {
       console.error('❌ Validation phase failed:', error);
       return {
         success: false,
         duration: Date.now() - phaseStart,
-        error: error instanceof Error ? error.message : 'Validation failed'
+        error: error instanceof Error ? error.message : 'Validation failed',
       };
     }
   }
@@ -316,73 +327,78 @@ export class SimpleSDLCWorkflow {
     request: { description: string; features?: string[] },
     analysis: BasicAnalysis,
     context7Data: Context7Data | undefined,
-    options: WorkflowOptions
+    _options: WorkflowOptions
   ): Promise<GeneratedCode> {
     const files: GeneratedCode['files'] = [];
 
     // Generate main implementation file
-    const mainFileContent = this.generateMainImplementation(request, analysis, context7Data, options);
+    const mainFileContent = this.generateMainImplementation(
+      request,
+      analysis,
+      context7Data,
+      _options
+    );
     files.push({
       path: 'src/generated/implementation.ts',
       content: mainFileContent,
-      type: 'implementation'
+      type: 'implementation',
     });
 
     // Role-based additions
-    switch (options.userRole) {
+    switch (_options.userRole) {
       case 'qa-engineer':
         // Generate comprehensive tests
-        const testContent = this.generateTestFile(request, analysis, options);
+        const testContent = this.generateTestFile(request, analysis, _options);
         files.push({
           path: 'src/generated/implementation.test.ts',
           content: testContent,
-          type: 'test'
+          type: 'test',
         });
         break;
 
       case 'operations-engineer':
         // Generate deployment config
-        const configContent = this.generateDeploymentConfig(request, analysis, options);
+        const configContent = this.generateDeploymentConfig(request, analysis, _options);
         files.push({
           path: 'deployment/config.yaml',
           content: configContent,
-          type: 'config'
+          type: 'config',
         });
         break;
 
       case 'product-strategist':
         // Generate documentation
-        const docContent = this.generateDocumentation(request, analysis, options);
+        const docContent = this.generateDocumentation(request, analysis, _options);
         files.push({
           path: 'docs/implementation-guide.md',
           content: docContent,
-          type: 'documentation'
+          type: 'documentation',
         });
         break;
     }
 
-    // Add additional files based on options
-    if (options.generateTests && options.userRole !== 'qa-engineer') {
-      const basicTestContent = this.generateBasicTestFile(request, analysis, options);
+    // Add additional files based on _options
+    if (_options.generateTests && _options.userRole !== 'qa-engineer') {
+      const basicTestContent = this.generateBasicTestFile(request, analysis, _options);
       files.push({
         path: 'src/generated/basic.test.ts',
         content: basicTestContent,
-        type: 'test'
+        type: 'test',
       });
     }
 
-    if (options.generateDocumentation && options.userRole !== 'product-strategist') {
-      const readmeContent = this.generateReadme(request, analysis, options);
+    if (_options.generateDocumentation && _options.userRole !== 'product-strategist') {
+      const readmeContent = this.generateReadme(request, analysis, _options);
       files.push({
         path: 'README.md',
         content: readmeContent,
-        type: 'documentation'
+        type: 'documentation',
       });
     }
 
     return {
       files,
-      dependencies: this.extractDependencies(analysis, context7Data)
+      dependencies: this.extractDependencies(analysis, context7Data),
     };
   }
 
@@ -393,14 +409,17 @@ export class SimpleSDLCWorkflow {
     request: { description: string; features?: string[] },
     analysis: BasicAnalysis,
     context7Data: Context7Data | undefined,
-    options: WorkflowOptions
+    _options: WorkflowOptions
   ): string {
-    const hasTypeScript = analysis.project.technologies.includes('typescript') || analysis.project.technologies.includes('ts');
+    const hasTypeScript =
+      analysis.project.detectedTechStack.includes('typescript') ||
+      analysis.project.detectedTechStack.includes('ts');
     const extension = hasTypeScript ? '.ts' : '.js';
 
-    // Use Context7 patterns if available
-    const patterns = context7Data?.patterns || [];
-    const bestPractice = patterns.find(p => p.type === 'best_practice')?.content || 'Follow standard coding practices';
+    // Use Context7 data if available
+    const bestPractice =
+      context7Data?.data.find(d => d.topic.includes('best_practice'))?.content ||
+      'Follow standard coding practices';
 
     return `#!/usr/bin/env node
 
@@ -408,21 +427,23 @@ export class SimpleSDLCWorkflow {
  * ${request.description}
  *
  * Generated by TappMCP Simple SDLC Workflow
- * Role: ${options.userRole}
- * Quality Level: ${options.qualityLevel}
+ * Role: ${_options.userRole}
+ * Quality Level: ${_options.qualityLevel}
  *
  * Analysis Summary:
- * - Project Score: ${analysis.overallScore}%
- * - Security Score: ${analysis.security.score}%
- * - Quality Score: ${analysis.quality.score}%
+ * - Project Score: ${analysis.summary.overallScore}%
+ * - Security Score: ${analysis.security.summary.total > 0 ? Math.max(0, 100 - analysis.security.summary.critical * 20 - analysis.security.summary.high * 10) : 100}%
+ * - Quality Score: ${analysis.static.metrics ? Math.round((analysis.static.metrics.complexity + analysis.static.metrics.maintainability) / 2) : 85}%
  *
  * Best Practice: ${bestPractice}
  */
 
-${hasTypeScript ? `
+${
+  hasTypeScript
+    ? `
 export interface ${this.toPascalCase(request.description)}Config {
   enabled: boolean;
-  options?: Record<string, any>;
+  _options?: Record<string, any>;
 }
 
 export interface ${this.toPascalCase(request.description)}Result {
@@ -430,7 +451,9 @@ export interface ${this.toPascalCase(request.description)}Result {
   data?: any;
   error?: string;
 }
-` : ''}
+`
+    : ''
+}
 
 /**
  * Main implementation class for ${request.description}
@@ -476,7 +499,7 @@ export class ${this.toPascalCase(request.description)}${hasTypeScript ? '' : ' {
       console.log('Executing ${request.description}...');
 
       // Role-optimized implementation
-      ${this.generateRoleSpecificLogic(options.userRole, request.features)}
+      ${this.generateRoleSpecificLogic(_options.userRole, request.features)}
 
       // Input validation (security-focused based on analysis)
       if (!data || typeof data !== 'object') {
@@ -506,16 +529,19 @@ export class ${this.toPascalCase(request.description)}${hasTypeScript ? '' : ' {
    */
   private async processData(data${hasTypeScript ? ': any' : ''})${hasTypeScript ? ': Promise<any>' : ''} {
     // Implementation based on Context7 insights
-    ${context7Data?.topics.slice(0, 2).map(topic =>
-      `// ${topic.title}: ${topic.content.substring(0, 100)}...`
-    ).join('\n    ') || '// Process data according to business requirements'}
+    ${
+      context7Data?.topics
+        .slice(0, 2)
+        .map(topic => `// ${topic}: Context7 insight`)
+        .join('\n    ') || '// Process data according to business requirements'
+    }
 
     // Quality-focused processing
     const processedData = {
       ...data,
       timestamp: new Date().toISOString(),
       processed: true,
-      quality: '${options.qualityLevel}'
+      quality: '${_options.qualityLevel}'
     };
 
     return processedData;
@@ -569,8 +595,8 @@ export default ${this.toPascalCase(request.description)};
    */
   private generateTestFile(
     request: { description: string; features?: string[] },
-    analysis: BasicAnalysis,
-    options: WorkflowOptions
+    _analysis: BasicAnalysis,
+    _options: WorkflowOptions
   ): string {
     const className = this.toPascalCase(request.description);
 
@@ -585,7 +611,7 @@ describe('${className}', () => {
   beforeEach(() => {
     const config = {
       enabled: true,
-      options: {}
+      _options: {}
     };
     instance = new ${className}(config);
   });
@@ -647,8 +673,8 @@ describe('${className}', () => {
    */
   private generateBasicTestFile(
     request: { description: string; features?: string[] },
-    analysis: BasicAnalysis,
-    options: WorkflowOptions
+    _analysis: BasicAnalysis,
+    _options: WorkflowOptions
   ): string {
     const className = this.toPascalCase(request.description);
 
@@ -679,12 +705,13 @@ describe('${className} - Basic Tests', () => {
   private generateDeploymentConfig(
     request: { description: string; features?: string[] },
     analysis: BasicAnalysis,
-    options: WorkflowOptions
+    _options: WorkflowOptions
   ): string {
-    const memoryLimit = analysis.project.estimatedSize > 1000000 ? '512Mi' : '256Mi';
-    const cpuLimit = analysis.project.estimatedSize > 1000000 ? '500m' : '200m';
-    const memoryRequest = analysis.project.estimatedSize > 1000000 ? '256Mi' : '128Mi';
-    const cpuRequest = analysis.project.estimatedSize > 1000000 ? '200m' : '100m';
+    const projectSize = analysis.project.projectStructure.files.length;
+    const memoryLimit = projectSize > 100 ? '512Mi' : '256Mi';
+    const cpuLimit = projectSize > 100 ? '500m' : '200m';
+    const memoryRequest = projectSize > 100 ? '256Mi' : '128Mi';
+    const cpuRequest = projectSize > 100 ? '200m' : '100m';
 
     return `# Deployment Configuration for ${request.description}
 # Generated by TappMCP Simple SDLC Workflow
@@ -696,10 +723,10 @@ metadata:
   labels:
     app: ${this.toKebabCase(request.description)}
     version: "1.0.0"
-    quality: "${options.qualityLevel}"
+    quality: "${_options.qualityLevel}"
 
 spec:
-  replicas: ${options.qualityLevel === 'enterprise' ? 3 : 1}
+  replicas: ${_options.qualityLevel === 'enterprise' ? 3 : 1}
   selector:
     matchLabels:
       app: ${this.toKebabCase(request.description)}
@@ -718,7 +745,7 @@ spec:
         - name: NODE_ENV
           value: "production"
         - name: QUALITY_LEVEL
-          value: "${options.qualityLevel}"
+          value: "${_options.qualityLevel}"
 
         # Resource limits based on analysis
         resources:
@@ -756,7 +783,7 @@ spec:
   - protocol: TCP
     port: 80
     targetPort: 3000
-  type: ${options.qualityLevel === 'enterprise' ? 'LoadBalancer' : 'ClusterIP'}
+  type: ${_options.qualityLevel === 'enterprise' ? 'LoadBalancer' : 'ClusterIP'}
 `;
   }
 
@@ -766,7 +793,7 @@ spec:
   private generateDocumentation(
     request: { description: string; features?: string[] },
     analysis: BasicAnalysis,
-    options: WorkflowOptions
+    _options: WorkflowOptions
   ): string {
     return `# ${request.description} - Implementation Guide
 
@@ -774,14 +801,14 @@ spec:
 
 ## Overview
 
-This implementation provides ${request.description} functionality with ${options.qualityLevel} quality standards.
+This implementation provides ${request.description} functionality with ${_options.qualityLevel} quality standards.
 
 ## Project Analysis Summary
 
-- **Overall Score**: ${analysis.overallScore}%
-- **Security Score**: ${analysis.security.score}%
-- **Quality Score**: ${analysis.quality.score}%
-- **Technologies**: ${analysis.project.technologies.join(', ')}
+- **Overall Score**: ${analysis.summary.overallScore}%
+- **Security Score**: ${analysis.security.summary.total > 0 ? Math.max(0, 100 - analysis.security.summary.critical * 20 - analysis.security.summary.high * 10) : 100}%
+- **Quality Score**: ${analysis.static.metrics ? Math.round((analysis.static.metrics.complexity + analysis.static.metrics.maintainability) / 2) : 85}%
+- **Technologies**: ${analysis.project.detectedTechStack.join(', ')}
 
 ## Features
 
@@ -817,8 +844,8 @@ import { ${this.toPascalCase(request.description)} } from './implementation.js';
 // Create instance with configuration
 const instance = new ${this.toPascalCase(request.description)}({
   enabled: true,
-  options: {
-    quality: '${options.qualityLevel}'
+  _options: {
+    quality: '${_options.qualityLevel}'
   }
 });
 
@@ -838,57 +865,73 @@ await instance.dispose();
 
 ## Quality Standards
 
-This implementation adheres to **${options.qualityLevel}** quality standards:
+This implementation adheres to **${_options.qualityLevel}** quality standards:
 
-${options.qualityLevel === 'enterprise' ? `
+${
+  _options.qualityLevel === 'enterprise'
+    ? `
 - Comprehensive error handling
 - Full test coverage
 - Performance monitoring
 - Security best practices
 - Scalable architecture
-` : options.qualityLevel === 'standard' ? `
+`
+    : _options.qualityLevel === 'standard'
+      ? `
 - Good error handling
 - Basic test coverage
 - Standard security practices
 - Maintainable code structure
-` : `
+`
+      : `
 - Basic error handling
 - Simple test coverage
 - Essential security practices
-`}
+`
+}
 
 ## Security Considerations
 
 Based on the project analysis, the following security measures are implemented:
 
-${analysis.security.issues.length > 0 ? `
+${
+  analysis.security.vulnerabilities.length > 0
+    ? `
 ### Identified Security Issues:
-${analysis.security.issues.map(issue => `- ${issue.message}`).join('\n')}
-` : '- No critical security issues identified'}
+${analysis.security.vulnerabilities.map(issue => `- ${issue.description}`).join('\n')}
+`
+    : '- No critical security issues identified'
+}
 
 ### Security Best Practices:
 - Input validation and sanitization
 - Proper error handling without information leakage
 - Secure configuration management
-- ${options.qualityLevel === 'enterprise' ? 'Advanced security monitoring' : 'Basic security logging'}
+- ${_options.qualityLevel === 'enterprise' ? 'Advanced security monitoring' : 'Basic security logging'}
 
 ## Performance Considerations
 
-- Optimized for projects of size: ${analysis.project.estimatedSize} bytes
-- Expected performance: ${analysis.project.estimatedSize > 1000000 ? 'High load capable' : 'Standard performance'}
-- Resource usage: ${analysis.project.estimatedSize > 1000000 ? 'Moderate to high' : 'Low to moderate'}
+- Optimized for projects of size: ${analysis.project.projectStructure.files.length} files
+- Expected performance: ${analysis.project.projectStructure.files.length > 100 ? 'High load capable' : 'Standard performance'}
+- Resource usage: ${analysis.project.projectStructure.files.length > 100 ? 'Moderate to high' : 'Low to moderate'}
 
 ## Deployment
 
-${options.userRole === 'operations-engineer' ? `
+${
+  _options.userRole === 'operations-engineer'
+    ? `
 See \`deployment/config.yaml\` for Kubernetes deployment configuration.
-` : `
+`
+    : `
 Refer to your operations team for deployment guidelines.
-`}
+`
+}
 
 ## Testing
 
-${options.generateTests || options.userRole === 'qa-engineer' ? `
+${
+  _options.generateTests || _options.userRole === 'qa-engineer'
+    ? `
 Run tests with:
 \`\`\`bash
 npm test
@@ -898,9 +941,11 @@ Test coverage includes:
 - Unit tests for all major functions
 - Integration tests for core workflows
 - Error handling scenarios
-` : `
+`
+    : `
 Basic tests are included. Run with: \`npm test\`
-`}
+`
+}
 
 ## Maintenance
 
@@ -922,7 +967,7 @@ For ongoing maintenance:
   private generateReadme(
     request: { description: string; features?: string[] },
     analysis: BasicAnalysis,
-    options: WorkflowOptions
+    _options: WorkflowOptions
   ): string {
     return `# ${request.description}
 
@@ -946,9 +991,9 @@ ${request.features?.map(feature => `- ${feature}`).join('\n') || '- Core functio
 
 ## Project Stats
 
-- **Quality Score**: ${analysis.overallScore}%
-- **Security**: ${analysis.security.score}%
-- **Technologies**: ${analysis.project.technologies.join(', ')}
+- **Quality Score**: ${analysis.summary.overallScore}%
+- **Security**: ${analysis.security.summary.total > 0 ? Math.max(0, 100 - analysis.security.summary.critical * 20 - analysis.security.summary.high * 10) : 100}%
+- **Technologies**: ${analysis.project.detectedTechStack.join(', ')}
 
 ## Usage
 
@@ -957,9 +1002,9 @@ See \`docs/implementation-guide.md\` for detailed usage instructions.
 ## Development
 
 This project was generated with:
-- **Role**: ${options.userRole}
-- **Quality Level**: ${options.qualityLevel}
-- **Analysis Depth**: ${options.analysisDepth}
+- **Role**: ${_options.userRole}
+- **Quality Level**: ${_options.qualityLevel}
+- **Analysis Depth**: ${_options.analysisDepth}
 
 ## Contributing
 
@@ -978,19 +1023,22 @@ MIT License
   /**
    * Extract dependencies from analysis and Context7 data
    */
-  private extractDependencies(analysis: BasicAnalysis, context7Data: Context7Data | undefined): string[] {
+  private extractDependencies(
+    analysis: BasicAnalysis,
+    _context7Data: Context7Data | undefined
+  ): string[] {
     const dependencies: string[] = [];
 
     // Add dependencies based on detected technologies
-    if (analysis.project.technologies.includes('typescript')) {
+    if (analysis.project.detectedTechStack.includes('typescript')) {
       dependencies.push('typescript', '@types/node');
     }
 
-    if (analysis.project.technologies.includes('react')) {
+    if (analysis.project.detectedTechStack.includes('react')) {
       dependencies.push('react', 'react-dom');
     }
 
-    if (analysis.project.technologies.includes('express')) {
+    if (analysis.project.detectedTechStack.includes('express')) {
       dependencies.push('express');
     }
 
@@ -1004,8 +1052,9 @@ MIT License
    * Calculate business value from workflow results
    */
   private calculateBusinessValue(result: WorkflowResult): WorkflowResult['businessValue'] {
-    const totalExecutionTime = result.phases.analysis.duration + result.phases.codeGeneration.duration;
-    const timeSaved = Math.max(1, Math.round(totalExecutionTime * 0.8 / 1000)); // Convert to seconds, minimum 1
+    const totalExecutionTime =
+      result.phases.analysis.duration + result.phases.codeGeneration.duration;
+    const timeSaved = Math.max(1, Math.round((totalExecutionTime * 0.8) / 1000)); // Convert to seconds, minimum 1
 
     const qualityImprovement = result.validation?.overallScore || 80;
 
@@ -1014,7 +1063,7 @@ MIT License
     return {
       timeSaved,
       qualityImprovement,
-      riskReduction
+      riskReduction,
     };
   }
 
@@ -1023,7 +1072,7 @@ MIT License
    */
   private generateWorkflowRecommendations(
     result: WorkflowResult,
-    options: WorkflowOptions
+    _options: WorkflowOptions
   ): string[] {
     const recommendations: string[] = [];
 
@@ -1032,7 +1081,7 @@ MIT License
       recommendations.push('🔍 Analysis phase failed - manual project review required');
     }
 
-    if (!result.phases.context7.success && options.enableContext7) {
+    if (!result.phases.context7.success && _options.enableContext7) {
       recommendations.push('🧠 Context7 intelligence unavailable - using fallback patterns');
     }
 
@@ -1040,7 +1089,7 @@ MIT License
       recommendations.push('✍️ Code generation failed - manual implementation required');
     }
 
-    if (!result.phases.validation.success && options.enableValidation) {
+    if (!result.phases.validation.success && _options.enableValidation) {
       recommendations.push('✅ Code validation failed - manual review recommended');
     }
 
@@ -1058,7 +1107,7 @@ MIT License
     }
 
     // Role-specific recommendations
-    switch (options.userRole) {
+    switch (_options.userRole) {
       case 'qa-engineer':
         recommendations.push('🧪 Review generated tests and add additional edge cases');
         break;
@@ -1088,18 +1137,18 @@ MIT License
   }
 
   /**
-   * Get default workflow options
+   * Get default workflow _options
    */
-  private getDefaultOptions(options: Partial<WorkflowOptions>): WorkflowOptions {
+  private getDefaultOptions(_options: Partial<WorkflowOptions>): WorkflowOptions {
     return {
-      userRole: options.userRole || 'developer',
-      qualityLevel: options.qualityLevel || 'standard',
-      analysisDepth: options.analysisDepth || 'standard',
-      enableContext7: options.enableContext7 !== false, // Default to true
-      enableValidation: options.enableValidation !== false, // Default to true
-      generateTests: options.generateTests || false,
-      generateDocumentation: options.generateDocumentation || false,
-      ...options
+      userRole: _options.userRole || 'developer',
+      qualityLevel: _options.qualityLevel || 'standard',
+      analysisDepth: _options.analysisDepth || 'standard',
+      enableContext7: _options.enableContext7 !== false, // Default to true
+      enableValidation: _options.enableValidation !== false, // Default to true
+      generateTests: _options.generateTests || false,
+      generateDocumentation: _options.generateDocumentation || false,
+      ..._options,
     };
   }
 
@@ -1108,7 +1157,7 @@ MIT License
    */
   private toPascalCase(str: string): string {
     return str
-      .replace(/(?:^\w|[A-Z]|\b\w)/g, (word) => word.toUpperCase())
+      .replace(/(?:^\w|[A-Z]|\b\w)/g, word => word.toUpperCase())
       .replace(/\s+/g, '')
       .replace(/[^a-zA-Z0-9]/g, '');
   }

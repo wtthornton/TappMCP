@@ -229,7 +229,7 @@ async function scanExistingProject(projectPath, analysisDepth) {
             projectScanner.scanProject(projectPath, analysisDepth).catch(err => {
                 console.warn('Project scan failed:', err);
                 return null;
-            })
+            }),
         ]);
         // Use ProjectScanner results as base if available
         if (projectResult) {
@@ -270,16 +270,20 @@ async function scanExistingProject(projectPath, analysisDepth) {
                 detectedTechStack: projectResult.detectedTechStack,
                 qualityIssues,
                 improvementOpportunities,
-                ...(securityResult && { securityAnalysis: {
+                ...(securityResult && {
+                    securityAnalysis: {
                         status: securityResult.status,
                         vulnerabilities: securityResult.vulnerabilities,
-                        summary: securityResult.summary
-                    } }),
-                ...(staticResult && { staticAnalysis: {
+                        summary: securityResult.summary,
+                    },
+                }),
+                ...(staticResult && {
+                    staticAnalysis: {
                         status: staticResult.status,
                         issues: staticResult.issues,
-                        metrics: staticResult.metrics
-                    } })
+                        metrics: staticResult.metrics,
+                    },
+                }),
             };
         }
         // Fallback to original implementation if ProjectScanner fails
@@ -724,7 +728,7 @@ export async function handleSmartBegin(input) {
                     domain: validatedInput.projectTemplate || 'general',
                     enableLogging: true,
                 });
-                console.log(`🔍 Context7 enhanced smart_begin for: ${validatedInput.projectName} (${validatedInput.mode})`);
+                console.log(`Context7 enhanced smart_begin for: ${validatedInput.projectName} (${validatedInput.mode})`);
             }
             catch (error) {
                 console.warn('Context7 integration failed:', error);
@@ -777,19 +781,22 @@ export async function handleSmartBegin(input) {
             // Use real security analysis if available
             if (scanResult.securityAnalysis) {
                 const { summary } = scanResult.securityAnalysis;
-                securityScore = scanResult.securityAnalysis.status === 'pass' ? 95 :
-                    Math.max(60, 95 - summary.critical * 10 - summary.high * 5 - summary.moderate * 2);
+                securityScore =
+                    scanResult.securityAnalysis.status === 'pass'
+                        ? 95
+                        : Math.max(60, 95 - summary.critical * 10 - summary.high * 5 - summary.moderate * 2);
             }
             else {
                 // Fallback to quality issues based scoring
                 securityScore = Math.max(60, 95 - qualityIssues.length * 5);
             }
-            // Use real static analysis if available  
+            // Use real static analysis if available
             if (scanResult.staticAnalysis) {
                 const { metrics } = scanResult.staticAnalysis;
-                complexityScore = metrics.complexity > 10 ?
-                    Math.max(50, 100 - metrics.complexity * 5) :
-                    Math.max(70, 100 - metrics.complexity * 2);
+                complexityScore =
+                    metrics.complexity > 10
+                        ? Math.max(50, 100 - metrics.complexity * 5)
+                        : Math.max(70, 100 - metrics.complexity * 2);
             }
             else {
                 // Fallback to quality issues based scoring

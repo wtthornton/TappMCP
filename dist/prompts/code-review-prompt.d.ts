@@ -17,23 +17,23 @@ export declare const CodeReviewPromptSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     language: string;
     code: string;
-    reviewType: "security" | "performance" | "maintainability" | "comprehensive" | "readability";
+    reviewType: "security" | "performance" | "maintainability" | "readability" | "comprehensive";
     context?: string | undefined;
     severity?: "low" | "medium" | "high" | undefined;
+    standards?: string[] | undefined;
     requirements?: string[] | undefined;
     focusAreas?: string[] | undefined;
-    standards?: string[] | undefined;
     includeSuggestions?: boolean | undefined;
     includeExamples?: boolean | undefined;
 }, {
     language: string;
     code: string;
-    reviewType: "security" | "performance" | "maintainability" | "comprehensive" | "readability";
+    reviewType: "security" | "performance" | "maintainability" | "readability" | "comprehensive";
     context?: string | undefined;
     severity?: "low" | "medium" | "high" | undefined;
+    standards?: string[] | undefined;
     requirements?: string[] | undefined;
     focusAreas?: string[] | undefined;
-    standards?: string[] | undefined;
     includeSuggestions?: boolean | undefined;
     includeExamples?: boolean | undefined;
 }>;

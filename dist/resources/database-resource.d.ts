@@ -20,48 +20,48 @@ export declare const DatabaseResourceSchema: z.ZodObject<{
         data: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodAny>>;
         where: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodAny>>;
     }, "strip", z.ZodTypeAny, {
-        operation: "query" | "delete" | "insert" | "update";
+        operation: "update" | "delete" | "query" | "insert";
         table: string;
         data?: Record<string, any> | undefined;
         query?: string | undefined;
         where?: Record<string, any> | undefined;
     }, {
-        operation: "query" | "delete" | "insert" | "update";
+        operation: "update" | "delete" | "query" | "insert";
         table: string;
         data?: Record<string, any> | undefined;
         query?: string | undefined;
         where?: Record<string, any> | undefined;
     }>, "many">>;
 }, "strip", z.ZodTypeAny, {
-    operation: "transaction" | "query" | "delete" | "insert" | "update";
+    operation: "update" | "delete" | "query" | "transaction" | "insert";
     table: string;
     orderDirection: "ASC" | "DESC";
     data?: Record<string, any> | undefined;
+    query?: string | undefined;
     limit?: number | undefined;
     transaction?: {
-        operation: "query" | "delete" | "insert" | "update";
+        operation: "update" | "delete" | "query" | "insert";
         table: string;
         data?: Record<string, any> | undefined;
         query?: string | undefined;
         where?: Record<string, any> | undefined;
     }[] | undefined;
-    query?: string | undefined;
     where?: Record<string, any> | undefined;
     offset?: number | undefined;
     orderBy?: string | undefined;
 }, {
-    operation: "transaction" | "query" | "delete" | "insert" | "update";
+    operation: "update" | "delete" | "query" | "transaction" | "insert";
     table: string;
     data?: Record<string, any> | undefined;
+    query?: string | undefined;
     limit?: number | undefined;
     transaction?: {
-        operation: "query" | "delete" | "insert" | "update";
+        operation: "update" | "delete" | "query" | "insert";
         table: string;
         data?: Record<string, any> | undefined;
         query?: string | undefined;
         where?: Record<string, any> | undefined;
     }[] | undefined;
-    query?: string | undefined;
     where?: Record<string, any> | undefined;
     offset?: number | undefined;
     orderBy?: string | undefined;
@@ -84,18 +84,18 @@ export declare const DatabaseResourceResponseSchema: z.ZodObject<{
     success: boolean;
     error?: string | undefined;
     data?: Record<string, any>[] | undefined;
+    query?: string | undefined;
     count?: number | undefined;
     executionTime?: number | undefined;
-    query?: string | undefined;
     affectedRows?: number | undefined;
     insertId?: number | undefined;
 }, {
     success: boolean;
     error?: string | undefined;
     data?: Record<string, any>[] | undefined;
+    query?: string | undefined;
     count?: number | undefined;
     executionTime?: number | undefined;
-    query?: string | undefined;
     affectedRows?: number | undefined;
     insertId?: number | undefined;
 }>;

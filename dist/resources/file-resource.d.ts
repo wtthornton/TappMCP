@@ -14,19 +14,19 @@ export declare const FileResourceSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     path: string;
     encoding: string;
-    mode: "read" | "write" | "append";
-    createIfNotExists: boolean;
+    mode: "write" | "read" | "append";
     backup: boolean;
+    createIfNotExists: boolean;
     data?: string | undefined;
     permissions?: string | undefined;
 }, {
     path: string;
     encoding?: string | undefined;
-    mode?: "read" | "write" | "append" | undefined;
+    mode?: "write" | "read" | "append" | undefined;
     data?: string | undefined;
-    createIfNotExists?: boolean | undefined;
-    backup?: boolean | undefined;
     permissions?: string | undefined;
+    backup?: boolean | undefined;
+    createIfNotExists?: boolean | undefined;
 }>;
 export type FileResourceConfig = z.infer<typeof FileResourceSchema>;
 /**
@@ -44,14 +44,14 @@ export declare const FileResourceResponseSchema: z.ZodObject<{
     }, "strip", z.ZodTypeAny, {
         path: string;
         size: number;
-        lastModified: Date;
         hash: string;
+        lastModified: Date;
         permissions?: string | undefined;
     }, {
         path: string;
         size: number;
-        lastModified: Date;
         hash: string;
+        lastModified: Date;
         permissions?: string | undefined;
     }>>;
     error: z.ZodOptional<z.ZodString>;
@@ -62,8 +62,8 @@ export declare const FileResourceResponseSchema: z.ZodObject<{
     metadata?: {
         path: string;
         size: number;
-        lastModified: Date;
         hash: string;
+        lastModified: Date;
         permissions?: string | undefined;
     } | undefined;
 }, {
@@ -73,8 +73,8 @@ export declare const FileResourceResponseSchema: z.ZodObject<{
     metadata?: {
         path: string;
         size: number;
-        lastModified: Date;
         hash: string;
+        lastModified: Date;
         permissions?: string | undefined;
     } | undefined;
 }>;

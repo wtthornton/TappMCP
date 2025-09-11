@@ -59,10 +59,10 @@ export declare const TemplateContextSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     constraints: string[];
     toolName: string;
+    preferences: Record<string, any>;
     userLevel: "beginner" | "intermediate" | "advanced";
     taskType: "planning" | "analysis" | "generation" | "transformation" | "debugging";
     outputFormat: "code" | "markdown" | "text" | "structured";
-    preferences: Record<string, any>;
     contextHistory: string[];
     timeConstraint: "standard" | "immediate" | "thorough";
     sessionId?: string | undefined;
@@ -85,10 +85,10 @@ export declare const TemplateContextSchema: z.ZodObject<{
     toolName: string;
     taskType: "planning" | "analysis" | "generation" | "transformation" | "debugging";
     constraints?: string[] | undefined;
+    preferences?: Record<string, any> | undefined;
     sessionId?: string | undefined;
     userLevel?: "beginner" | "intermediate" | "advanced" | undefined;
     outputFormat?: "code" | "markdown" | "text" | "structured" | undefined;
-    preferences?: Record<string, any> | undefined;
     contextHistory?: string[] | undefined;
     timeConstraint?: "standard" | "immediate" | "thorough" | undefined;
     projectContext?: {
@@ -210,8 +210,8 @@ export declare const TemplateMetadataSchema: z.ZodObject<{
     lastUpdated: Date;
     usageCount: number;
     name: string;
-    toolName: string;
     qualityScore: number;
+    toolName: string;
     compressionRatio: number;
     taskType: string;
     baseTokens: number;
@@ -235,8 +235,8 @@ export declare const TemplateMetadataSchema: z.ZodObject<{
     lastUpdated: Date;
     usageCount: number;
     name: string;
-    toolName: string;
     qualityScore: number;
+    toolName: string;
     compressionRatio: number;
     taskType: string;
     baseTokens: number;

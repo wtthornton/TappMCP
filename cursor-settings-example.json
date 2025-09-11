@@ -1,0 +1,13 @@
+{
+  "mcp.servers": {
+    "tappmcp": {
+      "command": "node",
+      "args": ["dist/server.js"],
+      "cwd": "C:\\cursor\\TappMCP",
+      "env": {
+        "NODE_ENV": "production"
+      }
+    }
+  },
+  "mcp.enabled": true
+}

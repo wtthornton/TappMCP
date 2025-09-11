@@ -21,6 +21,28 @@ npm run dev
 npm run build && npm start
 ```
 
+## 🎵 Vibe Coder Experience
+
+### In Cursor (MCP Integration)
+```typescript
+// Natural language commands in Cursor
+smart_vibe "make me a todo app with React and TypeScript"
+smart_vibe "check my code quality" { role: "qa-engineer" }
+smart_vibe "improve this function" { quality: "enterprise" }
+smart_vibe "ship my app" { role: "operations-engineer" }
+```
+
+### CLI (Terminal)
+```bash
+# Install vibe CLI globally
+npm install -g @tappmcp/vibe-coder
+
+# Use vibe commands in terminal
+vibe "make me a todo app"
+vibe check
+vibe ship
+```
+
 ## 📦 NPM Package
 
 ```bash
@@ -43,6 +65,9 @@ Full SDLC automation with 4-phase workflow (Analysis → Context7 → Generation
 
 ### smart_plan
 Generate technical implementation plans with Context7 insights.
+
+### smart_vibe 🎵
+Natural language interface for Cursor - full vibe coder experience with context management, role switching, and rich responses.
 
 ## 🎯 Key Features
 

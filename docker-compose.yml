@@ -14,6 +14,9 @@ services:
       - HEALTH_PORT=3001
     volumes:
       - smart-mcp-data:/app/data
+      - smart-mcp-logs:/app/logs
+    user: "1001:1001"
+    command: ["sh", "-c", "mkdir -p /app/logs && node dist/server.js"]
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"]
@@ -54,4 +57,6 @@ services:
 
 volumes:
   smart-mcp-data:
+    driver: local
+  smart-mcp-logs:
     driver: local

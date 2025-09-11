@@ -31,7 +31,7 @@ export class Context7Cache extends MCPCoordinator {
             enableFallbacks: cacheConfig.enableFallbacks ?? true,
             healthCheckInterval: cacheConfig.healthCheckInterval ?? 60000,
         };
-        console.log('Context7Cache initialized with smart caching');
+        // Context7Cache initialized with smart caching
     }
     /**
      * Get relevant Context7 data with smart caching
@@ -46,11 +46,11 @@ export class Context7Cache extends MCPCoordinator {
             const cachedData = this.getCachedData(cacheKey);
             if (cachedData) {
                 this.recordHit(cacheKey);
-                console.log(`📦 Context7 cache hit for: ${input.businessRequest}`);
+                // Context7 cache hit
                 return cachedData;
             }
             // Cache miss - fetch from Context7
-            console.log(`🔄 Context7 cache miss, fetching: ${input.businessRequest}`);
+            // Context7 cache miss, fetching data
             const knowledge = await this.fetchContext7Knowledge(input);
             // Cache the results
             this.setCachedData(cacheKey, knowledge);

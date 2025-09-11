@@ -25,13 +25,13 @@ describe('SimpleAnalyzer', () => {
 
     // Create mock instances
     mockSecurityScanner = {
-      runSecurityScan: vi.fn()
+      runSecurityScan: vi.fn(),
     };
     mockStaticAnalyzer = {
-      runStaticAnalysis: vi.fn()
+      runStaticAnalysis: vi.fn(),
     };
     mockProjectScanner = {
-      scanProject: vi.fn()
+      scanProject: vi.fn(),
     };
 
     // Setup constructor mocks
@@ -54,8 +54,8 @@ describe('SimpleAnalyzer', () => {
           critical: 0,
           high: 0,
           moderate: 0,
-          low: 0
-        }
+          low: 0,
+        },
       };
 
       const mockStaticResult = {
@@ -66,13 +66,13 @@ describe('SimpleAnalyzer', () => {
           total: 0,
           error: 0,
           warning: 0,
-          info: 0
+          info: 0,
         },
         metrics: {
           complexity: 5,
           maintainability: 85,
-          duplication: 2
-        }
+          duplication: 2,
+        },
       };
 
       const mockProjectResult = {
@@ -80,17 +80,17 @@ describe('SimpleAnalyzer', () => {
           folders: ['src', 'tests'],
           files: ['index.ts', 'package.json'],
           configFiles: ['tsconfig.json', '.eslintrc.json'],
-          templates: []
+          templates: [],
         },
         detectedTechStack: ['typescript', 'nodejs'],
         qualityIssues: [],
         improvementOpportunities: [],
         projectMetadata: {
           name: 'test-project',
-          version: '1.0.0'
+          version: '1.0.0',
         },
         analysisDepth: 'standard' as const,
-        analysisTimestamp: new Date().toISOString()
+        analysisTimestamp: new Date().toISOString(),
       };
 
       mockSecurityScanner.runSecurityScan.mockResolvedValue(mockSecurityResult);
@@ -140,7 +140,13 @@ describe('SimpleAnalyzer', () => {
       // Setup mocks with critical issues
       const mockSecurityResult = {
         vulnerabilities: [
-          { id: '1', severity: 'critical' as const, package: 'test', version: '1.0.0', description: 'Critical vuln' }
+          {
+            id: '1',
+            severity: 'critical' as const,
+            package: 'test',
+            version: '1.0.0',
+            description: 'Critical vuln',
+          },
         ],
         scanTime: 100,
         status: 'fail' as const,
@@ -149,13 +155,22 @@ describe('SimpleAnalyzer', () => {
           critical: 1,
           high: 1,
           moderate: 0,
-          low: 0
-        }
+          low: 0,
+        },
       };
 
       const mockStaticResult = {
         issues: [
-          { id: '1', severity: 'error' as const, file: 'test.ts', line: 1, column: 1, message: 'Error', rule: 'test', fix: 'Fix' }
+          {
+            id: '1',
+            severity: 'error' as const,
+            file: 'test.ts',
+            line: 1,
+            column: 1,
+            message: 'Error',
+            rule: 'test',
+            fix: 'Fix',
+          },
         ],
         scanTime: 150,
         status: 'fail' as const,
@@ -163,13 +178,13 @@ describe('SimpleAnalyzer', () => {
           total: 2,
           error: 1,
           warning: 1,
-          info: 0
+          info: 0,
         },
         metrics: {
           complexity: 15,
           maintainability: 60,
-          duplication: 8
-        }
+          duplication: 8,
+        },
       };
 
       const mockProjectResult = {
@@ -177,17 +192,17 @@ describe('SimpleAnalyzer', () => {
           folders: [],
           files: [],
           configFiles: [],
-          templates: []
+          templates: [],
         },
         detectedTechStack: ['typescript'],
         qualityIssues: ['Missing tests', 'No ESLint config'],
         improvementOpportunities: ['Add testing framework', 'Configure linting'],
         projectMetadata: {
           name: 'test-project',
-          version: '1.0.0'
+          version: '1.0.0',
         },
         analysisDepth: 'standard' as const,
-        analysisTimestamp: new Date().toISOString()
+        analysisTimestamp: new Date().toISOString(),
       };
 
       mockSecurityScanner.runSecurityScan.mockResolvedValue(mockSecurityResult);
@@ -205,7 +220,9 @@ describe('SimpleAnalyzer', () => {
 
       // Check that appropriate recommendations are included
       expect(result.summary.recommendations.length).toBeGreaterThan(0);
-      expect(result.summary.recommendations).toContain('Fix 1 critical security vulnerabilities immediately');
+      expect(result.summary.recommendations).toContain(
+        'Fix 1 critical security vulnerabilities immediately'
+      );
       expect(result.summary.recommendations).toContain('Address 1 high-priority security issues');
 
       // Complexity is 15, so should have complexity recommendation
@@ -227,8 +244,8 @@ describe('SimpleAnalyzer', () => {
           critical: 0,
           high: 0,
           moderate: 0,
-          low: 0
-        }
+          low: 0,
+        },
       };
 
       const mockStaticResult = {
@@ -239,13 +256,13 @@ describe('SimpleAnalyzer', () => {
           total: 0,
           error: 0,
           warning: 0,
-          info: 0
+          info: 0,
         },
         metrics: {
           complexity: 3,
           maintainability: 90,
-          duplication: 1
-        }
+          duplication: 1,
+        },
       };
 
       const mockProjectResult = {
@@ -253,17 +270,17 @@ describe('SimpleAnalyzer', () => {
           folders: ['src'],
           files: ['index.ts'],
           configFiles: ['package.json'],
-          templates: []
+          templates: [],
         },
         detectedTechStack: ['typescript'],
         qualityIssues: [],
         improvementOpportunities: [],
         projectMetadata: {
           name: 'test-project',
-          version: '1.0.0'
+          version: '1.0.0',
         },
         analysisDepth: 'quick' as const,
-        analysisTimestamp: new Date().toISOString()
+        analysisTimestamp: new Date().toISOString(),
       };
 
       mockSecurityScanner.runSecurityScan.mockResolvedValue(mockSecurityResult);
@@ -298,8 +315,8 @@ describe('SimpleAnalyzer', () => {
           critical: 0,
           high: 0,
           moderate: 0,
-          low: 0
-        }
+          low: 0,
+        },
       };
 
       const mockStaticResult = {
@@ -310,13 +327,13 @@ describe('SimpleAnalyzer', () => {
           total: 0,
           error: 0,
           warning: 0,
-          info: 0
+          info: 0,
         },
         metrics: {
           complexity: 5,
           maintainability: 85,
-          duplication: 2
-        }
+          duplication: 2,
+        },
       };
 
       const mockProjectResult = {
@@ -324,17 +341,17 @@ describe('SimpleAnalyzer', () => {
           folders: ['src', 'tests'],
           files: ['index.ts', 'package.json'],
           configFiles: ['tsconfig.json', '.eslintrc.json'],
-          templates: []
+          templates: [],
         },
         detectedTechStack: ['typescript'],
         qualityIssues: [],
         improvementOpportunities: [],
         projectMetadata: {
           name: 'test-project',
-          version: '1.0.0'
+          version: '1.0.0',
         },
         analysisDepth: 'standard' as const,
-        analysisTimestamp: new Date().toISOString()
+        analysisTimestamp: new Date().toISOString(),
       };
 
       mockSecurityScanner.runSecurityScan.mockResolvedValue(mockSecurityResult);
@@ -358,8 +375,8 @@ describe('SimpleAnalyzer', () => {
           critical: 1,
           high: 0,
           moderate: 0,
-          low: 0
-        }
+          low: 0,
+        },
       };
 
       const mockStaticResult = {
@@ -370,13 +387,13 @@ describe('SimpleAnalyzer', () => {
           total: 0,
           error: 0,
           warning: 0,
-          info: 0
+          info: 0,
         },
         metrics: {
           complexity: 5,
           maintainability: 85,
-          duplication: 2
-        }
+          duplication: 2,
+        },
       };
 
       const mockProjectResult = {
@@ -384,17 +401,17 @@ describe('SimpleAnalyzer', () => {
           folders: [],
           files: [],
           configFiles: [],
-          templates: []
+          templates: [],
         },
         detectedTechStack: [],
         qualityIssues: [],
         improvementOpportunities: [],
         projectMetadata: {
           name: 'test-project',
-          version: '1.0.0'
+          version: '1.0.0',
         },
         analysisDepth: 'standard' as const,
-        analysisTimestamp: new Date().toISOString()
+        analysisTimestamp: new Date().toISOString(),
       };
 
       mockSecurityScanner.runSecurityScan.mockResolvedValue(mockSecurityResult);

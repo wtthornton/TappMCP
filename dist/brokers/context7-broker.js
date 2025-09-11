@@ -75,7 +75,7 @@ export class Context7Broker {
             // Check cache first
             const cachedData = this.getCachedData(cacheKey);
             if (cachedData) {
-                console.log(`📦 Using cached Context7 docs for: ${topic}`);
+                // Using cached Context7 docs
                 return cachedData;
             }
             if (!this.isAvailable) {
@@ -87,7 +87,7 @@ export class Context7Broker {
                 }
             }
             // Make real Context7 MCP call
-            console.log(`🔄 Fetching real Context7 docs for: ${topic}`);
+            // Fetching real Context7 docs
             const docs = await this.fetchRealDocumentation(topic, version);
             // Cache the results
             this.setCachedData(cacheKey, docs);
@@ -184,7 +184,7 @@ export class Context7Broker {
             // Check cache first
             const cachedData = this.getCachedData(cacheKey);
             if (cachedData) {
-                console.log(`📦 Using cached Context7 examples for: ${technology} ${pattern}`);
+                // Using cached Context7 examples
                 return cachedData;
             }
             if (!this.isAvailable) {
@@ -196,7 +196,7 @@ export class Context7Broker {
                 }
             }
             // Make real Context7 MCP call
-            console.log(`🔄 Fetching real Context7 examples for: ${technology} ${pattern}`);
+            // Fetching real Context7 examples
             const examples = await this.fetchRealCodeExamples(technology, pattern);
             // Cache the results
             this.setCachedData(cacheKey, examples);
@@ -261,7 +261,7 @@ export class Context7Broker {
             // Check cache first
             const cachedData = this.getCachedData(cacheKey);
             if (cachedData) {
-                console.log(`📦 Using cached Context7 best practices for: ${domain}`);
+                // Using cached Context7 best practices
                 return cachedData;
             }
             if (!this.isAvailable) {
@@ -273,7 +273,7 @@ export class Context7Broker {
                 }
             }
             // Make real Context7 MCP call
-            console.log(`🔄 Fetching real Context7 best practices for: ${domain}`);
+            // Fetching real Context7 best practices
             const practices = await this.fetchRealBestPractices(domain);
             // Cache the results
             this.setCachedData(cacheKey, practices);
@@ -352,7 +352,7 @@ export class Context7Broker {
             // Check cache first
             const cachedData = this.getCachedData(cacheKey);
             if (cachedData) {
-                console.log(`📦 Using cached Context7 troubleshooting for: ${problem}`);
+                // Using cached Context7 troubleshooting
                 return cachedData;
             }
             if (!this.isAvailable) {
@@ -364,7 +364,7 @@ export class Context7Broker {
                 }
             }
             // Make real Context7 MCP call
-            console.log(`🔄 Fetching real Context7 troubleshooting for: ${problem}`);
+            // Fetching real Context7 troubleshooting
             const guides = await this.fetchRealTroubleshootingGuides(problem);
             // Cache the results
             this.setCachedData(cacheKey, guides);

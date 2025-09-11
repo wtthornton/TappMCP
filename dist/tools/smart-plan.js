@@ -338,7 +338,7 @@ export async function handleSmartPlan(input) {
                     priority: validatedInput.businessContext?.goals?.length ? 'high' : 'medium',
                     maxResults: 3,
                 });
-                console.log(`🔍 Context7 enhanced smart_plan for: ${validatedInput.planType} planning (${validatedInput.improvementMode || 'standard'})`);
+                console.log(`Context7 enhanced smart_plan for: ${validatedInput.planType} planning (${validatedInput.improvementMode || 'standard'})`);
             }
             catch (error) {
                 console.warn('Context7 integration failed:', error);

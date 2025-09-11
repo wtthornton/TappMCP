@@ -8,6 +8,7 @@ import { SimpleAnalyzer } from '../core/simple-analyzer.js';
 import { SecurityScanner } from '../core/security-scanner.js';
 import { StaticAnalyzer } from '../core/static-analyzer.js';
 import { Context7ProjectAnalyzer } from '../core/context7-project-analyzer.js';
+import { UnifiedCodeIntelligenceEngine } from '../intelligence/UnifiedCodeIntelligenceEngine.js';
 
 // Input schema for smart_write tool
 const SmartWriteInputSchema = z.object({
@@ -34,6 +35,8 @@ const SmartWriteInputSchema = z.object({
       securityLevel: z.enum(['low', 'medium', 'high']).default('medium'),
     })
     .optional(),
+  // Quality level for UnifiedCodeIntelligenceEngine
+  quality: z.enum(['basic', 'standard', 'enterprise', 'production']).default('standard'),
   // New parameter for project path to enable real analysis
   projectPath: z.string().optional(),
   // New parameters for existing project modification
@@ -153,6 +156,12 @@ export const smartWriteTool: Tool = {
         description: 'Strategy for modifying existing files',
         default: 'backup-first',
       },
+      quality: {
+        type: 'string',
+        enum: ['basic', 'standard', 'enterprise', 'production'],
+        description: 'Quality level for code generation',
+        default: 'standard',
+      },
       externalSources: {
         type: 'object',
         properties: {
@@ -179,6 +188,9 @@ const context7Cache = new Context7Cache({
   enableHitTracking: true,
 });
 
+// UnifiedCodeIntelligenceEngine instance for advanced code generation
+const unifiedIntelligence = new UnifiedCodeIntelligenceEngine();
+
 // Simple execution logging
 let executionLog = {
   startTime: Date.now(),
@@ -192,8 +204,90 @@ function resetExecutionLog() {
   };
 }
 
-// Generate real, functional code with role-specific behavior
-function generateRealCode(input: { featureDescription: string; [key: string]: unknown }) {
+// Generate intelligent code using UnifiedCodeIntelligenceEngine
+interface IntelligentCodeResult {
+  files: Array<{
+    path: string;
+    content: string;
+    type: string;
+  }>;
+  dependencies: string[];
+  roleFocus: string;
+  intelligenceMetadata?: {
+    technology: string;
+    category: string;
+    qualityScore: any;
+    engineUsed: string;
+    processingTime: number;
+    context7Insights?: number;
+  };
+}
+
+async function generateIntelligentCode(input: {
+  featureDescription: string;
+  targetRole: string;
+  techStack?: string[];
+  quality?: string;
+  projectAnalysis?: any;
+  context7Insights?: any;
+  [key: string]: unknown;
+}): Promise<IntelligentCodeResult> {
+  try {
+    console.log(
+      `[smart-write] Using UnifiedCodeIntelligenceEngine for: ${input.featureDescription}`
+    );
+
+    // Create request for UnifiedCodeIntelligenceEngine
+    const codeRequest = {
+      featureDescription: input.featureDescription,
+      projectAnalysis: input.projectAnalysis,
+      techStack: input.techStack || [],
+      role: input.targetRole,
+      quality: input.quality || 'standard',
+    };
+
+    // Generate code using the unified intelligence system
+    const result = await unifiedIntelligence.generateCode(codeRequest);
+
+    console.log(
+      `[smart-write] Generated with ${result.category} engine (${result.technology}), quality score: ${result.qualityScore.overall}`
+    );
+
+    // Convert result to smart_write format
+    const featureName = input.featureDescription.toLowerCase().replace(/\s+/g, '_');
+    const fileExtension = getFileExtension(result.technology);
+
+    return {
+      files: [
+        {
+          path: `src/${featureName}${fileExtension}`,
+          content: result.code,
+          type: result.category,
+        },
+      ],
+      dependencies: getDependenciesForTechnology(result.technology),
+      roleFocus: getRoleFocus(input.targetRole),
+      intelligenceMetadata: {
+        technology: result.technology,
+        category: result.category,
+        qualityScore: result.qualityScore,
+        engineUsed: result.metadata.engineUsed,
+        processingTime: result.metadata.processingTime,
+        context7Insights: result.metadata.context7Insights || 0,
+      },
+    };
+  } catch (error) {
+    console.error('[smart-write] UnifiedCodeIntelligenceEngine failed:', error);
+    // Fallback to legacy generation for compatibility
+    return generateLegacyCode(input);
+  }
+}
+
+// Fallback to legacy code generation (simplified version of original)
+function generateLegacyCode(input: {
+  featureDescription: string;
+  [key: string]: unknown;
+}): IntelligentCodeResult {
   const featureName = input.featureDescription.toLowerCase().replace(/\s+/g, '_');
   const functionName = input.featureDescription.replace(/\s+/g, '');
   const role = input.targetRole || 'developer';
@@ -234,7 +328,11 @@ function generateHtmlContent(input: any, featureName: string, role: string) {
 }
 
 // Enhanced code generation with Context7 insights and project analysis
-function getEnhancedCodeWithInsights(input: any, functionName: string, role: string): string | null {
+function getEnhancedCodeWithInsights(
+  input: any,
+  functionName: string,
+  role: string
+): string | null {
   const { context7Insights, projectAnalysis } = input;
 
   if (!context7Insights && !projectAnalysis) {
@@ -271,7 +369,11 @@ function getEnhancedCodeWithInsights(input: any, functionName: string, role: str
   }
 
   // Generate function based on complexity requirements
-  const complexityLimit = projectAnalysis?.recommendations?.some((r: string) => r.includes('complexity')) ? 8 : 15;
+  const complexityLimit = projectAnalysis?.recommendations?.some((r: string) =>
+    r.includes('complexity')
+  )
+    ? 8
+    : 15;
 
   codeTemplate += `/**\n * ${featureDescription}\n`;
   if (context7Insights?.patterns?.length > 0) {
@@ -286,7 +388,12 @@ function getEnhancedCodeWithInsights(input: any, functionName: string, role: str
   } else if (role === 'operations-engineer') {
     codeTemplate += generateOpsOptimizedCode(functionName, featureDescription, context7Insights);
   } else {
-    codeTemplate += generateDeveloperOptimizedCode(functionName, featureDescription, context7Insights, projectAnalysis);
+    codeTemplate += generateDeveloperOptimizedCode(
+      functionName,
+      featureDescription,
+      context7Insights,
+      projectAnalysis
+    );
   }
 
   // Add error handling based on project analysis
@@ -299,7 +406,11 @@ function getEnhancedCodeWithInsights(input: any, functionName: string, role: str
 }
 
 // Generate QA-optimized code with testing focus
-function generateQAOptimizedCode(functionName: string, description: string, context7Insights: any): string {
+function generateQAOptimizedCode(
+  functionName: string,
+  description: string,
+  context7Insights: any
+): string {
   let code = `export function ${functionName}(input: any): { success: boolean; result: any; errors: string[] } {\n`;
   code += `  // QA-focused implementation with comprehensive validation\n`;
   code += `  const errors: string[] = [];\n\n`;
@@ -330,7 +441,11 @@ function generateQAOptimizedCode(functionName: string, description: string, cont
 }
 
 // Generate operations-optimized code with monitoring
-function generateOpsOptimizedCode(functionName: string, description: string, context7Insights: any): string {
+function generateOpsOptimizedCode(
+  functionName: string,
+  description: string,
+  context7Insights: any
+): string {
   let code = `export function ${functionName}(input: any): Promise<{ success: boolean; metrics: any; result: any }> {\n`;
   code += `  return new Promise((resolve) => {\n`;
   code += `    const startTime = Date.now();\n\n`;
@@ -358,7 +473,12 @@ function generateOpsOptimizedCode(functionName: string, description: string, con
 }
 
 // Generate developer-optimized code with project context
-function generateDeveloperOptimizedCode(functionName: string, description: string, context7Insights: any, projectAnalysis: any): string {
+function generateDeveloperOptimizedCode(
+  functionName: string,
+  description: string,
+  context7Insights: any,
+  projectAnalysis: any
+): string {
   let code = `export function ${functionName}(input: any): any {\n`;
 
   if (projectAnalysis?.techStack?.includes('typescript')) {
@@ -1138,6 +1258,52 @@ function getRoleFocus(role: string): string {
   }
 }
 
+// Get file extension based on technology
+function getFileExtension(technology: string): string {
+  const tech = technology.toLowerCase();
+
+  if (tech.includes('typescript') || tech.includes('ts')) return '.ts';
+  if (tech.includes('javascript') || tech.includes('js')) return '.js';
+  if (tech.includes('python')) return '.py';
+  if (tech.includes('java')) return '.java';
+  if (tech.includes('csharp') || tech.includes('c#')) return '.cs';
+  if (tech.includes('go')) return '.go';
+  if (tech.includes('rust')) return '.rs';
+  if (tech.includes('php')) return '.php';
+  if (tech.includes('ruby')) return '.rb';
+  if (tech.includes('html')) return '.html';
+  if (tech.includes('css')) return '.css';
+  if (tech.includes('sql') || tech.includes('postgresql') || tech.includes('mysql')) return '.sql';
+  if (tech.includes('mongodb')) return '.js'; // MongoDB queries are typically JS
+  if (tech.includes('react')) return '.tsx';
+  if (tech.includes('vue')) return '.vue';
+
+  // Default to TypeScript for unknown technologies
+  return '.ts';
+}
+
+// Get dependencies based on technology
+function getDependenciesForTechnology(technology: string): string[] {
+  const tech = technology.toLowerCase();
+  const deps: string[] = [];
+
+  if (tech.includes('typescript')) deps.push('typescript', '@types/node');
+  if (tech.includes('javascript')) deps.push('node');
+  if (tech.includes('react')) deps.push('react', '@types/react');
+  if (tech.includes('vue')) deps.push('vue');
+  if (tech.includes('angular')) deps.push('@angular/core');
+  if (tech.includes('express')) deps.push('express', '@types/express');
+  if (tech.includes('fastapi')) deps.push('fastapi', 'uvicorn');
+  if (tech.includes('django')) deps.push('django');
+  if (tech.includes('spring')) deps.push('spring-boot');
+  if (tech.includes('postgresql')) deps.push('pg', '@types/pg');
+  if (tech.includes('mysql')) deps.push('mysql2');
+  if (tech.includes('mongodb')) deps.push('mongodb');
+  if (tech.includes('redis')) deps.push('redis');
+
+  return deps.length > 0 ? deps : ['typescript']; // Default fallback
+}
+
 // Main tool handler
 export async function handleSmartWrite(input: unknown): Promise<{
   success: boolean;
@@ -1168,7 +1334,10 @@ export async function handleSmartWrite(input: unknown): Promise<{
         const context7ProjectAnalyzer = new Context7ProjectAnalyzer();
 
         // Run analysis first
-        projectAnalysis = await simpleAnalyzer.runBasicAnalysis(validatedInput.projectPath, 'quick');
+        projectAnalysis = await simpleAnalyzer.runBasicAnalysis(
+          validatedInput.projectPath,
+          'quick'
+        );
 
         // Use real analysis results to inform code generation
         if (projectAnalysis) {
@@ -1176,13 +1345,21 @@ export async function handleSmartWrite(input: unknown): Promise<{
           realQualityMetrics = {
             testCoverage: validatedInput.qualityRequirements?.testCoverage || 85,
             complexity: projectAnalysis.static.metrics.complexity,
-            securityScore: Math.max(0, 100 - projectAnalysis.security.summary.critical * 20 - projectAnalysis.security.summary.high * 10),
+            securityScore: Math.max(
+              0,
+              100 -
+                projectAnalysis.security.summary.critical * 20 -
+                projectAnalysis.security.summary.high * 10
+            ),
             maintainability: projectAnalysis.static.metrics.maintainability,
           };
 
           // Get Context7 project-aware insights
-          context7ProjectData = await context7ProjectAnalyzer.getProjectAwareContext(projectAnalysis);
-          console.log(`🎯 Context7 project analysis generated ${context7ProjectData.topics.length} topics in ${context7ProjectData.metadata.fetchTime}ms`);
+          context7ProjectData =
+            await context7ProjectAnalyzer.getProjectAwareContext(projectAnalysis);
+          console.log(
+            `🎯 Context7 project analysis generated ${context7ProjectData.topics.length} topics in ${context7ProjectData.metadata.fetchTime}ms`
+          );
         }
       } catch (error) {
         console.warn('Project analysis failed:', error);
@@ -1225,7 +1402,7 @@ export async function handleSmartWrite(input: unknown): Promise<{
         });
 
         console.log(
-          `🔍 Context7 enhanced smart_write for: ${validatedInput.featureDescription} (${validatedInput.writeMode})`
+          `Context7 enhanced smart_write for: ${validatedInput.featureDescription} (${validatedInput.writeMode})`
         );
       } catch (error) {
         console.warn('Context7 integration failed:', error);
@@ -1239,23 +1416,31 @@ export async function handleSmartWrite(input: unknown): Promise<{
     const enhancedInput = {
       ...validatedInput,
       featureDescription: validatedInput.featureDescription, // Ensure required field is present
-      projectAnalysis: projectAnalysis ? {
-        techStack: projectAnalysis.project.detectedTechStack,
-        qualityIssues: projectAnalysis.project.qualityIssues,
-        recommendations: projectAnalysis.summary.recommendations,
-        securityLevel: projectAnalysis.summary.status === 'fail' ? 'high' :
-                      projectAnalysis.summary.status === 'warning' ? 'medium' : 'low'
-      } : null,
-      context7Insights: context7ProjectData ? {
-        patterns: context7ProjectData.insights.patterns,
-        bestPractices: context7ProjectData.insights.bestPractices,
-        warnings: context7ProjectData.insights.warnings,
-        recommendations: context7ProjectData.insights.recommendations,
-        techStackSpecific: context7ProjectData.insights.techStackSpecific
-      } : null
+      projectAnalysis: projectAnalysis
+        ? {
+            techStack: projectAnalysis.project.detectedTechStack,
+            qualityIssues: projectAnalysis.project.qualityIssues,
+            recommendations: projectAnalysis.summary.recommendations,
+            securityLevel:
+              projectAnalysis.summary.status === 'fail'
+                ? 'high'
+                : projectAnalysis.summary.status === 'warning'
+                  ? 'medium'
+                  : 'low',
+          }
+        : null,
+      context7Insights: context7ProjectData
+        ? {
+            patterns: context7ProjectData.insights.patterns,
+            bestPractices: context7ProjectData.insights.bestPractices,
+            warnings: context7ProjectData.insights.warnings,
+            recommendations: context7ProjectData.insights.recommendations,
+            techStackSpecific: context7ProjectData.insights.techStackSpecific,
+          }
+        : null,
     };
 
-    const generatedCode = generateRealCode(enhancedInput);
+    const generatedCode = await generateIntelligentCode(enhancedInput);
 
     // Update execution log
     executionLog.duration = Date.now() - startTime;
@@ -1285,8 +1470,15 @@ export async function handleSmartWrite(input: unknown): Promise<{
       technicalMetrics: {
         responseTime: executionLog.duration,
         generationTime: Math.max(1, executionLog.duration - 5),
-        linesGenerated: 50,
+        linesGenerated: generatedCode.files[0]?.content?.split('\n').length || 50,
         filesCreated: generatedCode.files.length,
+      },
+      // New intelligence metadata from UnifiedCodeIntelligenceEngine
+      intelligenceMetrics: generatedCode.intelligenceMetadata || {
+        technology: 'legacy',
+        category: 'generic',
+        engineUsed: 'legacy-fallback',
+        processingTime: executionLog.duration,
       },
       externalIntegration: {
         context7Status: validatedInput.externalSources?.useContext7 ? 'active' : 'disabled',
@@ -1300,29 +1492,33 @@ export async function handleSmartWrite(input: unknown): Promise<{
           : null,
         cacheStats: context7Cache.getCacheStats(),
       },
-      analysisIntegration: projectAnalysis ? {
-        analysisPerformed: true,
-        securityStatus: projectAnalysis.security.status,
-        staticStatus: projectAnalysis.static.status,
-        overallScore: projectAnalysis.summary.overallScore,
-        criticalIssues: projectAnalysis.summary.criticalIssues,
-        recommendations: projectAnalysis.summary.recommendations.slice(0, 3)
-      } : {
-        analysisPerformed: false,
-        message: 'Provide projectPath to enable real analysis'
-      },
-      context7ProjectIntegration: context7ProjectData ? {
-        context7ProjectAnalysisPerformed: true,
-        topicsGenerated: context7ProjectData.topics.length,
-        insightsCount: context7ProjectData.data.length,
-        patterns: context7ProjectData.insights.patterns.slice(0, 3),
-        warnings: context7ProjectData.insights.warnings,
-        techStackInsights: Object.keys(context7ProjectData.insights.techStackSpecific).length,
-        fetchTime: context7ProjectData.metadata.fetchTime
-      } : {
-        context7ProjectAnalysisPerformed: false,
-        message: 'Project analysis required for Context7 project insights'
-      },
+      analysisIntegration: projectAnalysis
+        ? {
+            analysisPerformed: true,
+            securityStatus: projectAnalysis.security.status,
+            staticStatus: projectAnalysis.static.status,
+            overallScore: projectAnalysis.summary.overallScore,
+            criticalIssues: projectAnalysis.summary.criticalIssues,
+            recommendations: projectAnalysis.summary.recommendations.slice(0, 3),
+          }
+        : {
+            analysisPerformed: false,
+            message: 'Provide projectPath to enable real analysis',
+          },
+      context7ProjectIntegration: context7ProjectData
+        ? {
+            context7ProjectAnalysisPerformed: true,
+            topicsGenerated: context7ProjectData.topics.length,
+            insightsCount: context7ProjectData.data.length,
+            patterns: context7ProjectData.insights.patterns.slice(0, 3),
+            warnings: context7ProjectData.insights.warnings,
+            techStackInsights: Object.keys(context7ProjectData.insights.techStackSpecific).length,
+            fetchTime: context7ProjectData.metadata.fetchTime,
+          }
+        : {
+            context7ProjectAnalysisPerformed: false,
+            message: 'Project analysis required for Context7 project insights',
+          },
     };
 
     return {
