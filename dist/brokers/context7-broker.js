@@ -8,32 +8,103 @@
  * - Best practices
  * - Troubleshooting guides
  */
+import { Context7HttpClient } from './context7-http-client.js';
+import { Context7MCPClient } from './context7-mcp-client.js';
+import { LRUCache } from 'lru-cache';
+import { writeFile, readFile, mkdir } from 'fs/promises';
+import { existsSync } from 'fs';
 /**
  * Context7 Broker for external knowledge integration
  */
 export class Context7Broker {
     config;
+    httpClient;
+    mcpClient;
     isAvailable = false;
-    cache = new Map();
+    cache;
+    cacheFile = './cache/context7-cache.json';
     constructor(config = {}) {
+        // Public Context7 API credentials - not secret
+        const DEFAULT_API_KEY = 'ctx7sk-45825e15-2f53-459e-8688-8c14b0604d02';
+        const DEFAULT_BASE_URL = 'https://context7.com/api/v1';
+        const DEFAULT_MCP_URL = 'https://mcp.context7.com/mcp';
         this.config = {
-            apiUrl: config.apiUrl ?? 'https://mcp.context7.com/mcp',
+            apiUrl: config.apiUrl ?? DEFAULT_MCP_URL,
+            apiKey: config.apiKey ?? process.env.CONTEXT7_API_KEY ?? DEFAULT_API_KEY,
+            baseUrl: config.baseUrl ?? process.env.CONTEXT7_BASE_URL ?? DEFAULT_BASE_URL,
             timeout: config.timeout ?? 5000,
             maxRetries: config.maxRetries ?? 2,
             enableFallback: config.enableFallback ?? true,
             enableCache: config.enableCache ?? true,
-            cacheExpiryHours: config.cacheExpiryHours ?? 36,
+            cacheExpiryHours: config.cacheExpiryHours ?? 30 * 24, // 30 DAYS
+            rateLimit: config.rateLimit ?? {
+                requestsPerMinute: 60,
+                burstLimit: 10,
+            },
+            retryPolicy: config.retryPolicy ?? {
+                maxRetries: 3,
+                baseDelay: 1000,
+                maxDelay: 10000,
+                backoffMultiplier: 2,
+            },
         };
-        // Check if Context7 MCP tools are available
-        this.isAvailable = this.checkMCPAvailability();
+        // Initialize HTTP client
+        const httpConfig = {
+            baseURL: this.config.baseUrl || this.config.apiUrl || 'https://mcp.context7.com',
+            apiKey: this.config.apiKey,
+            timeout: this.config.timeout,
+            rateLimit: {
+                ...this.config.rateLimit,
+                currentRequests: 0,
+                lastResetTime: Date.now(),
+            },
+            retryPolicy: this.config.retryPolicy,
+        };
+        this.httpClient = new Context7HttpClient(httpConfig);
+        // Initialize MCP client
+        const mcpConfig = {
+            apiKey: this.config.apiKey || DEFAULT_API_KEY,
+            mcpUrl: this.config.apiUrl || DEFAULT_MCP_URL,
+            timeout: this.config.timeout
+        };
+        this.mcpClient = new Context7MCPClient(mcpConfig);
+        // Initialize LRU cache (prevents memory leaks)
+        this.cache = new LRUCache({
+            max: 1000, // Max 1000 entries
+            ttl: Math.max(1, Math.floor(this.config.cacheExpiryHours * 60 * 60 * 1000)), // TTL in milliseconds, minimum 1ms
+            updateAgeOnGet: true, // Update access time on get
+            allowStale: false, // Don't return stale entries
+        });
+        // Load cache on startup
+        this.loadCache();
+        // Check if Context7 MCP tools are available (async)
+        this.checkMCPAvailability().then(available => {
+            this.isAvailable = available;
+        }).catch(() => {
+            this.isAvailable = false;
+        });
     }
     /**
      * Check if Context7 MCP tools are available
      */
-    checkMCPAvailability() {
-        // For now, always return true to enable real Context7 integration
-        // In a real implementation, this would check if MCP tools are actually available
-        return true;
+    async checkMCPAvailability() {
+        try {
+            // Try to connect to MCP server first
+            if (!this.mcpClient.isClientConnected()) {
+                await this.mcpClient.connect();
+            }
+            // Check MCP health
+            const mcpHealthy = await this.mcpClient.healthCheck();
+            if (mcpHealthy) {
+                return true;
+            }
+            // Fallback to HTTP health check
+            return await this.httpClient.healthCheck();
+        }
+        catch (error) {
+            console.warn('Context7 service health check failed:', error);
+            return false;
+        }
     }
     /**
      * Get cached data if available and not expired
@@ -44,6 +115,7 @@ export class Context7Broker {
         const cached = this.cache.get(key);
         if (!cached)
             return null;
+        // LRU cache handles expiry automatically, but keep manual check for compatibility
         const now = Date.now();
         if (now > cached.expiry) {
             this.cache.delete(key);
@@ -59,11 +131,48 @@ export class Context7Broker {
             return;
         const now = Date.now();
         const expiry = now + this.config.cacheExpiryHours * 60 * 60 * 1000;
+        // LRU cache handles size limits automatically
         this.cache.set(key, {
             data,
             timestamp: now,
             expiry,
         });
+        // Auto-save every 10 cache writes
+        if (this.cache.size % 10 === 0) {
+            this.saveCache();
+        }
+    }
+    /**
+     * Save cache to file
+     */
+    async saveCache() {
+        try {
+            if (!existsSync('./cache')) {
+                await mkdir('./cache', { recursive: true });
+            }
+            const cacheData = Array.from(this.cache.entries());
+            await writeFile(this.cacheFile, JSON.stringify(cacheData, null, 2));
+        }
+        catch (error) {
+            console.warn('Failed to save cache:', error);
+        }
+    }
+    /**
+     * Load cache from file
+     */
+    async loadCache() {
+        try {
+            if (!existsSync(this.cacheFile))
+                return;
+            const data = await readFile(this.cacheFile, 'utf8');
+            const cacheData = JSON.parse(data);
+            for (const [key, value] of cacheData) {
+                this.cache.set(key, value);
+            }
+        }
+        catch (error) {
+            console.warn('Failed to load cache:', error);
+        }
     }
     /**
      * Get documentation for a specific topic
@@ -106,38 +215,117 @@ export class Context7Broker {
      * Fetch real documentation from Context7 MCP
      */
     async fetchRealDocumentation(topic, version) {
-        // Map topic to Context7 library ID
-        const libraryId = this.mapTopicToLibraryId(topic);
-        if (!libraryId) {
-            throw new Error(`No Context7 library found for topic: ${topic}`);
+        try {
+            // First resolve the library ID using Context7 MCP tool
+            const libraryId = await this.resolveLibraryId(topic);
+            if (!libraryId) {
+                throw new Error(`No Context7 library found for topic: ${topic}`);
+            }
+            // Get documentation using Context7 MCP tool
+            const docs = await this.getLibraryDocs(libraryId, topic, version);
+            // Transform the response to match our interface
+            return docs.map((doc) => ({
+                id: doc.id || `doc-${topic}-${Date.now()}`,
+                title: doc.title || `${topic} Documentation`,
+                content: doc.content || doc.description || '',
+                url: doc.url || doc.link,
+                version: doc.version || (version ?? 'latest'),
+                lastUpdated: doc.lastUpdated ? new Date(doc.lastUpdated) : new Date(),
+                relevanceScore: doc.relevanceScore || doc.score || 0.8,
+            }));
         }
-        // Note: In a real implementation, this would call the Context7 MCP tools
-        // For now, we'll simulate the structure that would come from real MCP calls
-        // This is where we would integrate with the actual MCP Context7 tools
-        const mockRealDocs = [
-            {
-                id: `real-doc-${topic}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-                title: `${topic} Real Documentation`,
-                content: `Real documentation from Context7 for ${topic}. This contains actual external knowledge and best practices.`,
-                url: `https://context7.com/docs/${topic}`,
-                version: version ?? 'latest',
-                lastUpdated: new Date(),
-                relevanceScore: 0.95,
-            },
-            {
-                id: `real-doc-${topic}-examples-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-                title: `${topic} Code Examples`,
-                content: `Real code examples and patterns from Context7 for ${topic}. These are actual working examples from the community.`,
-                url: `https://context7.com/examples/${topic}`,
-                version: version ?? 'latest',
-                lastUpdated: new Date(),
-                relevanceScore: 0.88,
-            },
-        ];
-        return mockRealDocs;
+        catch (error) {
+            console.error('Error fetching real documentation from Context7:', error);
+            throw new Error(`Context7 documentation fetch failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
     }
     /**
-     * Map topic to Context7 library ID
+     * Resolve library ID using Context7 search API
+     */
+    async resolveLibraryId(topic) {
+        try {
+            // Try MCP client first
+            if (this.mcpClient.isClientConnected()) {
+                const libraryId = await this.mcpClient.resolveLibraryId(topic);
+                if (libraryId) {
+                    return libraryId;
+                }
+            }
+            // Fallback to HTTP client using search API
+            const response = await this.httpClient.get('/search', {
+                query: topic
+            });
+            if (!response.success || !response.data?.results || response.data.results.length === 0) {
+                console.warn(`No libraries found for topic: ${topic}`);
+                return null;
+            }
+            // Return the first result's ID (most relevant)
+            const firstResult = response.data.results[0];
+            return firstResult.id || null;
+        }
+        catch (error) {
+            console.warn(`Error resolving library ID for ${topic}:`, error);
+            return null;
+        }
+    }
+    /**
+     * Get library documentation using Context7 library API
+     */
+    async getLibraryDocs(libraryId, topic, version) {
+        try {
+            // Try MCP client first
+            if (this.mcpClient.isClientConnected()) {
+                const docs = await this.mcpClient.getLibraryDocs(libraryId, topic, version ?? 'latest');
+                if (docs.length > 0) {
+                    return docs;
+                }
+            }
+            // Fallback to HTTP client using library-specific endpoint
+            // Convert libraryId from "/owner/repo" to "owner/repo"
+            const cleanLibraryId = libraryId.startsWith('/') ? libraryId.slice(1) : libraryId;
+            const response = await this.httpClient.get(`/${cleanLibraryId}`, {
+                type: 'json',
+                topic: topic,
+                tokens: 4000
+            });
+            if (!response.success || !response.data) {
+                throw new Error(response.error || 'Failed to fetch library documentation');
+            }
+            // Transform Context7 API response to our format
+            const snippets = response.data.snippets || [];
+            const qaItems = response.data.qaItems || [];
+            // Combine snippets and QA items
+            const docs = [
+                ...snippets.map((snippet) => ({
+                    id: snippet.codeId || `snippet-${Date.now()}`,
+                    title: snippet.codeTitle || 'Code Example',
+                    content: snippet.codeDescription || '',
+                    code: snippet.codeList?.[0]?.code || '',
+                    language: snippet.codeLanguage || 'javascript',
+                    url: snippet.codeId,
+                    version: version ?? 'latest',
+                    lastUpdated: new Date(),
+                    relevanceScore: snippet.relevance || 0.8,
+                })),
+                ...qaItems.map((qa, index) => ({
+                    id: `qa-${index}-${Date.now()}`,
+                    title: qa.question || 'Q&A Item',
+                    content: qa.answer || '',
+                    url: qa.url,
+                    version: version ?? 'latest',
+                    lastUpdated: new Date(),
+                    relevanceScore: 0.7,
+                }))
+            ];
+            return docs;
+        }
+        catch (error) {
+            console.error('Error fetching library docs:', error);
+            throw error;
+        }
+    }
+    /**
+     * Map topic to Context7 library ID (fallback method)
      */
     mapTopicToLibraryId(topic) {
         const topicMap = {
@@ -216,39 +404,28 @@ export class Context7Broker {
      */
     async fetchRealCodeExamples(technology, pattern) {
         try {
-            const libraryId = this.mapTopicToLibraryId(technology);
+            // First resolve the library ID using Context7 MCP tool
+            const libraryId = await this.resolveLibraryId(technology);
             if (!libraryId) {
                 throw new Error(`No Context7 library found for technology: ${technology}`);
             }
-            // Note: In a real implementation, this would call the Context7 MCP tools
-            // For now, we'll simulate the structure that would come from real MCP calls
-            const mockRealExamples = [
-                {
-                    id: `real-example-${technology}-${pattern}-${Date.now()}`,
-                    title: `Real ${pattern} Pattern in ${technology}`,
-                    code: `// Real ${pattern} pattern implementation from Context7\n// This contains actual working code examples\nfunction ${pattern}Example() {\n  // Real implementation from Context7\n  return 'real example';\n}`,
-                    language: technology.toLowerCase(),
-                    description: `Real example implementation of ${pattern} pattern using ${technology} from Context7`,
-                    tags: [technology.toLowerCase(), pattern.toLowerCase(), 'pattern', 'example', 'real'],
-                    difficulty: 'intermediate',
-                    relevanceScore: 0.92,
-                },
-                {
-                    id: `real-example-${technology}-${pattern}-advanced-${Date.now()}`,
-                    title: `Real Advanced ${pattern} in ${technology}`,
-                    code: `// Real advanced ${pattern} implementation from Context7\n// Production-ready example with real error handling\nclass Advanced${pattern} {\n  constructor() {\n    // Real advanced setup from Context7\n  }\n}`,
-                    language: technology.toLowerCase(),
-                    description: `Real advanced production-ready implementation of ${pattern} in ${technology} from Context7`,
-                    tags: [technology.toLowerCase(), pattern.toLowerCase(), 'advanced', 'production', 'real'],
-                    difficulty: 'advanced',
-                    relevanceScore: 0.85,
-                },
-            ];
-            return mockRealExamples;
+            // Get documentation with pattern-specific topic
+            const docs = await this.getLibraryDocs(libraryId, `${technology} ${pattern}`, 'latest');
+            // Transform documentation into code examples
+            return docs.map((doc, index) => ({
+                id: `example-${technology}-${pattern}-${Date.now()}-${index}`,
+                title: doc.title || `${pattern} Example in ${technology}`,
+                code: doc.content || doc.code || '',
+                language: technology.toLowerCase(),
+                description: doc.description || doc.summary || '',
+                tags: [technology.toLowerCase(), pattern.toLowerCase()],
+                difficulty: 'intermediate',
+                relevanceScore: 0.8,
+            }));
         }
         catch (error) {
             console.error('Error fetching real Context7 code examples:', error);
-            throw error;
+            throw new Error(`Context7 code examples fetch failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     }
     /**
@@ -293,53 +470,28 @@ export class Context7Broker {
      */
     async fetchRealBestPractices(domain) {
         try {
-            const libraryId = this.mapTopicToLibraryId(domain);
+            // First resolve the library ID using Context7 MCP tool
+            const libraryId = await this.resolveLibraryId(domain);
             if (!libraryId) {
                 throw new Error(`No Context7 library found for domain: ${domain}`);
             }
-            // Note: In a real implementation, this would call the Context7 MCP tools
-            // For now, we'll simulate the structure that would come from real MCP calls
-            const mockRealPractices = [
-                {
-                    id: `real-bp-${domain}-security-${Date.now()}`,
-                    title: `Real ${domain} Security Best Practices`,
-                    description: `Real security practices for ${domain} development from Context7 including input validation, authentication, and data protection.`,
-                    category: 'security',
-                    priority: 'high',
-                    applicableScenarios: ['production deployment', 'user authentication', 'data handling'],
-                    benefits: ['Reduced security vulnerabilities', 'Compliance adherence', 'User trust'],
-                    relevanceScore: 0.94,
-                },
-                {
-                    id: `real-bp-${domain}-performance-${Date.now()}`,
-                    title: `Real ${domain} Performance Optimization`,
-                    description: `Real performance optimization strategies for ${domain} from Context7 including caching, lazy loading, and resource optimization.`,
-                    category: 'performance',
-                    priority: 'medium',
-                    applicableScenarios: [
-                        'high-traffic applications',
-                        'mobile optimization',
-                        'resource constraints',
-                    ],
-                    benefits: ['Faster load times', 'Better user experience', 'Reduced server costs'],
-                    relevanceScore: 0.87,
-                },
-                {
-                    id: `real-bp-${domain}-maintainability-${Date.now()}`,
-                    title: `Real ${domain} Code Maintainability`,
-                    description: `Real code organization and maintainability practices for ${domain} from Context7 including clean architecture and documentation.`,
-                    category: 'maintainability',
-                    priority: 'medium',
-                    applicableScenarios: ['long-term projects', 'team development', 'code reviews'],
-                    benefits: ['Easier debugging', 'Faster feature development', 'Reduced technical debt'],
-                    relevanceScore: 0.83,
-                },
-            ];
-            return mockRealPractices;
+            // Get documentation with best practices topic
+            const docs = await this.getLibraryDocs(libraryId, `${domain} best practices`, 'latest');
+            // Transform documentation into best practices
+            return docs.map((doc, index) => ({
+                id: `bp-${domain}-${Date.now()}-${index}`,
+                title: doc.title || `${domain} Best Practice`,
+                description: doc.content || doc.description || '',
+                category: 'general',
+                priority: 'medium',
+                applicableScenarios: ['general development'],
+                benefits: ['improved code quality'],
+                relevanceScore: 0.8,
+            }));
         }
         catch (error) {
             console.error('Error fetching real Context7 best practices:', error);
-            throw error;
+            throw new Error(`Context7 best practices fetch failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     }
     /**
@@ -384,46 +536,33 @@ export class Context7Broker {
      */
     async fetchRealTroubleshootingGuides(problem) {
         try {
-            // Note: In a real implementation, this would call the Context7 MCP tools
-            // For now, we'll simulate the structure that would come from real MCP calls
-            const mockRealGuides = [
-                {
-                    id: `real-guide-${problem.replace(/\s+/g, '-')}-${Date.now()}`,
-                    problem: `Real common issues with ${problem}`,
-                    solutions: [
-                        {
-                            description: `Real primary solution for ${problem} from Context7`,
-                            steps: [
-                                'Identify the root cause using Context7 insights',
-                                'Check configuration settings with real examples',
-                                'Verify dependencies with actual version info',
-                                'Apply the fix using proven methods',
-                                'Test the solution with real test cases',
-                            ],
-                            difficulty: 'medium',
-                            successRate: 0.85,
-                        },
-                        {
-                            description: `Real alternative solution for ${problem} from Context7`,
-                            steps: [
-                                'Try alternative approach from Context7',
-                                'Check system logs with real examples',
-                                'Restart services if needed with proper procedures',
-                                'Monitor for improvements with real metrics',
-                            ],
-                            difficulty: 'easy',
-                            successRate: 0.72,
-                        },
-                    ],
-                    relatedIssues: ['configuration errors', 'dependency conflicts', 'version compatibility'],
-                    relevanceScore: 0.89,
-                },
-            ];
-            return mockRealGuides;
+            // Extract technology from problem for library resolution
+            const techKeywords = ['react', 'typescript', 'javascript', 'node', 'next', 'vue', 'angular'];
+            const technology = techKeywords.find(tech => problem.toLowerCase().includes(tech)) || 'javascript';
+            // First resolve the library ID using Context7 MCP tool
+            const libraryId = await this.resolveLibraryId(technology);
+            if (!libraryId) {
+                throw new Error(`No Context7 library found for technology: ${technology}`);
+            }
+            // Get documentation with troubleshooting topic
+            const docs = await this.getLibraryDocs(libraryId, `troubleshooting ${problem}`, 'latest');
+            // Transform documentation into troubleshooting guides
+            return docs.map((doc, index) => ({
+                id: `guide-${problem.replace(/\s+/g, '-')}-${Date.now()}-${index}`,
+                problem: problem,
+                solutions: [{
+                        description: doc.title || `Solution for ${problem}`,
+                        steps: doc.content ? doc.content.split('\n').filter((line) => line.trim()) : [],
+                        difficulty: 'medium',
+                        successRate: 0.8,
+                    }],
+                relatedIssues: [],
+                relevanceScore: 0.8,
+            }));
         }
         catch (error) {
             console.error('Error fetching real Context7 troubleshooting guides:', error);
-            throw error;
+            throw new Error(`Context7 troubleshooting guides fetch failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     }
     /**
@@ -477,11 +616,34 @@ export class Context7Broker {
     async checkAvailability() {
         try {
             // Check if MCP tools are available
-            return this.isAvailable;
+            return await this.httpClient.healthCheck();
         }
         catch {
             return false;
         }
+    }
+    /**
+     * Get cache statistics
+     */
+    getCacheStats() {
+        return {
+            size: this.cache.size,
+            maxSize: this.cache.max,
+            hitRate: 'N/A', // LRU doesn't track hits by default
+            memoryUsage: 'N/A', // Would need custom tracking
+        };
+    }
+    /**
+     * Check if cache is healthy
+     */
+    isCacheHealthy() {
+        return this.cache.size < this.cache.max * 0.9; // Healthy if under 90% capacity
+    }
+    /**
+     * Clear cache
+     */
+    clearCache() {
+        this.cache.clear();
     }
     /**
      * Validate response time meets performance requirements

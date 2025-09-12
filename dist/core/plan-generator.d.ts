@@ -17,20 +17,20 @@ export declare const PlanPhaseSchema: z.ZodObject<{
         assignedTo: z.ZodOptional<z.ZodString>;
         status: z.ZodDefault<z.ZodEnum<["pending", "in_progress", "completed"]>>;
     }, "strip", z.ZodTypeAny, {
-        priority: "low" | "medium" | "high" | "critical";
-        id: string;
-        description: string;
+        priority: "critical" | "low" | "medium" | "high";
+        type: "development" | "testing" | "deployment" | "documentation" | "research";
         status: "pending" | "completed" | "in_progress";
         name: string;
-        type: "development" | "testing" | "deployment" | "documentation" | "research";
+        description: string;
+        id: string;
         estimatedHours: number;
         assignedTo?: string | undefined;
     }, {
-        priority: "low" | "medium" | "high" | "critical";
-        id: string;
-        description: string;
-        name: string;
+        priority: "critical" | "low" | "medium" | "high";
         type: "development" | "testing" | "deployment" | "documentation" | "research";
+        name: string;
+        description: string;
+        id: string;
         estimatedHours: number;
         status?: "pending" | "completed" | "in_progress" | undefined;
         assignedTo?: string | undefined;
@@ -39,40 +39,40 @@ export declare const PlanPhaseSchema: z.ZodObject<{
     risks: z.ZodArray<z.ZodString, "many">;
     milestones: z.ZodArray<z.ZodString, "many">;
 }, "strip", z.ZodTypeAny, {
-    id: string;
-    description: string;
     name: string;
+    description: string;
+    id: string;
     startDate: string;
     endDate: string;
     duration: number;
     deliverables: string[];
     milestones: string[];
     tasks: {
-        priority: "low" | "medium" | "high" | "critical";
-        id: string;
-        description: string;
+        priority: "critical" | "low" | "medium" | "high";
+        type: "development" | "testing" | "deployment" | "documentation" | "research";
         status: "pending" | "completed" | "in_progress";
         name: string;
-        type: "development" | "testing" | "deployment" | "documentation" | "research";
+        description: string;
+        id: string;
         estimatedHours: number;
         assignedTo?: string | undefined;
     }[];
     risks: string[];
 }, {
-    id: string;
-    description: string;
     name: string;
+    description: string;
+    id: string;
     startDate: string;
     endDate: string;
     duration: number;
     deliverables: string[];
     milestones: string[];
     tasks: {
-        priority: "low" | "medium" | "high" | "critical";
-        id: string;
-        description: string;
-        name: string;
+        priority: "critical" | "low" | "medium" | "high";
         type: "development" | "testing" | "deployment" | "documentation" | "research";
+        name: string;
+        description: string;
+        id: string;
         estimatedHours: number;
         status?: "pending" | "completed" | "in_progress" | undefined;
         assignedTo?: string | undefined;
@@ -129,17 +129,17 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
             dependencies: z.ZodArray<z.ZodString, "many">;
             complexity: z.ZodEnum<["low", "medium", "high"]>;
         }, "strip", z.ZodTypeAny, {
-            description: string;
+            type: "database" | "service" | "frontend" | "backend" | "external";
             name: string;
+            description: string;
             complexity: "low" | "medium" | "high";
             dependencies: string[];
-            type: "database" | "service" | "frontend" | "backend" | "external";
         }, {
-            description: string;
+            type: "database" | "service" | "frontend" | "backend" | "external";
             name: string;
+            description: string;
             complexity: "low" | "medium" | "high";
             dependencies: string[];
-            type: "database" | "service" | "frontend" | "backend" | "external";
         }>, "many">;
         patterns: z.ZodArray<z.ZodString, "many">;
         technologies: z.ZodArray<z.ZodObject<{
@@ -147,12 +147,12 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
             category: z.ZodEnum<["language", "framework", "database", "tool", "service"]>;
             justification: z.ZodString;
         }, "strip", z.ZodTypeAny, {
-            category: "database" | "language" | "service" | "tool" | "framework";
             name: string;
+            category: "database" | "language" | "service" | "tool" | "framework";
             justification: string;
         }, {
-            category: "database" | "language" | "service" | "tool" | "framework";
             name: string;
+            category: "database" | "language" | "service" | "tool" | "framework";
             justification: string;
         }>, "many">;
         constraints: z.ZodArray<z.ZodString, "many">;
@@ -160,31 +160,31 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         patterns: string[];
         constraints: string[];
         technologies: {
-            category: "database" | "language" | "service" | "tool" | "framework";
             name: string;
+            category: "database" | "language" | "service" | "tool" | "framework";
             justification: string;
         }[];
         components: {
-            description: string;
+            type: "database" | "service" | "frontend" | "backend" | "external";
             name: string;
+            description: string;
             complexity: "low" | "medium" | "high";
             dependencies: string[];
-            type: "database" | "service" | "frontend" | "backend" | "external";
         }[];
     }, {
         patterns: string[];
         constraints: string[];
         technologies: {
-            category: "database" | "language" | "service" | "tool" | "framework";
             name: string;
+            category: "database" | "language" | "service" | "tool" | "framework";
             justification: string;
         }[];
         components: {
-            description: string;
+            type: "database" | "service" | "frontend" | "backend" | "external";
             name: string;
+            description: string;
             complexity: "low" | "medium" | "high";
             dependencies: string[];
-            type: "database" | "service" | "frontend" | "backend" | "external";
         }[];
     }>;
     phases: z.ZodArray<z.ZodObject<{
@@ -204,20 +204,20 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
             assignedTo: z.ZodOptional<z.ZodString>;
             status: z.ZodDefault<z.ZodEnum<["pending", "in_progress", "completed"]>>;
         }, "strip", z.ZodTypeAny, {
-            priority: "low" | "medium" | "high" | "critical";
-            id: string;
-            description: string;
+            priority: "critical" | "low" | "medium" | "high";
+            type: "development" | "testing" | "deployment" | "documentation" | "research";
             status: "pending" | "completed" | "in_progress";
             name: string;
-            type: "development" | "testing" | "deployment" | "documentation" | "research";
+            description: string;
+            id: string;
             estimatedHours: number;
             assignedTo?: string | undefined;
         }, {
-            priority: "low" | "medium" | "high" | "critical";
-            id: string;
-            description: string;
-            name: string;
+            priority: "critical" | "low" | "medium" | "high";
             type: "development" | "testing" | "deployment" | "documentation" | "research";
+            name: string;
+            description: string;
+            id: string;
             estimatedHours: number;
             status?: "pending" | "completed" | "in_progress" | undefined;
             assignedTo?: string | undefined;
@@ -226,40 +226,40 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         risks: z.ZodArray<z.ZodString, "many">;
         milestones: z.ZodArray<z.ZodString, "many">;
     }, "strip", z.ZodTypeAny, {
-        id: string;
-        description: string;
         name: string;
+        description: string;
+        id: string;
         startDate: string;
         endDate: string;
         duration: number;
         deliverables: string[];
         milestones: string[];
         tasks: {
-            priority: "low" | "medium" | "high" | "critical";
-            id: string;
-            description: string;
+            priority: "critical" | "low" | "medium" | "high";
+            type: "development" | "testing" | "deployment" | "documentation" | "research";
             status: "pending" | "completed" | "in_progress";
             name: string;
-            type: "development" | "testing" | "deployment" | "documentation" | "research";
+            description: string;
+            id: string;
             estimatedHours: number;
             assignedTo?: string | undefined;
         }[];
         risks: string[];
     }, {
-        id: string;
-        description: string;
         name: string;
+        description: string;
+        id: string;
         startDate: string;
         endDate: string;
         duration: number;
         deliverables: string[];
         milestones: string[];
         tasks: {
-            priority: "low" | "medium" | "high" | "critical";
-            id: string;
-            description: string;
-            name: string;
+            priority: "critical" | "low" | "medium" | "high";
             type: "development" | "testing" | "deployment" | "documentation" | "research";
+            name: string;
+            description: string;
+            id: string;
             estimatedHours: number;
             status?: "pending" | "completed" | "in_progress" | undefined;
             assignedTo?: string | undefined;
@@ -277,20 +277,20 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         priority: z.ZodEnum<["low", "medium", "high", "critical"]>;
         estimatedEffort: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
-        priority: "low" | "medium" | "high" | "critical";
+        priority: "critical" | "low" | "medium" | "high";
+        description: string;
         id: string;
         title: string;
-        description: string;
         estimatedEffort: number;
         asA: string;
         iWant: string;
         soThat: string;
         acceptanceCriteria: string[];
     }, {
-        priority: "low" | "medium" | "high" | "critical";
+        priority: "critical" | "low" | "medium" | "high";
+        description: string;
         id: string;
         title: string;
-        description: string;
         estimatedEffort: number;
         asA: string;
         iWant: string;
@@ -307,21 +307,21 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         severity: z.ZodEnum<["low", "medium", "high", "critical"]>;
         mitigation: z.ZodArray<z.ZodString, "many">;
     }, "strip", z.ZodTypeAny, {
-        id: string;
-        description: string;
-        category: "technical" | "business" | "timeline" | "quality" | "resource";
-        impact: "low" | "medium" | "high";
         name: string;
-        severity: "low" | "medium" | "high" | "critical";
+        description: string;
+        id: string;
+        category: "resource" | "technical" | "business" | "timeline" | "quality";
+        impact: "low" | "medium" | "high";
+        severity: "critical" | "low" | "medium" | "high";
         probability: "low" | "medium" | "high";
         mitigation: string[];
     }, {
-        id: string;
-        description: string;
-        category: "technical" | "business" | "timeline" | "quality" | "resource";
-        impact: "low" | "medium" | "high";
         name: string;
-        severity: "low" | "medium" | "high" | "critical";
+        description: string;
+        id: string;
+        category: "resource" | "technical" | "business" | "timeline" | "quality";
+        impact: "low" | "medium" | "high";
+        severity: "critical" | "low" | "medium" | "high";
         probability: "low" | "medium" | "high";
         mitigation: string[];
     }>, "many">;
@@ -335,16 +335,16 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
             tasks: z.ZodArray<z.ZodString, "many">;
             milestones: z.ZodArray<z.ZodString, "many">;
         }, "strip", z.ZodTypeAny, {
-            id: string;
             name: string;
+            id: string;
             startDate: string;
             endDate: string;
             duration: number;
             milestones: string[];
             tasks: string[];
         }, {
-            id: string;
             name: string;
+            id: string;
             startDate: string;
             endDate: string;
             duration: number;
@@ -356,8 +356,8 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         bufferTime: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
         phases: {
-            id: string;
             name: string;
+            id: string;
             startDate: string;
             endDate: string;
             duration: number;
@@ -369,8 +369,8 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         bufferTime: number;
     }, {
         phases: {
-            id: string;
             name: string;
+            id: string;
             startDate: string;
             endDate: string;
             duration: number;
@@ -437,14 +437,14 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
             impact: z.ZodString;
             savings: z.ZodNumber;
         }, "strip", z.ZodTypeAny, {
+            type: "parallel" | "reuse" | "simplify" | "automate";
             description: string;
             impact: string;
-            type: "parallel" | "reuse" | "simplify" | "automate";
             savings: number;
         }, {
+            type: "parallel" | "reuse" | "simplify" | "automate";
             description: string;
             impact: string;
-            type: "parallel" | "reuse" | "simplify" | "automate";
             savings: number;
         }>, "many">;
         riskAdjustments: z.ZodArray<z.ZodObject<{
@@ -462,9 +462,9 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         }>, "many">;
     }, "strip", z.ZodTypeAny, {
         optimizations: {
+            type: "parallel" | "reuse" | "simplify" | "automate";
             description: string;
             impact: string;
-            type: "parallel" | "reuse" | "simplify" | "automate";
             savings: number;
         }[];
         originalEffort: number;
@@ -477,9 +477,9 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         }[];
     }, {
         optimizations: {
+            type: "parallel" | "reuse" | "simplify" | "automate";
             description: string;
             impact: string;
-            type: "parallel" | "reuse" | "simplify" | "automate";
             savings: number;
         }[];
         originalEffort: number;
@@ -526,11 +526,14 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
     successMetrics: z.ZodArray<z.ZodString, "many">;
     nextSteps: z.ZodArray<z.ZodString, "many">;
 }, "strip", z.ZodTypeAny, {
+    name: string;
+    description: string;
+    id: string;
     optimization: {
         optimizations: {
+            type: "parallel" | "reuse" | "simplify" | "automate";
             description: string;
             impact: string;
-            type: "parallel" | "reuse" | "simplify" | "automate";
             savings: number;
         }[];
         originalEffort: number;
@@ -542,9 +545,6 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
             adjustment: string;
         }[];
     };
-    id: string;
-    description: string;
-    name: string;
     complexity: {
         technical: "low" | "medium" | "high" | "very-high";
         business: "low" | "medium" | "high" | "very-high";
@@ -567,8 +567,8 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
     };
     timeline: {
         phases: {
-            id: string;
             name: string;
+            id: string;
             startDate: string;
             endDate: string;
             duration: number;
@@ -584,16 +584,16 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         patterns: string[];
         constraints: string[];
         technologies: {
-            category: "database" | "language" | "service" | "tool" | "framework";
             name: string;
+            category: "database" | "language" | "service" | "tool" | "framework";
             justification: string;
         }[];
         components: {
-            description: string;
+            type: "database" | "service" | "frontend" | "backend" | "external";
             name: string;
+            description: string;
             complexity: "low" | "medium" | "high";
             dependencies: string[];
-            type: "database" | "service" | "frontend" | "backend" | "external";
         }[];
     };
     businessRequirements: {
@@ -604,41 +604,41 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         successCriteria: string[];
     };
     phases: {
-        id: string;
-        description: string;
         name: string;
+        description: string;
+        id: string;
         startDate: string;
         endDate: string;
         duration: number;
         deliverables: string[];
         milestones: string[];
         tasks: {
-            priority: "low" | "medium" | "high" | "critical";
-            id: string;
-            description: string;
+            priority: "critical" | "low" | "medium" | "high";
+            type: "development" | "testing" | "deployment" | "documentation" | "research";
             status: "pending" | "completed" | "in_progress";
             name: string;
-            type: "development" | "testing" | "deployment" | "documentation" | "research";
+            description: string;
+            id: string;
             estimatedHours: number;
             assignedTo?: string | undefined;
         }[];
         risks: string[];
     }[];
     risks: {
-        id: string;
-        description: string;
-        category: "technical" | "business" | "timeline" | "quality" | "resource";
-        impact: "low" | "medium" | "high";
         name: string;
-        severity: "low" | "medium" | "high" | "critical";
+        description: string;
+        id: string;
+        category: "resource" | "technical" | "business" | "timeline" | "quality";
+        impact: "low" | "medium" | "high";
+        severity: "critical" | "low" | "medium" | "high";
         probability: "low" | "medium" | "high";
         mitigation: string[];
     }[];
     userStories: {
-        priority: "low" | "medium" | "high" | "critical";
+        priority: "critical" | "low" | "medium" | "high";
+        description: string;
         id: string;
         title: string;
-        description: string;
         estimatedEffort: number;
         asA: string;
         iWant: string;
@@ -658,11 +658,14 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         assumptions: string[];
     };
 }, {
+    name: string;
+    description: string;
+    id: string;
     optimization: {
         optimizations: {
+            type: "parallel" | "reuse" | "simplify" | "automate";
             description: string;
             impact: string;
-            type: "parallel" | "reuse" | "simplify" | "automate";
             savings: number;
         }[];
         originalEffort: number;
@@ -674,9 +677,6 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
             adjustment: string;
         }[];
     };
-    id: string;
-    description: string;
-    name: string;
     complexity: {
         technical: "low" | "medium" | "high" | "very-high";
         business: "low" | "medium" | "high" | "very-high";
@@ -699,8 +699,8 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
     };
     timeline: {
         phases: {
-            id: string;
             name: string;
+            id: string;
             startDate: string;
             endDate: string;
             duration: number;
@@ -716,16 +716,16 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         patterns: string[];
         constraints: string[];
         technologies: {
-            category: "database" | "language" | "service" | "tool" | "framework";
             name: string;
+            category: "database" | "language" | "service" | "tool" | "framework";
             justification: string;
         }[];
         components: {
-            description: string;
+            type: "database" | "service" | "frontend" | "backend" | "external";
             name: string;
+            description: string;
             complexity: "low" | "medium" | "high";
             dependencies: string[];
-            type: "database" | "service" | "frontend" | "backend" | "external";
         }[];
     };
     businessRequirements: {
@@ -736,20 +736,20 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         successCriteria: string[];
     };
     phases: {
-        id: string;
-        description: string;
         name: string;
+        description: string;
+        id: string;
         startDate: string;
         endDate: string;
         duration: number;
         deliverables: string[];
         milestones: string[];
         tasks: {
-            priority: "low" | "medium" | "high" | "critical";
-            id: string;
-            description: string;
-            name: string;
+            priority: "critical" | "low" | "medium" | "high";
             type: "development" | "testing" | "deployment" | "documentation" | "research";
+            name: string;
+            description: string;
+            id: string;
             estimatedHours: number;
             status?: "pending" | "completed" | "in_progress" | undefined;
             assignedTo?: string | undefined;
@@ -757,20 +757,20 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         risks: string[];
     }[];
     risks: {
-        id: string;
-        description: string;
-        category: "technical" | "business" | "timeline" | "quality" | "resource";
-        impact: "low" | "medium" | "high";
         name: string;
-        severity: "low" | "medium" | "high" | "critical";
+        description: string;
+        id: string;
+        category: "resource" | "technical" | "business" | "timeline" | "quality";
+        impact: "low" | "medium" | "high";
+        severity: "critical" | "low" | "medium" | "high";
         probability: "low" | "medium" | "high";
         mitigation: string[];
     }[];
     userStories: {
-        priority: "low" | "medium" | "high" | "critical";
+        priority: "critical" | "low" | "medium" | "high";
+        description: string;
         id: string;
         title: string;
-        description: string;
         estimatedEffort: number;
         asA: string;
         iWant: string;

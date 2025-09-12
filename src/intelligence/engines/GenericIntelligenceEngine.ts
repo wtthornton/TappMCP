@@ -364,7 +364,7 @@ export class GenericIntelligenceEngine extends BaseCategoryIntelligenceEngine {
   }
 
   private generateJavaScriptCode(description: string, role?: string): string {
-    const functionName = this.extractFunctionName(description);
+    const className = this.extractClassName(description);
 
     return `/**
  * ${description}
@@ -375,49 +375,112 @@ export class GenericIntelligenceEngine extends BaseCategoryIntelligenceEngine {
 'use strict';
 
 /**
- * ${functionName} - ${description}
- * @param {Object} options - Configuration options
- * @returns {Promise<Object>} Result object
+ * ${className} - ${description}
  */
-async function ${functionName}(options = {}) {
-  try {
-    // Validate input
-    if (!options || typeof options !== 'object') {
-      throw new Error('Invalid options provided');
+class ${className} {
+  /**
+   * Constructor
+   * @param {Object} options - Configuration options
+   */
+  constructor(options = {}) {
+    this.options = options;
+    this.initialized = false;
+  }
+
+  /**
+   * Initialize the class
+   * @public
+   * @returns {Promise<boolean>} Initialization success
+   */
+  async initialize() {
+    try {
+      // Validate input
+      if (!this.options || typeof this.options !== 'object') {
+        throw new Error('Invalid options provided');
+      }
+
+      // Initialize internal state
+      await this._setupInternalState();
+
+      this.initialized = true;
+      return true;
+    } catch (error) {
+      console.error(\`Error initializing \${this.constructor.name}:\`, error);
+      return false;
     }
+  }
 
-    // Main logic
-    const result = await processData(options);
+  /**
+   * Main processing method
+   * @public
+   * @returns {Promise<Object>} Result object
+   */
+  async process() {
+    try {
+      if (!this.initialized) {
+        await this.initialize();
+      }
 
-    // Return result
-    return {
-      success: true,
-      data: result,
-      timestamp: new Date().toISOString()
+      // Main logic
+      const result = await this._processData();
+
+      // Return result
+      return {
+        success: true,
+        data: result,
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      console.error(\`Error in \${this.constructor.name}:\`, error);
+      return {
+        success: false,
+        error: error.message,
+        timestamp: new Date().toISOString()
+      };
+    }
+  }
+
+  /**
+   * Setup internal state
+   * @private
+   */
+  async _setupInternalState() {
+    // TODO: Implement internal state setup
+    this.state = {
+      ready: true,
+      options: this.options
     };
-  } catch (error) {
-    console.error(\`Error in \${functionName}:\`, error);
+  }
+
+  /**
+   * Process data according to requirements
+   * @private
+   * @returns {Promise<Object>} Processed data
+   */
+  async _processData() {
+    // TODO: Implement main logic based on requirements
     return {
-      success: false,
-      error: error.message,
+      message: 'Implementation pending',
+      options: this.options,
+      state: this.state
+    };
+  }
+
+  /**
+   * Get current status
+   * @public
+   * @returns {Object} Current status
+   */
+  getStatus() {
+    return {
+      initialized: this.initialized,
+      ready: this.state?.ready || false,
       timestamp: new Date().toISOString()
     };
   }
 }
 
-/**
- * Process data according to requirements
- * @private
- */
-async function processData(options) {
-  // TODO: Implement main logic based on requirements
-  return {
-    message: 'Implementation pending',
-    options
-  };
-}
-
-module.exports = { ${functionName} };`;
+module.exports = { ${className} };`;
   }
 
   private generatePythonCode(description: string, role?: string): string {

@@ -1097,14 +1097,16 @@ class _${widgetName}State extends State<${widgetName}>
 
   private detectMobileCodeType(description: string): string {
     const lower = description.toLowerCase();
-    if (lower.includes('component') || lower.includes('screen')) return 'react-native-component';
+
+    // Prioritize component/widget generation over navigation
+    if (lower.includes('component') || lower.includes('screen') || lower.includes('app')) return 'react-native-component';
     if (lower.includes('widget') || lower.includes('flutter')) return 'flutter-widget';
     if (lower.includes('navigation') || lower.includes('route')) return 'navigation';
     if (lower.includes('api') || lower.includes('fetch') || lower.includes('request'))
       return 'api-integration';
     if (lower.includes('state') || lower.includes('redux') || lower.includes('context'))
       return 'state-management';
-    return 'generic';
+    return 'react-native-component'; // Default to component generation
   }
 
   private detectTargetPlatform(description: string): string {

@@ -51,19 +51,34 @@ export interface TroubleshootingGuide {
 }
 export interface Context7BrokerConfig {
     apiUrl?: string;
+    apiKey?: string | undefined;
+    baseUrl?: string;
     timeout: number;
     maxRetries: number;
     enableFallback: boolean;
     enableCache: boolean;
     cacheExpiryHours: number;
+    rateLimit: {
+        requestsPerMinute: number;
+        burstLimit: number;
+    };
+    retryPolicy: {
+        maxRetries: number;
+        baseDelay: number;
+        maxDelay: number;
+        backoffMultiplier: number;
+    };
 }
 /**
  * Context7 Broker for external knowledge integration
  */
 export declare class Context7Broker {
     private config;
+    private httpClient;
+    private mcpClient;
     private isAvailable;
     private cache;
+    private cacheFile;
     constructor(config?: Partial<Context7BrokerConfig>);
     /**
      * Check if Context7 MCP tools are available
@@ -78,6 +93,14 @@ export declare class Context7Broker {
      */
     private setCachedData;
     /**
+     * Save cache to file
+     */
+    private saveCache;
+    /**
+     * Load cache from file
+     */
+    private loadCache;
+    /**
      * Get documentation for a specific topic
      */
     getDocumentation(topic: string, version?: string): Promise<Documentation[]>;
@@ -86,7 +109,15 @@ export declare class Context7Broker {
      */
     private fetchRealDocumentation;
     /**
-     * Map topic to Context7 library ID
+     * Resolve library ID using Context7 search API
+     */
+    private resolveLibraryId;
+    /**
+     * Get library documentation using Context7 library API
+     */
+    private getLibraryDocs;
+    /**
+     * Map topic to Context7 library ID (fallback method)
      */
     private mapTopicToLibraryId;
     /**
@@ -135,6 +166,23 @@ export declare class Context7Broker {
      * Check if Context7 service is available
      */
     checkAvailability(): Promise<boolean>;
+    /**
+     * Get cache statistics
+     */
+    getCacheStats(): {
+        size: number;
+        maxSize: number;
+        hitRate: string;
+        memoryUsage: string;
+    };
+    /**
+     * Check if cache is healthy
+     */
+    isCacheHealthy(): boolean;
+    /**
+     * Clear cache
+     */
+    clearCache(): void;
     /**
      * Validate response time meets performance requirements
      */

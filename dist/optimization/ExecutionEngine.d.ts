@@ -19,12 +19,12 @@ export declare const ToolDefinitionSchema: z.ZodObject<{
         cpu: z.ZodDefault<z.ZodNumber>;
         tokens: z.ZodDefault<z.ZodNumber>;
     }, "strip", z.ZodTypeAny, {
-        memory: number;
         tokens: number;
+        memory: number;
         cpu: number;
     }, {
-        memory?: number | undefined;
         tokens?: number | undefined;
+        memory?: number | undefined;
         cpu?: number | undefined;
     }>>;
     reliability: z.ZodDefault<z.ZodNumber>;
@@ -33,36 +33,36 @@ export declare const ToolDefinitionSchema: z.ZodObject<{
     cacheEnabled: z.ZodDefault<z.ZodBoolean>;
     version: z.ZodDefault<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    description: string;
-    version: string;
-    category: "planning" | "analysis" | "validation" | "generation" | "orchestration" | "transformation";
     name: string;
-    dependencies: string[];
+    version: string;
+    description: string;
     inputSchema: Record<string, any>;
+    category: "validation" | "planning" | "analysis" | "generation" | "orchestration" | "transformation";
+    dependencies: string[];
     reliability: number;
     outputSchema: Record<string, any>;
     estimatedExecutionTime: number;
     resourceRequirements: {
-        memory: number;
         tokens: number;
+        memory: number;
         cpu: number;
     };
     costPerExecution: number;
     parallelizable: boolean;
     cacheEnabled: boolean;
 }, {
-    description: string;
-    category: "planning" | "analysis" | "validation" | "generation" | "orchestration" | "transformation";
     name: string;
+    description: string;
     inputSchema: Record<string, any>;
+    category: "validation" | "planning" | "analysis" | "generation" | "orchestration" | "transformation";
     outputSchema: Record<string, any>;
     version?: string | undefined;
     dependencies?: string[] | undefined;
     reliability?: number | undefined;
     estimatedExecutionTime?: number | undefined;
     resourceRequirements?: {
-        memory?: number | undefined;
         tokens?: number | undefined;
+        memory?: number | undefined;
         cpu?: number | undefined;
     } | undefined;
     costPerExecution?: number | undefined;
@@ -128,6 +128,9 @@ export declare const ExecutionPlanSchema: z.ZodObject<{
     }>>;
     metadata: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodAny>>;
 }, "strip", z.ZodTypeAny, {
+    name: string;
+    description: string;
+    id: string;
     optimization: {
         enableParallel: boolean;
         enableCaching: boolean;
@@ -139,9 +142,6 @@ export declare const ExecutionPlanSchema: z.ZodObject<{
             backoffMs: number;
         };
     };
-    id: string;
-    description: string;
-    name: string;
     dependencies: Record<string, string[]>;
     metadata: Record<string, any>;
     constraints: {
@@ -151,9 +151,9 @@ export declare const ExecutionPlanSchema: z.ZodObject<{
     };
     steps: any[];
 }, {
-    id: string;
-    description: string;
     name: string;
+    description: string;
+    id: string;
     steps: any[];
     optimization?: {
         enableParallel?: boolean | undefined;

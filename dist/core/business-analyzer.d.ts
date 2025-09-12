@@ -67,21 +67,21 @@ export declare const RiskSchema: z.ZodObject<{
     severity: z.ZodEnum<["low", "medium", "high", "critical"]>;
     mitigation: z.ZodArray<z.ZodString, "many">;
 }, "strip", z.ZodTypeAny, {
-    id: string;
-    description: string;
-    category: "technical" | "business" | "timeline" | "quality" | "resource";
-    impact: "low" | "medium" | "high";
     name: string;
-    severity: "low" | "medium" | "high" | "critical";
+    description: string;
+    id: string;
+    category: "resource" | "technical" | "business" | "timeline" | "quality";
+    impact: "low" | "medium" | "high";
+    severity: "critical" | "low" | "medium" | "high";
     probability: "low" | "medium" | "high";
     mitigation: string[];
 }, {
-    id: string;
-    description: string;
-    category: "technical" | "business" | "timeline" | "quality" | "resource";
-    impact: "low" | "medium" | "high";
     name: string;
-    severity: "low" | "medium" | "high" | "critical";
+    description: string;
+    id: string;
+    category: "resource" | "technical" | "business" | "timeline" | "quality";
+    impact: "low" | "medium" | "high";
+    severity: "critical" | "low" | "medium" | "high";
     probability: "low" | "medium" | "high";
     mitigation: string[];
 }>;
@@ -96,20 +96,20 @@ export declare const UserStorySchema: z.ZodObject<{
     priority: z.ZodEnum<["low", "medium", "high", "critical"]>;
     estimatedEffort: z.ZodNumber;
 }, "strip", z.ZodTypeAny, {
-    priority: "low" | "medium" | "high" | "critical";
+    priority: "critical" | "low" | "medium" | "high";
+    description: string;
     id: string;
     title: string;
-    description: string;
     estimatedEffort: number;
     asA: string;
     iWant: string;
     soThat: string;
     acceptanceCriteria: string[];
 }, {
-    priority: "low" | "medium" | "high" | "critical";
+    priority: "critical" | "low" | "medium" | "high";
+    description: string;
     id: string;
     title: string;
-    description: string;
     estimatedEffort: number;
     asA: string;
     iWant: string;

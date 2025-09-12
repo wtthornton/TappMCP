@@ -40,13 +40,13 @@ export declare const ErrorPatternSchema: z.ZodObject<{
     contextPatterns: z.ZodDefault<z.ZodArray<z.ZodString, "many">>;
     associatedErrors: z.ZodDefault<z.ZodArray<z.ZodString, "many">>;
 }, "strip", z.ZodTypeAny, {
-    pattern: string;
-    id: string;
-    description: string;
-    confidence: number;
-    category: "timeout" | "memory" | "authentication" | "validation" | "data" | "network" | "dependency" | "logic" | "configuration";
     name: string;
-    severity: "low" | "medium" | "high" | "critical";
+    description: string;
+    id: string;
+    confidence: number;
+    pattern: string;
+    category: "data" | "timeout" | "validation" | "memory" | "authentication" | "network" | "dependency" | "logic" | "configuration";
+    severity: "critical" | "low" | "medium" | "high";
     historicalOccurrences: number;
     preventionStrategies: {
         description: string;
@@ -58,13 +58,13 @@ export declare const ErrorPatternSchema: z.ZodObject<{
     associatedErrors: string[];
     lastSeen?: Date | undefined;
 }, {
-    pattern: string;
-    id: string;
-    description: string;
-    confidence: number;
-    category: "timeout" | "memory" | "authentication" | "validation" | "data" | "network" | "dependency" | "logic" | "configuration";
     name: string;
-    severity: "low" | "medium" | "high" | "critical";
+    description: string;
+    id: string;
+    confidence: number;
+    pattern: string;
+    category: "data" | "timeout" | "validation" | "memory" | "authentication" | "network" | "dependency" | "logic" | "configuration";
+    severity: "critical" | "low" | "medium" | "high";
     preventionStrategies: {
         description: string;
         strategy: string;

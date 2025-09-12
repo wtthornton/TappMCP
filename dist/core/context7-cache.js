@@ -6,11 +6,16 @@
  * for Context7 knowledge retrieval across all TappMCP tools.
  */
 import { MCPCoordinator, } from './mcp-coordinator.js';
+import { LRUCache } from 'lru-cache';
+import { gzip, gunzip } from 'zlib';
+import { promisify } from 'util';
+const gzipAsync = promisify(gzip);
+const gunzipAsync = promisify(gunzip);
 /**
  * Context7 Cache - Extends MCPCoordinator with smart caching
  */
 export class Context7Cache extends MCPCoordinator {
-    cache = new Map();
+    cache;
     cacheConfig;
     stats = {
         hits: 0,
@@ -22,16 +27,23 @@ export class Context7Cache extends MCPCoordinator {
         super(); // Initialize MCPCoordinator
         this.cacheConfig = {
             maxCacheSize: cacheConfig.maxCacheSize ?? 1000,
-            defaultExpiryHours: cacheConfig.defaultExpiryHours ?? 72,
+            defaultExpiryHours: cacheConfig.defaultExpiryHours ?? 7 * 24, // 7 DAYS
             enableVersionChecking: cacheConfig.enableVersionChecking ?? true,
             enableHitTracking: cacheConfig.enableHitTracking ?? true,
-            enableCompression: cacheConfig.enableCompression ?? false,
+            enableCompression: cacheConfig.enableCompression ?? true, // Enable compression by default
             timeout: cacheConfig.timeout ?? 30000,
             maxConcurrentRequests: cacheConfig.maxConcurrentRequests ?? 10,
             enableFallbacks: cacheConfig.enableFallbacks ?? true,
             healthCheckInterval: cacheConfig.healthCheckInterval ?? 60000,
         };
-        // Context7Cache initialized with smart caching
+        // Initialize LRU cache with proper configuration
+        this.cache = new LRUCache({
+            max: this.cacheConfig.maxCacheSize,
+            ttl: this.cacheConfig.defaultExpiryHours * 60 * 60 * 1000, // Convert hours to milliseconds
+            updateAgeOnGet: true,
+            allowStale: false,
+        });
+        // Context7Cache initialized with LRU caching
     }
     /**
      * Get relevant Context7 data with smart caching
@@ -43,7 +55,7 @@ export class Context7Cache extends MCPCoordinator {
         this.stats.totalRequests++;
         try {
             // Check cache first
-            const cachedData = this.getCachedData(cacheKey);
+            const cachedData = await this.getCachedData(cacheKey);
             if (cachedData) {
                 this.recordHit(cacheKey);
                 // Context7 cache hit
@@ -53,7 +65,7 @@ export class Context7Cache extends MCPCoordinator {
             // Context7 cache miss, fetching data
             const knowledge = await this.fetchContext7Knowledge(input);
             // Cache the results
-            this.setCachedData(cacheKey, knowledge);
+            await this.setCachedData(cacheKey, knowledge);
             // Record performance
             const responseTime = Date.now() - startTime;
             this.recordResponseTime(responseTime);
@@ -81,10 +93,11 @@ export class Context7Cache extends MCPCoordinator {
     /**
      * Get cached data if available and not expired
      */
-    getCachedData(key) {
+    async getCachedData(key) {
         const cached = this.cache.get(key);
         if (!cached)
             return null;
+        // LRU cache handles expiry automatically, but we keep manual check for compatibility
         const now = Date.now();
         if (now > cached.expiry) {
             this.cache.delete(key);
@@ -94,25 +107,42 @@ export class Context7Cache extends MCPCoordinator {
         if (this.cacheConfig.enableHitTracking) {
             cached.lastAccessed = now;
         }
+        // Decompress data if needed
+        if (cached.compressed) {
+            try {
+                return await this.decompressData(cached.data);
+            }
+            catch (error) {
+                console.warn('Failed to decompress cached data:', error);
+                this.cache.delete(key);
+                return null;
+            }
+        }
         return cached.data;
     }
     /**
      * Cache data with expiry and version checking
      */
-    setCachedData(key, data) {
+    async setCachedData(key, data) {
         const now = Date.now();
         const expiry = now + this.cacheConfig.defaultExpiryHours * 60 * 60 * 1000;
-        // Check cache size limit
-        if (this.cache.size >= this.cacheConfig.maxCacheSize) {
-            this.evictOldestEntry();
+        // Compress data if needed and enabled
+        let finalData = data;
+        let compressed = false;
+        if (this.cacheConfig.enableCompression) {
+            const compressionResult = await this.compressIfNeeded(data);
+            finalData = compressionResult.data;
+            compressed = compressionResult.compressed;
         }
+        // LRU cache handles size limits automatically, no need for manual eviction
         this.cache.set(key, {
-            data,
+            data: finalData,
             timestamp: now,
             expiry,
             version: this.getCurrentVersion(),
             hitCount: 0,
             lastAccessed: now,
+            compressed,
         });
     }
     /**
@@ -166,20 +196,38 @@ export class Context7Cache extends MCPCoordinator {
         ];
     }
     /**
-     * Evict oldest cache entry when size limit reached
+     * Compress data if it's larger than threshold
      */
-    evictOldestEntry() {
-        let oldestKey = '';
-        let oldestTime = Date.now();
-        for (const [key, entry] of this.cache.entries()) {
-            if (entry.lastAccessed < oldestTime) {
-                oldestTime = entry.lastAccessed;
-                oldestKey = key;
+    async compressIfNeeded(data) {
+        const serialized = JSON.stringify(data);
+        const size = Buffer.byteLength(serialized, 'utf8');
+        if (size > 1024) { // 1KB threshold
+            try {
+                const compressed = await gzipAsync(serialized);
+                return {
+                    data: compressed.toString('base64'),
+                    compressed: true
+                };
+            }
+            catch (error) {
+                console.warn('Compression failed, storing uncompressed:', error);
+                return { data, compressed: false };
             }
         }
-        if (oldestKey) {
-            this.cache.delete(oldestKey);
-            console.log(`🗑️ Evicted oldest cache entry: ${oldestKey}`);
+        return { data, compressed: false };
+    }
+    /**
+     * Decompress data if it was compressed
+     */
+    async decompressData(compressedData) {
+        try {
+            const buffer = Buffer.from(compressedData, 'base64');
+            const decompressed = await gunzipAsync(buffer);
+            return JSON.parse(decompressed.toString('utf8'));
+        }
+        catch (error) {
+            console.warn('Decompression failed:', error);
+            throw error;
         }
     }
     /**
@@ -243,9 +291,37 @@ export class Context7Cache extends MCPCoordinator {
             hitRate,
             missRate,
             averageResponseTime,
+            averageProcessingTime: averageResponseTime, // Use same value for now
             memoryUsage,
             topHitKeys,
         };
+    }
+    /**
+     * Warm cache with common patterns
+     */
+    async warmCache() {
+        const commonPatterns = [
+            'HTML5 accessibility WCAG 2.1 best practices',
+            'TypeScript strict mode patterns',
+            'React component optimization',
+            'Node.js security headers',
+            'CSS responsive design patterns'
+        ];
+        console.log('🔥 Warming Context7 cache with common patterns...');
+        for (const pattern of commonPatterns) {
+            try {
+                await this.getRelevantData({
+                    businessRequest: pattern,
+                    domain: 'general',
+                    priority: 'medium',
+                    maxResults: 3
+                });
+            }
+            catch (error) {
+                console.warn(`Failed to warm pattern: ${pattern}`, error);
+            }
+        }
+        console.log('✅ Cache warming completed');
     }
     /**
      * Clear cache

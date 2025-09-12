@@ -15,8 +15,8 @@ export declare const CodeReviewPromptSchema: z.ZodObject<{
     includeExamples: z.ZodOptional<z.ZodBoolean>;
     severity: z.ZodOptional<z.ZodEnum<["low", "medium", "high"]>>;
 }, "strip", z.ZodTypeAny, {
-    language: string;
     code: string;
+    language: string;
     reviewType: "security" | "performance" | "maintainability" | "readability" | "comprehensive";
     context?: string | undefined;
     severity?: "low" | "medium" | "high" | undefined;
@@ -26,8 +26,8 @@ export declare const CodeReviewPromptSchema: z.ZodObject<{
     includeSuggestions?: boolean | undefined;
     includeExamples?: boolean | undefined;
 }, {
-    language: string;
     code: string;
+    language: string;
     reviewType: "security" | "performance" | "maintainability" | "readability" | "comprehensive";
     context?: string | undefined;
     severity?: "low" | "medium" | "high" | undefined;

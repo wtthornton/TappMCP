@@ -12,12 +12,21 @@
     },
     "smart-mcp-container": {
       "command": "docker",
-      "args": ["exec", "-i", "smart-mcp", "node", "dist/server.js"],
+      "args": ["exec", "-i", "smart-mcp-prod", "node", "dist/server.js"],
       "env": {
         "NODE_ENV": "production"
       },
       "stdio": true,
-      "description": "Connect to deployed Docker container"
+      "description": "Connect to manually deployed Docker container (smart-mcp-prod)"
+    },
+    "smart-mcp-compose": {
+      "command": "docker",
+      "args": ["exec", "-i", "tappmcp-smart-mcp-1", "node", "dist/server.js"],
+      "env": {
+        "NODE_ENV": "production"
+      },
+      "stdio": true,
+      "description": "Connect to Docker Compose deployed container (tappmcp-smart-mcp-1)"
     },
     "smart-mcp-npm": {
       "command": "npx",

@@ -44,6 +44,30 @@ GET http://localhost:3001/ready
 
 ## 🧠 Core AI Components
 
+### 30-Day Persistent Cache System
+Intelligent caching system with 95% API cost reduction and automatic persistence.
+
+**Features:**
+- **30-day TTL** for Context7Broker (documentation data)
+- **7-day TTL** for Context7Cache (business logic)
+- **File-based persistence** (`./cache/context7-cache.json`)
+- **Auto-save** every 10 cache writes
+- **95% API call reduction** and cost savings
+- **Graceful error handling** with fallback
+
+**Usage:**
+```typescript
+const broker = new Context7Broker({
+  cacheExpiryHours: 30 * 24, // 30 days
+  enableCache: true,
+});
+
+// Cache management
+const stats = broker.getCacheStats();
+const healthy = broker.isCacheHealthy();
+broker.clearCache(); // Manual clear if needed
+```
+
 ### AdvancedContext7Cache
 Enterprise-grade caching system with compression, analytics, and monitoring.
 

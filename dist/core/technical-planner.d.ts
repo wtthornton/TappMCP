@@ -9,17 +9,17 @@ export declare const ArchitectureSchema: z.ZodObject<{
         dependencies: z.ZodArray<z.ZodString, "many">;
         complexity: z.ZodEnum<["low", "medium", "high"]>;
     }, "strip", z.ZodTypeAny, {
-        description: string;
+        type: "database" | "service" | "frontend" | "backend" | "external";
         name: string;
+        description: string;
         complexity: "low" | "medium" | "high";
         dependencies: string[];
-        type: "database" | "service" | "frontend" | "backend" | "external";
     }, {
-        description: string;
+        type: "database" | "service" | "frontend" | "backend" | "external";
         name: string;
+        description: string;
         complexity: "low" | "medium" | "high";
         dependencies: string[];
-        type: "database" | "service" | "frontend" | "backend" | "external";
     }>, "many">;
     patterns: z.ZodArray<z.ZodString, "many">;
     technologies: z.ZodArray<z.ZodObject<{
@@ -27,12 +27,12 @@ export declare const ArchitectureSchema: z.ZodObject<{
         category: z.ZodEnum<["language", "framework", "database", "tool", "service"]>;
         justification: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        category: "database" | "language" | "service" | "tool" | "framework";
         name: string;
+        category: "database" | "language" | "service" | "tool" | "framework";
         justification: string;
     }, {
-        category: "database" | "language" | "service" | "tool" | "framework";
         name: string;
+        category: "database" | "language" | "service" | "tool" | "framework";
         justification: string;
     }>, "many">;
     constraints: z.ZodArray<z.ZodString, "many">;
@@ -40,31 +40,31 @@ export declare const ArchitectureSchema: z.ZodObject<{
     patterns: string[];
     constraints: string[];
     technologies: {
-        category: "database" | "language" | "service" | "tool" | "framework";
         name: string;
+        category: "database" | "language" | "service" | "tool" | "framework";
         justification: string;
     }[];
     components: {
-        description: string;
+        type: "database" | "service" | "frontend" | "backend" | "external";
         name: string;
+        description: string;
         complexity: "low" | "medium" | "high";
         dependencies: string[];
-        type: "database" | "service" | "frontend" | "backend" | "external";
     }[];
 }, {
     patterns: string[];
     constraints: string[];
     technologies: {
-        category: "database" | "language" | "service" | "tool" | "framework";
         name: string;
+        category: "database" | "language" | "service" | "tool" | "framework";
         justification: string;
     }[];
     components: {
-        description: string;
+        type: "database" | "service" | "frontend" | "backend" | "external";
         name: string;
+        description: string;
         complexity: "low" | "medium" | "high";
         dependencies: string[];
-        type: "database" | "service" | "frontend" | "backend" | "external";
     }[];
 }>;
 export declare const TaskSchema: z.ZodObject<{
@@ -78,22 +78,22 @@ export declare const TaskSchema: z.ZodObject<{
     skills: z.ZodArray<z.ZodString, "many">;
     phase: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    priority: "low" | "medium" | "high" | "critical";
-    id: string;
-    description: string;
-    name: string;
-    dependencies: string[];
+    priority: "critical" | "low" | "medium" | "high";
     type: "development" | "testing" | "deployment" | "documentation" | "research";
+    name: string;
+    description: string;
+    id: string;
+    dependencies: string[];
     phase: string;
     estimatedHours: number;
     skills: string[];
 }, {
-    priority: "low" | "medium" | "high" | "critical";
-    id: string;
-    description: string;
-    name: string;
-    dependencies: string[];
+    priority: "critical" | "low" | "medium" | "high";
     type: "development" | "testing" | "deployment" | "documentation" | "research";
+    name: string;
+    description: string;
+    id: string;
+    dependencies: string[];
     phase: string;
     estimatedHours: number;
     skills: string[];
@@ -151,15 +151,15 @@ export declare const DependencySchema: z.ZodObject<{
     type: z.ZodEnum<["blocks", "requires", "enables", "influences"]>;
     description: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    id: string;
-    description: string;
     type: "blocks" | "requires" | "enables" | "influences";
+    description: string;
+    id: string;
     to: string;
     from: string;
 }, {
-    id: string;
-    description: string;
     type: "blocks" | "requires" | "enables" | "influences";
+    description: string;
+    id: string;
     to: string;
     from: string;
 }>;
@@ -173,16 +173,16 @@ export declare const TimelineSchema: z.ZodObject<{
         tasks: z.ZodArray<z.ZodString, "many">;
         milestones: z.ZodArray<z.ZodString, "many">;
     }, "strip", z.ZodTypeAny, {
-        id: string;
         name: string;
+        id: string;
         startDate: string;
         endDate: string;
         duration: number;
         milestones: string[];
         tasks: string[];
     }, {
-        id: string;
         name: string;
+        id: string;
         startDate: string;
         endDate: string;
         duration: number;
@@ -194,8 +194,8 @@ export declare const TimelineSchema: z.ZodObject<{
     bufferTime: z.ZodNumber;
 }, "strip", z.ZodTypeAny, {
     phases: {
-        id: string;
         name: string;
+        id: string;
         startDate: string;
         endDate: string;
         duration: number;
@@ -207,8 +207,8 @@ export declare const TimelineSchema: z.ZodObject<{
     bufferTime: number;
 }, {
     phases: {
-        id: string;
         name: string;
+        id: string;
         startDate: string;
         endDate: string;
         duration: number;
@@ -229,14 +229,14 @@ export declare const OptimizedPlanSchema: z.ZodObject<{
         impact: z.ZodString;
         savings: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
+        type: "parallel" | "reuse" | "simplify" | "automate";
         description: string;
         impact: string;
-        type: "parallel" | "reuse" | "simplify" | "automate";
         savings: number;
     }, {
+        type: "parallel" | "reuse" | "simplify" | "automate";
         description: string;
         impact: string;
-        type: "parallel" | "reuse" | "simplify" | "automate";
         savings: number;
     }>, "many">;
     riskAdjustments: z.ZodArray<z.ZodObject<{
@@ -254,9 +254,9 @@ export declare const OptimizedPlanSchema: z.ZodObject<{
     }>, "many">;
 }, "strip", z.ZodTypeAny, {
     optimizations: {
+        type: "parallel" | "reuse" | "simplify" | "automate";
         description: string;
         impact: string;
-        type: "parallel" | "reuse" | "simplify" | "automate";
         savings: number;
     }[];
     originalEffort: number;
@@ -269,9 +269,9 @@ export declare const OptimizedPlanSchema: z.ZodObject<{
     }[];
 }, {
     optimizations: {
+        type: "parallel" | "reuse" | "simplify" | "automate";
         description: string;
         impact: string;
-        type: "parallel" | "reuse" | "simplify" | "automate";
         savings: number;
     }[];
     originalEffort: number;

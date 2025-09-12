@@ -62,7 +62,7 @@ export declare const TemplateContextSchema: z.ZodObject<{
     preferences: Record<string, any>;
     userLevel: "beginner" | "intermediate" | "advanced";
     taskType: "planning" | "analysis" | "generation" | "transformation" | "debugging";
-    outputFormat: "code" | "markdown" | "text" | "structured";
+    outputFormat: "text" | "code" | "markdown" | "structured";
     contextHistory: string[];
     timeConstraint: "standard" | "immediate" | "thorough";
     sessionId?: string | undefined;
@@ -88,7 +88,7 @@ export declare const TemplateContextSchema: z.ZodObject<{
     preferences?: Record<string, any> | undefined;
     sessionId?: string | undefined;
     userLevel?: "beginner" | "intermediate" | "advanced" | undefined;
-    outputFormat?: "code" | "markdown" | "text" | "structured" | undefined;
+    outputFormat?: "text" | "code" | "markdown" | "structured" | undefined;
     contextHistory?: string[] | undefined;
     timeConstraint?: "standard" | "immediate" | "thorough" | undefined;
     projectContext?: {
@@ -205,11 +205,11 @@ export declare const TemplateMetadataSchema: z.ZodObject<{
         adaptationTriggers: string[];
     }>>;
 }, "strip", z.ZodTypeAny, {
-    id: string;
+    name: string;
     description: string;
+    id: string;
     lastUpdated: Date;
     usageCount: number;
-    name: string;
     qualityScore: number;
     toolName: string;
     compressionRatio: number;
@@ -230,11 +230,11 @@ export declare const TemplateMetadataSchema: z.ZodObject<{
         adaptationTriggers: string[];
     } | undefined;
 }, {
-    id: string;
+    name: string;
     description: string;
+    id: string;
     lastUpdated: Date;
     usageCount: number;
-    name: string;
     qualityScore: number;
     toolName: string;
     compressionRatio: number;

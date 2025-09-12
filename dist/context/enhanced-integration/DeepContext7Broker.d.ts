@@ -70,14 +70,14 @@ export declare const ContextEntrySchema: z.ZodObject<{
         compressionRatio: number;
     }>>;
 }, "strip", z.ZodTypeAny, {
-    id: string;
     content: string;
+    id: string;
     timestamp: Date;
     toolName: string;
     sessionId: string;
     contextType: "user_query" | "system_response" | "tool_output" | "error_context" | "workflow_state";
     relevanceScore: number;
-    persistenceLevel: "project" | "session" | "user" | "global";
+    persistenceLevel: "user" | "project" | "session" | "global";
     metadata?: {
         projectId?: string | undefined;
         qualityScore?: number | undefined;
@@ -96,8 +96,8 @@ export declare const ContextEntrySchema: z.ZodObject<{
         compressionRatio: number;
     } | undefined;
 }, {
-    id: string;
     content: string;
+    id: string;
     timestamp: Date;
     toolName: string;
     sessionId: string;
@@ -115,7 +115,7 @@ export declare const ContextEntrySchema: z.ZodObject<{
         targetContextId: string;
         strength: number;
     }[] | undefined;
-    persistenceLevel?: "project" | "session" | "user" | "global" | undefined;
+    persistenceLevel?: "user" | "project" | "session" | "global" | undefined;
     compressionInfo?: {
         originalLength: number;
         compressedLength: number;

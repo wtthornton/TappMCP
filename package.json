@@ -81,6 +81,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^0.4.0",
     "@types/handlebars": "^4.0.40",
+    "axios": "^1.6.0",
     "handlebars": "^4.7.8",
     "lru-cache": "^11.2.1",
     "zod": "^3.22.0"

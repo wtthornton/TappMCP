@@ -38,12 +38,12 @@ declare const CodePatternSchema: z.ZodObject<{
         type: z.ZodString;
         description: z.ZodOptional<z.ZodString>;
     }, "strip", z.ZodTypeAny, {
-        name: string;
         type: string;
+        name: string;
         description?: string | undefined;
     }, {
-        name: string;
         type: string;
+        name: string;
         description?: string | undefined;
     }>, "many">;
     dependencies: z.ZodArray<z.ZodString, "many">;
@@ -65,11 +65,11 @@ declare const CodePatternSchema: z.ZodObject<{
         potentialSavings: number;
     }>;
 }, "strip", z.ZodTypeAny, {
-    pattern: string;
-    id: string;
-    description: string;
-    category: "function" | "testing" | "type" | "async" | "module" | "error-handling" | "utility" | "class" | "control-flow";
     name: string;
+    description: string;
+    id: string;
+    pattern: string;
+    category: "function" | "type" | "testing" | "async" | "module" | "error-handling" | "utility" | "class" | "control-flow";
     metrics: {
         tokensPerUse: number;
         avgComplexity: number;
@@ -80,17 +80,17 @@ declare const CodePatternSchema: z.ZodObject<{
     dependencies: string[];
     examples: string[];
     variables: {
-        name: string;
         type: string;
+        name: string;
         description?: string | undefined;
     }[];
     abstractPattern: string;
 }, {
-    pattern: string;
-    id: string;
-    description: string;
-    category: "function" | "testing" | "type" | "async" | "module" | "error-handling" | "utility" | "class" | "control-flow";
     name: string;
+    description: string;
+    id: string;
+    pattern: string;
+    category: "function" | "type" | "testing" | "async" | "module" | "error-handling" | "utility" | "class" | "control-flow";
     metrics: {
         tokensPerUse: number;
         avgComplexity: number;
@@ -101,8 +101,8 @@ declare const CodePatternSchema: z.ZodObject<{
     dependencies: string[];
     examples: string[];
     variables: {
-        name: string;
         type: string;
+        name: string;
         description?: string | undefined;
     }[];
     abstractPattern: string;
@@ -117,19 +117,19 @@ declare const PatternSuggestionSchema: z.ZodObject<{
     rationale: z.ZodString;
     context: z.ZodRecord<z.ZodString, z.ZodUnknown>;
 }, "strip", z.ZodTypeAny, {
+    code: string;
     id: string;
     confidence: number;
     context: Record<string, unknown>;
-    code: string;
     patternId: string;
     similarity: number;
     suggestedReplacement: string;
     rationale: string;
 }, {
+    code: string;
     id: string;
     confidence: number;
     context: Record<string, unknown>;
-    code: string;
     patternId: string;
     similarity: number;
     suggestedReplacement: string;

@@ -674,7 +674,7 @@ export class QualityAssuranceEngine {
     if (hasDescriptiveNames) score += 5;
 
     // Check for documentation
-    const hasDocComments = /\/\*\*|\"\"\"|'''/g.test(code);
+    const hasDocComments = /\/\*\*|"""|'''/g.test(code);
     if (hasDocComments) score += 10;
 
     // Check for consistent formatting

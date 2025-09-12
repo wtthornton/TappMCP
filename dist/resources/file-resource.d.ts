@@ -12,21 +12,21 @@ export declare const FileResourceSchema: z.ZodObject<{
     permissions: z.ZodOptional<z.ZodString>;
     data: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
+    mode: "write" | "read" | "append";
     path: string;
     encoding: string;
-    mode: "write" | "read" | "append";
-    backup: boolean;
     createIfNotExists: boolean;
+    backup: boolean;
     data?: string | undefined;
     permissions?: string | undefined;
 }, {
     path: string;
-    encoding?: string | undefined;
-    mode?: "write" | "read" | "append" | undefined;
     data?: string | undefined;
+    mode?: "write" | "read" | "append" | undefined;
+    encoding?: string | undefined;
     permissions?: string | undefined;
-    backup?: boolean | undefined;
     createIfNotExists?: boolean | undefined;
+    backup?: boolean | undefined;
 }>;
 export type FileResourceConfig = z.infer<typeof FileResourceSchema>;
 /**

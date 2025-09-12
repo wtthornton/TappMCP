@@ -20,7 +20,7 @@ import { CodeOptimizationEngine } from './CodeOptimizationEngine.js';
 import { Context7QualityEngineImpl } from '../vibe/quality/context7/Context7QualityEngine.js';
 import { BasicAnalysis } from '../core/simple-analyzer.js';
 import { globalPerformanceCache, PerformanceCache } from './PerformanceCache.js';
-import { globalAdvancedContext7Cache, AdvancedContext7Cache } from './AdvancedContext7Cache.js';
+import { Context7Cache } from '../core/context7-cache.js';
 import { globalErrorHandler, ErrorHandler } from './ErrorHandling.js';
 
 // Input schema for code generation requests
@@ -79,7 +79,7 @@ export class UnifiedCodeIntelligenceEngine {
   private optimizationEngine: CodeOptimizationEngine;
   private context7QualityEngine: Context7QualityEngineImpl;
   private performanceCache: PerformanceCache;
-  private advancedContext7Cache: AdvancedContext7Cache;
+  private context7Cache: Context7Cache;
   private errorHandler: ErrorHandler;
 
   constructor() {
@@ -90,7 +90,11 @@ export class UnifiedCodeIntelligenceEngine {
     this.optimizationEngine = new CodeOptimizationEngine();
     this.context7QualityEngine = new Context7QualityEngineImpl();
     this.performanceCache = globalPerformanceCache;
-    this.advancedContext7Cache = globalAdvancedContext7Cache;
+    this.context7Cache = new Context7Cache({
+      maxCacheSize: 1000,
+      defaultExpiryHours: 2,
+      enableHitTracking: true
+    });
     this.errorHandler = globalErrorHandler;
 
     // Initialize category engines
@@ -116,19 +120,12 @@ export class UnifiedCodeIntelligenceEngine {
       // Validate request
       const validatedRequest = CodeGenerationRequestSchema.parse(request);
 
-      // Use advanced Context7 caching for the entire code generation process
-      return await this.advancedContext7Cache.cacheCodeGeneration(validatedRequest, async () => {
-        // 1. Get project context with Context7 (with caching and error handling)
-        const projectContext = await this.errorHandler.executeContext7Operation(
-          async () =>
-            await this.advancedContext7Cache.cacheTechnologyInsights(
-              'context7-analysis',
-              validatedRequest.projectAnalysis,
-              async () =>
-                await this.context7Analyzer.getProjectAwareContext(
-                  validatedRequest.projectAnalysis as BasicAnalysis
-                )
-            ),
+      // 1. Get project context with Context7 (with caching and error handling)
+      const projectContext = await this.errorHandler.executeContext7Operation(
+        async () =>
+          await this.context7Analyzer.getProjectAwareContext(
+            validatedRequest.projectAnalysis as BasicAnalysis
+          ),
           // Fallback for Context7 failure
           async () => ({
             topics: [],
@@ -150,12 +147,7 @@ export class UnifiedCodeIntelligenceEngine {
         const technologyMap = await this.errorHandler.executeAnalysisOperation(
           'technology-discovery',
           async () =>
-            await this.advancedContext7Cache.cacheTechnologyInsights(
-              'technology-discovery',
-              adaptedContext,
-              async () =>
-                await this.technologyDiscovery.discoverAvailableTechnologies(adaptedContext)
-            ),
+            await this.technologyDiscovery.discoverAvailableTechnologies(adaptedContext),
           // Fallback to comprehensive technology map
           async () => ({
             frontend: [
@@ -262,32 +254,20 @@ export class UnifiedCodeIntelligenceEngine {
         // 6. Apply quality assurance and optimization (with caching and error handling)
         const optimizedCode = await this.errorHandler.executeAnalysisOperation(
           'optimization',
-          async () =>
-            (await this.advancedContext7Cache.cacheCodeAnalysis(
-              code,
-              technology,
-              async () => await this.optimizationEngine.optimize(code, adaptedContext),
-              'optimization'
-            )) as string,
+          async () => await this.optimizationEngine.optimize(code, adaptedContext),
           // Fallback: return original code if optimization fails
           async () => code
-        );
+        ) as string;
 
         // 7. Context7-enhanced quality analysis
         const context7QualityAnalysis = await this.errorHandler.executeAnalysisOperation(
           'context7-quality-analysis',
           async () =>
-            (await this.advancedContext7Cache.cacheCodeAnalysis(
+            await this.context7QualityEngine.analyzeQuality(
               optimizedCode,
               technology,
-              async () =>
-                await this.context7QualityEngine.analyzeQuality(
-                  optimizedCode,
-                  technology,
-                  projectContext
-                ),
-              'context7-quality'
-            )) as any,
+              projectContext
+            ) as any,
           // Fallback quality analysis
           async () => ({
             issues: [],
@@ -311,12 +291,7 @@ export class UnifiedCodeIntelligenceEngine {
         const qualityScore = await this.errorHandler.executeAnalysisOperation(
           'quality-analysis',
           async () => {
-            const analysis = await this.advancedContext7Cache.cacheCodeAnalysis(
-              optimizedCode,
-              category,
-              async () => await this.qualityAssurance.analyze(optimizedCode, category),
-              'quality'
-            );
+            const analysis = await this.qualityAssurance.analyze(optimizedCode, category);
             return (
               analysis || {
                 overall: 85,
@@ -365,13 +340,12 @@ export class UnifiedCodeIntelligenceEngine {
             processingTime,
             engineUsed: category,
             context7Insights: projectContext?.insights?.patterns?.length || 0,
-            cacheStats: this.advancedContext7Cache.getStats(),
+            cacheStats: this.context7Cache.getCacheStats(),
             errorStats: this.errorHandler.getErrorStats(),
           },
         };
 
         return result;
-      });
     } catch (error) {
       console.error('[UnifiedCodeIntelligenceEngine] Error in code generation:', error);
 
@@ -679,7 +653,7 @@ export class UnifiedCodeIntelligenceEngine {
     averageProcessingTime: number;
     cacheStats: any;
   }> {
-    const cacheStats = this.advancedContext7Cache.getStats();
+    const cacheStats = this.context7Cache.getCacheStats();
 
     return {
       totalEngines: this.categoryEngines.size,
@@ -718,7 +692,7 @@ export class UnifiedCodeIntelligenceEngine {
       },
     ];
 
-    await this.advancedContext7Cache.warmCache(commonPatterns);
+    await this.context7Cache.warmCache();
     console.log(
       '[UnifiedCodeIntelligenceEngine] Advanced Context7 cache warmed with common patterns'
     );
@@ -728,7 +702,7 @@ export class UnifiedCodeIntelligenceEngine {
    * Clear all performance caches
    */
   clearCache(): void {
-    this.advancedContext7Cache.clearCache();
+    this.context7Cache.clearCache();
     console.log('[UnifiedCodeIntelligenceEngine] Advanced Context7 cache cleared');
   }
 
@@ -753,7 +727,7 @@ export class UnifiedCodeIntelligenceEngine {
     cacheStats: any;
   } {
     const errorStats = this.errorHandler.getErrorStats();
-    const cacheStats = this.advancedContext7Cache.getStats();
+    const cacheStats = this.context7Cache.getCacheStats();
 
     return {
       ...errorStats,

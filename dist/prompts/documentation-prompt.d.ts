@@ -17,8 +17,8 @@ export declare const DocumentationPromptSchema: z.ZodObject<{
     contextInfo: z.ZodOptional<z.ZodString>;
     requirements: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
 }, "strip", z.ZodTypeAny, {
-    language: string;
     code: string;
+    language: string;
     docType: "function" | "api" | "module" | "tutorial" | "guide" | "class" | "readme";
     requirements?: string[] | undefined;
     style?: "markdown" | "jsdoc" | "tsdoc" | "sphinx" | "asciidoc" | "plain" | undefined;
@@ -30,8 +30,8 @@ export declare const DocumentationPromptSchema: z.ZodObject<{
     includeUsage?: boolean | undefined;
     contextInfo?: string | undefined;
 }, {
-    language: string;
     code: string;
+    language: string;
     docType: "function" | "api" | "module" | "tutorial" | "guide" | "class" | "readme";
     requirements?: string[] | undefined;
     style?: "markdown" | "jsdoc" | "tsdoc" | "sphinx" | "asciidoc" | "plain" | undefined;

@@ -22,32 +22,33 @@ vi.mock('./PerformanceCache.js', () => ({
   },
 }));
 
-vi.mock('./AdvancedContext7Cache.js', () => ({
-  globalAdvancedContext7Cache: {
-    cacheCodeGeneration: vi
-      .fn()
-      .mockImplementation(
-        async (request, generator, codeType = 'generic', technology = 'unknown') => {
-          const result = await generator();
-          return result;
-        }
-      ),
-    cacheTechnologyInsights: vi.fn().mockImplementation(async (key, context, generator) => {
-      const result = await generator();
-      return result;
+vi.mock('../core/context7-cache.js', () => ({
+  Context7Cache: vi.fn().mockImplementation(() => ({
+    getRelevantData: vi.fn().mockImplementation(async (input) => {
+      return [
+        {
+          id: 'mock-data',
+          source: 'context7',
+          type: 'documentation',
+          title: 'Mock Context7 Data',
+          content: 'Mock content for testing',
+          relevanceScore: 0.8,
+          retrievalTime: Date.now(),
+          metadata: { test: true },
+        },
+      ];
     }),
-    cacheCodeAnalysis: vi.fn().mockImplementation(async (code, tech, generator) => {
-      const result = await generator();
-      return result;
-    }),
-    getStats: vi.fn().mockReturnValue({
-      totalRequests: 0,
-      cacheHits: 0,
-      cacheMisses: 0,
+    getCacheStats: vi.fn().mockReturnValue({
+      totalEntries: 0,
+      hitRate: 0,
+      missRate: 0,
       averageResponseTime: 0,
       memoryUsage: 0,
+      topHitKeys: [],
     }),
-  },
+    clearCache: vi.fn(),
+    warmCache: vi.fn(),
+  })),
 }));
 
 vi.mock('./ErrorHandling.js', () => ({

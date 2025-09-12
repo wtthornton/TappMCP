@@ -16,6 +16,7 @@ export interface CachedData {
     version: string;
     hitCount: number;
     lastAccessed: number;
+    compressed?: boolean;
 }
 /**
  * Context7 Cache Configuration
@@ -35,6 +36,7 @@ export interface CacheStats {
     hitRate: number;
     missRate: number;
     averageResponseTime: number;
+    averageProcessingTime: number;
     memoryUsage: number;
     topHitKeys: string[];
 }
@@ -77,9 +79,13 @@ export declare class Context7Cache extends MCPCoordinator {
      */
     private getContext7FallbackKnowledge;
     /**
-     * Evict oldest cache entry when size limit reached
+     * Compress data if it's larger than threshold
      */
-    private evictOldestEntry;
+    private compressIfNeeded;
+    /**
+     * Decompress data if it was compressed
+     */
+    private decompressData;
     /**
      * Get current version for cache entries
      */
@@ -100,6 +106,10 @@ export declare class Context7Cache extends MCPCoordinator {
      * Get cache statistics
      */
     getCacheStats(): CacheStats;
+    /**
+     * Warm cache with common patterns
+     */
+    warmCache(): Promise<void>;
     /**
      * Clear cache
      */

@@ -380,7 +380,7 @@ describe('End-to-End Code Generation Pipeline', () => {
       expect(result).toBeDefined();
       expect(result.code).toBeDefined();
       expect(result.code.length).toBeGreaterThan(0);
-      expect(['frontend', 'backend', 'generic']).toContain(result.category);
+      expect(['frontend', 'backend', 'datascience', 'generic']).toContain(result.category);
     });
 
     it('should handle conflicting technology requirements', async () => {

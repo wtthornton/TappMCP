@@ -27,31 +27,31 @@ export declare const ContextEntrySchema: z.ZodObject<{
     tags: z.ZodDefault<z.ZodArray<z.ZodString, "many">>;
     metadata: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodAny>>;
 }, "strip", z.ZodTypeAny, {
-    priority: "low" | "medium" | "high" | "critical";
-    id: string;
-    tags: string[];
+    priority: "critical" | "low" | "medium" | "high";
     version: number;
     content: string;
-    timestamp: Date;
-    metadata: Record<string, any>;
-    compressed: boolean;
-    toolName: string;
-    sessionId: string;
-    contextType: "intermediate" | "metadata" | "input" | "output";
-    tokens: number;
-}, {
     id: string;
+    timestamp: Date;
+    tokens: number;
+    tags: string[];
+    compressed: boolean;
+    metadata: Record<string, any>;
+    toolName: string;
+    sessionId: string;
+    contextType: "intermediate" | "metadata" | "input" | "output";
+}, {
     content: string;
+    id: string;
     timestamp: Date;
     toolName: string;
     sessionId: string;
     contextType: "intermediate" | "metadata" | "input" | "output";
-    priority?: "low" | "medium" | "high" | "critical" | undefined;
-    tags?: string[] | undefined;
+    priority?: "critical" | "low" | "medium" | "high" | undefined;
     version?: number | undefined;
-    metadata?: Record<string, any> | undefined;
-    compressed?: boolean | undefined;
     tokens?: number | undefined;
+    tags?: string[] | undefined;
+    compressed?: boolean | undefined;
+    metadata?: Record<string, any> | undefined;
 }>;
 export type ContextEntry = z.infer<typeof ContextEntrySchema>;
 /**
@@ -66,17 +66,17 @@ export declare const StorageConfigSchema: z.ZodObject<{
     storageDirectory: z.ZodDefault<z.ZodString>;
     compressionLevel: z.ZodDefault<z.ZodNumber>;
 }, "strip", z.ZodTypeAny, {
-    compressionThreshold: number;
     maxMemoryEntries: number;
     maxDiskEntries: number;
+    compressionThreshold: number;
     archiveAfterDays: number;
     autoCleanupEnabled: boolean;
     storageDirectory: string;
     compressionLevel: number;
 }, {
-    compressionThreshold?: number | undefined;
     maxMemoryEntries?: number | undefined;
     maxDiskEntries?: number | undefined;
+    compressionThreshold?: number | undefined;
     archiveAfterDays?: number | undefined;
     autoCleanupEnabled?: boolean | undefined;
     storageDirectory?: string | undefined;
@@ -100,9 +100,9 @@ export declare const SearchQuerySchema: z.ZodObject<{
     sortOrder: z.ZodDefault<z.ZodEnum<["asc", "desc"]>>;
 }, "strip", z.ZodTypeAny, {
     limit: number;
-    sortBy: "priority" | "timestamp" | "relevance" | "tokens";
+    sortBy: "priority" | "timestamp" | "tokens" | "relevance";
     sortOrder: "asc" | "desc";
-    priority?: "low" | "medium" | "high" | "critical" | undefined;
+    priority?: "critical" | "low" | "medium" | "high" | undefined;
     tags?: string[] | undefined;
     startDate?: Date | undefined;
     endDate?: Date | undefined;
@@ -111,7 +111,7 @@ export declare const SearchQuerySchema: z.ZodObject<{
     contextType?: "intermediate" | "metadata" | "input" | "output" | undefined;
     textSearch?: string | undefined;
 }, {
-    priority?: "low" | "medium" | "high" | "critical" | undefined;
+    priority?: "critical" | "low" | "medium" | "high" | undefined;
     tags?: string[] | undefined;
     startDate?: Date | undefined;
     endDate?: Date | undefined;
@@ -120,7 +120,7 @@ export declare const SearchQuerySchema: z.ZodObject<{
     sessionId?: string | undefined;
     contextType?: "intermediate" | "metadata" | "input" | "output" | undefined;
     textSearch?: string | undefined;
-    sortBy?: "priority" | "timestamp" | "relevance" | "tokens" | undefined;
+    sortBy?: "priority" | "timestamp" | "tokens" | "relevance" | undefined;
     sortOrder?: "asc" | "desc" | undefined;
 }>;
 export type SearchQuery = z.infer<typeof SearchQuerySchema>;
