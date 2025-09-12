@@ -19,7 +19,7 @@ describe('CodeValidator', () => {
     // Cleanup any remaining temp files
     try {
       await fs.rm('./temp-test-validation', { recursive: true, force: true });
-    } catch (error) {
+    } catch (_error) {
       // Ignore cleanup errors
     }
   });

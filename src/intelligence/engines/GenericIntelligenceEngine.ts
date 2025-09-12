@@ -965,7 +965,7 @@ if __name__ == "__main__":
 
     // Check for testability factors
     const functionCount = (code.match(/function\s+\w+/g) || []).length;
-    const classCount = (code.match(/class\s+\w+/g) || []).length;
+    const _classCount = (code.match(/class\s+\w+/g) || []).length;
 
     // Functions should be small and focused
     const lines = code.split('\n').length;

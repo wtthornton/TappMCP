@@ -1,16 +1,19 @@
-# TappMCP - AI-Powered Development Assistant
+# TappMCP - AI Assistant Enhancement Platform
 
-AI-powered MCP server with real analysis capabilities, Context7 intelligence, and comprehensive workflow orchestration.
+AI-powered MCP server designed to **enhance AI assistants** with real analysis capabilities, Context7 intelligence, and comprehensive workflow orchestration.
 
-## ✨ Real Context7 Integration
+## ✨ Context7 Intelligence for AI Assistants
 
-TappMCP now features **real Context7 integration** with:
-- ✅ **Real API calls** to Context7 for up-to-date documentation
+TappMCP features **Context7 intelligence integration** designed to make AI assistants smarter:
+- ✅ **AI Assistant Enhancement** - Provides context and insights to improve AI assistant responses
+- ✅ **Real API calls** to Context7 for up-to-date documentation and best practices
 - ✅ **MCP client** with HTTP fallback for robust connectivity
-- ✅ **Live code examples** and best practices from Context7
+- ✅ **Live code examples** and domain expertise from Context7
 - ✅ **Intelligent fallback** when Context7 is unavailable
 - ✅ **30-day persistent cache** for 95% API cost reduction
 - ✅ **Smart caching** with automatic persistence across restarts
+
+**Purpose**: The Context7 intelligence is designed to enhance AI assistants (like Claude, Cursor AI) to provide better code suggestions, not to generate code directly.
 
 ## 🚀 Quick Start
 
@@ -45,9 +48,11 @@ npm run build && npm start
 
 ### Docker Production Deployment
 ```bash
-# Build and deploy production container
-docker build -t smart-mcp:latest .
-docker run -d --name smart-mcp-prod -p 8080:3000 -p 8081:3001 smart-mcp:latest
+# ⚠️ CRITICAL: Use docker-compose.yml for two-level deployment
+docker-compose up -d
+
+# ❌ WRONG: Don't use docker-compose.production.yml (wrong ports)
+# ❌ WRONG: Don't use manual docker run (wrong container name)
 
 # Or use Docker Compose (recommended)
 docker-compose up -d smart-mcp
@@ -65,6 +70,24 @@ docker logs smart-mcp-prod
 - **Docker Compose**: Creates container named `tappmcp-smart-mcp-1` (project prefix + service name)
 - **Manual Docker run**: Creates container named `smart-mcp-prod` (as specified with --name)
 - **Always check actual container name**: `docker ps` to see the real container name
+
+## 🎯 Visual Status System
+
+TappMCP includes a comprehensive visual status system to provide clear visibility of system availability and health.
+
+### Status Commands
+- `smart_vibe "status"` - Show full status dashboard in Cursor
+- `npm run status` - Show status in terminal
+- `npm run vibe-status` - Alternative status command
+
+### Visual Indicators
+- 🎯 Smart Vibe - Natural language interface
+- 🔍 Smart Begin - Project initialization
+- ✍️ Smart Write - Code generation
+- 📋 Smart Plan - Technical planning
+- 🎭 Smart Orchestrate - Full SDLC automation
+- ✅ Smart Finish - Project completion
+- 💬 Smart Converse - Advanced conversation
 
 ### Cursor MCP Integration
 

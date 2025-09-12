@@ -10,9 +10,14 @@ import {
 import { z } from 'zod';
 import { handleError, getErrorMessage } from './utils/errors.js';
 
-// Import health server for Docker health checks (skip only for tests)
-if (process.env.NODE_ENV !== 'test' && process.env.VITEST !== 'true') {
+// Import health server for Docker health checks (skip for tests and when explicitly disabled)
+if (
+  process.env.NODE_ENV !== 'test' &&
+  process.env.VITEST !== 'true' &&
+  process.env.SKIP_HEALTH_SERVER !== 'true'
+) {
   import('./health-server.js');
+  import('./http-server.js');
 }
 
 // Import tool handlers
@@ -28,19 +33,34 @@ import { smartVibeTool, handleSmartVibe } from './tools/smart-vibe.js';
 const SERVER_NAME = 'smart-mcp';
 const SERVER_VERSION = '0.1.0';
 
-// Tool registry
+// Tool registry with visual indicators
 const TOOLS: Record<string, { tool: Tool; handler: (input: unknown) => Promise<unknown> }> = {
-  smart_begin: { tool: smartBeginTool, handler: handleSmartBegin },
-  smart_plan: { tool: smartPlanTool, handler: handleSmartPlan },
-  smart_write: { tool: smartWriteTool, handler: handleSmartWrite },
-  smart_finish: { tool: smartFinishTool, handler: handleSmartFinish },
-  smart_orchestrate: { tool: smartOrchestrateTool, handler: handleSmartOrchestrate },
+  smart_begin: {
+    tool: { ...smartBeginTool, description: `🔍 ${smartBeginTool.description}` },
+    handler: handleSmartBegin,
+  },
+  smart_plan: {
+    tool: { ...smartPlanTool, description: `📋 ${smartPlanTool.description}` },
+    handler: handleSmartPlan,
+  },
+  smart_write: {
+    tool: { ...smartWriteTool, description: `✍️ ${smartWriteTool.description}` },
+    handler: handleSmartWrite,
+  },
+  smart_finish: {
+    tool: { ...smartFinishTool, description: `✅ ${smartFinishTool.description}` },
+    handler: handleSmartFinish,
+  },
+  smart_orchestrate: {
+    tool: { ...smartOrchestrateTool, description: `🎭 ${smartOrchestrateTool.description}` },
+    handler: handleSmartOrchestrate,
+  },
   smart_converse: {
-    tool: smartConverseTool,
+    tool: { ...smartConverseTool, description: `💬 ${smartConverseTool.description}` },
     handler: handleSmartConverse as (input: unknown) => Promise<unknown>,
   },
   smart_vibe: {
-    tool: smartVibeTool,
+    tool: smartVibeTool, // Already has visual indicator
     handler: handleSmartVibe as (input: unknown) => Promise<unknown>,
   },
 };

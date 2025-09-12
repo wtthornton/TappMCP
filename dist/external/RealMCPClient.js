@@ -152,7 +152,7 @@ export class RealMCPClient extends EventEmitter {
                 this.emit('message', serverName, message);
             }
         }
-        catch (error) {
+        catch (_error) {
             console.error(`❌ Failed to parse message from ${serverName}:`, messageStr);
         }
     }

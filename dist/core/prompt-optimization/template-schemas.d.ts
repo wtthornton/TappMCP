@@ -22,13 +22,13 @@ export declare const TemplateContextSchema: z.ZodObject<{
         domain: z.ZodOptional<z.ZodString>;
         complexity: z.ZodOptional<z.ZodEnum<["simple", "moderate", "complex"]>>;
     }, "strip", z.ZodTypeAny, {
-        projectId?: string | undefined;
         domain?: string | undefined;
-        complexity?: "moderate" | "complex" | "simple" | undefined;
+        projectId?: string | undefined;
+        complexity?: "moderate" | "simple" | "complex" | undefined;
     }, {
-        projectId?: string | undefined;
         domain?: string | undefined;
-        complexity?: "moderate" | "complex" | "simple" | undefined;
+        projectId?: string | undefined;
+        complexity?: "moderate" | "simple" | "complex" | undefined;
     }>>;
     userBehaviorProfile: z.ZodOptional<z.ZodObject<{
         preferredVerbosity: z.ZodOptional<z.ZodEnum<["concise", "moderate", "detailed"]>>;
@@ -58,18 +58,18 @@ export declare const TemplateContextSchema: z.ZodObject<{
     }>>;
 }, "strip", z.ZodTypeAny, {
     constraints: string[];
-    toolName: string;
     preferences: Record<string, any>;
+    toolName: string;
     userLevel: "beginner" | "intermediate" | "advanced";
     taskType: "planning" | "analysis" | "generation" | "transformation" | "debugging";
-    outputFormat: "text" | "code" | "markdown" | "structured";
+    outputFormat: "text" | "code" | "structured" | "markdown";
     contextHistory: string[];
     timeConstraint: "standard" | "immediate" | "thorough";
     sessionId?: string | undefined;
     projectContext?: {
-        projectId?: string | undefined;
         domain?: string | undefined;
-        complexity?: "moderate" | "complex" | "simple" | undefined;
+        projectId?: string | undefined;
+        complexity?: "moderate" | "simple" | "complex" | undefined;
     } | undefined;
     userBehaviorProfile?: {
         preferredVerbosity?: "moderate" | "detailed" | "concise" | undefined;
@@ -88,13 +88,13 @@ export declare const TemplateContextSchema: z.ZodObject<{
     preferences?: Record<string, any> | undefined;
     sessionId?: string | undefined;
     userLevel?: "beginner" | "intermediate" | "advanced" | undefined;
-    outputFormat?: "text" | "code" | "markdown" | "structured" | undefined;
+    outputFormat?: "text" | "code" | "structured" | "markdown" | undefined;
     contextHistory?: string[] | undefined;
     timeConstraint?: "standard" | "immediate" | "thorough" | undefined;
     projectContext?: {
-        projectId?: string | undefined;
         domain?: string | undefined;
-        complexity?: "moderate" | "complex" | "simple" | undefined;
+        projectId?: string | undefined;
+        complexity?: "moderate" | "simple" | "complex" | undefined;
     } | undefined;
     userBehaviorProfile?: {
         preferredVerbosity?: "moderate" | "detailed" | "concise" | undefined;

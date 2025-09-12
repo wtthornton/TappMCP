@@ -15,8 +15,8 @@ export declare const FileResourceSchema: z.ZodObject<{
     mode: "write" | "read" | "append";
     path: string;
     encoding: string;
-    createIfNotExists: boolean;
     backup: boolean;
+    createIfNotExists: boolean;
     data?: string | undefined;
     permissions?: string | undefined;
 }, {
@@ -24,9 +24,9 @@ export declare const FileResourceSchema: z.ZodObject<{
     data?: string | undefined;
     mode?: "write" | "read" | "append" | undefined;
     encoding?: string | undefined;
-    permissions?: string | undefined;
-    createIfNotExists?: boolean | undefined;
     backup?: boolean | undefined;
+    createIfNotExists?: boolean | undefined;
+    permissions?: string | undefined;
 }>;
 export type FileResourceConfig = z.infer<typeof FileResourceSchema>;
 /**

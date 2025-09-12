@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 🧠 AI Assistant Enhancement Purpose
+
+**TappMCP is designed to enhance AI assistants like Claude, not to generate code directly.** The Context7 intelligence provides domain expertise, best practices, and enhanced context to make AI assistants smarter and more helpful to developers. The theater system exposes the difference between template-based responses and genuine AI intelligence to help vibe coders understand and evaluate AI assistant quality.
+
 ## 🚨 CRITICAL: Before Starting ANY Work
 
 **MANDATORY COMPLIANCE CHECKLIST:**

@@ -635,7 +635,7 @@ export class Context7Broker {
      */
     async getKnowledge(params) {
         const startTime = Date.now();
-        const { topic, projectId, priority } = params;
+        const { topic, priority } = params;
         try {
             // Get all types of knowledge in parallel
             const [documentation, codeExamples, bestPractices, troubleshootingGuides] = await Promise.all([

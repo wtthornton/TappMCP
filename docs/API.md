@@ -1,7 +1,9 @@
 # TappMCP API Reference - Enhanced with Real AI Intelligence
 
 ## 🎯 Overview
-TappMCP provides a complete set of AI-powered development tools with **real analysis capabilities**, **Advanced Context7 Cache**, **Unified Code Intelligence**, and **comprehensive workflow orchestration**. All tools have been enhanced with genuine AI intelligence replacing hardcoded templates.
+TappMCP provides a complete set of AI assistant enhancement tools with **real analysis capabilities**, **Advanced Context7 Cache**, **Unified Code Intelligence**, and **comprehensive workflow orchestration**. All tools are designed to enhance AI assistants (like Claude, Cursor AI) with genuine intelligence, not to generate code directly.
+
+**Key Purpose**: Context7 intelligence enhances AI assistants to provide better code suggestions, architectural guidance, and domain expertise - making the AI assistant smarter, not replacing the coding process.
 
 ## 🔄 Docker Health Endpoints
 

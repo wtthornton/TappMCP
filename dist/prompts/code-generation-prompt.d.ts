@@ -18,7 +18,7 @@ export declare const CodeGenerationPromptSchema: z.ZodObject<{
     language: string;
     task: string;
     context?: string | undefined;
-    complexity?: "medium" | "complex" | "simple" | undefined;
+    complexity?: "medium" | "simple" | "complex" | undefined;
     framework?: string | undefined;
     requirements?: string[] | undefined;
     style?: "functional" | "object-oriented" | "procedural" | undefined;
@@ -29,7 +29,7 @@ export declare const CodeGenerationPromptSchema: z.ZodObject<{
     language: string;
     task: string;
     context?: string | undefined;
-    complexity?: "medium" | "complex" | "simple" | undefined;
+    complexity?: "medium" | "simple" | "complex" | undefined;
     framework?: string | undefined;
     requirements?: string[] | undefined;
     style?: "functional" | "object-oriented" | "procedural" | undefined;

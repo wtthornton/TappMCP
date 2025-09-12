@@ -4,6 +4,10 @@
 
 This guide provides essential information for AI assistants working with the TappMCP codebase.
 
+## 🧠 AI Assistant Enhancement Purpose
+
+**TappMCP is designed to enhance AI assistants like Claude, not to generate code directly.** The Context7 intelligence provides domain expertise, best practices, and enhanced context to make AI assistants smarter and more helpful to developers. The theater system exposes the difference between template-based responses and genuine AI intelligence to help vibe coders understand and evaluate AI assistant quality.
+
 ## 🚨 CRITICAL: Pre-Work Checklist
 
 **MANDATORY before ANY work:**

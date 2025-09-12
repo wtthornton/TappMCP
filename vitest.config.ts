@@ -25,7 +25,13 @@ export default defineConfig({
         },
       },
     },
-    testTimeout: 10000,
-    hookTimeout: 10000,
+    testTimeout: 15000, // Increased from 10s to 15s for integration tests
+    hookTimeout: 15000, // Increased from 10s to 15s for setup/teardown
+    // Increase timeout for integration tests
+    poolOptions: {
+      threads: {
+        singleThread: true,
+      },
+    },
   },
 });

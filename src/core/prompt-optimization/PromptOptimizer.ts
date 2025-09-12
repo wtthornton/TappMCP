@@ -715,9 +715,10 @@ export class PromptOptimizer {
     context: TemplateContext
   ): Promise<string> {
     switch (strategy) {
-      case 'compression':
+      case 'compression': {
         const compressionResult = this.applyCompression(originalPrompt);
         return compressionResult.prompt;
+      }
       case 'template-based':
         return this.applyTemplateBasedOptimization(originalPrompt, template, context);
       case 'context-aware':

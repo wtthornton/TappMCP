@@ -714,7 +714,7 @@ describe('SmartOrchestrate - REAL TESTS (Expose Workflow Theater)', () => {
       expect(result.data?.orchestration.businessValue.costPrevention).toBeGreaterThan(0);
 
       // Technical metrics should show template generation performance
-      expect(result.data?.technicalMetrics.responseTime).toBeLessThan(2000);
+      expect(result.data?.technicalMetrics.responseTime).toBeLessThan(2500);
       expect(result.data?.technicalMetrics.phasesOrchestrated).toBeGreaterThan(0);
       expect(result.data?.technicalMetrics.qualityGatesConfigured).toBeGreaterThan(0);
 

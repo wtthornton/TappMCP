@@ -1,55 +1,80 @@
-# Setup script for Cursor MCP integration
-Write-Host "🎯 Setting up TappMCP for Cursor..." -ForegroundColor Green
+# TappMCP Cursor Setup Script
+# This script configures Cursor to use the TappMCP MCP server
 
-# Check if Cursor settings directory exists
-$cursorSettingsPath = "$env:APPDATA\Cursor\User\settings.json"
-$cursorDir = Split-Path $cursorSettingsPath -Parent
+Write-Host "🚀 Setting up TappMCP for Cursor..." -ForegroundColor Green
 
-if (-not (Test-Path $cursorDir)) {
-    Write-Host "❌ Cursor settings directory not found at: $cursorDir" -ForegroundColor Red
-    Write-Host "Please ensure Cursor is installed and run this script again." -ForegroundColor Yellow
+# Check if Docker is running
+Write-Host "📋 Checking Docker container..." -ForegroundColor Yellow
+$containerStatus = docker ps --filter "name=tappmcp-smart-mcp-1" --format "{{.Status}}"
+if ($containerStatus -notlike "*Up*") {
+    Write-Host "⚠️  Docker container not running. Starting it..." -ForegroundColor Yellow
+    docker-compose up -d
+    Start-Sleep -Seconds 5
+}
+
+# Verify container is running
+$containerRunning = docker ps --filter "name=tappmcp-smart-mcp-1" --format "{{.Names}}"
+if ($containerRunning -eq "tappmcp-smart-mcp-1") {
+    Write-Host "✅ Docker container is running" -ForegroundColor Green
+} else {
+    Write-Host "❌ Failed to start Docker container" -ForegroundColor Red
     exit 1
 }
 
+# Create Cursor settings directory if it doesn't exist
+$cursorSettingsDir = "$env:APPDATA\Cursor\User"
+if (!(Test-Path $cursorSettingsDir)) {
+    New-Item -ItemType Directory -Path $cursorSettingsDir -Force
+    Write-Host "📁 Created Cursor settings directory" -ForegroundColor Yellow
+}
+
 # Backup existing settings
-if (Test-Path $cursorSettingsPath) {
-    $backupPath = "$cursorSettingsPath.backup.$(Get-Date -Format 'yyyyMMdd-HHmmss')"
-    Copy-Item $cursorSettingsPath $backupPath
-    Write-Host "📋 Backed up existing settings to: $backupPath" -ForegroundColor Yellow
+$settingsPath = "$cursorSettingsDir\settings.json"
+if (Test-Path $settingsPath) {
+    $backupPath = "$settingsPath.backup.$(Get-Date -Format 'yyyyMMdd-HHmmss')"
+    Copy-Item $settingsPath $backupPath
+    Write-Host "💾 Backed up existing settings to: $backupPath" -ForegroundColor Yellow
 }
 
-# Read existing settings or create new
-if (Test-Path $cursorSettingsPath) {
-    $settings = Get-Content $cursorSettingsPath | ConvertFrom-Json
-} else {
-    $settings = @{}
-}
-
-# Add MCP configuration
-$mcpServers = @{
-    "tappmcp" = @{
-        "command" = "docker"
-        "args" = @("exec", "-i", "tappmcp-smart-mcp-1", "node", "dist/server.js")
-        "cwd" = "C:\cursor\TappMCP"
-        "env" = @{
-            "NODE_ENV" = "production"
-        }
+# Copy MCP settings
+$mcpSettings = @"
+{
+  "mcp.servers": {
+    "tappmcp": {
+      "command": "docker",
+      "args": ["exec", "-i", "tappmcp-smart-mcp-1", "node", "dist/server.js"],
+      "env": {
+        "NODE_ENV": "production"
+      },
+      "stdio": true,
+      "description": "TappMCP Smart Vibe - AI-powered development assistant"
     }
+  },
+  "mcp.enabled": true,
+  "mcp.defaultServer": "tappmcp"
+}
+"@
+
+$mcpSettings | Out-File -FilePath $settingsPath -Encoding UTF8
+Write-Host "✅ Cursor MCP configuration updated" -ForegroundColor Green
+
+# Test MCP connection
+Write-Host "🧪 Testing MCP connection..." -ForegroundColor Yellow
+$testResult = echo '{"jsonrpc": "2.0", "id": 1, "method": "tools/list"}' | docker exec -i tappmcp-smart-mcp-1 node dist/server.js 2>$null
+if ($testResult -like "*smart_vibe*") {
+    Write-Host "✅ MCP connection successful - smart_vibe tool available" -ForegroundColor Green
+} else {
+    Write-Host "⚠️  MCP connection test failed, but configuration is set" -ForegroundColor Yellow
 }
 
-$settings | Add-Member -NotePropertyName "mcp.servers" -NotePropertyValue $mcpServers -Force
-$settings | Add-Member -NotePropertyName "mcp.enabled" -NotePropertyValue $true -Force
-
-# Save settings
-$settings | ConvertTo-Json -Depth 10 | Set-Content $cursorSettingsPath -Encoding UTF8
-
-Write-Host "✅ Cursor MCP configuration updated!" -ForegroundColor Green
-Write-Host "📍 Settings saved to: $cursorSettingsPath" -ForegroundColor Cyan
-
-Write-Host "`n🎵 Next Steps:" -ForegroundColor Magenta
-Write-Host "1. Restart Cursor" -ForegroundColor White
-Write-Host "2. Open a new chat in Cursor" -ForegroundColor White
-Write-Host "3. Try: smart_vibe 'make me a React todo app'" -ForegroundColor White
-Write-Host "4. Try: smart_vibe 'check my code quality'" -ForegroundColor White
-
-Write-Host "`n🚀 TappMCP is ready for vibe coding!" -ForegroundColor Green
+Write-Host ""
+Write-Host "🎉 Setup Complete!" -ForegroundColor Green
+Write-Host "📋 Next steps:" -ForegroundColor Cyan
+Write-Host "   1. Restart Cursor completely" -ForegroundColor White
+Write-Host "   2. Open a new Cursor agent" -ForegroundColor White
+Write-Host "   3. Test with: smart_vibe 'create a hello world html page'" -ForegroundColor White
+Write-Host ""
+Write-Host "🔧 If it doesn't work:" -ForegroundColor Yellow
+Write-Host "   - Check Docker container: docker ps" -ForegroundColor White
+Write-Host "   - Check Cursor settings: Ctrl+, then search 'mcp'" -ForegroundColor White
+Write-Host "   - Restart Cursor again" -ForegroundColor White

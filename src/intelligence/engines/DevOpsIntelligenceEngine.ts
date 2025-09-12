@@ -309,7 +309,7 @@ export class DevOpsIntelligenceEngine extends BaseCategoryIntelligenceEngine {
    */
   async optimizeCode(code: string, technology: string, context: Context7Data): Promise<string> {
     let optimizedCode = code;
-    const insights = await this.getTechnologyInsights(technology, context);
+    const _insights = await this.getTechnologyInsights(technology, context);
 
     // Apply DevOps-specific optimizations
     if (technology.toLowerCase().includes('docker')) {
@@ -615,7 +615,7 @@ export class DevOpsIntelligenceEngine extends BaseCategoryIntelligenceEngine {
     _insights: TechnologyInsights
   ): string {
     const baseImage = this.selectOptimalBaseImage(request);
-    const packages = this.determineRequiredPackages(request);
+    const _packages = this.determineRequiredPackages(request);
 
     return `# Multi-stage build for optimized production image
 # Build stage

@@ -350,7 +350,7 @@ class CustomCodeAnalysisTool extends MCPTool<
         },
         score,
       };
-    } catch (error) {
+    } catch (_error) {
       return {
         summary: 'Could not analyze dependencies - package.json not found or invalid',
         issues: [
@@ -578,8 +578,8 @@ async function demonstrateRegistry() {
           });
         }
       }
-    } catch (error) {
-      console.error('❌ Analysis failed:', error);
+    } catch (_error) {
+      console.error('❌ Analysis failed:', _error);
     }
   }
 }

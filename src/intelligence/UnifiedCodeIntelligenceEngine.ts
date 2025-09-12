@@ -8,9 +8,9 @@
 import { z } from 'zod';
 import { CategoryIntelligenceEngine } from './CategoryIntelligenceEngine.js';
 import { GenericIntelligenceEngine } from './engines/GenericIntelligenceEngine.js';
-import { FrontendIntelligenceEngine } from './engines/FrontendIntelligenceEngine.js';
-import { BackendIntelligenceEngine } from './engines/BackendIntelligenceEngine.js';
-import { DatabaseIntelligenceEngine } from './engines/DatabaseIntelligenceEngine.js';
+import { FrontendIntelligenceEngine } from './engines/frontend/index.js';
+import { BackendIntelligenceEngine } from './engines/backend/index.js';
+import { DatabaseIntelligenceEngine } from './engines/database/index.js';
 import { DevOpsIntelligenceEngine } from './engines/DevOpsIntelligenceEngine.js';
 import { MobileIntelligenceEngine } from './engines/MobileIntelligenceEngine.js';
 import { TechnologyDiscoveryEngine } from './TechnologyDiscoveryEngine.js';

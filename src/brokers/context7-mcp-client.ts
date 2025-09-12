@@ -34,8 +34,8 @@ export class Context7MCPClient {
 
     // Create stdio transport for Context7 MCP server
     this.transport = new StdioClientTransport({
-      command: 'npx',
-      args: ['-y', '@upstash/context7-mcp'],
+      command: 'C:\\Program Files\\nodejs\\npm.cmd',
+      args: ['exec', '-y', '@upstash/context7-mcp'],
       env: {
         ...process.env,
         CONTEXT7_API_KEY: config.apiKey,

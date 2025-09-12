@@ -347,7 +347,7 @@ export class MobileIntelligenceEngine extends BaseCategoryIntelligenceEngine {
    */
   async optimizeCode(code: string, technology: string, context: Context7Data): Promise<string> {
     let optimizedCode = code;
-    const insights = await this.getTechnologyInsights(technology, context);
+    const _insights = await this.getTechnologyInsights(technology, context);
 
     // Apply mobile-specific optimizations
     if (technology.toLowerCase().includes('react native')) {

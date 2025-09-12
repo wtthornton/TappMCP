@@ -446,7 +446,7 @@ ${Array(55).fill('          processStep();').join('\n')}
             if (data[i]) {
               if (typeof data[i] === 'object') {
                 for (const key in data[i]) {
-                  if (data[i].hasOwnProperty(key)) {
+                  if (Object.prototype.hasOwnProperty.call(data[i], key)) {
                     switch (typeof data[i][key]) {
                       case 'string':
                         if (data[i][key].length > 10) {
@@ -558,7 +558,7 @@ ${Array(55).fill('          processStep();').join('\n')}
           if (input) {
             if (typeof input === 'object') {
               for (const key in input) {
-                if (input.hasOwnProperty(key)) {
+                if (Object.prototype.hasOwnProperty.call(input, key)) {
                   switch (typeof input[key]) {
                     case 'string':
                       if (input[key].length > 0 && input[key].length < 100 || input[key] === 'special') {

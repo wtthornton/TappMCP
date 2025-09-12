@@ -38,7 +38,11 @@ const healthServer = createServer((req, res) => {
 });
 
 // Start health server only if not in test environment
-if (process.env.NODE_ENV !== 'test' && process.env.VITEST !== 'true') {
+if (
+  process.env.NODE_ENV !== 'test' &&
+  process.env.VITEST !== 'true' &&
+  process.env.SKIP_HEALTH_SERVER !== 'true'
+) {
   healthServer.listen(Number(PORT), '0.0.0.0', () => {
     // Health server running
   });

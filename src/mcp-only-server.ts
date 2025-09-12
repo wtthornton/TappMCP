@@ -16,18 +16,43 @@ import { smartPlanTool, handleSmartPlan } from './tools/smart-plan.js';
 import { smartWriteTool, handleSmartWrite } from './tools/smart-write.js';
 import { smartFinishTool, handleSmartFinish } from './tools/smart-finish.js';
 import { smartOrchestrateTool, handleSmartOrchestrate } from './tools/smart-orchestrate.js';
+import { smartConverseTool, handleSmartConverse } from './tools/smart-converse.js';
+import { smartVibeTool, handleSmartVibe } from './tools/smart-vibe.js';
 
 // Server configuration
 const SERVER_NAME = 'smart-mcp';
 const SERVER_VERSION = '0.1.0';
 
-// Tool registry
+// Tool registry with visual indicators
 const TOOLS: Record<string, { tool: Tool; handler: (input: unknown) => Promise<unknown> }> = {
-  smart_begin: { tool: smartBeginTool, handler: handleSmartBegin },
-  smart_plan: { tool: smartPlanTool, handler: handleSmartPlan },
-  smart_write: { tool: smartWriteTool, handler: handleSmartWrite },
-  smart_finish: { tool: smartFinishTool, handler: handleSmartFinish },
-  smart_orchestrate: { tool: smartOrchestrateTool, handler: handleSmartOrchestrate },
+  smart_begin: {
+    tool: { ...smartBeginTool, description: `🔍 ${smartBeginTool.description}` },
+    handler: handleSmartBegin,
+  },
+  smart_plan: {
+    tool: { ...smartPlanTool, description: `📋 ${smartPlanTool.description}` },
+    handler: handleSmartPlan,
+  },
+  smart_write: {
+    tool: { ...smartWriteTool, description: `✍️ ${smartWriteTool.description}` },
+    handler: handleSmartWrite,
+  },
+  smart_finish: {
+    tool: { ...smartFinishTool, description: `✅ ${smartFinishTool.description}` },
+    handler: handleSmartFinish,
+  },
+  smart_orchestrate: {
+    tool: { ...smartOrchestrateTool, description: `🎭 ${smartOrchestrateTool.description}` },
+    handler: handleSmartOrchestrate,
+  },
+  smart_converse: {
+    tool: { ...smartConverseTool, description: `💬 ${smartConverseTool.description}` },
+    handler: handleSmartConverse as (input: unknown) => Promise<unknown>,
+  },
+  smart_vibe: {
+    tool: smartVibeTool, // Already has visual indicator
+    handler: handleSmartVibe as (input: unknown) => Promise<unknown>,
+  },
 };
 
 // Input validation schema

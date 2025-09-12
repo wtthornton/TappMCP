@@ -342,10 +342,11 @@ export class ContextPersistenceEngine {
                 case 'timestamp':
                     comparison = a.timestamp.getTime() - b.timestamp.getTime();
                     break;
-                case 'priority':
+                case 'priority': {
                     const priorityOrder = { low: 1, medium: 2, high: 3, critical: 4 };
                     comparison = priorityOrder[a.priority] - priorityOrder[b.priority];
                     break;
+                }
                 case 'tokens':
                     comparison = a.tokens - b.tokens;
                     break;

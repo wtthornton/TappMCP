@@ -167,9 +167,9 @@ export class Context7ProjectAnalyzer {
               const validResults = context7Results.filter(r => r !== null);
 
               // Merge and synthesize Context7 data with enhanced insights
-              const mergedData = this.mergeContext7Data(validResults);
+              const _mergedData = this.mergeContext7Data(validResults);
               const insights = await this.synthesizeEnhancedContext7Insights(
-                mergedData,
+                _mergedData,
                 projectAnalysis,
                 primaryCategory
               );
@@ -178,10 +178,10 @@ export class Context7ProjectAnalyzer {
 
               return {
                 topics,
-                data: mergedData,
+                data: _mergedData,
                 insights,
                 metadata: {
-                  totalResults: mergedData.length,
+                  totalResults: _mergedData.length,
                   fetchTime,
                   cacheHits: Math.round(
                     this.context7Cache.getCacheStats().hitRate * validResults.length
@@ -460,7 +460,7 @@ export class Context7ProjectAnalyzer {
 
     const results = await Promise.all(context7Promises);
     const validResults = results.filter(r => r !== null);
-    const mergedData = this.mergeContext7Data(validResults);
+    const _mergedData = this.mergeContext7Data(validResults);
 
     // Create simplified insights
     return {
@@ -809,7 +809,7 @@ export class Context7ProjectAnalyzer {
   ): Promise<SecurityInsights> {
     const vulnerabilities = analysis.security.vulnerabilities;
     const criticalCount = analysis.security.summary.critical;
-    const highCount = analysis.security.summary.high;
+    const _highCount = analysis.security.summary.high;
 
     return {
       threatModel:
@@ -984,7 +984,27 @@ export class Context7ProjectAnalyzer {
   /**
    * Generate fallback insights for error scenarios
    */
-  private generateFallbackInsights(analysis: BasicAnalysis): Context7Insights {
+  private generateFallbackInsights(analysis: BasicAnalysis | null): Context7Insights {
+    // Handle null analysis gracefully
+    if (!analysis) {
+      return {
+        patterns: ['Follow established design patterns', 'Use clean code principles'],
+        bestPractices: ['Write readable code', 'Add comprehensive tests', 'Document your code'],
+        warnings: ['Context7 insights unavailable', 'Project analysis not available'],
+        recommendations: [
+          'Initialize project analysis first',
+          'Ensure proper error handling',
+          'Follow security best practices',
+        ],
+        techStackSpecific: {},
+        qualityMetrics: {
+          overall: 70,
+          complexity: 5,
+          maintainability: 70,
+        },
+      };
+    }
+
     return {
       patterns: ['Follow established design patterns', 'Use clean code principles'],
       bestPractices: ['Write readable code', 'Add comprehensive tests', 'Document your code'],
@@ -995,17 +1015,19 @@ export class Context7ProjectAnalyzer {
         'Optimize for maintainability',
         'Follow security best practices',
       ],
-      techStackSpecific: analysis.project.detectedTechStack.reduce(
+      techStackSpecific: analysis.project?.detectedTechStack?.reduce(
         (acc, tech) => {
           acc[tech] = [`Follow ${tech} best practices`, 'Review official documentation'];
           return acc;
         },
         {} as Record<string, string[]>
-      ),
+      ) || {},
       qualityMetrics: {
         overall: 70,
-        complexity: analysis.static.metrics.complexity,
-        maintainability: Math.max(0, 100 - analysis.static.metrics.duplication * 5),
+        complexity: analysis.static?.metrics?.complexity || 5,
+        maintainability: analysis.static?.metrics?.duplication
+          ? Math.max(0, 100 - analysis.static.metrics.duplication * 5)
+          : 70,
       },
     };
   }

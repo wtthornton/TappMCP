@@ -346,7 +346,7 @@ export class SimpleSDLCWorkflow {
 
     // Role-based additions
     switch (_options.userRole) {
-      case 'qa-engineer':
+      case 'qa-engineer': {
         // Generate comprehensive tests
         const testContent = this.generateTestFile(request, analysis, _options);
         files.push({
@@ -355,8 +355,9 @@ export class SimpleSDLCWorkflow {
           type: 'test',
         });
         break;
+      }
 
-      case 'operations-engineer':
+      case 'operations-engineer': {
         // Generate deployment config
         const configContent = this.generateDeploymentConfig(request, analysis, _options);
         files.push({
@@ -365,8 +366,9 @@ export class SimpleSDLCWorkflow {
           type: 'config',
         });
         break;
+      }
 
-      case 'product-strategist':
+      case 'product-strategist': {
         // Generate documentation
         const docContent = this.generateDocumentation(request, analysis, _options);
         files.push({
@@ -375,6 +377,7 @@ export class SimpleSDLCWorkflow {
           type: 'documentation',
         });
         break;
+      }
     }
 
     // Add additional files based on _options
@@ -414,7 +417,7 @@ export class SimpleSDLCWorkflow {
     const hasTypeScript =
       analysis.project.detectedTechStack.includes('typescript') ||
       analysis.project.detectedTechStack.includes('ts');
-    const extension = hasTypeScript ? '.ts' : '.js';
+    const _extension = hasTypeScript ? '.ts' : '.js';
 
     // Use Context7 data if available
     const bestPractice =

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple HTML Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .feature {
+            background-color: #e8f4f8;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #007acc;
+        }
+        .button {
+            background-color: #007acc;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        .button:hover {
+            background-color: #005a9e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to My Simple HTML Page</h1>
+
+        <div class="feature">
+            <h3>🎯 Clean Design</h3>
+            <p>This page features a modern, responsive design with clean typography and subtle shadows.</p>
+        </div>
+
+        <div class="feature">
+            <h3>📱 Responsive Layout</h3>
+            <p>The layout adapts to different screen sizes, ensuring a great experience on all devices.</p>
+        </div>
+
+        <div class="feature">
+            <h3>🎨 Interactive Elements</h3>
+            <p>Hover over the buttons below to see interactive effects in action.</p>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <button class="button" onclick="showMessage()">Click Me!</button>
+            <button class="button" onclick="changeColor()">Change Color</button>
+            <button class="button" onclick="showTime()">Show Time</button>
+        </div>
+
+        <div id="output" style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px; min-height: 50px;">
+            <p>Click a button above to see some magic happen! ✨</p>
+        </div>
+    </div>
+
+    <script>
+        function showMessage() {
+            const output = document.getElementById('output');
+            output.innerHTML = '<p>🎉 Hello! You clicked the button! This is a simple interactive HTML page.</p>';
+        }
+
+        function changeColor() {
+            const container = document.querySelector('.container');
+            const colors = ['#e8f4f8', '#f0f8e8', '#f8e8f0', '#fff8e8'];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            container.style.backgroundColor = randomColor;
+            document.getElementById('output').innerHTML = '<p>🎨 Color changed! The page background is now different.</p>';
+        }
+
+        function showTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString();
+            document.getElementById('output').innerHTML = `<p>⏰ Current time: <strong>${timeString}</strong></p>`;
+        }
+    </script>
+</body>
+</html>

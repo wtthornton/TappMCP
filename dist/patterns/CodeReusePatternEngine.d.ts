@@ -69,7 +69,7 @@ declare const CodePatternSchema: z.ZodObject<{
     description: string;
     id: string;
     pattern: string;
-    category: "function" | "type" | "testing" | "async" | "module" | "error-handling" | "utility" | "class" | "control-flow";
+    category: "function" | "type" | "testing" | "async" | "class" | "module" | "error-handling" | "utility" | "control-flow";
     metrics: {
         tokensPerUse: number;
         avgComplexity: number;
@@ -90,7 +90,7 @@ declare const CodePatternSchema: z.ZodObject<{
     description: string;
     id: string;
     pattern: string;
-    category: "function" | "type" | "testing" | "async" | "module" | "error-handling" | "utility" | "class" | "control-flow";
+    category: "function" | "type" | "testing" | "async" | "class" | "module" | "error-handling" | "utility" | "control-flow";
     metrics: {
         tokensPerUse: number;
         avgComplexity: number;

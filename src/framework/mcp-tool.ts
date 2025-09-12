@@ -177,16 +177,8 @@ export abstract class MCPTool<TInput = unknown, TOutput = unknown> {
    * Check if tool is healthy
    */
   async healthCheck(): Promise<boolean> {
-    try {
-      // Basic health check - can be overridden by subclasses
-      return true;
-    } catch (error) {
-      this.logger.error('Health check failed', {
-        toolName: this.config.name,
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
-      return false;
-    }
+    // Basic health check - can be overridden by subclasses
+    return true;
   }
 
   /**

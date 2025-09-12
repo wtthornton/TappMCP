@@ -1,5 +1,9 @@
 # Context7 Configuration Guide
 
+## Purpose: AI Assistant Enhancement
+
+**Context7 integration is designed to enhance AI assistants (like Claude, Cursor AI) with domain expertise and best practices.** The intelligence provides context and insights to improve AI assistant responses, not to generate code directly.
+
 ## Environment Variables
 
 The following environment variables are required for Context7 integration:

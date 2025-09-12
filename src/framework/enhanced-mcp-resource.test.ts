@@ -93,7 +93,7 @@ describe('EnhancedMCPResource', () => {
 
       try {
         await resource.execute(operation);
-      } catch (error) {
+      } catch (_error) {
         // Expected to throw
       }
 
@@ -136,7 +136,7 @@ describe('EnhancedMCPResource', () => {
       for (let i = 0; i < 5; i++) {
         try {
           await resource.execute(operation);
-        } catch (error) {
+        } catch (_error) {
           // Expected to throw
         }
       }

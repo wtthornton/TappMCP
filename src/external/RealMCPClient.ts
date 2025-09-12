@@ -196,7 +196,7 @@ export class RealMCPClient extends EventEmitter {
         console.log(`📨 ${serverName} notification:`, message);
         this.emit('message', serverName, message);
       }
-    } catch (error) {
+    } catch (_error) {
       console.error(`❌ Failed to parse message from ${serverName}:`, messageStr);
     }
   }

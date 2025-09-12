@@ -101,9 +101,10 @@ export class Context7Broker {
     const DEFAULT_MCP_URL = 'https://mcp.context7.com/mcp';
 
     // Check for HTTP-only mode from environment
-    const useHttpOnly = process.env.CONTEXT7_USE_HTTP_ONLY === 'true' ||
-                       process.env.NODE_ENV === 'production' ||
-                       config.useHttpOnly === true;
+    const useHttpOnly =
+      process.env.CONTEXT7_USE_HTTP_ONLY === 'true' ||
+      process.env.NODE_ENV === 'production' ||
+      config.useHttpOnly === true;
 
     this.config = {
       apiUrl: config.apiUrl ?? DEFAULT_MCP_URL,
@@ -798,7 +799,7 @@ export class Context7Broker {
     summary: string;
   }> {
     const startTime = Date.now();
-    const { topic, projectId, priority } = params;
+    const { topic, priority } = params;
 
     try {
       // Get all types of knowledge in parallel

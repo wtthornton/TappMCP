@@ -1,0 +1,15 @@
+{
+  "mcp.servers": {
+    "tappmcp": {
+      "command": "docker",
+      "args": ["exec", "-i", "tappmcp-smart-mcp-1", "node", "dist/mcp-only-server.js"],
+      "env": {
+        "NODE_ENV": "production"
+      },
+      "stdio": true,
+      "description": "TappMCP Smart Vibe - AI-powered development assistant (Docker)"
+    }
+  },
+  "mcp.enabled": true,
+  "mcp.defaultServer": "tappmcp"
+}

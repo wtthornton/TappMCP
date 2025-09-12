@@ -7,6 +7,26 @@
 - Node.js 20+ (for development)
 - At least 512MB available memory
 
+## ⚠️ CRITICAL: Deployment Configuration
+
+**ALWAYS USE**: `docker-compose.yml` (ports 8080/8081)
+
+### Correct Two-Level Architecture:
+1. **Level 1**: Docker container `tappmcp-smart-mcp-1` on ports 8080:3000 and 8081:3001
+2. **Level 2**: Cursor MCP integration via `smart-mcp-compose` configuration
+
+### Deployment Commands:
+```bash
+# ✅ CORRECT - Use main docker-compose.yml
+docker-compose up -d
+
+# Use the standard docker-compose.yml for all deployments
+```
+
+### Container Name Must Be:
+- ✅ `tappmcp-smart-mcp-1` (matches cursor-mcp-config.json)
+- ❌ `smart-mcp-prod` (wrong container name)
+
 ### Production Deployment
 
 1. **Build and Start**

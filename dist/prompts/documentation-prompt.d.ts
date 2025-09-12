@@ -19,7 +19,7 @@ export declare const DocumentationPromptSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     code: string;
     language: string;
-    docType: "function" | "api" | "module" | "tutorial" | "guide" | "class" | "readme";
+    docType: "function" | "api" | "class" | "module" | "tutorial" | "guide" | "readme";
     requirements?: string[] | undefined;
     style?: "markdown" | "jsdoc" | "tsdoc" | "sphinx" | "asciidoc" | "plain" | undefined;
     includeExamples?: boolean | undefined;
@@ -32,7 +32,7 @@ export declare const DocumentationPromptSchema: z.ZodObject<{
 }, {
     code: string;
     language: string;
-    docType: "function" | "api" | "module" | "tutorial" | "guide" | "class" | "readme";
+    docType: "function" | "api" | "class" | "module" | "tutorial" | "guide" | "readme";
     requirements?: string[] | undefined;
     style?: "markdown" | "jsdoc" | "tsdoc" | "sphinx" | "asciidoc" | "plain" | undefined;
     includeExamples?: boolean | undefined;

@@ -5,7 +5,7 @@
  * Tests individual MCP tools via STDIO protocol
  */
 
-const { spawn } = require('child_process');
+import { spawn } from 'child_process';
 
 const colors = {
   reset: '\x1b[0m',

@@ -193,7 +193,7 @@ export class MCPCoordinator {
             result.status === 'fulfilled'
         )
         .map(result => result.value);
-    } catch (error) {
+    } catch (_error) {
       // Assumption validation failed
       return [];
     }
@@ -229,7 +229,7 @@ export class MCPCoordinator {
       console.log(`Market intelligence gathered in ${responseTime}ms`);
 
       return { analysis, trends, insights };
-    } catch (error) {
+    } catch (_error) {
       // Market intelligence gathering failed
       return { analysis: null, trends: [], insights: [] };
     }
@@ -301,7 +301,7 @@ export class MCPCoordinator {
       };
 
       await this.memory.storeLessonLearned(lessonData);
-    } catch (error) {
+    } catch (_error) {
       // Failed to store lesson learned
     }
   }
@@ -332,7 +332,7 @@ export class MCPCoordinator {
       );
 
       return knowledge;
-    } catch (error) {
+    } catch (_error) {
       // Context7 knowledge gathering failed
       return [];
     }
@@ -357,7 +357,7 @@ export class MCPCoordinator {
       knowledge.push(...trends.slice(0, 1).map(trend => this.transformTrend(trend)));
 
       return knowledge;
-    } catch (error) {
+    } catch (_error) {
       // Web search knowledge gathering failed
       return [];
     }
@@ -387,7 +387,7 @@ export class MCPCoordinator {
       knowledge.push(...insights.slice(0, 1).map(insight => this.transformInsight(insight)));
 
       return knowledge;
-    } catch (error) {
+    } catch (_error) {
       // Memory knowledge gathering failed
       return [];
     }
