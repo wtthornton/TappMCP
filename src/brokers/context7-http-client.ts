@@ -60,7 +60,7 @@ export class Context7HttpClient {
       headers: {
         'Content-Type': 'application/json',
         'User-Agent': 'TappMCP-Context7Client/1.0.0',
-        ...(config.apiKey && { 'Authorization': `Bearer ${config.apiKey}` }),
+        ...(config.apiKey && { Authorization: `Bearer ${config.apiKey}` }),
       },
     });
 
@@ -85,7 +85,10 @@ export class Context7HttpClient {
   /**
    * Make a GET request to Context7 API
    */
-  async get<T = any>(endpoint: string, params?: Record<string, any>): Promise<Context7ApiResponse<T>> {
+  async get<T = any>(
+    endpoint: string,
+    params?: Record<string, any>
+  ): Promise<Context7ApiResponse<T>> {
     const requestId = this.generateRequestId();
 
     try {
@@ -179,11 +182,14 @@ export class Context7HttpClient {
 
     // Calculate delay with exponential backoff
     const delay = Math.min(
-      this.config.retryPolicy.baseDelay * Math.pow(this.config.retryPolicy.backoffMultiplier, config.retryCount - 1),
+      this.config.retryPolicy.baseDelay *
+        Math.pow(this.config.retryPolicy.backoffMultiplier, config.retryCount - 1),
       this.config.retryPolicy.maxDelay
     );
 
-    console.log(`Retrying request in ${delay}ms (attempt ${config.retryCount}/${this.config.retryPolicy.maxRetries})`);
+    console.log(
+      `Retrying request in ${delay}ms (attempt ${config.retryCount}/${this.config.retryPolicy.maxRetries})`
+    );
 
     await this.sleep(delay);
 
@@ -261,9 +267,9 @@ export class Context7HttpClient {
       // Test with a simple search query
       const response = await this.client.get('/search', {
         params: {
-          query: 'test'
+          query: 'test',
         },
-        timeout: 5000
+        timeout: 5000,
       });
       return response.status === 200;
     } catch (error) {

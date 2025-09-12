@@ -1160,11 +1160,15 @@ jobs:
   private checkCacheStrategy = (code: string) => /COPY package.*json|FROM\s+/i.test(code);
   private checkBuildContext = (code: string) => /\.dockerignore|FROM\s+/i.test(code);
   private checkArgumentsUsage = (code: string) => /ARG|FROM\s+/i.test(code);
-  private checkSecretsManagement = (code: string) => !/password|secret|key/.test(code) || /FROM\s+/i.test(code);
+  private checkSecretsManagement = (code: string) =>
+    !/password|secret|key/.test(code) || /FROM\s+/i.test(code);
 
-  private checkResourceManagement = (code: string) => /resources:|limits:|requests:|apiVersion/i.test(code);
-  private checkConfigurationManagement = (code: string) => /ConfigMap|Secret|apiVersion/i.test(code);
-  private checkSecurityPolicies = (code: string) => /securityContext|PodSecurityPolicy|apiVersion/i.test(code);
+  private checkResourceManagement = (code: string) =>
+    /resources:|limits:|requests:|apiVersion/i.test(code);
+  private checkConfigurationManagement = (code: string) =>
+    /ConfigMap|Secret|apiVersion/i.test(code);
+  private checkSecurityPolicies = (code: string) =>
+    /securityContext|PodSecurityPolicy|apiVersion/i.test(code);
   private checkNetworkPolicies = (code: string) => /NetworkPolicy|apiVersion/i.test(code);
   private checkMonitoringSetup = (code: string) => /prometheus|monitoring/.test(code);
   private checkRollingUpdates = (code: string) => /RollingUpdate/.test(code);

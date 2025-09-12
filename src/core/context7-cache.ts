@@ -285,16 +285,17 @@ export class Context7Cache extends MCPCoordinator {
   /**
    * Compress data if it's larger than threshold
    */
-  private async compressIfNeeded(data: any): Promise<{data: any, compressed: boolean}> {
+  private async compressIfNeeded(data: any): Promise<{ data: any; compressed: boolean }> {
     const serialized = JSON.stringify(data);
     const size = Buffer.byteLength(serialized, 'utf8');
 
-    if (size > 1024) { // 1KB threshold
+    if (size > 1024) {
+      // 1KB threshold
       try {
         const compressed = await gzipAsync(serialized);
         return {
           data: compressed.toString('base64'),
-          compressed: true
+          compressed: true,
         };
       } catch (error) {
         console.warn('Compression failed, storing uncompressed:', error);
@@ -407,7 +408,7 @@ export class Context7Cache extends MCPCoordinator {
       'TypeScript strict mode patterns',
       'React component optimization',
       'Node.js security headers',
-      'CSS responsive design patterns'
+      'CSS responsive design patterns',
     ];
 
     console.log('🔥 Warming Context7 cache with common patterns...');
@@ -418,7 +419,7 @@ export class Context7Cache extends MCPCoordinator {
           businessRequest: pattern,
           domain: 'general',
           priority: 'medium',
-          maxResults: 3
+          maxResults: 3,
         });
       } catch (error) {
         console.warn(`Failed to warm pattern: ${pattern}`, error);

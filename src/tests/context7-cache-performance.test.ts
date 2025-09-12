@@ -18,7 +18,7 @@ describe('Context7 Cache Performance', () => {
       maxCacheSize: 100,
       defaultExpiryHours: 2,
       enableCompression: true,
-      enableHitTracking: true
+      enableHitTracking: true,
     });
   });
 
@@ -31,7 +31,7 @@ describe('Context7 Cache Performance', () => {
         businessRequest: `test-request-${i}`,
         domain: 'test',
         priority: 'medium',
-        maxResults: 3
+        maxResults: 3,
       });
     }
 
@@ -59,7 +59,7 @@ describe('Context7 Cache Performance', () => {
       businessRequest: largeData,
       domain: 'test',
       priority: 'medium',
-      maxResults: 3
+      maxResults: 3,
     });
 
     const endTime = Date.now();
@@ -83,7 +83,7 @@ describe('Context7 Cache Performance', () => {
         businessRequest: 'HTML5 accessibility WCAG 2.1 best practices',
         domain: 'general',
         priority: 'medium',
-        maxResults: 3
+        maxResults: 3,
       });
     }
 
@@ -112,7 +112,7 @@ describe('Context7 Cache Performance', () => {
           businessRequest: `concurrent-test-${i % 5}`, // Some repetition for cache hits
           domain: 'test',
           priority: 'medium',
-          maxResults: 3
+          maxResults: 3,
         })
       );
     }

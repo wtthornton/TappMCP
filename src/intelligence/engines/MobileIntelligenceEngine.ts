@@ -1099,7 +1099,8 @@ class _${widgetName}State extends State<${widgetName}>
     const lower = description.toLowerCase();
 
     // Prioritize component/widget generation over navigation
-    if (lower.includes('component') || lower.includes('screen') || lower.includes('app')) return 'react-native-component';
+    if (lower.includes('component') || lower.includes('screen') || lower.includes('app'))
+      return 'react-native-component';
     if (lower.includes('widget') || lower.includes('flutter')) return 'flutter-widget';
     if (lower.includes('navigation') || lower.includes('route')) return 'navigation';
     if (lower.includes('api') || lower.includes('fetch') || lower.includes('request'))

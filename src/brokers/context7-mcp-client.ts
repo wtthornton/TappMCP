@@ -29,7 +29,7 @@ export class Context7MCPClient {
     // Create MCP client
     this.client = new Client({
       name: 'TappMCP-Context7Client',
-      version: '1.0.0'
+      version: '1.0.0',
     });
 
     // Create stdio transport for Context7 MCP server
@@ -38,8 +38,8 @@ export class Context7MCPClient {
       args: ['-y', '@upstash/context7-mcp'],
       env: {
         ...process.env,
-        CONTEXT7_API_KEY: config.apiKey
-      }
+        CONTEXT7_API_KEY: config.apiKey,
+      },
     });
   }
 
@@ -54,7 +54,9 @@ export class Context7MCPClient {
       console.log('✅ Connected to Context7 MCP server');
     } catch (error) {
       console.error('❌ Failed to connect to Context7 MCP server:', error);
-      throw new Error(`Context7 MCP connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Context7 MCP connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -90,8 +92,8 @@ export class Context7MCPClient {
       const result = await this.client.callTool({
         name: 'resolve-library-id',
         arguments: {
-          libraryName
-        }
+          libraryName,
+        },
       });
 
       if (result.isError) {
@@ -121,7 +123,11 @@ export class Context7MCPClient {
   /**
    * Get library documentation using Context7 MCP tool
    */
-  async getLibraryDocs(libraryId: string, topic: string, version: string = 'latest'): Promise<Context7LibraryDoc[]> {
+  async getLibraryDocs(
+    libraryId: string,
+    topic: string,
+    version: string = 'latest'
+  ): Promise<Context7LibraryDoc[]> {
     if (!this.isConnected) {
       throw new Error('Context7 MCP client not connected');
     }
@@ -133,8 +139,8 @@ export class Context7MCPClient {
           libraryId,
           topic,
           version,
-          tokenLimit: 4000
-        }
+          tokenLimit: 4000,
+        },
       });
 
       if (result.isError) {
@@ -150,14 +156,16 @@ export class Context7MCPClient {
           return this.transformDocs(data.docs || []);
         } catch {
           // If not JSON, create a single doc from text
-          return [{
-            id: `doc-${libraryId}-${Date.now()}`,
-            title: `${topic} Documentation`,
-            content: content.text,
-            version,
-            lastUpdated: new Date(),
-            relevanceScore: 0.8
-          }];
+          return [
+            {
+              id: `doc-${libraryId}-${Date.now()}`,
+              title: `${topic} Documentation`,
+              content: content.text,
+              version,
+              lastUpdated: new Date(),
+              relevanceScore: 0.8,
+            },
+          ];
         }
       }
 
@@ -179,7 +187,7 @@ export class Context7MCPClient {
       url: doc.url || doc.link,
       version: doc.version || 'latest',
       lastUpdated: doc.lastUpdated ? new Date(doc.lastUpdated) : new Date(),
-      relevanceScore: doc.relevanceScore || doc.score || 0.8
+      relevanceScore: doc.relevanceScore || doc.score || 0.8,
     }));
   }
 

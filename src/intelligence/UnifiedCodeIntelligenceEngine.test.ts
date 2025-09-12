@@ -24,7 +24,7 @@ vi.mock('./PerformanceCache.js', () => ({
 
 vi.mock('../core/context7-cache.js', () => ({
   Context7Cache: vi.fn().mockImplementation(() => ({
-    getRelevantData: vi.fn().mockImplementation(async (input) => {
+    getRelevantData: vi.fn().mockImplementation(async input => {
       return [
         {
           id: 'mock-data',

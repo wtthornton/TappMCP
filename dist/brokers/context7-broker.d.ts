@@ -58,6 +58,7 @@ export interface Context7BrokerConfig {
     enableFallback: boolean;
     enableCache: boolean;
     cacheExpiryHours: number;
+    useHttpOnly?: boolean;
     rateLimit: {
         requestsPerMinute: number;
         burstLimit: number;

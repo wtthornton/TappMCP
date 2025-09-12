@@ -93,7 +93,7 @@ export class UnifiedCodeIntelligenceEngine {
     this.context7Cache = new Context7Cache({
       maxCacheSize: 1000,
       defaultExpiryHours: 2,
-      enableHitTracking: true
+      enableHitTracking: true,
     });
     this.errorHandler = globalErrorHandler;
 
@@ -126,226 +126,225 @@ export class UnifiedCodeIntelligenceEngine {
           await this.context7Analyzer.getProjectAwareContext(
             validatedRequest.projectAnalysis as BasicAnalysis
           ),
-          // Fallback for Context7 failure
-          async () => ({
-            topics: [],
-            data: [],
-            insights: {
-              patterns: [],
-              bestPractices: [],
-              recommendations: [],
-              warnings: [],
-              techStackSpecific: {},
-              qualityMetrics: { overall: 70 },
-            },
-            metadata: { totalResults: 0, fetchTime: 0, cacheHits: 0 },
-          })
-        );
-
-        // 2. Discover available technologies (with caching and error handling)
-        const adaptedContext = this.adaptContext7Data(projectContext);
-        const technologyMap = await this.errorHandler.executeAnalysisOperation(
-          'technology-discovery',
-          async () =>
-            await this.technologyDiscovery.discoverAvailableTechnologies(adaptedContext),
-          // Fallback to comprehensive technology map
-          async () => ({
-            frontend: [
-              'HTML',
-              'CSS',
-              'JavaScript',
-              'TypeScript',
-              'React',
-              'Vue',
-              'Angular',
-              'Svelte',
-              'react',
-              'vue',
-              'angular',
-            ],
-            backend: [
-              'Node.js',
-              'Express',
-              'Python',
-              'Java',
-              'Ruby',
-              'PHP',
-              'Go',
-              'Rust',
-              'C#',
-              'nodejs',
-              'node',
-            ],
-            database: [
-              'PostgreSQL',
-              'MySQL',
-              'MongoDB',
-              'Redis',
-              'SQLite',
-              'Oracle',
-              'SQL',
-              'postgres',
-              'mysql',
-              'mongo',
-            ],
-            devops: [
-              'Docker',
-              'Kubernetes',
-              'Jenkins',
-              'GitHub Actions',
-              'GitLab CI',
-              'CircleCI',
-              'docker',
-              'k8s',
-            ],
-            mobile: [
-              'React Native',
-              'Flutter',
-              'Swift',
-              'Kotlin',
-              'Ionic',
-              'react-native',
-              'flutter',
-            ],
-            datascience: ['Python', 'R', 'Julia', 'Pandas', 'NumPy', 'TensorFlow', 'PyTorch'],
-            generic: ['TypeScript', 'JavaScript'],
-          })
-        );
-
-        // 3. Determine technology and category (with role override)
-        const technology = this.detectTechnology(validatedRequest, technologyMap);
-        let category = this.determineCategory(technology, technologyMap);
-
-        // Override category based on role if specified
-        if (validatedRequest.role) {
-          const roleToCategory: Record<string, string> = {
-            frontend: 'frontend',
-            backend: 'backend',
-            database: 'database',
-            devops: 'devops',
-            mobile: 'mobile',
-            datascience: 'datascience',
-            fullstack: 'generic',
-          };
-
-          if (roleToCategory[validatedRequest.role]) {
-            category = roleToCategory[validatedRequest.role];
-          }
-        }
-
-        // 4. Get appropriate category engine
-        const engine = this.categoryEngines.get(category) || this.categoryEngines.get('generic')!;
-
-        // Log engine selection for debugging
-        console.log(
-          `[UnifiedCodeIntelligenceEngine] Using ${category} engine for ${technology} (cached)`
-        );
-
-        // 5. Generate code with Context7 insights (with error handling)
-        const code = await this.errorHandler.executeGenerationOperation(
-          async () => await engine.generateCode(validatedRequest, adaptedContext),
-          // Fallback to generic engine
-          async () => {
-            const genericEngine = this.categoryEngines.get('generic')!;
-            return await genericEngine.generateCode(validatedRequest, adaptedContext);
-          }
-        );
-
-        // 6. Apply quality assurance and optimization (with caching and error handling)
-        const optimizedCode = await this.errorHandler.executeAnalysisOperation(
-          'optimization',
-          async () => await this.optimizationEngine.optimize(code, adaptedContext),
-          // Fallback: return original code if optimization fails
-          async () => code
-        ) as string;
-
-        // 7. Context7-enhanced quality analysis
-        const context7QualityAnalysis = await this.errorHandler.executeAnalysisOperation(
-          'context7-quality-analysis',
-          async () =>
-            await this.context7QualityEngine.analyzeQuality(
-              optimizedCode,
-              technology,
-              projectContext
-            ) as any,
-          // Fallback quality analysis
-          async () => ({
-            issues: [],
-            improvements: [],
-            context7Insights: projectContext.insights,
-            qualityScore: 75,
-            domain: category,
-            compliance: [],
-            metadata: {
-              analysisTime: 0,
-              context7Enhanced: false,
-              totalIssues: 0,
-              criticalIssues: 0,
-              highIssues: 0,
-              mediumIssues: 0,
-              lowIssues: 0,
-            },
-          })
-        );
-
-        const qualityScore = await this.errorHandler.executeAnalysisOperation(
-          'quality-analysis',
-          async () => {
-            const analysis = await this.qualityAssurance.analyze(optimizedCode, category);
-            return (
-              analysis || {
-                overall: 85,
-                message: 'Code quality analyzed successfully',
-                breakdown: {
-                  maintainability: 85,
-                  performance: 90,
-                  security: 85,
-                  reliability: 85,
-                  usability: 85,
-                },
-                timestamp: new Date().toISOString(),
-              }
-            );
-          },
-          // Fallback quality score
-          async () => ({
-            overall: context7QualityAnalysis.qualityScore || 75,
-            message: 'Quality analysis using fallback',
-            breakdown: {
-              maintainability: 75,
-              performance: 75,
-              security: 75,
-              reliability: 75,
-              usability: 75,
-            },
-            timestamp: new Date().toISOString(),
-          })
-        );
-
-        const processingTime = Math.max(1, Date.now() - startTime); // Ensure at least 1ms
-
-        const result: CodeGenerationResult = {
-          code: optimizedCode as string,
-          technology: technology as string,
-          category: category as string,
-          qualityScore: qualityScore as any,
-          insights: projectContext?.insights || {
+        // Fallback for Context7 failure
+        async () => ({
+          topics: [],
+          data: [],
+          insights: {
             patterns: [],
+            bestPractices: [],
             recommendations: [],
             warnings: [],
             techStackSpecific: {},
             qualityMetrics: { overall: 70 },
           },
-          metadata: {
-            processingTime,
-            engineUsed: category,
-            context7Insights: projectContext?.insights?.patterns?.length || 0,
-            cacheStats: this.context7Cache.getCacheStats(),
-            errorStats: this.errorHandler.getErrorStats(),
-          },
+          metadata: { totalResults: 0, fetchTime: 0, cacheHits: 0 },
+        })
+      );
+
+      // 2. Discover available technologies (with caching and error handling)
+      const adaptedContext = this.adaptContext7Data(projectContext);
+      const technologyMap = await this.errorHandler.executeAnalysisOperation(
+        'technology-discovery',
+        async () => await this.technologyDiscovery.discoverAvailableTechnologies(adaptedContext),
+        // Fallback to comprehensive technology map
+        async () => ({
+          frontend: [
+            'HTML',
+            'CSS',
+            'JavaScript',
+            'TypeScript',
+            'React',
+            'Vue',
+            'Angular',
+            'Svelte',
+            'react',
+            'vue',
+            'angular',
+          ],
+          backend: [
+            'Node.js',
+            'Express',
+            'Python',
+            'Java',
+            'Ruby',
+            'PHP',
+            'Go',
+            'Rust',
+            'C#',
+            'nodejs',
+            'node',
+          ],
+          database: [
+            'PostgreSQL',
+            'MySQL',
+            'MongoDB',
+            'Redis',
+            'SQLite',
+            'Oracle',
+            'SQL',
+            'postgres',
+            'mysql',
+            'mongo',
+          ],
+          devops: [
+            'Docker',
+            'Kubernetes',
+            'Jenkins',
+            'GitHub Actions',
+            'GitLab CI',
+            'CircleCI',
+            'docker',
+            'k8s',
+          ],
+          mobile: [
+            'React Native',
+            'Flutter',
+            'Swift',
+            'Kotlin',
+            'Ionic',
+            'react-native',
+            'flutter',
+          ],
+          datascience: ['Python', 'R', 'Julia', 'Pandas', 'NumPy', 'TensorFlow', 'PyTorch'],
+          generic: ['TypeScript', 'JavaScript'],
+        })
+      );
+
+      // 3. Determine technology and category (with role override)
+      const technology = this.detectTechnology(validatedRequest, technologyMap);
+      let category = this.determineCategory(technology, technologyMap);
+
+      // Override category based on role if specified
+      if (validatedRequest.role) {
+        const roleToCategory: Record<string, string> = {
+          frontend: 'frontend',
+          backend: 'backend',
+          database: 'database',
+          devops: 'devops',
+          mobile: 'mobile',
+          datascience: 'datascience',
+          fullstack: 'generic',
         };
 
-        return result;
+        if (roleToCategory[validatedRequest.role]) {
+          category = roleToCategory[validatedRequest.role];
+        }
+      }
+
+      // 4. Get appropriate category engine
+      const engine = this.categoryEngines.get(category) || this.categoryEngines.get('generic')!;
+
+      // Log engine selection for debugging
+      console.log(
+        `[UnifiedCodeIntelligenceEngine] Using ${category} engine for ${technology} (cached)`
+      );
+
+      // 5. Generate code with Context7 insights (with error handling)
+      const code = await this.errorHandler.executeGenerationOperation(
+        async () => await engine.generateCode(validatedRequest, adaptedContext),
+        // Fallback to generic engine
+        async () => {
+          const genericEngine = this.categoryEngines.get('generic')!;
+          return await genericEngine.generateCode(validatedRequest, adaptedContext);
+        }
+      );
+
+      // 6. Apply quality assurance and optimization (with caching and error handling)
+      const optimizedCode = (await this.errorHandler.executeAnalysisOperation(
+        'optimization',
+        async () => await this.optimizationEngine.optimize(code, adaptedContext),
+        // Fallback: return original code if optimization fails
+        async () => code
+      )) as string;
+
+      // 7. Context7-enhanced quality analysis
+      const context7QualityAnalysis = await this.errorHandler.executeAnalysisOperation(
+        'context7-quality-analysis',
+        async () =>
+          (await this.context7QualityEngine.analyzeQuality(
+            optimizedCode,
+            technology,
+            projectContext
+          )) as any,
+        // Fallback quality analysis
+        async () => ({
+          issues: [],
+          improvements: [],
+          context7Insights: projectContext.insights,
+          qualityScore: 75,
+          domain: category,
+          compliance: [],
+          metadata: {
+            analysisTime: 0,
+            context7Enhanced: false,
+            totalIssues: 0,
+            criticalIssues: 0,
+            highIssues: 0,
+            mediumIssues: 0,
+            lowIssues: 0,
+          },
+        })
+      );
+
+      const qualityScore = await this.errorHandler.executeAnalysisOperation(
+        'quality-analysis',
+        async () => {
+          const analysis = await this.qualityAssurance.analyze(optimizedCode, category);
+          return (
+            analysis || {
+              overall: 85,
+              message: 'Code quality analyzed successfully',
+              breakdown: {
+                maintainability: 85,
+                performance: 90,
+                security: 85,
+                reliability: 85,
+                usability: 85,
+              },
+              timestamp: new Date().toISOString(),
+            }
+          );
+        },
+        // Fallback quality score
+        async () => ({
+          overall: context7QualityAnalysis.qualityScore || 75,
+          message: 'Quality analysis using fallback',
+          breakdown: {
+            maintainability: 75,
+            performance: 75,
+            security: 75,
+            reliability: 75,
+            usability: 75,
+          },
+          timestamp: new Date().toISOString(),
+        })
+      );
+
+      const processingTime = Math.max(1, Date.now() - startTime); // Ensure at least 1ms
+
+      const result: CodeGenerationResult = {
+        code: optimizedCode as string,
+        technology: technology as string,
+        category: category as string,
+        qualityScore: qualityScore as any,
+        insights: projectContext?.insights || {
+          patterns: [],
+          recommendations: [],
+          warnings: [],
+          techStackSpecific: {},
+          qualityMetrics: { overall: 70 },
+        },
+        metadata: {
+          processingTime,
+          engineUsed: category,
+          context7Insights: projectContext?.insights?.patterns?.length || 0,
+          cacheStats: this.context7Cache.getCacheStats(),
+          errorStats: this.errorHandler.getErrorStats(),
+        },
+      };
+
+      return result;
     } catch (error) {
       console.error('[UnifiedCodeIntelligenceEngine] Error in code generation:', error);
 

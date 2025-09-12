@@ -70,6 +70,7 @@ export interface Context7BrokerConfig {
   enableFallback: boolean;
   enableCache: boolean;
   cacheExpiryHours: number;
+  useHttpOnly?: boolean;
   rateLimit: {
     requestsPerMinute: number;
     burstLimit: number;
@@ -99,6 +100,11 @@ export class Context7Broker {
     const DEFAULT_BASE_URL = 'https://context7.com/api/v1';
     const DEFAULT_MCP_URL = 'https://mcp.context7.com/mcp';
 
+    // Check for HTTP-only mode from environment
+    const useHttpOnly = process.env.CONTEXT7_USE_HTTP_ONLY === 'true' ||
+                       process.env.NODE_ENV === 'production' ||
+                       config.useHttpOnly === true;
+
     this.config = {
       apiUrl: config.apiUrl ?? DEFAULT_MCP_URL,
       apiKey: config.apiKey ?? process.env.CONTEXT7_API_KEY ?? DEFAULT_API_KEY,
@@ -108,6 +114,7 @@ export class Context7Broker {
       enableFallback: config.enableFallback ?? true,
       enableCache: config.enableCache ?? true,
       cacheExpiryHours: config.cacheExpiryHours ?? 30 * 24, // 30 DAYS
+      useHttpOnly: useHttpOnly,
       rateLimit: config.rateLimit ?? {
         requestsPerMinute: 60,
         burstLimit: 10,
@@ -138,7 +145,7 @@ export class Context7Broker {
     const mcpConfig: Context7MCPConfig = {
       apiKey: this.config.apiKey || DEFAULT_API_KEY,
       mcpUrl: this.config.apiUrl || DEFAULT_MCP_URL,
-      timeout: this.config.timeout
+      timeout: this.config.timeout,
     };
     this.mcpClient = new Context7MCPClient(mcpConfig);
 
@@ -154,11 +161,13 @@ export class Context7Broker {
     this.loadCache();
 
     // Check if Context7 MCP tools are available (async)
-    this.checkMCPAvailability().then(available => {
-      this.isAvailable = available;
-    }).catch(() => {
-      this.isAvailable = false;
-    });
+    this.checkMCPAvailability()
+      .then(available => {
+        this.isAvailable = available;
+      })
+      .catch(() => {
+        this.isAvailable = false;
+      });
   }
 
   /**
@@ -166,6 +175,12 @@ export class Context7Broker {
    */
   private async checkMCPAvailability(): Promise<boolean> {
     try {
+      // If HTTP-only mode is enabled, skip MCP and go straight to HTTP
+      if (this.config.useHttpOnly) {
+        console.log('Context7 HTTP-only mode enabled, using HTTP client');
+        return await this.httpClient.healthCheck();
+      }
+
       // Try to connect to MCP server first
       if (!this.mcpClient.isClientConnected()) {
         await this.mcpClient.connect();
@@ -329,7 +344,9 @@ export class Context7Broker {
       }));
     } catch (error) {
       console.error('Error fetching real documentation from Context7:', error);
-      throw new Error(`Context7 documentation fetch failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Context7 documentation fetch failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -338,6 +355,22 @@ export class Context7Broker {
    */
   private async resolveLibraryId(topic: string): Promise<string | null> {
     try {
+      // If HTTP-only mode is enabled, skip MCP and go straight to HTTP
+      if (this.config.useHttpOnly) {
+        const response = await this.httpClient.get('/search', {
+          query: topic,
+        });
+
+        if (!response.success || !response.data?.results || response.data.results.length === 0) {
+          console.warn(`No libraries found for topic: ${topic}`);
+          return null;
+        }
+
+        // Return the first result's ID (most relevant)
+        const firstResult = response.data.results[0];
+        return firstResult.id || null;
+      }
+
       // Try MCP client first
       if (this.mcpClient.isClientConnected()) {
         const libraryId = await this.mcpClient.resolveLibraryId(topic);
@@ -348,7 +381,7 @@ export class Context7Broker {
 
       // Fallback to HTTP client using search API
       const response = await this.httpClient.get('/search', {
-        query: topic
+        query: topic,
       });
 
       if (!response.success || !response.data?.results || response.data.results.length === 0) {
@@ -370,6 +403,50 @@ export class Context7Broker {
    */
   private async getLibraryDocs(libraryId: string, topic: string, version?: string): Promise<any[]> {
     try {
+      // If HTTP-only mode is enabled, skip MCP and go straight to HTTP
+      if (this.config.useHttpOnly) {
+        // Convert libraryId from "/owner/repo" to "owner/repo"
+        const cleanLibraryId = libraryId.startsWith('/') ? libraryId.slice(1) : libraryId;
+
+        const response = await this.httpClient.get(`/${cleanLibraryId}`, {
+          type: 'json',
+          topic: topic,
+          tokens: 4000,
+        });
+
+        if (!response.success || !response.data) {
+          throw new Error(response.error || 'Failed to fetch library documentation');
+        }
+
+        // Transform Context7 API response to our format
+        const snippets = response.data.snippets || [];
+        const qaItems = response.data.qaItems || [];
+
+        // Combine snippets and QA items
+        const docs = [
+          ...snippets.map((snippet: any) => ({
+            id: snippet.id || `snippet-${Date.now()}`,
+            title: snippet.title || `${topic} Code Example`,
+            content: snippet.content || snippet.code || '',
+            url: snippet.url || snippet.link,
+            version: version ?? 'latest',
+            lastUpdated: snippet.lastUpdated ? new Date(snippet.lastUpdated) : new Date(),
+            relevanceScore: snippet.relevanceScore || snippet.score || 0.8,
+          })),
+          ...qaItems.map((qa: any) => ({
+            id: qa.id || `qa-${Date.now()}`,
+            title: qa.question || `${topic} Q&A`,
+            content: qa.answer || qa.content || '',
+            url: qa.url || qa.link,
+            version: version ?? 'latest',
+            lastUpdated: qa.lastUpdated ? new Date(qa.lastUpdated) : new Date(),
+            relevanceScore: qa.relevanceScore || qa.score || 0.7,
+          })),
+        ];
+
+        return docs;
+      }
+
       // Try MCP client first
       if (this.mcpClient.isClientConnected()) {
         const docs = await this.mcpClient.getLibraryDocs(libraryId, topic, version ?? 'latest');
@@ -385,7 +462,7 @@ export class Context7Broker {
       const response = await this.httpClient.get(`/${cleanLibraryId}`, {
         type: 'json',
         topic: topic,
-        tokens: 4000
+        tokens: 4000,
       });
 
       if (!response.success || !response.data) {
@@ -417,7 +494,7 @@ export class Context7Broker {
           version: version ?? 'latest',
           lastUpdated: new Date(),
           relevanceScore: 0.7,
-        }))
+        })),
       ];
 
       return docs;
@@ -539,7 +616,9 @@ export class Context7Broker {
       }));
     } catch (error) {
       console.error('Error fetching real Context7 code examples:', error);
-      throw new Error(`Context7 code examples fetch failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Context7 code examples fetch failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -613,7 +692,9 @@ export class Context7Broker {
       }));
     } catch (error) {
       console.error('Error fetching real Context7 best practices:', error);
-      throw new Error(`Context7 best practices fetch failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Context7 best practices fetch failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -667,7 +748,8 @@ export class Context7Broker {
     try {
       // Extract technology from problem for library resolution
       const techKeywords = ['react', 'typescript', 'javascript', 'node', 'next', 'vue', 'angular'];
-      const technology = techKeywords.find(tech => problem.toLowerCase().includes(tech)) || 'javascript';
+      const technology =
+        techKeywords.find(tech => problem.toLowerCase().includes(tech)) || 'javascript';
 
       // First resolve the library ID using Context7 MCP tool
       const libraryId = await this.resolveLibraryId(technology);
@@ -682,18 +764,22 @@ export class Context7Broker {
       return docs.map((doc: any, index: number) => ({
         id: `guide-${problem.replace(/\s+/g, '-')}-${Date.now()}-${index}`,
         problem: problem,
-        solutions: [{
-          description: doc.title || `Solution for ${problem}`,
-          steps: doc.content ? doc.content.split('\n').filter((line: string) => line.trim()) : [],
-          difficulty: 'medium',
-          successRate: 0.8,
-        }],
+        solutions: [
+          {
+            description: doc.title || `Solution for ${problem}`,
+            steps: doc.content ? doc.content.split('\n').filter((line: string) => line.trim()) : [],
+            difficulty: 'medium',
+            successRate: 0.8,
+          },
+        ],
         relatedIssues: [],
         relevanceScore: 0.8,
       }));
     } catch (error) {
       console.error('Error fetching real Context7 troubleshooting guides:', error);
-      throw new Error(`Context7 troubleshooting guides fetch failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Context7 troubleshooting guides fetch failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
