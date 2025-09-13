@@ -328,7 +328,35 @@ function generateNextSteps(workflowResult, _businessContext, orchestrationValida
     });
     return nextSteps;
 }
-// Enhanced Phase 2B tool handler with business context management and role orchestration
+/**
+ * Enhanced Phase 2B tool handler with business context management and role orchestration
+ *
+ * This is the main entry point for the Smart Orchestrate MCP tool. It processes
+ * business requests and orchestrates complete SDLC workflows with role transitions,
+ * quality gates, and business value tracking.
+ *
+ * @param input - The orchestration request containing business context and options
+ * @returns Promise resolving to orchestration results with workflow, metrics, and next steps
+ *
+ * @example
+ * ```typescript
+ * const result = await handleSmartOrchestrate({
+ *   request: "Build a user management system with authentication",
+ *   options: {
+ *     qualityLevel: "high",
+ *     businessContext: {
+ *       projectId: "user-mgmt-001",
+ *       businessGoals: ["Improve user experience", "Increase security"],
+ *       requirements: ["OAuth integration", "Role-based access"]
+ *     }
+ *   }
+ * });
+ * ```
+ *
+ * @throws {Error} When input validation fails or orchestration encounters critical errors
+ * @since 2.0.0
+ * @author TappMCP Team
+ */
 export async function handleSmartOrchestrate(input) {
     const startTime = Date.now();
     const orchestrationEngine = new OrchestrationEngine();

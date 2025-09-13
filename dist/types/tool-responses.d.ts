@@ -1,3 +1,17 @@
+/**
+ * Response structure for Smart Begin tool operations
+ *
+ * Contains project initialization data, quality gates, business value metrics,
+ * and technical metrics for project setup and analysis.
+ *
+ * @interface SmartBeginResponse
+ * @property {boolean} success - Whether the operation completed successfully
+ * @property {Object} [data] - Response data containing project information
+ * @property {string} [error] - Error message if operation failed
+ * @property {string} timestamp - ISO timestamp of the response
+ *
+ * @since 2.0.0
+ */
 export interface SmartBeginResponse {
     success: boolean;
     data?: {
@@ -33,6 +47,20 @@ export interface SmartBeginResponse {
     error?: string;
     timestamp: string;
 }
+/**
+ * Response structure for Smart Write tool operations
+ *
+ * Contains generated code, quality metrics, and validation results
+ * for code generation and enhancement operations.
+ *
+ * @interface SmartWriteResponse
+ * @property {boolean} success - Whether the code generation completed successfully
+ * @property {Object} [data] - Response data containing generated code and metrics
+ * @property {string} [error] - Error message if operation failed
+ * @property {string} timestamp - ISO timestamp of the response
+ *
+ * @since 2.0.0
+ */
 export interface SmartWriteResponse {
     success: boolean;
     data?: {

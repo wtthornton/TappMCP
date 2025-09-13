@@ -61,8 +61,9 @@ export class SecurityScanner {
             }
             return vulnerabilities;
         }
-        catch (_error) {
+        catch (error) {
             // npm audit failed - set error flag and return empty result
+            console.debug('npm audit failed:', error);
             this.hasNpmAuditError = true;
             return [];
         }
@@ -78,8 +79,9 @@ export class SecurityScanner {
             const osvData = JSON.parse(osvOutput);
             return this.parseOSVResults(osvData);
         }
-        catch (_error) {
+        catch (error) {
             // OSV scan failed - return empty result
+            console.debug('OSV scan failed:', error);
             return [];
         }
     }
@@ -95,8 +97,9 @@ export class SecurityScanner {
                 timeout: 30000, // 30 second timeout
             });
         }
-        catch (_error) {
+        catch (error) {
             // OSV-Scanner not available or scan failed - return empty results
+            console.debug('OSV-Scanner execution failed:', error);
             // eslint-disable-next-line no-console
             console.warn('OSV-Scanner not available or scan failed, skipping OSV scan');
             return null;
@@ -201,8 +204,9 @@ export class SecurityScanner {
             }
             return vulnerabilities;
         }
-        catch (_error) {
+        catch (error) {
             // retire.js scan failed - set error flag and return empty result
+            console.debug('retire.js scan failed:', error);
             this.hasRetireError = true;
             return [];
         }
@@ -222,8 +226,9 @@ export class SecurityScanner {
             }
             return vulnerabilities;
         }
-        catch (_error) {
+        catch (error) {
             // File security checks failed - return empty result
+            console.debug('File security checks failed:', error);
             return [];
         }
     }
@@ -251,7 +256,8 @@ export class SecurityScanner {
                     }
                 }
             }
-            catch (_error) {
+            catch (error) {
+                console.debug('File system scan error:', error);
                 // Ignore permission errors
             }
         };

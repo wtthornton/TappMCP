@@ -13,7 +13,7 @@ import {
   type KnowledgeRequest,
   type MCPCoordinatorConfig,
 } from './mcp-coordinator.js';
-import { Context7Broker } from '../brokers/context7-broker.js';
+// import { Context7Broker } from '../brokers/context7-broker.js'; // Unused import
 import { LRUCache } from 'lru-cache';
 import { gzip, gunzip } from 'zlib';
 import { promisify } from 'util';

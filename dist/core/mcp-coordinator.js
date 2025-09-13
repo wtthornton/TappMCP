@@ -111,8 +111,9 @@ export class MCPCoordinator {
                 .filter((result) => result.status === 'fulfilled')
                 .map(result => result.value);
         }
-        catch (_error) {
+        catch (error) {
             // Assumption validation failed
+            console.debug('Assumption validation failed:', error);
             return [];
         }
     }
@@ -135,8 +136,9 @@ export class MCPCoordinator {
             console.log(`Market intelligence gathered in ${responseTime}ms`);
             return { analysis, trends, insights };
         }
-        catch (_error) {
+        catch (error) {
             // Market intelligence gathering failed
+            console.debug('Market intelligence gathering failed:', error);
             return { analysis: null, trends: [], insights: [] };
         }
     }
@@ -196,8 +198,9 @@ export class MCPCoordinator {
             };
             await this.memory.storeLessonLearned(lessonData);
         }
-        catch (_error) {
+        catch (error) {
             // Failed to store lesson learned
+            console.debug('Failed to store lesson learned:', error);
         }
     }
     /**
@@ -220,8 +223,9 @@ export class MCPCoordinator {
             knowledge.push(...practices.slice(0, 1).map(practice => this.transformBestPractice(practice)));
             return knowledge;
         }
-        catch (_error) {
+        catch (error) {
             // Context7 knowledge gathering failed
+            console.debug('Context7 knowledge gathering failed:', error);
             return [];
         }
     }
@@ -239,8 +243,9 @@ export class MCPCoordinator {
             knowledge.push(...trends.slice(0, 1).map(trend => this.transformTrend(trend)));
             return knowledge;
         }
-        catch (_error) {
+        catch (error) {
             // Web search knowledge gathering failed
+            console.debug('Web search knowledge gathering failed:', error);
             return [];
         }
     }
@@ -264,8 +269,9 @@ export class MCPCoordinator {
             knowledge.push(...insights.slice(0, 1).map(insight => this.transformInsight(insight)));
             return knowledge;
         }
-        catch (_error) {
+        catch (error) {
             // Memory knowledge gathering failed
+            console.debug('Memory knowledge gathering failed:', error);
             return [];
         }
     }

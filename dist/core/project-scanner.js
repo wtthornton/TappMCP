@@ -40,7 +40,7 @@ export class ProjectScanner {
         'mcp-server': ['@modelcontextprotocol/sdk'],
     };
     async scanProject(projectPath, analysisDepth = 'standard') {
-        const startTime = Date.now();
+        const _startTime = Date.now();
         try {
             // Validate project path
             const stats = await fs.stat(projectPath);
@@ -152,7 +152,7 @@ export class ProjectScanner {
                 }
             }
         }
-        catch (error) {
+        catch (_error) {
             // No package.json or invalid format
         }
         // Check for config files
@@ -213,7 +213,7 @@ export class ProjectScanner {
                 issues.push('Missing build script in package.json');
             }
         }
-        catch (error) {
+        catch (_error) {
             issues.push('Invalid or missing package.json');
         }
         return issues;
@@ -282,7 +282,7 @@ export class ProjectScanner {
                 devDependencies: packageJson.devDependencies,
             };
         }
-        catch (error) {
+        catch (_error) {
             return {
                 name: path.basename(projectPath),
             };

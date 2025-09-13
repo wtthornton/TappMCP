@@ -359,7 +359,7 @@ export class ImprovementDetector {
     }
     calculateScores(analysis, opportunities) {
         const totalIssues = analysis.qualityIssues.length;
-        const totalOpportunities = opportunities.length;
+        const _totalOpportunities = opportunities.length;
         // Calculate quality score (inverse of issues)
         const qualityScore = Math.max(0, 100 - totalIssues * 10);
         // Calculate security score

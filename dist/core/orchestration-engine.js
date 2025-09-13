@@ -10,26 +10,61 @@ import { Context7Broker } from '../brokers/context7-broker.js';
 import { LRUCache } from 'lru-cache';
 // Role orchestration removed - implementing real role-specific behavior
 import { handleError, getErrorMessage } from '../utils/errors.js';
+import { dynamicImportManager } from './dynamic-imports.js';
 /**
  * Main Orchestration Engine for complete workflow management
  */
+/**
+ * OrchestrationEngine - Central coordination engine for Smart Orchestrate workflows
+ *
+ * This class provides comprehensive workflow orchestration capabilities including:
+ * - Business context management and role transitions
+ * - Context7 intelligence integration with caching and fallback mechanisms
+ * - Quality gates and validation throughout the SDLC process
+ * - Performance monitoring and error handling with circuit breaker patterns
+ * - Domain-specific intelligence delivery and response relevance scoring
+ *
+ * @example
+ * ```typescript
+ * const engine = new OrchestrationEngine();
+ * const result = await engine.orchestrateWorkflow({
+ *   request: "Build a user management system with authentication",
+ *   options: { qualityLevel: "high" }
+ * });
+ * ```
+ *
+ * @since 2.0.0
+ * @author TappMCP Team
+ */
 export class OrchestrationEngine {
+    /** Business context broker for managing role transitions and business requirements */
     contextBroker;
+    /** Context7 broker for accessing external intelligence and documentation */
     context7Broker;
+    /** Map of currently active workflows by workflow ID */
     activeWorkflows = new Map();
+    /** Map of completed workflow results by workflow ID */
     workflowResults = new Map();
+    /** Role orchestrator for managing role-specific behavior (TODO: Define proper type) */
     roleOrchestrator; // TODO: Define proper RoleOrchestrator type
-    // Enhanced caching for workflow-specific data
+    /** Enhanced caching for workflow-specific data with TTL support */
     workflowCache;
+    /** Context7 response cache to reduce API calls and improve performance */
     context7Cache;
+    /** Cache for Context7 topics to optimize topic discovery */
     topicCache; // Cache for Context7 topics
-    // Retry logic and circuit breaker state
+    /** Retry attempt tracking for failed operations */
     retryAttempts = new Map();
+    /** Circuit breaker state management for external service resilience */
     circuitBreakerState = new Map();
+    /** Maximum number of retry attempts for failed operations */
     maxRetries = 3;
+    /** Base delay for retry operations in milliseconds */
     retryDelay = 1000; // 1 second base delay
     circuitBreakerThreshold = 5; // Open circuit after 5 failures
     circuitBreakerTimeout = 60000; // 1 minute timeout
+    // Dynamic import management for code splitting
+    intelligenceEngines = new Map();
     // Quality monitoring properties
     qualityMonitoringState = new Map();
     monitoringIntervals = new Map();
@@ -69,6 +104,19 @@ export class OrchestrationEngine {
     continuousImprovementState = new Map();
     relevanceLearningData = new Map();
     maxRelevanceHistorySize = 300; // Keep last 300 relevance analyses
+    /**
+     * Creates a new OrchestrationEngine instance
+     *
+     * Initializes all required brokers, caches, and monitoring systems.
+     * Sets up LRU caches with appropriate TTL values for different data types.
+     *
+     * @example
+     * ```typescript
+     * const engine = new OrchestrationEngine();
+     * ```
+     *
+     * @since 2.0.0
+     */
     constructor() {
         this.contextBroker = new BusinessContextBroker();
         this.context7Broker = new Context7Broker();
@@ -193,7 +241,97 @@ export class OrchestrationEngine {
         this.initializeResponseRelevanceScoring();
     }
     /**
+     * Dynamically loads an intelligence engine with caching
+     *
+     * @param engineName - Name of the engine to load
+     * @returns Promise resolving to the engine class
+     *
+     * @example
+     * ```typescript
+     * const QualityEngine = await engine.loadIntelligenceEngine('QualityAssuranceEngine');
+     * ```
+     *
+     * @since 2.0.0
+     */
+    async loadIntelligenceEngine(engineName) {
+        if (this.intelligenceEngines.has(engineName)) {
+            return this.intelligenceEngines.get(engineName);
+        }
+        let engineClass;
+        switch (engineName) {
+            case 'UnifiedCodeIntelligenceEngine':
+                engineClass = await dynamicImportManager.getUnifiedCodeIntelligenceEngine();
+                break;
+            case 'QualityAssuranceEngine':
+                engineClass = await dynamicImportManager.getQualityAssuranceEngine();
+                break;
+            case 'BackendIntelligenceEngine':
+                engineClass = await dynamicImportManager.getBackendIntelligenceEngine();
+                break;
+            case 'MobileIntelligenceEngine':
+                engineClass = await dynamicImportManager.getMobileIntelligenceEngine();
+                break;
+            case 'DevOpsIntelligenceEngine':
+                engineClass = await dynamicImportManager.getDevOpsIntelligenceEngine();
+                break;
+            case 'BusinessAnalyzer':
+                engineClass = await dynamicImportManager.getBusinessAnalyzer();
+                break;
+            default:
+                throw new Error(`Unknown intelligence engine: ${engineName}`);
+        }
+        this.intelligenceEngines.set(engineName, engineClass);
+        return engineClass;
+    }
+    /**
+     * Preloads all intelligence engines for better performance
+     *
+     * @returns Promise resolving when all engines are loaded
+     *
+     * @example
+     * ```typescript
+     * await engine.preloadIntelligenceEngines();
+     * ```
+     *
+     * @since 2.0.0
+     */
+    async preloadIntelligenceEngines() {
+        const engineNames = [
+            'UnifiedCodeIntelligenceEngine',
+            'QualityAssuranceEngine',
+            'BackendIntelligenceEngine',
+            'MobileIntelligenceEngine',
+            'DevOpsIntelligenceEngine',
+            'BusinessAnalyzer'
+        ];
+        await Promise.all(engineNames.map(name => this.loadIntelligenceEngine(name)));
+    }
+    /**
      * Execute a complete workflow with role orchestration and context management
+     */
+    /**
+     * Executes a complete workflow with business context and quality monitoring
+     *
+     * This method orchestrates the execution of a workflow through all its phases,
+     * managing role transitions, quality gates, and business value tracking.
+     *
+     * @param workflow - The workflow to execute with phases and tasks
+     * @param context - Business context including goals, requirements, and constraints
+     * @returns Promise resolving to workflow execution results with metrics and outcomes
+     *
+     * @example
+     * ```typescript
+     * const workflow = createSDLCWorkflow("Build user management system");
+     * const context = {
+     *   projectId: "user-mgmt-001",
+     *   businessGoals: ["Improve user experience"],
+     *   requirements: ["OAuth integration"]
+     * };
+     * const result = await engine.executeWorkflow(workflow, context);
+     * ```
+     *
+     * @throws {Error} When workflow execution fails or quality gates are not met
+     * @since 2.0.0
      */
     async executeWorkflow(workflow, context) {
         const startTime = Date.now();
@@ -519,7 +657,7 @@ export class OrchestrationEngine {
     async gatherContext7Insights(phase, role, context) {
         const errors = [];
         let fallbackUsed = false;
-        let cacheHit = false;
+        let _cacheHit = false;
         try {
             // Create cache key for this specific insight gathering
             const cacheKey = `insights:${phase.name}:${role}:${context.projectId}`;
@@ -539,14 +677,14 @@ export class OrchestrationEngine {
                 this.gatherDocumentationCached(topics, 'documentation'),
                 this.gatherCodeExamplesCached(topics, role, 'codeExamples'),
                 this.gatherBestPracticesCached(topics, role, 'bestPractices'),
-                this.gatherTroubleshootingCached(topics, role, 'troubleshooting')
+                this.gatherTroubleshootingCached(topics, role, 'troubleshooting'),
             ]);
             // Process results and handle individual failures
             const processedResults = {
                 documentation: this.processContext7Result(documentation, 'documentation', errors),
                 codeExamples: this.processContext7Result(codeExamples, 'codeExamples', errors),
                 bestPractices: this.processContext7Result(bestPractices, 'bestPractices', errors),
-                troubleshooting: this.processContext7Result(troubleshooting, 'troubleshooting', errors)
+                troubleshooting: this.processContext7Result(troubleshooting, 'troubleshooting', errors),
             };
             // Check if any fallback was used
             fallbackUsed = errors.length > 0;
@@ -556,7 +694,7 @@ export class OrchestrationEngine {
                 fallbackUsed,
                 cacheHit: false,
                 intelligenceLevel,
-                domainType
+                domainType,
             };
             // Cache the results for future use
             this.setCachedInsights(cacheKey, result);
@@ -575,7 +713,7 @@ export class OrchestrationEngine {
                 fallbackUsed: true,
                 cacheHit: false,
                 intelligenceLevel: 'basic',
-                domainType: 'generic'
+                domainType: 'generic',
             };
         }
     }
@@ -814,9 +952,21 @@ export class OrchestrationEngine {
         const businessGoals = context.businessGoals || [];
         const allText = [...requirements, ...businessGoals].join(' ').toLowerCase();
         const graphKeywords = [
-            'graph', 'chart', 'visualization', 'dashboard', 'analytics',
-            'data visualization', 'chart.js', 'd3', 'recharts', 'plotly',
-            'highcharts', 'echarts', 'observable', 'vega', 'vega-lite'
+            'graph',
+            'chart',
+            'visualization',
+            'dashboard',
+            'analytics',
+            'data visualization',
+            'chart.js',
+            'd3',
+            'recharts',
+            'plotly',
+            'highcharts',
+            'echarts',
+            'observable',
+            'vega',
+            'vega-lite',
         ];
         return graphKeywords.some(keyword => allText.includes(keyword));
     }
@@ -885,7 +1035,12 @@ export class OrchestrationEngine {
             chartTypes = ['scatter plots', 'heatmaps', 'treemaps', 'sankey diagrams', 'funnel charts'];
         }
         else if (allText.includes('network') || allText.includes('relationship')) {
-            chartTypes = ['network graphs', 'force-directed graphs', 'hierarchical graphs', 'node-link diagrams'];
+            chartTypes = [
+                'network graphs',
+                'force-directed graphs',
+                'hierarchical graphs',
+                'node-link diagrams',
+            ];
         }
         else if (allText.includes('time') || allText.includes('trend')) {
             chartTypes = ['line charts', 'area charts', 'timeline charts', 'candlestick charts'];
@@ -900,7 +1055,7 @@ export class OrchestrationEngine {
                 'Implement virtual scrolling for long lists',
                 'Consider WebGL for complex visualizations',
                 'Use canvas rendering for better performance',
-                'Implement data streaming for real-time updates'
+                'Implement data streaming for real-time updates',
             ];
         }
         else {
@@ -909,7 +1064,7 @@ export class OrchestrationEngine {
                 'Implement proper data aggregation',
                 'Consider lazy loading for complex charts',
                 'Use requestAnimationFrame for smooth animations',
-                'Optimize data transformation operations'
+                'Optimize data transformation operations',
             ];
         }
         return {
@@ -917,7 +1072,7 @@ export class OrchestrationEngine {
             secondaryLibraries,
             chartTypes,
             performanceTips,
-            integrationGuide
+            integrationGuide,
         };
     }
     /**
@@ -928,32 +1083,53 @@ export class OrchestrationEngine {
         const businessGoals = context.businessGoals || [];
         const allText = [...requirements, ...businessGoals].join(' ').toLowerCase();
         // Frontend indicators
-        if (allText.includes('frontend') || allText.includes('ui') || allText.includes('user interface') ||
-            allText.includes('react') || allText.includes('vue') || allText.includes('angular')) {
+        if (allText.includes('frontend') ||
+            allText.includes('ui') ||
+            allText.includes('user interface') ||
+            allText.includes('react') ||
+            allText.includes('vue') ||
+            allText.includes('angular')) {
             return 'frontend';
         }
         // Backend indicators
-        if (allText.includes('backend') || allText.includes('api') || allText.includes('server') ||
-            allText.includes('database') || allText.includes('microservice')) {
+        if (allText.includes('backend') ||
+            allText.includes('api') ||
+            allText.includes('server') ||
+            allText.includes('database') ||
+            allText.includes('microservice')) {
             return 'backend';
         }
         // Mobile indicators
-        if (allText.includes('mobile') || allText.includes('app') || allText.includes('ios') ||
-            allText.includes('android') || allText.includes('react native') || allText.includes('flutter')) {
+        if (allText.includes('mobile') ||
+            allText.includes('app') ||
+            allText.includes('ios') ||
+            allText.includes('android') ||
+            allText.includes('react native') ||
+            allText.includes('flutter')) {
             return 'mobile';
         }
         // Data indicators
-        if (allText.includes('data') || allText.includes('analytics') || allText.includes('machine learning') ||
-            allText.includes('ai') || allText.includes('visualization') || allText.includes('chart')) {
+        if (allText.includes('data') ||
+            allText.includes('analytics') ||
+            allText.includes('machine learning') ||
+            allText.includes('ai') ||
+            allText.includes('visualization') ||
+            allText.includes('chart')) {
             return 'data';
         }
         // DevOps indicators
-        if (allText.includes('deployment') || allText.includes('devops') || allText.includes('infrastructure') ||
-            allText.includes('docker') || allText.includes('kubernetes') || allText.includes('aws')) {
+        if (allText.includes('deployment') ||
+            allText.includes('devops') ||
+            allText.includes('infrastructure') ||
+            allText.includes('docker') ||
+            allText.includes('kubernetes') ||
+            allText.includes('aws')) {
             return 'devops';
         }
         // Fullstack indicators
-        if (allText.includes('fullstack') || allText.includes('full stack') || allText.includes('web app') ||
+        if (allText.includes('fullstack') ||
+            allText.includes('full stack') ||
+            allText.includes('web app') ||
             allText.includes('web application')) {
             return 'fullstack';
         }
@@ -964,7 +1140,8 @@ export class OrchestrationEngine {
      */
     async gatherDocumentationCached(topics, type) {
         const allDocs = [];
-        for (const topic of topics.slice(0, 3)) { // Limit to 3 topics for performance
+        for (const topic of topics.slice(0, 3)) {
+            // Limit to 3 topics for performance
             try {
                 // Check individual topic cache first
                 const topicCacheKey = `${type}:${topic}`;
@@ -1000,7 +1177,8 @@ export class OrchestrationEngine {
      */
     async gatherCodeExamplesCached(topics, role, type) {
         const allExamples = [];
-        for (const topic of topics.slice(0, 2)) { // Limit to 2 topics for performance
+        for (const topic of topics.slice(0, 2)) {
+            // Limit to 2 topics for performance
             try {
                 // Check individual topic cache first
                 const topicCacheKey = `${type}:${topic}:${role}`;
@@ -1036,7 +1214,8 @@ export class OrchestrationEngine {
      */
     async gatherBestPracticesCached(topics, role, type) {
         const allPractices = [];
-        for (const topic of topics.slice(0, 2)) { // Limit to 2 topics for performance
+        for (const topic of topics.slice(0, 2)) {
+            // Limit to 2 topics for performance
             try {
                 // Check individual topic cache first
                 const topicCacheKey = `${type}:${topic}:${role}`;
@@ -1072,7 +1251,8 @@ export class OrchestrationEngine {
      */
     async gatherTroubleshootingCached(topics, role, type) {
         const allTroubleshooting = [];
-        for (const topic of topics.slice(0, 2)) { // Limit to 2 topics for performance
+        for (const topic of topics.slice(0, 2)) {
+            // Limit to 2 topics for performance
             try {
                 // Check individual topic cache first
                 const topicCacheKey = `${type}:${topic}:${role}`;
@@ -1275,7 +1455,9 @@ Benefits: ${practice.benefits?.join(', ') || 'Improved code quality'}`;
         return troubleshooting.slice(0, 2).map((guide) => {
             return `**${guide.problem || 'Common Issue'}**
 Solutions:
-${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: ${solution.steps?.join(', ') || 'No steps available'}`).join('\n') || 'No solutions available'}`;
+${guide.solutions
+                ?.map((solution) => `- ${solution.description || 'Solution'}: ${solution.steps?.join(', ') || 'No steps available'}`)
+                .join('\n') || 'No solutions available'}`;
         });
     }
     calculatePhaseQualityMetrics(phase, context, role, context7Insights) {
@@ -1338,7 +1520,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                 url: 'https://example.com/fallback-docs',
                 version: 'fallback',
                 lastUpdated: new Date(),
-                relevanceScore: 0.5
+                relevanceScore: 0.5,
             },
             {
                 id: 'fallback-doc-2',
@@ -1347,8 +1529,8 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                 url: 'https://example.com/fallback-planning',
                 version: 'fallback',
                 lastUpdated: new Date(),
-                relevanceScore: 0.5
-            }
+                relevanceScore: 0.5,
+            },
         ];
     }
     /**
@@ -1364,8 +1546,8 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                 description: 'Basic implementation pattern for development',
                 tags: ['basic', 'pattern'],
                 difficulty: 'beginner',
-                relevanceScore: 0.5
-            }
+                relevanceScore: 0.5,
+            },
         ];
     }
     /**
@@ -1381,8 +1563,8 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                 priority: 'high',
                 applicableScenarios: ['general development'],
                 benefits: ['improved maintainability', 'better code quality'],
-                relevanceScore: 0.5
-            }
+                relevanceScore: 0.5,
+            },
         ];
     }
     /**
@@ -1398,12 +1580,12 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                         description: 'Check code syntax and logic',
                         steps: ['Review code', 'Check for syntax errors', 'Test functionality'],
                         difficulty: 'easy',
-                        successRate: 0.8
-                    }
+                        successRate: 0.8,
+                    },
                 ],
                 relatedIssues: ['syntax errors', 'logic errors'],
-                relevanceScore: 0.5
-            }
+                relevanceScore: 0.5,
+            },
         ];
     }
     calculateBusinessValue(context, phases, transitions) {
@@ -1563,7 +1745,8 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                 this.topicCache.set(`warmup:${topic}`, topics);
             }
             // Warm up Context7 cache with common documentation
-            for (const topic of commonTopics.slice(0, 3)) { // Limit to 3 for performance
+            for (const topic of commonTopics.slice(0, 3)) {
+                // Limit to 3 for performance
                 try {
                     const docs = await this.context7Broker.getDocumentation(topic);
                     if (docs && docs.length > 0) {
@@ -1612,7 +1795,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
             domainType,
             intelligenceLevel,
             recommendedTopics,
-            complexityScore
+            complexityScore,
         };
     }
     /**
@@ -1747,7 +1930,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
         const state = this.circuitBreakerState.get(operationKey) || {
             failures: 0,
             lastFailure: 0,
-            state: 'closed'
+            state: 'closed',
         };
         state.failures++;
         state.lastFailure = now;
@@ -1814,7 +1997,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                 securityAnalysis,
                 codeQuality,
                 dependencies,
-                recommendations
+                recommendations,
             };
         }
         catch (error) {
@@ -1836,7 +2019,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
             architecture: this.detectArchitecture(allText),
             fileStructure: this.inferFileStructure(allText),
             complexity: this.calculateProjectComplexity(context),
-            technologies: this.detectTechnologies(allText)
+            technologies: this.detectTechnologies(allText),
         };
     }
     /**
@@ -1850,7 +2033,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
             vulnerabilities: this.detectVulnerabilities(allText),
             securityScore: this.calculateSecurityScore(allText),
             recommendations: this.generateSecurityRecommendations(allText),
-            compliance: this.checkCompliance(allText)
+            compliance: this.checkCompliance(allText),
         };
     }
     /**
@@ -1865,7 +2048,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
             maintainability: this.calculateMaintainability(allText),
             testCoverage: this.estimateTestCoverage(allText),
             codeSmells: this.detectCodeSmells(allText),
-            qualityScore: this.calculateQualityScoreFromRequirements(allText)
+            qualityScore: this.calculateQualityScoreFromRequirements(allText),
         };
     }
     /**
@@ -1879,7 +2062,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
             dependencies: this.detectDependencies(allText),
             vulnerabilities: this.detectDependencyVulnerabilities(allText),
             outdated: this.detectOutdatedDependencies(allText),
-            recommendations: this.generateDependencyRecommendations(allText)
+            recommendations: this.generateDependencyRecommendations(allText),
         };
     }
     /**
@@ -1894,7 +2077,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                 priority: 'high',
                 title: 'Improve Security Posture',
                 description: 'Address security vulnerabilities and implement security best practices',
-                actions: securityAnalysis.recommendations
+                actions: securityAnalysis.recommendations,
             });
         }
         // Code quality recommendations
@@ -1908,8 +2091,8 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                     'Implement code linting and formatting',
                     'Add comprehensive unit tests',
                     'Refactor complex code sections',
-                    'Improve documentation'
-                ]
+                    'Improve documentation',
+                ],
             });
         }
         // Dependency recommendations
@@ -1923,8 +2106,8 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                     'Update outdated packages',
                     'Review breaking changes',
                     'Test compatibility',
-                    'Update package-lock.json'
-                ]
+                    'Update package-lock.json',
+                ],
             });
         }
         return recommendations;
@@ -1989,9 +2172,26 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
     detectTechnologies(requirements) {
         const technologies = [];
         const techKeywords = [
-            'react', 'vue', 'angular', 'typescript', 'javascript', 'python', 'java',
-            'nodejs', 'express', 'django', 'flask', 'mongodb', 'postgresql', 'mysql',
-            'redis', 'docker', 'kubernetes', 'aws', 'azure', 'gcp'
+            'react',
+            'vue',
+            'angular',
+            'typescript',
+            'javascript',
+            'python',
+            'java',
+            'nodejs',
+            'express',
+            'django',
+            'flask',
+            'mongodb',
+            'postgresql',
+            'mysql',
+            'redis',
+            'docker',
+            'kubernetes',
+            'aws',
+            'azure',
+            'gcp',
         ];
         techKeywords.forEach(tech => {
             if (requirements.includes(tech)) {
@@ -2096,8 +2296,17 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
     detectDependencies(requirements) {
         const dependencies = [];
         const commonDeps = [
-            'react', 'vue', 'angular', 'express', 'django', 'flask',
-            'mongodb', 'postgresql', 'redis', 'docker', 'kubernetes'
+            'react',
+            'vue',
+            'angular',
+            'express',
+            'django',
+            'flask',
+            'mongodb',
+            'postgresql',
+            'redis',
+            'docker',
+            'kubernetes',
         ];
         commonDeps.forEach(dep => {
             if (requirements.includes(dep)) {
@@ -2137,34 +2346,40 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                 architecture: 'traditional',
                 fileStructure: [],
                 complexity: 50,
-                technologies: []
+                technologies: [],
             },
             securityAnalysis: {
                 vulnerabilities: [],
                 securityScore: 70,
                 recommendations: ['Implement basic security measures'],
-                compliance: []
+                compliance: [],
             },
             codeQuality: {
                 complexity: 50,
                 maintainability: 70,
                 testCoverage: 60,
                 codeSmells: [],
-                qualityScore: 70
+                qualityScore: 70,
             },
             dependencies: {
                 dependencies: [],
                 vulnerabilities: [],
                 outdated: [],
-                recommendations: ['Regularly update dependencies']
+                recommendations: ['Regularly update dependencies'],
             },
-            recommendations: [{
+            recommendations: [
+                {
                     category: 'general',
                     priority: 'medium',
                     title: 'Improve Project Analysis',
                     description: 'Enable real project scanning for better insights',
-                    actions: ['Integrate project scanning tools', 'Enable static analysis', 'Add security scanning']
-                }]
+                    actions: [
+                        'Integrate project scanning tools',
+                        'Enable static analysis',
+                        'Add security scanning',
+                    ],
+                },
+            ],
         };
     }
     /**
@@ -2213,10 +2428,10 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                         'Implement code splitting and lazy loading',
                         'Optimize images and assets',
                         'Use performance monitoring tools',
-                        'Implement caching strategies'
+                        'Implement caching strategies',
                     ],
                     context: 'requirements',
-                    rationale: 'Performance requirements detected in project specifications'
+                    rationale: 'Performance requirements detected in project specifications',
                 });
             }
             if (requirements.includes('security')) {
@@ -2234,10 +2449,10 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                         'Implement authentication and authorization',
                         'Use HTTPS for all communications',
                         'Implement input validation and sanitization',
-                        'Regular security audits and testing'
+                        'Regular security audits and testing',
                     ],
                     context: 'requirements',
-                    rationale: 'Security requirements detected in project specifications'
+                    rationale: 'Security requirements detected in project specifications',
                 });
             }
             if (requirements.includes('scalability')) {
@@ -2255,10 +2470,10 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                         'Implement microservices architecture',
                         'Use load balancing and horizontal scaling',
                         'Implement caching and database optimization',
-                        'Design for cloud deployment'
+                        'Design for cloud deployment',
                     ],
                     context: 'requirements',
-                    rationale: 'Scalability requirements detected in project specifications'
+                    rationale: 'Scalability requirements detected in project specifications',
                 });
             }
         }
@@ -2280,10 +2495,10 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                         'Use open-source tools and libraries',
                         'Implement automated testing to reduce manual effort',
                         'Optimize cloud resource usage',
-                        'Implement code reuse and component libraries'
+                        'Implement code reuse and component libraries',
                     ],
                     context: 'business-goals',
-                    rationale: 'Cost optimization goals detected in business objectives'
+                    rationale: 'Cost optimization goals detected in business objectives',
                 });
             }
             if (goals.includes('time') || goals.includes('speed')) {
@@ -2301,10 +2516,10 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                         'Implement CI/CD pipelines for faster deployment',
                         'Use rapid prototyping and iterative development',
                         'Implement automated testing and quality gates',
-                        'Use pre-built components and templates'
+                        'Use pre-built components and templates',
                     ],
                     context: 'business-goals',
-                    rationale: 'Time-to-market goals detected in business objectives'
+                    rationale: 'Time-to-market goals detected in business objectives',
                 });
             }
         }
@@ -2329,7 +2544,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                 technicalComplexity: 0.7,
                 actions: projectAnalysis.securityAnalysis.recommendations,
                 context: 'security-analysis',
-                rationale: `Low security score (${projectAnalysis.securityAnalysis.securityScore}/100) indicates significant vulnerabilities`
+                rationale: `Low security score (${projectAnalysis.securityAnalysis.securityScore}/100) indicates significant vulnerabilities`,
             });
         }
         // Code quality recommendations
@@ -2348,10 +2563,10 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                     'Implement comprehensive code linting and formatting',
                     'Add unit tests to improve test coverage',
                     'Refactor complex code sections',
-                    'Improve code documentation and comments'
+                    'Improve code documentation and comments',
                 ],
                 context: 'code-quality-analysis',
-                rationale: `Low code quality score (${projectAnalysis.codeQuality.qualityScore}/100) indicates maintainability issues`
+                rationale: `Low code quality score (${projectAnalysis.codeQuality.qualityScore}/100) indicates maintainability issues`,
             });
         }
         // Dependency recommendations
@@ -2368,7 +2583,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                 technicalComplexity: 0.3,
                 actions: projectAnalysis.dependencies.recommendations,
                 context: 'dependency-analysis',
-                rationale: 'Outdated dependencies may contain security vulnerabilities and missing features'
+                rationale: 'Outdated dependencies may contain security vulnerabilities and missing features',
             });
         }
         return recommendations;
@@ -2405,7 +2620,8 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
      * Score recommendations based on business value and technical complexity
      */
     scoreRecommendations(recommendations, context) {
-        return recommendations.map(rec => {
+        return recommendations
+            .map(rec => {
             // Calculate priority score based on impact, effort, and business value
             const priorityScore = this.calculatePriorityScore(rec, context);
             // Calculate ROI score
@@ -2414,9 +2630,10 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                 ...rec,
                 priorityScore,
                 roiScore,
-                recommended: priorityScore > 0.7 && roiScore > 0.6
+                recommended: priorityScore > 0.7 && roiScore > 0.6,
             };
-        }).sort((a, b) => b.priorityScore - a.priorityScore);
+        })
+            .sort((a, b) => b.priorityScore - a.priorityScore);
     }
     /**
      * Calculate priority score for a recommendation
@@ -2425,19 +2642,19 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
         let score = 0;
         // Impact weight
         const impactWeight = {
-            'critical': 1.0,
-            'high': 0.8,
-            'medium': 0.6,
-            'low': 0.4
+            critical: 1.0,
+            high: 0.8,
+            medium: 0.6,
+            low: 0.4,
         };
         score += impactWeight[rec.impact] * 0.4;
         // Business value weight
         score += rec.businessValue * 0.3;
         // Effort inverse weight (lower effort = higher priority)
         const effortWeight = {
-            'low': 1.0,
-            'medium': 0.7,
-            'high': 0.4
+            low: 1.0,
+            medium: 0.7,
+            high: 0.4,
         };
         score += effortWeight[rec.effort] * 0.2;
         // Context relevance
@@ -2451,9 +2668,9 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
     calculateROIScore(rec) {
         // ROI = (Business Value - Technical Complexity) / Effort
         const effortValue = {
-            'low': 1.0,
-            'medium': 0.7,
-            'high': 0.4
+            low: 1.0,
+            medium: 0.7,
+            high: 0.4,
         };
         const roi = (rec.businessValue - rec.technicalComplexity) / effortValue[rec.effort];
         return Math.max(0, Math.min(roi, 1.0));
@@ -2496,10 +2713,10 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                 'Use TypeScript for type safety',
                 'Implement component-based architecture',
                 'Use modern build tools (Vite, Webpack)',
-                'Implement responsive design principles'
+                'Implement responsive design principles',
             ],
             context: 'domain-specific',
-            rationale: 'Frontend project detected - modern practices improve maintainability and user experience'
+            rationale: 'Frontend project detected - modern practices improve maintainability and user experience',
         });
         return recommendations;
     }
@@ -2519,10 +2736,10 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                 'Implement proper error handling and logging',
                 'Use dependency injection and service patterns',
                 'Implement API versioning and documentation',
-                'Use database connection pooling and optimization'
+                'Use database connection pooling and optimization',
             ],
             context: 'domain-specific',
-            rationale: 'Backend project detected - robust architecture ensures scalability and maintainability'
+            rationale: 'Backend project detected - robust architecture ensures scalability and maintainability',
         });
         return recommendations;
     }
@@ -2542,10 +2759,10 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                 'Implement proper separation of concerns',
                 'Use consistent coding standards across frontend and backend',
                 'Implement comprehensive testing strategy',
-                'Use shared type definitions and validation'
+                'Use shared type definitions and validation',
             ],
             context: 'domain-specific',
-            rationale: 'Full-stack project detected - comprehensive practices ensure consistency and maintainability'
+            rationale: 'Full-stack project detected - comprehensive practices ensure consistency and maintainability',
         });
         return recommendations;
     }
@@ -2565,10 +2782,10 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                 'Implement responsive design for different screen sizes',
                 'Optimize for mobile performance and battery life',
                 'Implement proper touch and gesture handling',
-                'Use platform-specific UI guidelines'
+                'Use platform-specific UI guidelines',
             ],
             context: 'domain-specific',
-            rationale: 'Mobile project detected - mobile-specific practices improve user experience and performance'
+            rationale: 'Mobile project detected - mobile-specific practices improve user experience and performance',
         });
         return recommendations;
     }
@@ -2588,10 +2805,10 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                 'Implement proper data validation and cleaning',
                 'Use appropriate data structures and algorithms',
                 'Implement data visualization best practices',
-                'Use statistical analysis and machine learning patterns'
+                'Use statistical analysis and machine learning patterns',
             ],
             context: 'domain-specific',
-            rationale: 'Data project detected - data best practices ensure accuracy and insights'
+            rationale: 'Data project detected - data best practices ensure accuracy and insights',
         });
         return recommendations;
     }
@@ -2611,10 +2828,10 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                 'Implement Infrastructure as Code (IaC)',
                 'Use containerization and orchestration',
                 'Implement CI/CD pipelines',
-                'Use monitoring and logging tools'
+                'Use monitoring and logging tools',
             ],
             context: 'domain-specific',
-            rationale: 'DevOps project detected - modern practices improve deployment and operations'
+            rationale: 'DevOps project detected - modern practices improve deployment and operations',
         });
         return recommendations;
     }
@@ -2637,7 +2854,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                 threshold: this.getQualityThreshold(phase),
                 checks: qualityChecks,
                 recommendations: this.generateQualityRecommendations(qualityChecks, qualityScore),
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
             };
             if (!passed) {
                 console.warn(`Quality gates failed for ${phase.name} phase. Score: ${qualityScore}/${this.getQualityThreshold(phase)}`);
@@ -2670,8 +2887,8 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                     complexity: projectAnalysis.codeQuality.complexity,
                     maintainability: projectAnalysis.codeQuality.maintainability,
                     testCoverage: projectAnalysis.codeQuality.testCoverage,
-                    codeSmells: projectAnalysis.codeQuality.codeSmells.length
-                }
+                    codeSmells: projectAnalysis.codeQuality.codeSmells.length,
+                },
             });
             // Security checks
             checks.push({
@@ -2684,8 +2901,8 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                 details: {
                     vulnerabilities: projectAnalysis.securityAnalysis.vulnerabilities.length,
                     compliance: projectAnalysis.securityAnalysis.compliance.length,
-                    recommendations: projectAnalysis.securityAnalysis.recommendations.length
-                }
+                    recommendations: projectAnalysis.securityAnalysis.recommendations.length,
+                },
             });
             // Dependency checks
             checks.push({
@@ -2698,8 +2915,8 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                 details: {
                     totalDependencies: projectAnalysis.dependencies.dependencies.length,
                     outdatedDependencies: projectAnalysis.dependencies.outdated.length,
-                    vulnerabilities: projectAnalysis.dependencies.vulnerabilities.length
-                }
+                    vulnerabilities: projectAnalysis.dependencies.vulnerabilities.length,
+                },
             });
         }
         // Phase-specific checks
@@ -2739,13 +2956,13 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
      */
     applyQualityWeights(checks, baseScore) {
         const categoryWeights = {
-            'security': 1.2,
+            security: 1.2,
             'code-quality': 1.1,
-            'dependencies': 1.0,
-            'performance': 0.9,
-            'testing': 0.8,
-            'documentation': 0.7,
-            'context7': 0.6
+            dependencies: 1.0,
+            performance: 0.9,
+            testing: 0.8,
+            documentation: 0.7,
+            context7: 0.6,
         };
         let weightedSum = 0;
         let totalWeight = 0;
@@ -2833,8 +3050,8 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                     message: 'Requirements completeness check',
                     details: {
                         requirementsCount: context.requirements?.length || 0,
-                        businessGoalsCount: context.businessGoals?.length || 0
-                    }
+                        businessGoalsCount: context.businessGoals?.length || 0,
+                    },
                 });
                 break;
             case 'development':
@@ -2848,8 +3065,8 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                     details: {
                         hasTypeScript: this.hasTypeScript(context),
                         hasLinting: this.hasLinting(context),
-                        hasFormatting: this.hasFormatting(context)
-                    }
+                        hasFormatting: this.hasFormatting(context),
+                    },
                 });
                 break;
             case 'quality assurance':
@@ -2863,8 +3080,8 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                     details: {
                         hasUnitTests: this.hasUnitTests(context),
                         hasIntegrationTests: this.hasIntegrationTests(context),
-                        hasE2ETests: this.hasE2ETests(context)
-                    }
+                        hasE2ETests: this.hasE2ETests(context),
+                    },
                 });
                 break;
             case 'deployment & operations':
@@ -2878,8 +3095,8 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                     details: {
                         hasCI: this.hasCI(context),
                         hasCD: this.hasCD(context),
-                        hasMonitoring: this.hasMonitoring(context)
-                    }
+                        hasMonitoring: this.hasMonitoring(context),
+                    },
                 });
                 break;
         }
@@ -2906,8 +3123,8 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                     bestPracticesCount: context7Insights.bestPractices.length,
                     troubleshootingCount: context7Insights.troubleshooting.length,
                     cacheHit: context7Insights.cacheHit,
-                    fallbackUsed: context7Insights.fallbackUsed
-                }
+                    fallbackUsed: context7Insights.fallbackUsed,
+                },
             });
             // Check intelligence level appropriateness
             const intelligenceLevel = context7Insights.intelligenceLevel || 'basic';
@@ -2922,8 +3139,8 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                 details: {
                     currentLevel: intelligenceLevel,
                     expectedLevel: expectedLevel,
-                    domainType: context7Insights.domainType
-                }
+                    domainType: context7Insights.domainType,
+                },
             });
         }
         catch (error) {
@@ -2935,8 +3152,8 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                 threshold: 80,
                 message: 'Context7 integration failed',
                 details: {
-                    error: error instanceof Error ? error.message : 'Unknown error'
-                }
+                    error: error instanceof Error ? error.message : 'Unknown error',
+                },
             });
         }
         return checks;
@@ -3005,7 +3222,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
     hasMonitoring(context) {
         const requirements = context.requirements || [];
         const allText = requirements.join(' ').toLowerCase();
-        return allText.includes('monitor') || allText.includes('logging') || allText.includes('metrics');
+        return (allText.includes('monitor') || allText.includes('logging') || allText.includes('metrics'));
     }
     getExpectedIntelligenceLevel(_phase, context) {
         const complexity = this.calculateProjectComplexityScore(context);
@@ -3021,17 +3238,19 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
             passed: false,
             qualityScore: 0,
             threshold: this.getQualityThreshold(phase),
-            checks: [{
+            checks: [
+                {
                     name: 'Quality Gate Error',
                     category: 'general',
                     status: 'failed',
                     score: 0,
                     threshold: 0,
                     message: 'Quality gate validation failed due to system error',
-                    details: { error: 'System error during quality gate validation' }
-                }],
+                    details: { error: 'System error during quality gate validation' },
+                },
+            ],
             recommendations: ['Fix system error and retry quality gate validation'],
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
         };
     }
     /**
@@ -3050,7 +3269,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
             lastCheck: Date.now(),
             qualityHistory: [],
             alerts: [],
-            isActive: true
+            isActive: true,
         });
         // Start monitoring interval
         const monitoringInterval = setInterval(async () => {
@@ -3101,7 +3320,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                 qualityScore: qualityAssessment.overallScore,
                 categoryScores: qualityAssessment.categoryScores,
                 issues: qualityAssessment.issues,
-                recommendations: qualityAssessment.recommendations
+                recommendations: qualityAssessment.recommendations,
             });
             // Check for quality degradation
             this.checkQualityDegradation(workflowId, qualityAssessment);
@@ -3130,7 +3349,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
             performance: this.calculatePerformanceScore(context),
             testing: this.calculateTestingScore(context),
             documentation: this.calculateDocumentationScore(context),
-            context7: this.calculateContext7Score(context)
+            context7: this.calculateContext7Score(context),
         };
         // Calculate overall score
         const overallScore = this.calculateOverallQualityScore(categoryScores);
@@ -3143,7 +3362,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
             categoryScores,
             issues,
             recommendations,
-            timestamp: Date.now()
+            timestamp: Date.now(),
         };
     }
     /**
@@ -3166,9 +3385,9 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                     currentScore,
                     previousScore,
                     degradation,
-                    affectedCategories: this.getAffectedCategories(assessment.categoryScores, state.qualityHistory[state.qualityHistory.length - 2].categoryScores)
+                    affectedCategories: this.getAffectedCategories(assessment.categoryScores, state.qualityHistory[state.qualityHistory.length - 2].categoryScores),
                 },
-                timestamp: Date.now()
+                timestamp: Date.now(),
             };
             state.alerts.push(alert);
             console.warn(`Quality degradation alert for workflow ${workflowId}:`, alert);
@@ -3187,9 +3406,9 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                 message: `${criticalIssues.length} critical quality issues detected`,
                 details: {
                     issues: criticalIssues,
-                    overallScore: assessment.overallScore
+                    overallScore: assessment.overallScore,
                 },
-                timestamp: Date.now()
+                timestamp: Date.now(),
             };
             const state = this.qualityMonitoringState.get(workflowId);
             if (state) {
@@ -3212,10 +3431,12 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
             endTime: state.endTime || 0,
             lastCheck: state.lastCheck,
             totalChecks: state.qualityHistory.length,
-            currentScore: state.qualityHistory.length > 0 ? state.qualityHistory[state.qualityHistory.length - 1].qualityScore : 0,
+            currentScore: state.qualityHistory.length > 0
+                ? state.qualityHistory[state.qualityHistory.length - 1].qualityScore
+                : 0,
             averageScore: this.calculateAverageQualityScore(state.qualityHistory),
             alertsCount: state.alerts.length,
-            recentAlerts: state.alerts.slice(-5)
+            recentAlerts: state.alerts.slice(-5),
         };
     }
     /**
@@ -3235,7 +3456,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
             qualityScore: entry.qualityScore,
             categoryScores: entry.categoryScores,
             issuesCount: entry.issues.length,
-            recommendationsCount: entry.recommendations.length
+            recommendationsCount: entry.recommendations.length,
         }));
     }
     // Helper methods for quality monitoring
@@ -3298,12 +3519,12 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
     calculateOverallQualityScore(categoryScores) {
         const weights = {
             codeQuality: 0.25,
-            security: 0.20,
+            security: 0.2,
             dependencies: 0.15,
             performance: 0.15,
-            testing: 0.10,
-            documentation: 0.10,
-            context7: 0.05
+            testing: 0.1,
+            documentation: 0.1,
+            context7: 0.05,
         };
         let weightedSum = 0;
         let totalWeight = 0;
@@ -3323,7 +3544,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                     severity: score < 50 ? 'critical' : score < 60 ? 'high' : 'medium',
                     message: `${category} score is below acceptable threshold: ${score}/100`,
                     score,
-                    threshold: 70
+                    threshold: 70,
                 });
             }
         });
@@ -3418,7 +3639,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
             patterns,
             bestPractices,
             performanceTips,
-            accessibilityGuidelines
+            accessibilityGuidelines,
         };
     }
     /**
@@ -3451,7 +3672,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
             patterns,
             bestPractices,
             securityGuidelines,
-            scalabilityTips
+            scalabilityTips,
         };
     }
     /**
@@ -3484,7 +3705,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
             patterns,
             bestPractices,
             performanceTips,
-            securityGuidelines
+            securityGuidelines,
         };
     }
     /**
@@ -3515,7 +3736,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
             patterns,
             bestPractices,
             securityGuidelines,
-            monitoringTips
+            monitoringTips,
         };
     }
     // Helper methods for domain-specific insights
@@ -3860,8 +4081,14 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
         const timestamp = Date.now();
         // Check each field for changes
         const fieldsToCheck = [
-            'phase', 'businessRequirements', 'technicalRequirements', 'constraints',
-            'assumptions', 'decisions', 'artifacts', 'relationships'
+            'phase',
+            'businessRequirements',
+            'technicalRequirements',
+            'constraints',
+            'assumptions',
+            'decisions',
+            'artifacts',
+            'relationships',
         ];
         for (const field of fieldsToCheck) {
             const oldValue = oldContext[field];
@@ -4078,9 +4305,15 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
     checkPhaseRelevance(phase, businessReqs, technicalReqs) {
         const phaseKeywords = {
             'Strategic Planning': ['strategy', 'business', 'requirements', 'goals', 'objectives'],
-            'Development': ['development', 'implementation', 'coding', 'programming', 'build'],
+            Development: ['development', 'implementation', 'coding', 'programming', 'build'],
             'Quality Assurance': ['testing', 'quality', 'validation', 'verification', 'qa'],
-            'Deployment & Operations': ['deployment', 'operations', 'monitoring', 'maintenance', 'production'],
+            'Deployment & Operations': [
+                'deployment',
+                'operations',
+                'monitoring',
+                'maintenance',
+                'production',
+            ],
         };
         const keywords = phaseKeywords[phase] || [];
         const text = `${businessReqs} ${technicalReqs}`.toLowerCase();
@@ -4100,7 +4333,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
             return 1.0;
         const phaseArtifactTypes = {
             'Strategic Planning': ['document', 'diagram'],
-            'Development': ['code', 'configuration'],
+            Development: ['code', 'configuration'],
             'Quality Assurance': ['document', 'data'],
             'Deployment & Operations': ['configuration', 'data'],
         };
@@ -4363,7 +4596,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                 conflictingElements.push('Technical requirements changed');
             }
             // Calculate continuity score
-            const totalElements = 4; // business, technical, constraints, assumptions
+            const _totalElements = 4; // business, technical, constraints, assumptions
             const missingPenalty = missingElements.length * 0.25;
             const conflictPenalty = conflictingElements.length * 0.15;
             const continuityScore = Math.max(0, 1 - missingPenalty - conflictPenalty);
@@ -4423,8 +4656,12 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
             // Determine trend
             const recentAccuracies = allAccuracies.slice(-5); // Last 5 entries
             const olderAccuracies = allAccuracies.slice(-10, -5); // Previous 5 entries
-            const recentAvg = recentAccuracies.length > 0 ? recentAccuracies.reduce((sum, acc) => sum + acc, 0) / recentAccuracies.length : 0;
-            const olderAvg = olderAccuracies.length > 0 ? olderAccuracies.reduce((sum, acc) => sum + acc, 0) / olderAccuracies.length : 0;
+            const recentAvg = recentAccuracies.length > 0
+                ? recentAccuracies.reduce((sum, acc) => sum + acc, 0) / recentAccuracies.length
+                : 0;
+            const olderAvg = olderAccuracies.length > 0
+                ? olderAccuracies.reduce((sum, acc) => sum + acc, 0) / olderAccuracies.length
+                : 0;
             let trend = 'stable';
             if (recentAvg > olderAvg + 0.05)
                 trend = 'improving';
@@ -4703,11 +4940,11 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
             // Completeness (0-1)
             const completeness = this.calculateCompleteness(response);
             // Overall score (weighted average)
-            const overallScore = (domainRelevance * 0.25 +
+            const overallScore = domainRelevance * 0.25 +
                 specificity * 0.25 +
-                originality * 0.20 +
+                originality * 0.2 +
                 accuracy * 0.15 +
-                completeness * 0.15);
+                completeness * 0.15;
             // Confidence based on consistency of scores
             const scores = [domainRelevance, specificity, originality, accuracy, completeness];
             const scoreVariance = this.calculateVariance(scores);
@@ -4735,10 +4972,29 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
         let score = 0.5; // Base score
         // Check for domain-specific keywords
         const domainKeywords = [
-            'frontend', 'backend', 'fullstack', 'mobile', 'data', 'devops',
-            'react', 'vue', 'angular', 'node', 'python', 'java', 'typescript',
-            'database', 'api', 'microservice', 'container', 'kubernetes',
-            'testing', 'deployment', 'monitoring', 'security', 'performance',
+            'frontend',
+            'backend',
+            'fullstack',
+            'mobile',
+            'data',
+            'devops',
+            'react',
+            'vue',
+            'angular',
+            'node',
+            'python',
+            'java',
+            'typescript',
+            'database',
+            'api',
+            'microservice',
+            'container',
+            'kubernetes',
+            'testing',
+            'deployment',
+            'monitoring',
+            'security',
+            'performance',
         ];
         const responseLower = response.toLowerCase();
         let keywordCount = 0;
@@ -4801,9 +5057,17 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
         let score = 0.5; // Base score
         // Check for unique phrases (not common boilerplate)
         const commonPhrases = [
-            'please note', 'it is important', 'keep in mind', 'make sure',
-            'ensure that', 'it should be noted', 'it is worth mentioning',
-            'as you can see', 'as mentioned', 'in other words', 'for example',
+            'please note',
+            'it is important',
+            'keep in mind',
+            'make sure',
+            'ensure that',
+            'it should be noted',
+            'it is worth mentioning',
+            'as you can see',
+            'as mentioned',
+            'in other words',
+            'for example',
         ];
         const responseLower = response.toLowerCase();
         let commonPhraseCount = 0;
@@ -4872,7 +5136,11 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
         const technicalMistakes = [
             { pattern: /\bJSON\s+object\b/gi, penalty: 0.1, reason: 'Redundant "JSON object"' },
             { pattern: /\bHTTP\s+URL\b/gi, penalty: 0.1, reason: 'Redundant "HTTP URL"' },
-            { pattern: /\bREST\s+API\s+endpoint\b/gi, penalty: 0.05, reason: 'Redundant "REST API endpoint"' },
+            {
+                pattern: /\bREST\s+API\s+endpoint\b/gi,
+                penalty: 0.05,
+                reason: 'Redundant "REST API endpoint"',
+            },
         ];
         for (const mistake of technicalMistakes) {
             if (mistake.pattern.test(response)) {
@@ -4889,10 +5157,22 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
         // Check for different types of content
         const contentTypes = [
             { pattern: /\b(what|how|why|when|where|who)\b/gi, weight: 0.2, name: 'Questions answered' },
-            { pattern: /\b(example|for instance|such as|like)\b/gi, weight: 0.2, name: 'Examples provided' },
+            {
+                pattern: /\b(example|for instance|such as|like)\b/gi,
+                weight: 0.2,
+                name: 'Examples provided',
+            },
             { pattern: /\b(step|process|procedure|method)\b/gi, weight: 0.2, name: 'Process described' },
-            { pattern: /\b(advantage|benefit|pros|cons|disadvantage)\b/gi, weight: 0.2, name: 'Pros/cons mentioned' },
-            { pattern: /\b(alternative|option|choice|instead)\b/gi, weight: 0.2, name: 'Alternatives discussed' },
+            {
+                pattern: /\b(advantage|benefit|pros|cons|disadvantage)\b/gi,
+                weight: 0.2,
+                name: 'Pros/cons mentioned',
+            },
+            {
+                pattern: /\b(alternative|option|choice|instead)\b/gi,
+                weight: 0.2,
+                name: 'Alternatives discussed',
+            },
         ];
         for (const contentType of contentTypes) {
             const matches = response.match(contentType.pattern);
@@ -4974,7 +5254,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                 });
             }
             // Determine primary source
-            const primarySource = sources.reduce((prev, current) => (current.contribution > prev.contribution) ? current : prev);
+            const primarySource = sources.reduce((prev, current) => current.contribution > prev.contribution ? current : prev);
             // Calculate source reliability
             const sourceReliability = sources.length > 0
                 ? sources.reduce((sum, source) => sum + source.reliability * source.contribution, 0)
@@ -5055,7 +5335,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
         let score = intelligenceScore.overallScore;
         // Penalize template responses
         if (templateDetection.isTemplate) {
-            score *= (1 - templateDetection.confidence * 0.5);
+            score *= 1 - templateDetection.confidence * 0.5;
         }
         // Apply confidence weighting
         score *= intelligenceScore.confidence;
@@ -5189,35 +5469,77 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
     getKnowledgeAreasForCategory(category) {
         const knowledgeAreas = {
             frontend: [
-                'User Interface Design', 'User Experience', 'Responsive Design', 'Accessibility',
-                'Performance Optimization', 'State Management', 'Component Architecture',
-                'Testing Strategies', 'Build Tools', 'Deployment'
+                'User Interface Design',
+                'User Experience',
+                'Responsive Design',
+                'Accessibility',
+                'Performance Optimization',
+                'State Management',
+                'Component Architecture',
+                'Testing Strategies',
+                'Build Tools',
+                'Deployment',
             ],
             backend: [
-                'API Design', 'Database Design', 'Authentication & Authorization', 'Security',
-                'Performance & Scalability', 'Caching Strategies', 'Microservices Architecture',
-                'Testing & Quality Assurance', 'Monitoring & Logging', 'DevOps Integration'
+                'API Design',
+                'Database Design',
+                'Authentication & Authorization',
+                'Security',
+                'Performance & Scalability',
+                'Caching Strategies',
+                'Microservices Architecture',
+                'Testing & Quality Assurance',
+                'Monitoring & Logging',
+                'DevOps Integration',
             ],
             fullstack: [
-                'System Architecture', 'Database Design', 'API Integration', 'Authentication',
-                'Security Best Practices', 'Performance Optimization', 'Testing Strategies',
-                'Deployment & DevOps', 'Monitoring & Analytics', 'Scalability Planning'
+                'System Architecture',
+                'Database Design',
+                'API Integration',
+                'Authentication',
+                'Security Best Practices',
+                'Performance Optimization',
+                'Testing Strategies',
+                'Deployment & DevOps',
+                'Monitoring & Analytics',
+                'Scalability Planning',
             ],
             mobile: [
-                'Mobile UI/UX', 'Platform-Specific Development', 'Cross-Platform Solutions',
-                'Performance Optimization', 'Offline Capabilities', 'Push Notifications',
-                'App Store Optimization', 'Testing & QA', 'Security & Privacy', 'Analytics'
+                'Mobile UI/UX',
+                'Platform-Specific Development',
+                'Cross-Platform Solutions',
+                'Performance Optimization',
+                'Offline Capabilities',
+                'Push Notifications',
+                'App Store Optimization',
+                'Testing & QA',
+                'Security & Privacy',
+                'Analytics',
             ],
             data: [
-                'Data Modeling', 'ETL Processes', 'Data Warehousing', 'Machine Learning',
-                'Data Visualization', 'Data Quality', 'Data Governance', 'Big Data Processing',
-                'Real-time Analytics', 'Data Security & Privacy'
+                'Data Modeling',
+                'ETL Processes',
+                'Data Warehousing',
+                'Machine Learning',
+                'Data Visualization',
+                'Data Quality',
+                'Data Governance',
+                'Big Data Processing',
+                'Real-time Analytics',
+                'Data Security & Privacy',
             ],
             devops: [
-                'CI/CD Pipelines', 'Infrastructure as Code', 'Containerization', 'Orchestration',
-                'Monitoring & Observability', 'Security & Compliance', 'Automation',
-                'Cloud Platforms', 'Disaster Recovery', 'Performance Optimization'
-            ]
+                'CI/CD Pipelines',
+                'Infrastructure as Code',
+                'Containerization',
+                'Orchestration',
+                'Monitoring & Observability',
+                'Security & Compliance',
+                'Automation',
+                'Cloud Platforms',
+                'Disaster Recovery',
+                'Performance Optimization',
+            ],
         };
         return knowledgeAreas[category] || [];
     }
@@ -5250,7 +5572,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                     examples: ['React.lazy()', 'Webpack code splitting', 'Image compression'],
                     references: ['Web.dev performance', 'React performance', 'Vue performance'],
                     lastUpdated: timestamp,
-                }
+                },
             ],
             backend: [
                 {
@@ -5276,8 +5598,8 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                     examples: ['Joi validation', 'Express validator', 'Input sanitization'],
                     references: ['OWASP input validation', 'Security best practices'],
                     lastUpdated: timestamp,
-                }
-            ]
+                },
+            ],
         };
         return bestPractices[category] || [];
     }
@@ -5298,7 +5620,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                     tradeoffs: ['More boilerplate', 'Complexity'],
                     examples: ['Redux containers', 'React hooks pattern'],
                     lastUpdated: timestamp,
-                }
+                },
             ],
             backend: [
                 {
@@ -5312,8 +5634,8 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                     tradeoffs: ['Additional complexity', 'Over-engineering for simple cases'],
                     examples: ['UserRepository', 'ProductRepository', 'OrderRepository'],
                     lastUpdated: timestamp,
-                }
-            ]
+                },
+            ],
         };
         return patterns[category] || [];
     }
@@ -5334,7 +5656,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                     prevention: ['Single responsibility principle', 'Regular refactoring', 'Code reviews'],
                     examples: ['Component with 500+ lines', 'Component handling multiple features'],
                     lastUpdated: timestamp,
-                }
+                },
             ],
             backend: [
                 {
@@ -5344,12 +5666,19 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                     category,
                     symptoms: ['Data-only classes', 'Business logic in services', 'No encapsulation'],
                     consequences: ['Poor object design', 'Logic scattered', 'Hard to maintain'],
-                    solutions: ['Add behavior to domain objects', 'Use rich domain models', 'Encapsulate logic'],
+                    solutions: [
+                        'Add behavior to domain objects',
+                        'Use rich domain models',
+                        'Encapsulate logic',
+                    ],
                     prevention: ['Domain-driven design', 'Object-oriented principles', 'Proper modeling'],
-                    examples: ['User class with only getters/setters', 'Order class without business methods'],
+                    examples: [
+                        'User class with only getters/setters',
+                        'Order class without business methods',
+                    ],
                     lastUpdated: timestamp,
-                }
-            ]
+                },
+            ],
         };
         return antiPatterns[category] || [];
     }
@@ -5371,7 +5700,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                     alternatives: ['Vue.js', 'Angular', 'Svelte'],
                     documentation: 'https://reactjs.org/docs',
                     lastUpdated: timestamp,
-                }
+                },
             ],
             backend: [
                 {
@@ -5386,8 +5715,8 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                     alternatives: ['Python', 'Java', 'Go', 'C#'],
                     documentation: 'https://nodejs.org/docs',
                     lastUpdated: timestamp,
-                }
-            ]
+                },
+            ],
         };
         return tools[category] || [];
     }
@@ -5410,7 +5739,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                     scalability: 'Horizontal scaling, CDN integration',
                     security: 'Built-in security headers, CSRF protection',
                     lastUpdated: timestamp,
-                }
+                },
             ],
             backend: [
                 {
@@ -5426,8 +5755,8 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
                     scalability: 'Horizontal scaling, load balancing',
                     security: 'Requires additional security middleware',
                     lastUpdated: timestamp,
-                }
-            ]
+                },
+            ],
         };
         return frameworks[category] || [];
     }
@@ -5651,8 +5980,8 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
             return 0;
         const avgConfidence = (knowledge.reduce((sum, k) => sum + k.confidence, 0) +
             bestPractices.reduce((sum, _bp) => sum + 0.9, 0) + // Best practices have high confidence
-            patterns.reduce((sum, _p) => sum + 0.8, 0) // Patterns have good confidence
-        ) / totalItems;
+            patterns.reduce((sum, _p) => sum + 0.8, 0)) / // Patterns have good confidence
+            totalItems;
         return Math.min(1, avgConfidence);
     }
     /**
@@ -5676,11 +6005,11 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
             // Validate framework suitability
             const frameworkSuitability = this.validateFrameworkSuitability(response, expertise);
             // Calculate overall validation score
-            const validationScore = (expertiseAccuracy * 0.3 +
+            const validationScore = expertiseAccuracy * 0.3 +
                 bestPracticeCompliance * 0.3 +
                 patternCorrectness * 0.2 +
                 toolAppropriateness * 0.1 +
-                frameworkSuitability * 0.1);
+                frameworkSuitability * 0.1;
             // Generate recommendations
             if (expertiseAccuracy < 0.7) {
                 recommendations.push('Improve domain-specific accuracy and terminology');
@@ -5820,7 +6149,7 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
      */
     initializeResponseRelevanceScoring() {
         // Initialize with default relevance thresholds
-        const defaultThresholds = {
+        const _defaultThresholds = {
             highRelevance: 0.8,
             mediumRelevance: 0.6,
             lowRelevance: 0.4,
@@ -5890,13 +6219,19 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
             const domainRelevance = this.calculateDomainRelevanceForRelevance(response, context?.domain);
             const temporalRelevance = this.calculateTemporalRelevance(response, context);
             // Calculate overall score (weighted average)
-            const overallScore = (topicRelevance * 0.3 +
+            const overallScore = topicRelevance * 0.3 +
                 contextRelevance * 0.25 +
                 userIntentRelevance * 0.25 +
                 domainRelevance * 0.15 +
-                temporalRelevance * 0.05);
+                temporalRelevance * 0.05;
             // Calculate confidence based on consistency
-            const scores = [topicRelevance, contextRelevance, userIntentRelevance, domainRelevance, temporalRelevance];
+            const scores = [
+                topicRelevance,
+                contextRelevance,
+                userIntentRelevance,
+                domainRelevance,
+                temporalRelevance,
+            ];
             const scoreVariance = this.calculateVariance(scores);
             const confidence = Math.max(0, 1 - scoreVariance);
             const relevanceScore = {
@@ -5985,22 +6320,30 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
         const responseLower = response.toLowerCase();
         switch (intent) {
             case 'question':
-                if (responseLower.includes('?') || responseLower.includes('answer') || responseLower.includes('explain')) {
+                if (responseLower.includes('?') ||
+                    responseLower.includes('answer') ||
+                    responseLower.includes('explain')) {
                     score += 0.3;
                 }
                 break;
             case 'request':
-                if (responseLower.includes('here') || responseLower.includes('provide') || responseLower.includes('create')) {
+                if (responseLower.includes('here') ||
+                    responseLower.includes('provide') ||
+                    responseLower.includes('create')) {
                     score += 0.3;
                 }
                 break;
             case 'problem':
-                if (responseLower.includes('solution') || responseLower.includes('fix') || responseLower.includes('resolve')) {
+                if (responseLower.includes('solution') ||
+                    responseLower.includes('fix') ||
+                    responseLower.includes('resolve')) {
                     score += 0.3;
                 }
                 break;
             case 'explanation':
-                if (responseLower.includes('explain') || responseLower.includes('how') || responseLower.includes('why')) {
+                if (responseLower.includes('explain') ||
+                    responseLower.includes('how') ||
+                    responseLower.includes('why')) {
                     score += 0.3;
                 }
                 break;
@@ -6047,7 +6390,15 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
     calculateTemporalRelevance(response, _context) {
         let score = 0.5; // Base score
         // Check for time-sensitive content
-        const timeIndicators = ['recent', 'latest', 'current', 'new', 'updated', 'modern', 'contemporary'];
+        const timeIndicators = [
+            'recent',
+            'latest',
+            'current',
+            'new',
+            'updated',
+            'modern',
+            'contemporary',
+        ];
         const responseLower = response.toLowerCase();
         let timeCount = 0;
         for (const indicator of timeIndicators) {
@@ -6069,7 +6420,8 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
      */
     extractKeywords(text) {
         // Simple keyword extraction
-        const words = text.toLowerCase()
+        const words = text
+            .toLowerCase()
             .replace(/[^\w\s]/g, ' ')
             .split(/\s+/)
             .filter(word => word.length > 2)
@@ -6090,9 +6442,45 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
      */
     isStopWord(word) {
         const stopWords = new Set([
-            'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by',
-            'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did',
-            'will', 'would', 'could', 'should', 'may', 'might', 'must', 'can', 'this', 'that', 'these', 'those'
+            'the',
+            'a',
+            'an',
+            'and',
+            'or',
+            'but',
+            'in',
+            'on',
+            'at',
+            'to',
+            'for',
+            'of',
+            'with',
+            'by',
+            'is',
+            'are',
+            'was',
+            'were',
+            'be',
+            'been',
+            'being',
+            'have',
+            'has',
+            'had',
+            'do',
+            'does',
+            'did',
+            'will',
+            'would',
+            'could',
+            'should',
+            'may',
+            'might',
+            'must',
+            'can',
+            'this',
+            'that',
+            'these',
+            'those',
         ]);
         return stopWords.has(word);
     }
@@ -6111,16 +6499,27 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
      */
     detectUserIntent(query) {
         const queryLower = query.toLowerCase();
-        if (queryLower.includes('?') || queryLower.includes('how') || queryLower.includes('what') || queryLower.includes('why')) {
+        if (queryLower.includes('?') ||
+            queryLower.includes('how') ||
+            queryLower.includes('what') ||
+            queryLower.includes('why')) {
             return 'question';
         }
-        if (queryLower.includes('create') || queryLower.includes('build') || queryLower.includes('make') || queryLower.includes('generate')) {
+        if (queryLower.includes('create') ||
+            queryLower.includes('build') ||
+            queryLower.includes('make') ||
+            queryLower.includes('generate')) {
             return 'request';
         }
-        if (queryLower.includes('error') || queryLower.includes('problem') || queryLower.includes('issue') || queryLower.includes('fix')) {
+        if (queryLower.includes('error') ||
+            queryLower.includes('problem') ||
+            queryLower.includes('issue') ||
+            queryLower.includes('fix')) {
             return 'problem';
         }
-        if (queryLower.includes('explain') || queryLower.includes('understand') || queryLower.includes('learn')) {
+        if (queryLower.includes('explain') ||
+            queryLower.includes('understand') ||
+            queryLower.includes('learn')) {
             return 'explanation';
         }
         return 'other';
@@ -6130,12 +6529,33 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
      */
     getDomainTerms(domain) {
         const domainTerms = {
-            frontend: ['ui', 'ux', 'component', 'react', 'vue', 'angular', 'css', 'html', 'javascript', 'typescript'],
-            backend: ['api', 'server', 'database', 'node', 'python', 'java', 'microservice', 'rest', 'graphql'],
+            frontend: [
+                'ui',
+                'ux',
+                'component',
+                'react',
+                'vue',
+                'angular',
+                'css',
+                'html',
+                'javascript',
+                'typescript',
+            ],
+            backend: [
+                'api',
+                'server',
+                'database',
+                'node',
+                'python',
+                'java',
+                'microservice',
+                'rest',
+                'graphql',
+            ],
             fullstack: ['fullstack', 'full-stack', 'end-to-end', 'full', 'stack', 'application'],
             mobile: ['mobile', 'ios', 'android', 'react-native', 'flutter', 'app', 'native'],
             data: ['data', 'database', 'sql', 'nosql', 'analytics', 'machine', 'learning', 'ai'],
-            devops: ['devops', 'ci', 'cd', 'docker', 'kubernetes', 'deployment', 'infrastructure']
+            devops: ['devops', 'ci', 'cd', 'docker', 'kubernetes', 'deployment', 'infrastructure'],
         };
         return domainTerms[domain] || [];
     }
@@ -6145,9 +6565,15 @@ ${guide.solutions?.map((solution) => `- ${solution.description || 'Solution'}: $
     getPhaseTerms(phase) {
         const phaseTerms = {
             'Strategic Planning': ['strategy', 'planning', 'requirements', 'analysis', 'goals'],
-            'Development': ['development', 'implementation', 'coding', 'programming', 'build'],
+            Development: ['development', 'implementation', 'coding', 'programming', 'build'],
             'Quality Assurance': ['testing', 'quality', 'validation', 'verification', 'qa'],
-            'Deployment & Operations': ['deployment', 'operations', 'monitoring', 'maintenance', 'production']
+            'Deployment & Operations': [
+                'deployment',
+                'operations',
+                'monitoring',
+                'maintenance',
+                'production',
+            ],
         };
         return phaseTerms[phase] || [];
     }

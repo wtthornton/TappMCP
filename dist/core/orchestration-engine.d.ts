@@ -6,6 +6,35 @@
  * and business context management for complete SDLC orchestration.
  */
 import { type BusinessContext, type RoleTransition } from './business-context-broker.js';
+/**
+ * Represents a complete workflow with phases, tasks, and business context
+ *
+ * A workflow defines the structure and execution plan for a business request,
+ * including all phases, tasks, and their relationships within the SDLC process.
+ *
+ * @interface Workflow
+ * @property {string} id - Unique identifier for the workflow
+ * @property {string} name - Human-readable name for the workflow
+ * @property {string} type - Type of workflow (e.g., 'sdlc', 'project', 'quality')
+ * @property {WorkflowPhase[]} phases - Array of workflow phases to be executed
+ * @property {BusinessContext} businessContext - Business context and requirements
+ * @property {string} [currentPhase] - Currently active phase identifier
+ * @property {'pending'|'running'|'completed'|'failed'|'paused'} status - Current workflow status
+ *
+ * @example
+ * ```typescript
+ * const workflow: Workflow = {
+ *   id: "wf-001",
+ *   name: "User Management System",
+ *   type: "sdlc",
+ *   phases: [planningPhase, developmentPhase, testingPhase],
+ *   businessContext: businessContext,
+ *   status: "pending"
+ * };
+ * ```
+ *
+ * @since 2.0.0
+ */
 export interface Workflow {
     id: string;
     name: string;
@@ -15,6 +44,42 @@ export interface Workflow {
     currentPhase?: string;
     status: 'pending' | 'running' | 'completed' | 'failed' | 'paused';
 }
+/**
+ * Represents an individual task within a workflow phase
+ *
+ * A workflow task defines a specific deliverable or action within a phase,
+ * including its requirements, dependencies, and execution details.
+ *
+ * @interface WorkflowTask
+ * @property {string} id - Unique identifier for the task
+ * @property {string} name - Human-readable name for the task
+ * @property {string} description - Detailed description of what the task accomplishes
+ * @property {string} type - Type of task (e.g., 'analysis', 'development', 'testing')
+ * @property {string} [role] - Required role for executing this task
+ * @property {string} [phase] - Phase this task belongs to
+ * @property {string[]} [deliverables] - Expected deliverables from this task
+ * @property {number} [estimatedTime] - Estimated time to complete in minutes
+ * @property {'pending'|'running'|'completed'|'failed'} status - Current task status
+ * @property {number} [estimatedDuration] - Alternative duration estimate
+ * @property {string[]} [dependencies] - Array of task IDs that must complete first
+ *
+ * @example
+ * ```typescript
+ * const task: WorkflowTask = {
+ *   id: "task-001",
+ *   name: "Requirements Analysis",
+ *   description: "Analyze business requirements and create technical specifications",
+ *   type: "analysis",
+ *   role: "product-strategist",
+ *   phase: "planning",
+ *   deliverables: ["requirements-doc", "technical-spec"],
+ *   estimatedTime: 120,
+ *   status: "pending"
+ * };
+ * ```
+ *
+ * @since 2.0.0
+ */
 export interface WorkflowTask {
     id: string;
     name: string;
@@ -660,21 +725,56 @@ export interface OptimizedWorkflow {
 /**
  * Main Orchestration Engine for complete workflow management
  */
+/**
+ * OrchestrationEngine - Central coordination engine for Smart Orchestrate workflows
+ *
+ * This class provides comprehensive workflow orchestration capabilities including:
+ * - Business context management and role transitions
+ * - Context7 intelligence integration with caching and fallback mechanisms
+ * - Quality gates and validation throughout the SDLC process
+ * - Performance monitoring and error handling with circuit breaker patterns
+ * - Domain-specific intelligence delivery and response relevance scoring
+ *
+ * @example
+ * ```typescript
+ * const engine = new OrchestrationEngine();
+ * const result = await engine.orchestrateWorkflow({
+ *   request: "Build a user management system with authentication",
+ *   options: { qualityLevel: "high" }
+ * });
+ * ```
+ *
+ * @since 2.0.0
+ * @author TappMCP Team
+ */
 export declare class OrchestrationEngine {
+    /** Business context broker for managing role transitions and business requirements */
     private contextBroker;
+    /** Context7 broker for accessing external intelligence and documentation */
     private context7Broker;
+    /** Map of currently active workflows by workflow ID */
     private activeWorkflows;
+    /** Map of completed workflow results by workflow ID */
     private workflowResults;
+    /** Role orchestrator for managing role-specific behavior (TODO: Define proper type) */
     private roleOrchestrator;
+    /** Enhanced caching for workflow-specific data with TTL support */
     private workflowCache;
+    /** Context7 response cache to reduce API calls and improve performance */
     private context7Cache;
+    /** Cache for Context7 topics to optimize topic discovery */
     private topicCache;
+    /** Retry attempt tracking for failed operations */
     private retryAttempts;
+    /** Circuit breaker state management for external service resilience */
     private circuitBreakerState;
+    /** Maximum number of retry attempts for failed operations */
     private maxRetries;
+    /** Base delay for retry operations in milliseconds */
     private retryDelay;
     private circuitBreakerThreshold;
     private circuitBreakerTimeout;
+    private intelligenceEngines;
     private qualityMonitoringState;
     private monitoringIntervals;
     private qualityMonitoringInterval;
@@ -709,9 +809,73 @@ export declare class OrchestrationEngine {
     private continuousImprovementState;
     private relevanceLearningData;
     private maxRelevanceHistorySize;
+    /**
+     * Creates a new OrchestrationEngine instance
+     *
+     * Initializes all required brokers, caches, and monitoring systems.
+     * Sets up LRU caches with appropriate TTL values for different data types.
+     *
+     * @example
+     * ```typescript
+     * const engine = new OrchestrationEngine();
+     * ```
+     *
+     * @since 2.0.0
+     */
     constructor();
     /**
+     * Dynamically loads an intelligence engine with caching
+     *
+     * @param engineName - Name of the engine to load
+     * @returns Promise resolving to the engine class
+     *
+     * @example
+     * ```typescript
+     * const QualityEngine = await engine.loadIntelligenceEngine('QualityAssuranceEngine');
+     * ```
+     *
+     * @since 2.0.0
+     */
+    private loadIntelligenceEngine;
+    /**
+     * Preloads all intelligence engines for better performance
+     *
+     * @returns Promise resolving when all engines are loaded
+     *
+     * @example
+     * ```typescript
+     * await engine.preloadIntelligenceEngines();
+     * ```
+     *
+     * @since 2.0.0
+     */
+    preloadIntelligenceEngines(): Promise<void>;
+    /**
      * Execute a complete workflow with role orchestration and context management
+     */
+    /**
+     * Executes a complete workflow with business context and quality monitoring
+     *
+     * This method orchestrates the execution of a workflow through all its phases,
+     * managing role transitions, quality gates, and business value tracking.
+     *
+     * @param workflow - The workflow to execute with phases and tasks
+     * @param context - Business context including goals, requirements, and constraints
+     * @returns Promise resolving to workflow execution results with metrics and outcomes
+     *
+     * @example
+     * ```typescript
+     * const workflow = createSDLCWorkflow("Build user management system");
+     * const context = {
+     *   projectId: "user-mgmt-001",
+     *   businessGoals: ["Improve user experience"],
+     *   requirements: ["OAuth integration"]
+     * };
+     * const result = await engine.executeWorkflow(workflow, context);
+     * ```
+     *
+     * @throws {Error} When workflow execution fails or quality gates are not met
+     * @since 2.0.0
      */
     executeWorkflow(workflow: Workflow, context: BusinessContext): Promise<WorkflowResult>;
     /**

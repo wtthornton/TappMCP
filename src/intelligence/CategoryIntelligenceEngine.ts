@@ -6,7 +6,7 @@
  * code generation and analysis capabilities.
  */
 
-import { z } from 'zod';
+// import { z } from 'zod'; // Unused import
 import { CodeGenerationRequest } from './UnifiedCodeIntelligenceEngine.js';
 
 // Context7 data structure

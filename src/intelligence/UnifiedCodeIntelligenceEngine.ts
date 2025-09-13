@@ -3,6 +3,23 @@
  *
  * Core orchestration engine that manages all category-specific intelligence engines
  * and provides a unified interface for code generation across all technologies.
+ *
+ * This engine coordinates multiple specialized intelligence engines to provide
+ * comprehensive code generation, analysis, and optimization capabilities across
+ * different technology domains including frontend, backend, database, DevOps, and mobile.
+ *
+ * @example
+ * ```typescript
+ * const engine = new UnifiedCodeIntelligenceEngine();
+ * const result = await engine.generateCode({
+ *   featureDescription: "Create a user authentication system",
+ *   techStack: ["React", "Node.js", "PostgreSQL"],
+ *   targetRole: "developer"
+ * });
+ * ```
+ *
+ * @since 2.0.0
+ * @author TappMCP Team
  */
 
 import { z } from 'zod';
@@ -112,6 +129,28 @@ export class UnifiedCodeIntelligenceEngine {
 
   /**
    * Generate code using the unified intelligence system with performance caching
+   */
+  /**
+   * Generates code using unified intelligence across all technology domains
+   *
+   * This method coordinates multiple intelligence engines to generate high-quality
+   * code based on feature requirements, technology stack, and project context.
+   *
+   * @param request - Code generation request with feature description and context
+   * @returns Promise resolving to generated code with quality metrics and analysis
+   *
+   * @example
+   * ```typescript
+   * const result = await engine.generateCode({
+   *   featureDescription: "Create a REST API for user management",
+   *   techStack: ["Node.js", "Express", "PostgreSQL"],
+   *   targetRole: "developer",
+   *   projectAnalysis: analysisData
+   * });
+   * ```
+   *
+   * @throws {Error} When code generation fails or validation errors occur
+   * @since 2.0.0
    */
   async generateCode(request: CodeGenerationRequest): Promise<CodeGenerationResult> {
     const startTime = Date.now();

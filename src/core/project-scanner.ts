@@ -75,7 +75,7 @@ export class ProjectScanner {
     projectPath: string,
     analysisDepth: 'quick' | 'standard' | 'deep' = 'standard'
   ): Promise<ProjectAnalysis> {
-    const startTime = Date.now();
+    const _startTime = Date.now();
 
     try {
       // Validate project path
@@ -227,7 +227,7 @@ export class ProjectScanner {
           }
         }
       }
-    } catch (error) {
+    } catch (_error) {
       // No package.json or invalid format
     }
 
@@ -303,7 +303,7 @@ export class ProjectScanner {
       if (!packageJson.scripts || !packageJson.scripts.build) {
         issues.push('Missing build script in package.json');
       }
-    } catch (error) {
+    } catch (_error) {
       issues.push('Invalid or missing package.json');
     }
 
@@ -389,7 +389,7 @@ export class ProjectScanner {
         dependencies: packageJson.dependencies,
         devDependencies: packageJson.devDependencies,
       };
-    } catch (error) {
+    } catch (_error) {
       return {
         name: path.basename(projectPath),
       };

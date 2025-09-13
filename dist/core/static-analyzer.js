@@ -88,9 +88,10 @@ export class StaticAnalyzer {
             }
             return issues;
         }
-        catch (_error) {
+        catch (error) {
             // ESLint analysis failed - return empty array instead of throwing
             // This allows other analyzers to continue working
+            console.debug('ESLint analysis failed:', error);
             return [];
         }
     }
@@ -109,8 +110,9 @@ export class StaticAnalyzer {
                     timeout: 45000, // 45 second timeout
                 });
             }
-            catch (_error) {
+            catch (error) {
                 // Semgrep not available or scan failed - return empty results
+                console.debug('Semgrep scan failed:', error);
                 // eslint-disable-next-line no-console
                 console.warn('Semgrep not available or scan failed, skipping Semgrep analysis');
                 return [];
@@ -133,8 +135,9 @@ export class StaticAnalyzer {
             }
             return issues;
         }
-        catch (_error) {
+        catch (error) {
             // Semgrep scan failed - return empty result
+            console.debug('Semgrep analysis failed:', error);
             return [];
         }
     }
@@ -190,7 +193,8 @@ export class StaticAnalyzer {
                 const fileIssues = this.analyzeComplexity(file, content);
                 issues.push(...fileIssues);
             }
-            catch (_error) {
+            catch (error) {
+                console.debug('Analysis error:', error);
                 // Failed to analyze complexity for file
             }
         }
@@ -220,7 +224,8 @@ export class StaticAnalyzer {
                     }
                 }
             }
-            catch (_error) {
+            catch (error) {
+                console.debug('Analysis error:', error);
                 // If directory doesn't exist, return some default files for testing
                 if (dir === '/test') {
                     files.push('/test/sample.ts');
@@ -373,7 +378,8 @@ export class StaticAnalyzer {
                 const duplicates = this.detectDuplicates(content);
                 duplicateLines += duplicates;
             }
-            catch (_error) {
+            catch (error) {
+                console.debug('Analysis error:', error);
                 // Failed to calculate metrics for file
             }
         }

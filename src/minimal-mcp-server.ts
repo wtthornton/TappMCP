@@ -18,28 +18,29 @@ const TOOLS: Record<string, { tool: Tool; handler: (input: unknown) => Promise<u
   smart_begin: {
     tool: {
       name: 'smart_begin',
-      description: '🔍 Initialize a new project or analyze an existing project with proper structure, quality gates, and business context for non-technical users',
+      description:
+        '🔍 Initialize a new project or analyze an existing project with proper structure, quality gates, and business context for non-technical users',
       inputSchema: {
         type: 'object',
         properties: {
           projectName: {
             type: 'string',
             description: 'Name of the project to initialize or analyze',
-            minLength: 1
+            minLength: 1,
           },
           description: {
             type: 'string',
-            description: 'Optional description of the project'
+            description: 'Optional description of the project',
           },
           techStack: {
             type: 'array',
             items: { type: 'string' },
-            description: 'Array of technologies to use (e.g., [\'typescript\', \'nodejs\', \'react\'])',
-            default: []
-          }
+            description: "Array of technologies to use (e.g., ['typescript', 'nodejs', 'react'])",
+            default: [],
+          },
         },
-        required: ['projectName']
-      }
+        required: ['projectName'],
+      },
     },
     handler: async (input: any) => {
       return {
@@ -48,32 +49,33 @@ const TOOLS: Record<string, { tool: Tool; handler: (input: unknown) => Promise<u
           projectId: `proj_${Date.now()}`,
           message: `Project "${input.projectName}" initialized successfully`,
           techStack: input.techStack || [],
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        },
       };
-    }
+    },
   },
   smart_plan: {
     tool: {
       name: 'smart_plan',
-      description: '📋 Create comprehensive project plans with external MCP integration, resource optimization, and existing project improvement strategies',
+      description:
+        '📋 Create comprehensive project plans with external MCP integration, resource optimization, and existing project improvement strategies',
       inputSchema: {
         type: 'object',
         properties: {
           projectId: {
             type: 'string',
             description: 'Project ID from smart_begin tool for context preservation',
-            minLength: 1
+            minLength: 1,
           },
           planType: {
             type: 'string',
             enum: ['development', 'testing', 'deployment', 'maintenance', 'migration'],
             description: 'Type of plan to create',
-            default: 'development'
-          }
+            default: 'development',
+          },
         },
-        required: ['projectId']
-      }
+        required: ['projectId'],
+      },
     },
     handler: async (input: any) => {
       return {
@@ -86,39 +88,46 @@ const TOOLS: Record<string, { tool: Tool; handler: (input: unknown) => Promise<u
             'Setup project structure',
             'Implement core features',
             'Add testing',
-            'Deploy and monitor'
+            'Deploy and monitor',
           ],
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        },
       };
-    }
+    },
   },
   smart_write: {
     tool: {
       name: 'smart_write',
-      description: '✍️ Smart Write v2.0 - Modular AI-Assisted Code Generation with Context7 integration, project analysis, quality validation, and role-specific optimizations',
+      description:
+        '✍️ Smart Write v2.0 - Modular AI-Assisted Code Generation with Context7 integration, project analysis, quality validation, and role-specific optimizations',
       inputSchema: {
         type: 'object',
         properties: {
           projectId: {
             type: 'string',
             description: 'Unique identifier for your project',
-            minLength: 1
+            minLength: 1,
           },
           featureDescription: {
             type: 'string',
             description: 'Detailed description of the feature to generate',
-            minLength: 1
+            minLength: 1,
           },
           targetRole: {
             type: 'string',
-            enum: ['developer', 'product-strategist', 'designer', 'qa-engineer', 'operations-engineer'],
+            enum: [
+              'developer',
+              'product-strategist',
+              'designer',
+              'qa-engineer',
+              'operations-engineer',
+            ],
             description: 'Target role for optimized code generation',
-            default: 'developer'
-          }
+            default: 'developer',
+          },
         },
-        required: ['projectId', 'featureDescription']
-      }
+        required: ['projectId', 'featureDescription'],
+      },
     },
     handler: async (input: any) => {
       return {
@@ -128,32 +137,33 @@ const TOOLS: Record<string, { tool: Tool; handler: (input: unknown) => Promise<u
           message: `Generated code for: ${input.featureDescription}`,
           targetRole: input.targetRole || 'developer',
           content: `// Generated code for: ${input.featureDescription}\n// Project: ${input.projectId}\n// Role: ${input.targetRole || 'developer'}`,
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        },
       };
-    }
+    },
   },
   smart_finish: {
     tool: {
       name: 'smart_finish',
-      description: '✅ Complete project validation with real analysis using SimpleAnalyzer, comprehensive quality scorecard, and code validation',
+      description:
+        '✅ Complete project validation with real analysis using SimpleAnalyzer, comprehensive quality scorecard, and code validation',
       inputSchema: {
         type: 'object',
         properties: {
           projectId: {
             type: 'string',
             description: 'Project ID from smart_begin tool for context preservation',
-            minLength: 1
+            minLength: 1,
           },
           codeIds: {
             type: 'array',
             items: { type: 'string' },
             description: 'Array of code IDs from smart_write tool to validate',
-            minItems: 1
-          }
+            minItems: 1,
+          },
         },
-        required: ['projectId', 'codeIds']
-      }
+        required: ['projectId', 'codeIds'],
+      },
     },
     handler: async (input: any) => {
       return {
@@ -163,22 +173,24 @@ const TOOLS: Record<string, { tool: Tool; handler: (input: unknown) => Promise<u
           message: `Project ${input.projectId} completed successfully`,
           validatedCodeIds: input.codeIds || [],
           qualityScore: 85,
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        },
       };
-    }
+    },
   },
   smart_orchestrate: {
     tool: {
       name: 'smart_orchestrate',
-      description: '🎭 Phase 2B: Orchestrate complete SDLC workflows with automatic role switching, business context management, and comprehensive business value validation',
+      description:
+        '🎭 Phase 2B: Orchestrate complete SDLC workflows with automatic role switching, business context management, and comprehensive business value validation',
       inputSchema: {
         type: 'object',
         properties: {
           request: {
             type: 'string',
-            description: 'Complete business request for orchestration (e.g., "Build a user management system with authentication")',
-            minLength: 10
+            description:
+              'Complete business request for orchestration (e.g., "Build a user management system with authentication")',
+            minLength: 10,
           },
           options: {
             type: 'object',
@@ -187,14 +199,14 @@ const TOOLS: Record<string, { tool: Tool; handler: (input: unknown) => Promise<u
                 type: 'string',
                 enum: ['basic', 'standard', 'high'],
                 description: 'Quality level for orchestration',
-                default: 'standard'
-              }
+                default: 'standard',
+              },
             },
-            description: 'Orchestration options and business context'
-          }
+            description: 'Orchestration options and business context',
+          },
         },
-        required: ['request', 'options']
-      }
+        required: ['request', 'options'],
+      },
     },
     handler: async (input: any) => {
       return {
@@ -208,28 +220,29 @@ const TOOLS: Record<string, { tool: Tool; handler: (input: unknown) => Promise<u
             'Create project plan',
             'Generate code',
             'Validate and test',
-            'Deploy and monitor'
+            'Deploy and monitor',
           ],
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        },
       };
-    }
+    },
   },
   smart_converse: {
     tool: {
       name: 'smart_converse',
-      description: '💬 Natural language interface for TappMCP - converts conversations to project setup',
+      description:
+        '💬 Natural language interface for TappMCP - converts conversations to project setup',
       inputSchema: {
         type: 'object',
         properties: {
           userMessage: {
             type: 'string',
             description: 'Natural language message describing what you want to build',
-            minLength: 1
-          }
+            minLength: 1,
+          },
         },
-        required: ['userMessage']
-      }
+        required: ['userMessage'],
+      },
     },
     handler: async (input: any) => {
       return {
@@ -241,24 +254,26 @@ const TOOLS: Record<string, { tool: Tool; handler: (input: unknown) => Promise<u
             'I can help you set up a new project',
             'I can analyze your existing code',
             'I can generate code for specific features',
-            'I can create comprehensive project plans'
+            'I can create comprehensive project plans',
           ],
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        },
       };
-    }
+    },
   },
   smart_vibe: {
     tool: {
       name: 'smart_vibe',
-      description: '🎯 Smart Vibe - Natural language interface for TappMCP with visual status indicators, context management, role switching, and rich responses',
+      description:
+        '🎯 Smart Vibe - Natural language interface for TappMCP with visual status indicators, context management, role switching, and rich responses',
       inputSchema: {
         type: 'object',
         properties: {
           command: {
             type: 'string',
-            description: 'Natural language command (e.g., "make me a todo app", "check my code", "improve this function"), "status" for system status, or "install tools" for missing tools',
-            minLength: 1
+            description:
+              'Natural language command (e.g., "make me a todo app", "check my code", "improve this function"), "status" for system status, or "install tools" for missing tools',
+            minLength: 1,
           },
           options: {
             type: 'object',
@@ -266,19 +281,25 @@ const TOOLS: Record<string, { tool: Tool; handler: (input: unknown) => Promise<u
             properties: {
               role: {
                 type: 'string',
-                enum: ['developer', 'designer', 'qa-engineer', 'operations-engineer', 'product-strategist'],
-                description: 'Role for the command execution'
+                enum: [
+                  'developer',
+                  'designer',
+                  'qa-engineer',
+                  'operations-engineer',
+                  'product-strategist',
+                ],
+                description: 'Role for the command execution',
               },
               quality: {
                 type: 'string',
                 enum: ['basic', 'standard', 'enterprise', 'production'],
-                description: 'Quality level for the command'
-              }
-            }
-          }
+                description: 'Quality level for the command',
+              },
+            },
+          },
         },
-        required: ['command']
-      }
+        required: ['command'],
+      },
     },
     handler: async (input: any) => {
       return {
@@ -292,13 +313,13 @@ const TOOLS: Record<string, { tool: Tool; handler: (input: unknown) => Promise<u
             'Focus on clean, maintainable code',
             'Consider user experience',
             'Add proper error handling',
-            'Write comprehensive tests'
+            'Write comprehensive tests',
           ],
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        },
       };
-    }
-  }
+    },
+  },
 };
 
 // Input validation schema
@@ -451,4 +472,3 @@ if (isMainModule) {
 }
 
 export { MinimalMCPServer };
-

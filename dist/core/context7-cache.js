@@ -6,6 +6,7 @@
  * for Context7 knowledge retrieval across all TappMCP tools.
  */
 import { MCPCoordinator, } from './mcp-coordinator.js';
+// import { Context7Broker } from '../brokers/context7-broker.js'; // Unused import
 import { LRUCache } from 'lru-cache';
 import { gzip, gunzip } from 'zlib';
 import { promisify } from 'util';

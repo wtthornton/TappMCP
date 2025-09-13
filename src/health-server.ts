@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { createServer } from 'http';
+import { globalPerformanceMonitor } from './monitoring/performance-monitor.js';
 
 const PORT = process.env.HEALTH_PORT ?? 3001;
 
@@ -26,6 +27,21 @@ const healthServer = createServer((req, res) => {
         timestamp: new Date().toISOString(),
       })
     );
+  } else if (req.url === '/performance') {
+    // Performance monitoring endpoint
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    const report = globalPerformanceMonitor.generateReport();
+    res.end(JSON.stringify(report, null, 2));
+  } else if (req.url === '/metrics') {
+    // Raw metrics endpoint
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    const metrics = globalPerformanceMonitor.getMetrics();
+    res.end(JSON.stringify(metrics, null, 2));
+  } else if (req.url === '/alerts') {
+    // Performance alerts endpoint
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    const alerts = globalPerformanceMonitor.getAlerts();
+    res.end(JSON.stringify(alerts, null, 2));
   } else {
     res.writeHead(404, { 'Content-Type': 'application/json' });
     res.end(
@@ -45,6 +61,11 @@ if (
 ) {
   healthServer.listen(Number(PORT), '0.0.0.0', () => {
     // Health server running
+    console.log(`Health server running on port ${PORT}`);
+
+    // Start performance monitoring
+    globalPerformanceMonitor.startMonitoring(30000); // Monitor every 30 seconds
+    console.log('Performance monitoring started');
   });
 }
 

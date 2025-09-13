@@ -126,8 +126,9 @@ class DeploymentSmokeTestClient {
             try {
               const message: MCPMessage = JSON.parse(line);
               this.handleMessage(message);
-            } catch (_error) {
+            } catch (error) {
               // Ignore non-JSON output (like debug logs)
+              console.debug('Non-JSON output:', error);
               console.log(`📝 Server output: ${line.trim()}`);
             }
           }
@@ -318,7 +319,7 @@ class DeploymentSmokeTestClient {
       this.client.connected = false;
 
       // Clear any pending requests
-      for (const [id, pending] of this.client.pendingRequests.entries()) {
+      for (const [_id, pending] of this.client.pendingRequests.entries()) {
         clearTimeout(pending.timeout);
         pending.reject(new Error('Connection closed'));
       }

@@ -93,8 +93,12 @@ export class CodeGenerator {
     let primaryContent: string;
 
     // Choose generation method based on tech stack
-    if (input.techStack.includes('HTML') || input.techStack.includes('html') ||
-        input.techStack.includes('CSS') || input.techStack.includes('css')) {
+    if (
+      input.techStack.includes('HTML') ||
+      input.techStack.includes('html') ||
+      input.techStack.includes('CSS') ||
+      input.techStack.includes('css')
+    ) {
       primaryContent = this.generateHtmlContent(input, featureName);
     } else {
       primaryContent = this.generateTypeScriptContent(input, featureName, functionName);

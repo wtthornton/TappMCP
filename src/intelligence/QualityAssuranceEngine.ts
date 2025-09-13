@@ -8,7 +8,7 @@
  * Phase 2 Enhancement: Task 2.4.1 Implementation
  */
 
-import { z } from 'zod';
+// import { z } from 'zod'; // Unused import
 import { globalPerformanceCache } from './PerformanceCache.js';
 import { globalErrorHandler } from './ErrorHandling.js';
 
@@ -234,7 +234,7 @@ export class QualityAssuranceEngine {
    * Enhanced analyze method with comprehensive quality assessment (Phase 2)
    */
   async analyze(code: string, category: string): Promise<QualityScore> {
-    const startTime = Date.now();
+    const _startTime = Date.now();
 
     try {
       return await globalErrorHandler.executeAnalysisOperation(
@@ -1113,7 +1113,7 @@ export class QualityAssuranceEngine {
     category: string,
     currentScore: number
   ): Promise<QualityTrend> {
-    const codeHash = this.generateCodeHash(code);
+    const _codeHash = this.generateCodeHash(code);
     const recentHistory = this.qualityHistory
       .filter(entry => entry.category === category)
       .slice(-5); // Last 5 assessments
@@ -1631,7 +1631,7 @@ export class QualityAssuranceEngine {
     }
 
     let duplicated = 0;
-    for (const [line, count] of lineCount) {
+    for (const [_line, count] of lineCount) {
       if (count > 1) {
         duplicated += count - 1; // All occurrences except the first
       }
