@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TappMCP Real-Time Dashboard</title>
+    <title>🚀 TappMCP Command Center</title>
     <style>
         * {
             margin: 0;
@@ -11,137 +11,301 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary-bg: #0a0a0a;
+            --secondary-bg: #1a1a1a;
+            --accent-bg: #2a2a2a;
+            --primary-text: #ffffff;
+            --secondary-text: #b0b0b0;
+            --accent-color: #00ff88;
+            --warning-color: #ffaa00;
+            --error-color: #ff4444;
+            --success-color: #00ff88;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-4: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --gradient-5: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --glow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--primary-bg);
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(118, 75, 162, 0.1) 0%, transparent 50%);
             min-height: 100vh;
-            color: #333;
+            color: var(--primary-text);
+            overflow-x: hidden;
         }
 
         .dashboard {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
+            position: relative;
         }
 
         .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            background: var(--secondary-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gradient-4);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
 
         .header h1 {
-            color: #2d3748;
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 8px;
+            color: var(--primary-text);
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: var(--gradient-4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: var(--glow);
         }
 
         .header p {
-            color: #718096;
-            font-size: 1rem;
+            color: var(--secondary-text);
+            font-size: 1.1rem;
+            font-weight: 300;
         }
 
         .status-bar {
             display: flex;
-            gap: 16px;
-            margin-top: 16px;
+            gap: 20px;
+            margin-top: 24px;
+            flex-wrap: wrap;
         }
 
         .status-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 8px;
-            font-size: 0.9rem;
+            gap: 12px;
+            padding: 12px 20px;
+            background: var(--accent-bg);
+            border-radius: 16px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--glow);
+        }
+
+        .status-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .status-item:hover::before {
+            left: 100%;
         }
 
         .status-dot {
-            width: 8px;
-            height: 8px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
-            background: #48bb78;
+            background: var(--success-color);
+            box-shadow: 0 0 10px var(--success-color);
+            animation: pulse-dot 2s ease-in-out infinite;
         }
 
         .status-dot.disconnected {
-            background: #f56565;
+            background: var(--error-color);
+            box-shadow: 0 0 10px var(--error-color);
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.8; }
         }
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 32px;
+            margin-bottom: 32px;
         }
 
         .card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease;
+            background: var(--secondary-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .card:hover {
-            transform: translateY(-2px);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .card:hover::before {
+            opacity: 1;
         }
 
         .card h2 {
-            color: #2d3748;
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 16px;
+            color: var(--primary-text);
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 24px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .metric {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #e2e8f0;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
         }
 
         .metric:last-child {
             border-bottom: none;
         }
 
+        .metric:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+
         .metric-label {
-            color: #718096;
-            font-size: 0.9rem;
+            color: var(--secondary-text);
+            font-size: 0.95rem;
+            font-weight: 500;
         }
 
         .metric-value {
-            color: #2d3748;
-            font-weight: 600;
-            font-size: 1.1rem;
+            color: var(--primary-text);
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .metric-value.success {
+            color: var(--success-color);
+            text-shadow: 0 0 10px var(--success-color);
+        }
+
+        .metric-value.warning {
+            color: var(--warning-color);
+            text-shadow: 0 0 10px var(--warning-color);
+        }
+
+        .metric-value.error {
+            color: var(--error-color);
+            text-shadow: 0 0 10px var(--error-color);
         }
 
         .workflow-item {
-            background: #f7fafc;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 12px;
-            border-left: 4px solid #4299e1;
+            background: var(--accent-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-left: 4px solid var(--accent-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .workflow-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gradient-3);
+            transition: all 0.3s ease;
         }
 
         .workflow-item.completed {
-            border-left-color: #48bb78;
+            border-left-color: var(--success-color);
+        }
+
+        .workflow-item.completed::before {
+            background: var(--gradient-4);
         }
 
         .workflow-item.failed {
-            border-left-color: #f56565;
+            border-left-color: var(--error-color);
+        }
+
+        .workflow-item.failed::before {
+            background: var(--gradient-2);
         }
 
         .workflow-item.running {
-            border-left-color: #ed8936;
+            border-left-color: var(--warning-color);
+        }
+
+        .workflow-item.running::before {
+            background: var(--gradient-5);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .workflow-item:hover {
+            transform: translateX(8px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
 
         .workflow-header {
@@ -270,57 +434,93 @@
         }
 
         .tool-item {
-            background: #f7fafc;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 12px;
-            border-left: 4px solid #4299e1;
-            transition: all 0.2s ease;
+            background: var(--accent-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-left: 4px solid var(--accent-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .tool-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gradient-1);
+            transition: all 0.3s ease;
         }
 
         .tool-item:hover {
-            background: #edf2f7;
-            transform: translateX(2px);
+            background: rgba(0, 255, 136, 0.1);
+            transform: translateX(8px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(0, 255, 136, 0.2);
+        }
+
+        .tool-item:hover::before {
+            background: var(--gradient-4);
+            box-shadow: 0 0 20px var(--accent-color);
         }
 
         .tool-name {
-            font-weight: 600;
-            color: #2d3748;
-            font-size: 1rem;
-            margin-bottom: 4px;
+            font-weight: 700;
+            color: var(--primary-text);
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
 
         .tool-description {
-            color: #4a5568;
-            font-size: 0.9rem;
-            margin-bottom: 8px;
+            color: var(--secondary-text);
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            line-height: 1.5;
         }
 
         .tool-schema {
-            background: #e2e8f0;
-            border-radius: 4px;
-            padding: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.8rem;
-            color: #2d3748;
+            background: var(--primary-bg);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent-color);
             overflow-x: auto;
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            position: relative;
+        }
+
+        .tool-schema::before {
+            content: '⚙️';
+            position: absolute;
+            top: -8px;
+            right: 8px;
+            background: var(--primary-bg);
+            padding: 0 8px;
+            font-size: 0.8rem;
         }
 
         .tool-required {
-            color: #e53e3e;
-            font-weight: 500;
+            color: var(--error-color);
+            font-weight: 600;
+            text-shadow: 0 0 5px var(--error-color);
         }
 
         .tool-optional {
-            color: #718096;
+            color: var(--secondary-text);
+            font-weight: 400;
         }
     </style>
 </head>
 <body>
     <div class="dashboard">
         <div class="header">
-            <h1>🚀 TappMCP Real-Time Dashboard</h1>
-            <p>Monitor your TappMCP server performance and workflow status in real-time</p>
+            <h1>🚀 TappMCP Command Center</h1>
+            <p>Advanced AI-powered development assistant with real-time monitoring and intelligent workflow orchestration</p>
             <div class="status-bar">
                 <div class="status-item">
                     <div class="status-dot" id="connectionStatus"></div>
@@ -332,13 +532,19 @@
                 <div class="status-item">
                     <span>Uptime: <strong id="serverUptime">--</strong></span>
                 </div>
+                <div class="status-item">
+                    <span>Tools: <strong id="toolCount">7</strong></span>
+                </div>
+                <div class="status-item">
+                    <span>Mode: <strong>Dark</strong></span>
+                </div>
             </div>
         </div>
 
         <div class="grid">
             <!-- System Status Card -->
             <div class="card">
-                <h2>📊 System Status</h2>
+                <h2>🧠 Neural Network Status</h2>
                 <div class="metric">
                     <span class="metric-label">Memory Usage</span>
                     <span class="metric-value" id="memoryUsage">--</span>
@@ -363,7 +569,7 @@
 
             <!-- Performance Metrics Card -->
             <div class="card">
-                <h2>⚡ Performance Metrics</h2>
+                <h2>⚡ Turbo Performance</h2>
                 <div class="metric">
                     <span class="metric-label">Requests/sec</span>
                     <span class="metric-value" id="requestsPerSecond">--</span>
@@ -388,33 +594,33 @@
 
             <!-- Active Workflows Card -->
             <div class="card">
-                <h2>🔄 Active Workflows</h2>
+                <h2>🎭 Workflow Orchestra</h2>
                 <div id="workflowsContainer">
                     <div class="loading">
                         <div class="spinner"></div>
-                        <span>Loading workflows...</span>
+                        <span>Conducting workflows...</span>
                     </div>
                 </div>
             </div>
 
             <!-- Available Tools Card -->
             <div class="card">
-                <h2>🛠️ Available Tools</h2>
+                <h2>🛠️ AI Tool Arsenal</h2>
                 <div id="toolsContainer">
                     <div class="loading">
                         <div class="spinner"></div>
-                        <span>Loading tools...</span>
+                        <span>Loading AI tools...</span>
                     </div>
                 </div>
             </div>
 
             <!-- Notifications Card -->
             <div class="card">
-                <h2>🔔 Notifications</h2>
+                <h2>🔔 Smart Alerts</h2>
                 <div id="notificationsContainer">
                     <div class="loading">
                         <div class="spinner"></div>
-                        <span>Loading notifications...</span>
+                        <span>Scanning for alerts...</span>
                     </div>
                 </div>
             </div>
