@@ -124,6 +124,12 @@ export const WEBSOCKET_EVENTS = {
   SYSTEM_STATUS: 'system:status',
   SYSTEM_MAINTENANCE: 'system:maintenance',
   SYSTEM_ERROR: 'system:error',
+
+  // Connection events
+  PONG: 'pong',
+  AUTHENTICATED: 'authenticated',
+  SUBSCRIBED: 'subscribed',
+  UNSUBSCRIBED: 'unsubscribed',
 } as const;
 
 export type WebSocketEventType = typeof WEBSOCKET_EVENTS[keyof typeof WEBSOCKET_EVENTS];

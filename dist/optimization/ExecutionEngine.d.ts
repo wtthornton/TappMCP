@@ -19,12 +19,12 @@ export declare const ToolDefinitionSchema: z.ZodObject<{
         cpu: z.ZodDefault<z.ZodNumber>;
         tokens: z.ZodDefault<z.ZodNumber>;
     }, "strip", z.ZodTypeAny, {
-        tokens: number;
         memory: number;
+        tokens: number;
         cpu: number;
     }, {
-        tokens?: number | undefined;
         memory?: number | undefined;
+        tokens?: number | undefined;
         cpu?: number | undefined;
     }>>;
     reliability: z.ZodDefault<z.ZodNumber>;
@@ -37,14 +37,14 @@ export declare const ToolDefinitionSchema: z.ZodObject<{
     version: string;
     description: string;
     inputSchema: Record<string, any>;
-    category: "validation" | "planning" | "analysis" | "generation" | "orchestration" | "transformation";
-    dependencies: string[];
     reliability: number;
+    category: "validation" | "planning" | "orchestration" | "analysis" | "generation" | "transformation";
+    dependencies: string[];
     outputSchema: Record<string, any>;
     estimatedExecutionTime: number;
     resourceRequirements: {
-        tokens: number;
         memory: number;
+        tokens: number;
         cpu: number;
     };
     costPerExecution: number;
@@ -54,15 +54,15 @@ export declare const ToolDefinitionSchema: z.ZodObject<{
     name: string;
     description: string;
     inputSchema: Record<string, any>;
-    category: "validation" | "planning" | "analysis" | "generation" | "orchestration" | "transformation";
+    category: "validation" | "planning" | "orchestration" | "analysis" | "generation" | "transformation";
     outputSchema: Record<string, any>;
     version?: string | undefined;
-    dependencies?: string[] | undefined;
     reliability?: number | undefined;
+    dependencies?: string[] | undefined;
     estimatedExecutionTime?: number | undefined;
     resourceRequirements?: {
-        tokens?: number | undefined;
         memory?: number | undefined;
+        tokens?: number | undefined;
         cpu?: number | undefined;
     } | undefined;
     costPerExecution?: number | undefined;
@@ -142,13 +142,13 @@ export declare const ExecutionPlanSchema: z.ZodObject<{
             backoffMs: number;
         };
     };
-    dependencies: Record<string, string[]>;
-    metadata: Record<string, any>;
     constraints: {
         maxExecutionTime?: number | undefined;
         maxCost?: number | undefined;
         requiredReliability?: number | undefined;
     };
+    metadata: Record<string, any>;
+    dependencies: Record<string, string[]>;
     steps: any[];
 }, {
     name: string;
@@ -166,13 +166,13 @@ export declare const ExecutionPlanSchema: z.ZodObject<{
             backoffMs?: number | undefined;
         } | undefined;
     } | undefined;
-    dependencies?: Record<string, string[]> | undefined;
-    metadata?: Record<string, any> | undefined;
     constraints?: {
         maxExecutionTime?: number | undefined;
         maxCost?: number | undefined;
         requiredReliability?: number | undefined;
     } | undefined;
+    metadata?: Record<string, any> | undefined;
+    dependencies?: Record<string, string[]> | undefined;
 }>;
 export type ExecutionPlan = z.infer<typeof ExecutionPlanSchema>;
 export interface ExecutionResult {

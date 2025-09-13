@@ -7,17 +7,17 @@ export declare const BusinessRequirementsSchema: z.ZodObject<{
     constraints: z.ZodArray<z.ZodString, "many">;
     riskFactors: z.ZodArray<z.ZodString, "many">;
 }, "strip", z.ZodTypeAny, {
-    targetUsers: string[];
-    riskFactors: string[];
     constraints: string[];
     primaryGoals: string[];
+    targetUsers: string[];
     successCriteria: string[];
+    riskFactors: string[];
 }, {
-    targetUsers: string[];
-    riskFactors: string[];
     constraints: string[];
     primaryGoals: string[];
+    targetUsers: string[];
     successCriteria: string[];
+    riskFactors: string[];
 }>;
 export declare const StakeholderSchema: z.ZodObject<{
     name: z.ZodString;
@@ -26,15 +26,15 @@ export declare const StakeholderSchema: z.ZodObject<{
     interest: z.ZodEnum<["high", "medium", "low"]>;
     requirements: z.ZodArray<z.ZodString, "many">;
 }, "strip", z.ZodTypeAny, {
-    name: string;
     role: string;
     requirements: string[];
+    name: string;
     influence: "low" | "medium" | "high";
     interest: "low" | "medium" | "high";
 }, {
-    name: string;
     role: string;
     requirements: string[];
+    name: string;
     influence: "low" | "medium" | "high";
     interest: "low" | "medium" | "high";
 }>;
@@ -45,16 +45,16 @@ export declare const ComplexityAssessmentSchema: z.ZodObject<{
     overall: z.ZodEnum<["low", "medium", "high", "very-high"]>;
     factors: z.ZodArray<z.ZodString, "many">;
 }, "strip", z.ZodTypeAny, {
+    overall: "low" | "medium" | "high" | "very-high";
     technical: "low" | "medium" | "high" | "very-high";
     business: "low" | "medium" | "high" | "very-high";
     integration: "low" | "medium" | "high" | "very-high";
-    overall: "low" | "medium" | "high" | "very-high";
     factors: string[];
 }, {
+    overall: "low" | "medium" | "high" | "very-high";
     technical: "low" | "medium" | "high" | "very-high";
     business: "low" | "medium" | "high" | "very-high";
     integration: "low" | "medium" | "high" | "very-high";
-    overall: "low" | "medium" | "high" | "very-high";
     factors: string[];
 }>;
 export declare const RiskSchema: z.ZodObject<{
@@ -67,21 +67,21 @@ export declare const RiskSchema: z.ZodObject<{
     severity: z.ZodEnum<["low", "medium", "high", "critical"]>;
     mitigation: z.ZodArray<z.ZodString, "many">;
 }, "strip", z.ZodTypeAny, {
+    severity: "low" | "medium" | "high" | "critical";
     name: string;
     description: string;
     id: string;
-    category: "resource" | "technical" | "business" | "timeline" | "quality";
+    category: "resource" | "quality" | "technical" | "business" | "timeline";
     impact: "low" | "medium" | "high";
-    severity: "critical" | "low" | "medium" | "high";
     probability: "low" | "medium" | "high";
     mitigation: string[];
 }, {
+    severity: "low" | "medium" | "high" | "critical";
     name: string;
     description: string;
     id: string;
-    category: "resource" | "technical" | "business" | "timeline" | "quality";
+    category: "resource" | "quality" | "technical" | "business" | "timeline";
     impact: "low" | "medium" | "high";
-    severity: "critical" | "low" | "medium" | "high";
     probability: "low" | "medium" | "high";
     mitigation: string[];
 }>;
@@ -96,25 +96,25 @@ export declare const UserStorySchema: z.ZodObject<{
     priority: z.ZodEnum<["low", "medium", "high", "critical"]>;
     estimatedEffort: z.ZodNumber;
 }, "strip", z.ZodTypeAny, {
-    priority: "critical" | "low" | "medium" | "high";
+    priority: "low" | "medium" | "high" | "critical";
     description: string;
     id: string;
     title: string;
-    estimatedEffort: number;
     asA: string;
     iWant: string;
     soThat: string;
     acceptanceCriteria: string[];
+    estimatedEffort: number;
 }, {
-    priority: "critical" | "low" | "medium" | "high";
+    priority: "low" | "medium" | "high" | "critical";
     description: string;
     id: string;
     title: string;
-    estimatedEffort: number;
     asA: string;
     iWant: string;
     soThat: string;
     acceptanceCriteria: string[];
+    estimatedEffort: number;
 }>;
 export type BusinessRequirements = z.infer<typeof BusinessRequirementsSchema>;
 export type Stakeholder = z.infer<typeof StakeholderSchema>;

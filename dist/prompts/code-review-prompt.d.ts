@@ -18,10 +18,10 @@ export declare const CodeReviewPromptSchema: z.ZodObject<{
     code: string;
     language: string;
     reviewType: "security" | "performance" | "maintainability" | "readability" | "comprehensive";
-    context?: string | undefined;
     severity?: "low" | "medium" | "high" | undefined;
-    standards?: string[] | undefined;
     requirements?: string[] | undefined;
+    context?: string | undefined;
+    standards?: string[] | undefined;
     focusAreas?: string[] | undefined;
     includeSuggestions?: boolean | undefined;
     includeExamples?: boolean | undefined;
@@ -29,10 +29,10 @@ export declare const CodeReviewPromptSchema: z.ZodObject<{
     code: string;
     language: string;
     reviewType: "security" | "performance" | "maintainability" | "readability" | "comprehensive";
-    context?: string | undefined;
     severity?: "low" | "medium" | "high" | undefined;
-    standards?: string[] | undefined;
     requirements?: string[] | undefined;
+    context?: string | undefined;
+    standards?: string[] | undefined;
     focusAreas?: string[] | undefined;
     includeSuggestions?: boolean | undefined;
     includeExamples?: boolean | undefined;

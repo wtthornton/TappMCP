@@ -180,63 +180,53 @@ export class FileResource extends MCPResource {
      * Write file content
      */
     async writeFile(path, config) {
-        try {
-            // Create backup if requested
-            if (config.backup) {
-                await this.createBackup(path);
-            }
-            // Ensure directory exists
-            await fs.mkdir(dirname(path), { recursive: true });
-            // Write file
-            const data = config.data || '';
-            await fs.writeFile(path, data, { encoding: config.encoding });
-            // Set permissions if specified
-            if (config.permissions) {
-                await fs.chmod(path, parseInt(config.permissions, 8));
-            }
-            const stats = await fs.stat(path);
-            return {
-                success: true,
-                data,
-                metadata: {
-                    path,
-                    size: stats.size,
-                    lastModified: stats.mtime,
-                    hash: this.calculateHash(Buffer.from(data)),
-                    permissions: stats.mode.toString(8),
-                },
-            };
+        // Create backup if requested
+        if (config.backup) {
+            await this.createBackup(path);
         }
-        catch (error) {
-            throw error;
+        // Ensure directory exists
+        await fs.mkdir(dirname(path), { recursive: true });
+        // Write file
+        const data = config.data || '';
+        await fs.writeFile(path, data, { encoding: config.encoding });
+        // Set permissions if specified
+        if (config.permissions) {
+            await fs.chmod(path, parseInt(config.permissions, 8));
         }
+        const stats = await fs.stat(path);
+        return {
+            success: true,
+            data,
+            metadata: {
+                path,
+                size: stats.size,
+                lastModified: stats.mtime,
+                hash: this.calculateHash(Buffer.from(data)),
+                permissions: stats.mode.toString(8),
+            },
+        };
     }
     /**
      * Append to file
      */
     async appendFile(path, config) {
-        try {
-            // Ensure directory exists
-            await fs.mkdir(dirname(path), { recursive: true });
-            // Append to file
-            const data = config.data || '';
-            await fs.appendFile(path, data, { encoding: config.encoding });
-            const stats = await fs.stat(path);
-            return {
-                success: true,
-                data,
-                metadata: {
-                    path,
-                    size: stats.size,
-                    lastModified: stats.mtime,
-                    hash: this.calculateHash(await fs.readFile(path)),
-                    permissions: stats.mode.toString(8),
-                },
-            };
-        }
-        catch (error) {
-            throw error;
-        }
+        // Ensure directory exists
+        await fs.mkdir(dirname(path), { recursive: true });
+        // Append to file
+        const data = config.data || '';
+        await fs.appendFile(path, data, { encoding: config.encoding });
+        const stats = await fs.stat(path);
+        return {
+            success: true,
+            data,
+            metadata: {
+                path,
+                size: stats.size,
+                lastModified: stats.mtime,
+                hash: this.calculateHash(await fs.readFile(path)),
+                permissions: stats.mode.toString(8),
+            },
+        };
     }
     /**
      * Resolve file path relative to base path

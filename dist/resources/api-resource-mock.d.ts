@@ -32,15 +32,15 @@ export declare const ApiResourceSchema: z.ZodObject<{
     }, "strip", z.ZodTypeAny, {
         type: "basic" | "bearer" | "api-key" | "oauth2";
         apiKeyHeader: string;
+        token?: string | undefined;
         apiKey?: string | undefined;
         password?: string | undefined;
-        token?: string | undefined;
         username?: string | undefined;
     }, {
         type: "basic" | "bearer" | "api-key" | "oauth2";
+        token?: string | undefined;
         apiKey?: string | undefined;
         password?: string | undefined;
-        token?: string | undefined;
         username?: string | undefined;
         apiKeyHeader?: string | undefined;
     }>>;
@@ -55,9 +55,9 @@ export declare const ApiResourceSchema: z.ZodObject<{
     auth?: {
         type: "basic" | "bearer" | "api-key" | "oauth2";
         apiKeyHeader: string;
+        token?: string | undefined;
         apiKey?: string | undefined;
         password?: string | undefined;
-        token?: string | undefined;
         username?: string | undefined;
     } | undefined;
     body?: any;
@@ -73,9 +73,9 @@ export declare const ApiResourceSchema: z.ZodObject<{
     timeout?: number | undefined;
     auth?: {
         type: "basic" | "bearer" | "api-key" | "oauth2";
+        token?: string | undefined;
         apiKey?: string | undefined;
         password?: string | undefined;
-        token?: string | undefined;
         username?: string | undefined;
         apiKeyHeader?: string | undefined;
     } | undefined;
@@ -116,8 +116,8 @@ export declare const ApiResourceResponseSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     success: boolean;
     error?: string | undefined;
-    headers?: Record<string, string> | undefined;
     data?: any;
+    headers?: Record<string, string> | undefined;
     status?: number | undefined;
     executionTime?: number | undefined;
     statusText?: string | undefined;
@@ -130,8 +130,8 @@ export declare const ApiResourceResponseSchema: z.ZodObject<{
 }, {
     success: boolean;
     error?: string | undefined;
-    headers?: Record<string, string> | undefined;
     data?: any;
+    headers?: Record<string, string> | undefined;
     status?: number | undefined;
     executionTime?: number | undefined;
     statusText?: string | undefined;

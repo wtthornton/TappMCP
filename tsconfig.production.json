@@ -10,7 +10,11 @@
     "exactOptionalPropertyTypes": false,
     "noImplicitAny": false,
     "noImplicitReturns": false,
-    "noImplicitThis": false
+    "noImplicitThis": false,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": false
   },
   "exclude": ["node_modules", "dist", "**/*.test.ts", "src/**/*.test.ts"]
 }

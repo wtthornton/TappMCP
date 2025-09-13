@@ -15,8 +15,8 @@ export declare const ErrorAnalysisPromptSchema: z.ZodObject<{
     severity: z.ZodOptional<z.ZodEnum<["low", "medium", "high", "critical"]>>;
 }, "strip", z.ZodTypeAny, {
     errorMessage: string;
+    severity?: "low" | "medium" | "high" | "critical" | undefined;
     language?: string | undefined;
-    severity?: "critical" | "low" | "medium" | "high" | undefined;
     framework?: string | undefined;
     errorType?: string | undefined;
     stackTrace?: string | undefined;
@@ -25,8 +25,8 @@ export declare const ErrorAnalysisPromptSchema: z.ZodObject<{
     recentChanges?: string[] | undefined;
 }, {
     errorMessage: string;
+    severity?: "low" | "medium" | "high" | "critical" | undefined;
     language?: string | undefined;
-    severity?: "critical" | "low" | "medium" | "high" | undefined;
     framework?: string | undefined;
     errorType?: string | undefined;
     stackTrace?: string | undefined;

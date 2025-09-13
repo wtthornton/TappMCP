@@ -68,15 +68,15 @@ declare const CodePatternSchema: z.ZodObject<{
     name: string;
     description: string;
     id: string;
-    pattern: string;
-    category: "function" | "type" | "testing" | "async" | "class" | "module" | "error-handling" | "utility" | "control-flow";
+    complexity: "low" | "medium" | "high";
     metrics: {
         tokensPerUse: number;
         avgComplexity: number;
         reuseOpportunities: number;
         potentialSavings: number;
     };
-    complexity: "low" | "medium" | "high";
+    pattern: string;
+    category: "function" | "type" | "testing" | "async" | "class" | "module" | "error-handling" | "utility" | "control-flow";
     dependencies: string[];
     examples: string[];
     variables: {
@@ -89,15 +89,15 @@ declare const CodePatternSchema: z.ZodObject<{
     name: string;
     description: string;
     id: string;
-    pattern: string;
-    category: "function" | "type" | "testing" | "async" | "class" | "module" | "error-handling" | "utility" | "control-flow";
+    complexity: "low" | "medium" | "high";
     metrics: {
         tokensPerUse: number;
         avgComplexity: number;
         reuseOpportunities: number;
         potentialSavings: number;
     };
-    complexity: "low" | "medium" | "high";
+    pattern: string;
+    category: "function" | "type" | "testing" | "async" | "class" | "module" | "error-handling" | "utility" | "control-flow";
     dependencies: string[];
     examples: string[];
     variables: {
@@ -119,8 +119,8 @@ declare const PatternSuggestionSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     code: string;
     id: string;
-    confidence: number;
     context: Record<string, unknown>;
+    confidence: number;
     patternId: string;
     similarity: number;
     suggestedReplacement: string;
@@ -128,8 +128,8 @@ declare const PatternSuggestionSchema: z.ZodObject<{
 }, {
     code: string;
     id: string;
-    confidence: number;
     context: Record<string, unknown>;
+    confidence: number;
     patternId: string;
     similarity: number;
     suggestedReplacement: string;

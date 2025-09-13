@@ -2,7 +2,7 @@
   "mcp.servers": {
     "smart-mcp": {
       "command": "node",
-      "args": ["dist/minimal-mcp-server.js"],
+      "args": ["dist/server.js"],
       "cwd": "C:\\cursor\\TappMCP",
       "env": {
         "NODE_ENV": "production"
@@ -20,7 +20,7 @@
     },
     "smart-mcp-compose": {
       "command": "docker",
-      "args": ["exec", "-i", "tappmcp-smart-mcp-1", "node", "dist/minimal-mcp-server.js"],
+      "args": ["exec", "-i", "tappmcp-smart-mcp-1", "node", "dist/server.js"],
       "env": {
         "NODE_ENV": "production"
       },

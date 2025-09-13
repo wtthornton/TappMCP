@@ -82,19 +82,19 @@ export declare const DatabaseResourceResponseSchema: z.ZodObject<{
     query: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     success: boolean;
+    count?: number | undefined;
     error?: string | undefined;
     data?: Record<string, any>[] | undefined;
     query?: string | undefined;
-    count?: number | undefined;
     executionTime?: number | undefined;
     affectedRows?: number | undefined;
     insertId?: number | undefined;
 }, {
     success: boolean;
+    count?: number | undefined;
     error?: string | undefined;
     data?: Record<string, any>[] | undefined;
     query?: string | undefined;
-    count?: number | undefined;
     executionTime?: number | undefined;
     affectedRows?: number | undefined;
     insertId?: number | undefined;

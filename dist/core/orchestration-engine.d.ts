@@ -6,6 +6,7 @@
  * and business context management for complete SDLC orchestration.
  */
 import { type BusinessContext, type RoleTransition } from './business-context-broker.js';
+import { MetricsBroadcaster } from '../websocket/MetricsBroadcaster.js';
 /**
  * Represents a complete workflow with phases, tasks, and business context
  *
@@ -674,6 +675,12 @@ export interface WorkflowResult {
     roleTransitions: RoleTransition[];
     technicalMetrics: OrchestrationMetrics;
     errors?: string[];
+    iconData?: {
+        status: 'pending' | 'running' | 'completed' | 'failed' | 'paused' | 'cancelled';
+        progress: number;
+        currentPhase: string;
+        systemHealth: 'healthy' | 'degraded' | 'unhealthy' | 'maintenance';
+    };
 }
 export interface WorkflowPhaseResult {
     phase: string;
@@ -762,6 +769,8 @@ export declare class OrchestrationEngine {
     private workflowCache;
     /** Context7 response cache to reduce API calls and improve performance */
     private context7Cache;
+    /** Metrics broadcaster for real-time workflow updates */
+    private metricsBroadcaster;
     /** Cache for Context7 topics to optimize topic discovery */
     private topicCache;
     /** Retry attempt tracking for failed operations */
@@ -823,6 +832,19 @@ export declare class OrchestrationEngine {
      * @since 2.0.0
      */
     constructor();
+    /**
+     * Sets the metrics broadcaster for real-time workflow updates
+     *
+     * @param broadcaster - Metrics broadcaster instance
+     *
+     * @example
+     * ```typescript
+     * orchestrationEngine.setMetricsBroadcaster(metricsBroadcaster);
+     * ```
+     *
+     * @since 2.0.0
+     */
+    setMetricsBroadcaster(broadcaster: MetricsBroadcaster): void;
     /**
      * Dynamically loads an intelligence engine with caching
      *
@@ -1925,5 +1947,19 @@ export declare class OrchestrationEngine {
      * Clear response relevance data for a workflow
      */
     clearResponseRelevance(workflowId: string): void;
+    /**
+     * Determines system health based on technical metrics
+     *
+     * @param metrics - Technical metrics from workflow execution
+     * @returns System health status
+     *
+     * @example
+     * ```typescript
+     * const health = this.determineSystemHealth(metrics);
+     * ```
+     *
+     * @since 2.0.0
+     */
+    private determineSystemHealth;
 }
 //# sourceMappingURL=orchestration-engine.d.ts.map

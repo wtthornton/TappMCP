@@ -268,9 +268,12 @@ async function createStatusResponse(): Promise<string> {
 export async function handleSmartVibe(
   input: SmartVibeInput
 ): Promise<{ content: Array<{ type: string; text: string }>; isError?: boolean }> {
+  console.log('🎯 handleSmartVibe called with input:', JSON.stringify(input, null, 2));
+
   try {
     // Validate input
     const validatedInput = SmartVibeSchema.parse(input);
+    console.log('✅ Input validated:', JSON.stringify(validatedInput, null, 2));
 
     // Handle status command
     if (validatedInput.command.toLowerCase() === 'status') {
@@ -302,42 +305,16 @@ export async function handleSmartVibe(
       };
     }
 
-    // Get VibeTapp instance
-    const vibe = getVibeInstance();
-
-    // Apply configuration options if provided
-    if (validatedInput.options) {
-      const { role, quality, verbosity, mode } = validatedInput.options;
-
-      if (role) {
-        vibe.setRole(role as any);
-      }
-      if (quality) {
-        vibe.setQuality(quality as any);
-      }
-      if (verbosity) {
-        vibe.setVerbosity(verbosity as any);
-      }
-      if (mode) {
-        vibe.setMode(mode as any);
-      }
-    }
-
-    // Execute vibe command
-    const vibeResponse = await vibe.vibe(validatedInput.command, validatedInput.options as any);
-
-    // Format response for MCP/Cursor
-    const formattedResponse = formatVibeResponse(vibeResponse);
-
-    // Return MCP-compatible response
+    // FOR NOW: Return a working response that shows the function is being called
+    // This will help us identify if the issue is in the MCP routing or the VibeTapp execution
     return {
       content: [
         {
           type: 'text',
-          text: formattedResponse,
+          text: `🎯 **Smart Vibe Debug Response**\n\n✅ handleSmartVibe function is being called!\n\n**Command:** ${validatedInput.command}\n**Role:** ${validatedInput.options?.role || 'default'}\n**Quality:** ${validatedInput.options?.quality || 'default'}\n\n🚧 **Next Step:** Execute actual VibeTapp system and tools\n\n**Timestamp:** ${new Date().toISOString()}`,
         },
       ],
-      isError: !vibeResponse.success,
+      isError: false,
     };
   } catch (error) {
     // Error handling with user-friendly message

@@ -168,7 +168,7 @@ export class FileResource extends MCPResource {
    */
   private async readFile(path: string, config: FileResourceConfig): Promise<FileResourceResponse> {
     try {
-      const data = await fs.readFile(path, { encoding: config.encoding as BufferEncoding });
+      const data = await fs.readFile(path, { encoding: config.encoding as 'utf8' | 'utf-8' | 'ascii' | 'base64' | 'hex' | 'latin1' | 'binary' });
       const stats = await fs.stat(path);
 
       return {
@@ -185,7 +185,7 @@ export class FileResource extends MCPResource {
     } catch (error) {
       if ((error as any).code === 'ENOENT' && config.createIfNotExists) {
         // Create empty file if it doesn't exist and createIfNotExists is true
-        await fs.writeFile(path, '', { encoding: config.encoding as BufferEncoding });
+        await fs.writeFile(path, '', { encoding: config.encoding as 'utf8' | 'utf-8' | 'ascii' | 'base64' | 'hex' | 'latin1' | 'binary' });
         return {
           success: true,
           data: '',
@@ -206,40 +206,36 @@ export class FileResource extends MCPResource {
    * Write file content
    */
   private async writeFile(path: string, config: FileResourceConfig): Promise<FileResourceResponse> {
-    try {
-      // Create backup if requested
-      if (config.backup) {
-        await this.createBackup(path);
-      }
-
-      // Ensure directory exists
-      await fs.mkdir(dirname(path), { recursive: true });
-
-      // Write file
-      const data = config.data || '';
-      await fs.writeFile(path, data, { encoding: config.encoding as BufferEncoding });
-
-      // Set permissions if specified
-      if (config.permissions) {
-        await fs.chmod(path, parseInt(config.permissions, 8));
-      }
-
-      const stats = await fs.stat(path);
-
-      return {
-        success: true,
-        data,
-        metadata: {
-          path,
-          size: stats.size,
-          lastModified: stats.mtime,
-          hash: this.calculateHash(Buffer.from(data)),
-          permissions: stats.mode.toString(8),
-        },
-      };
-    } catch (error) {
-      throw error;
+    // Create backup if requested
+    if (config.backup) {
+      await this.createBackup(path);
     }
+
+    // Ensure directory exists
+    await fs.mkdir(dirname(path), { recursive: true });
+
+    // Write file
+    const data = config.data || '';
+    await fs.writeFile(path, data, { encoding: config.encoding as 'utf8' | 'utf-8' | 'ascii' | 'base64' | 'hex' | 'latin1' | 'binary' });
+
+    // Set permissions if specified
+    if (config.permissions) {
+      await fs.chmod(path, parseInt(config.permissions, 8));
+    }
+
+    const stats = await fs.stat(path);
+
+    return {
+      success: true,
+      data,
+      metadata: {
+        path,
+        size: stats.size,
+        lastModified: stats.mtime,
+        hash: this.calculateHash(Buffer.from(data)),
+        permissions: stats.mode.toString(8),
+      },
+    };
   }
 
   /**
@@ -249,30 +245,26 @@ export class FileResource extends MCPResource {
     path: string,
     config: FileResourceConfig
   ): Promise<FileResourceResponse> {
-    try {
-      // Ensure directory exists
-      await fs.mkdir(dirname(path), { recursive: true });
+    // Ensure directory exists
+    await fs.mkdir(dirname(path), { recursive: true });
 
-      // Append to file
-      const data = config.data || '';
-      await fs.appendFile(path, data, { encoding: config.encoding as BufferEncoding });
+    // Append to file
+    const data = config.data || '';
+    await fs.appendFile(path, data, { encoding: config.encoding as 'utf8' | 'utf-8' | 'ascii' | 'base64' | 'hex' | 'latin1' | 'binary' });
 
-      const stats = await fs.stat(path);
+    const stats = await fs.stat(path);
 
-      return {
-        success: true,
-        data,
-        metadata: {
-          path,
-          size: stats.size,
-          lastModified: stats.mtime,
-          hash: this.calculateHash(await fs.readFile(path)),
-          permissions: stats.mode.toString(8),
-        },
-      };
-    } catch (error) {
-      throw error;
-    }
+    return {
+      success: true,
+      data,
+      metadata: {
+        path,
+        size: stats.size,
+        lastModified: stats.mtime,
+        hash: this.calculateHash(await fs.readFile(path)),
+        permissions: stats.mode.toString(8),
+      },
+    };
   }
 
   /**

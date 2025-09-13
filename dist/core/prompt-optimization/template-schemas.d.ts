@@ -22,13 +22,13 @@ export declare const TemplateContextSchema: z.ZodObject<{
         domain: z.ZodOptional<z.ZodString>;
         complexity: z.ZodOptional<z.ZodEnum<["simple", "moderate", "complex"]>>;
     }, "strip", z.ZodTypeAny, {
-        domain?: string | undefined;
         projectId?: string | undefined;
-        complexity?: "moderate" | "simple" | "complex" | undefined;
+        complexity?: "moderate" | "complex" | "simple" | undefined;
+        domain?: string | undefined;
     }, {
-        domain?: string | undefined;
         projectId?: string | undefined;
-        complexity?: "moderate" | "simple" | "complex" | undefined;
+        complexity?: "moderate" | "complex" | "simple" | undefined;
+        domain?: string | undefined;
     }>>;
     userBehaviorProfile: z.ZodOptional<z.ZodObject<{
         preferredVerbosity: z.ZodOptional<z.ZodEnum<["concise", "moderate", "detailed"]>>;
@@ -67,9 +67,9 @@ export declare const TemplateContextSchema: z.ZodObject<{
     timeConstraint: "standard" | "immediate" | "thorough";
     sessionId?: string | undefined;
     projectContext?: {
-        domain?: string | undefined;
         projectId?: string | undefined;
-        complexity?: "moderate" | "simple" | "complex" | undefined;
+        complexity?: "moderate" | "complex" | "simple" | undefined;
+        domain?: string | undefined;
     } | undefined;
     userBehaviorProfile?: {
         preferredVerbosity?: "moderate" | "detailed" | "concise" | undefined;
@@ -92,9 +92,9 @@ export declare const TemplateContextSchema: z.ZodObject<{
     contextHistory?: string[] | undefined;
     timeConstraint?: "standard" | "immediate" | "thorough" | undefined;
     projectContext?: {
-        domain?: string | undefined;
         projectId?: string | undefined;
-        complexity?: "moderate" | "simple" | "complex" | undefined;
+        complexity?: "moderate" | "complex" | "simple" | undefined;
+        domain?: string | undefined;
     } | undefined;
     userBehaviorProfile?: {
         preferredVerbosity?: "moderate" | "detailed" | "concise" | undefined;

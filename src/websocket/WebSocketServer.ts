@@ -117,7 +117,7 @@ export class WebSocketServer extends EventEmitter {
 
     this.connections.forEach((ws, clientId) => {
       if (this.shouldSendToClient(clientId, eventType, filters)) {
-        this.sendToClient(ws, message);
+        this.sendToWebSocket(ws, message);
       }
     });
 
@@ -149,7 +149,7 @@ export class WebSocketServer extends EventEmitter {
       id: this.generateMessageId()
     };
 
-    return this.sendToClient(ws, message);
+    return this.sendToWebSocket(ws, message);
   }
 
   /**
@@ -214,7 +214,7 @@ export class WebSocketServer extends EventEmitter {
     console.log(`Client connected: ${clientId} from ${ipAddress}`);
 
     // Send welcome message
-    this.sendToClient(ws, {
+    this.sendToWebSocket(ws, {
       type: WEBSOCKET_EVENTS.CONNECT,
       data: { clientId, serverTime: Date.now() },
       timestamp: Date.now(),
@@ -259,7 +259,7 @@ export class WebSocketServer extends EventEmitter {
         break;
 
       case 'ping':
-        this.sendToClient(this.connections.get(clientId)!, 'pong', { timestamp: Date.now() });
+        this.sendToClient(clientId, WEBSOCKET_EVENTS.PONG, { timestamp: Date.now() });
         break;
 
       default:
@@ -282,7 +282,7 @@ export class WebSocketServer extends EventEmitter {
         });
         this.connectionInfo.set(clientId, connectionInfo);
 
-        this.sendToClient(this.connections.get(clientId)!, 'authenticated', {
+        this.sendToClient(clientId, WEBSOCKET_EVENTS.AUTHENTICATED, {
           success: true,
           userId,
           timestamp: Date.now()
@@ -311,7 +311,7 @@ export class WebSocketServer extends EventEmitter {
       this.connectionInfo.set(clientId, connectionInfo);
     }
 
-    this.sendToClient(this.connections.get(clientId)!, 'subscribed', {
+    this.sendToClient(clientId, WEBSOCKET_EVENTS.SUBSCRIBED, {
       eventTypes,
       filters,
       timestamp: Date.now()
@@ -329,7 +329,7 @@ export class WebSocketServer extends EventEmitter {
       this.connectionInfo.set(clientId, connectionInfo);
     }
 
-    this.sendToClient(this.connections.get(clientId)!, 'unsubscribed', {
+    this.sendToClient(clientId, WEBSOCKET_EVENTS.UNSUBSCRIBED, {
       timestamp: Date.now()
     });
   }
@@ -371,7 +371,7 @@ export class WebSocketServer extends EventEmitter {
     return true;
   }
 
-  private sendToClient(ws: WebSocket, message: WebSocketMessage): boolean {
+  private sendToWebSocket(ws: WebSocket, message: WebSocketMessage): boolean {
     if (ws.readyState !== WebSocket.OPEN) {
       return false;
     }
@@ -388,7 +388,7 @@ export class WebSocketServer extends EventEmitter {
   private sendError(clientId: string, message: string): void {
     const ws = this.connections.get(clientId);
     if (ws) {
-      this.sendToClient(ws, {
+      this.sendToWebSocket(ws, {
         type: 'error',
         data: { message },
         timestamp: Date.now(),

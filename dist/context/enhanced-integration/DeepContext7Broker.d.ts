@@ -70,14 +70,19 @@ export declare const ContextEntrySchema: z.ZodObject<{
         compressionRatio: number;
     }>>;
 }, "strip", z.ZodTypeAny, {
+    timestamp: Date;
     content: string;
     id: string;
-    timestamp: Date;
     toolName: string;
     sessionId: string;
     contextType: "user_query" | "system_response" | "tool_output" | "error_context" | "workflow_state";
     relevanceScore: number;
-    persistenceLevel: "user" | "project" | "session" | "global";
+    persistenceLevel: "user" | "session" | "global" | "project";
+    relationships?: {
+        type: "follows" | "references" | "contradicts" | "enhances";
+        targetContextId: string;
+        strength: number;
+    }[] | undefined;
     metadata?: {
         projectId?: string | undefined;
         qualityScore?: number | undefined;
@@ -85,24 +90,24 @@ export declare const ContextEntrySchema: z.ZodObject<{
         userLevel?: string | undefined;
         workflowStage?: string | undefined;
     } | undefined;
-    relationships?: {
-        type: "follows" | "references" | "contradicts" | "enhances";
-        targetContextId: string;
-        strength: number;
-    }[] | undefined;
     compressionInfo?: {
         originalLength: number;
         compressedLength: number;
         compressionRatio: number;
     } | undefined;
 }, {
+    timestamp: Date;
     content: string;
     id: string;
-    timestamp: Date;
     toolName: string;
     sessionId: string;
     contextType: "user_query" | "system_response" | "tool_output" | "error_context" | "workflow_state";
     relevanceScore: number;
+    relationships?: {
+        type: "follows" | "references" | "contradicts" | "enhances";
+        targetContextId: string;
+        strength: number;
+    }[] | undefined;
     metadata?: {
         projectId?: string | undefined;
         qualityScore?: number | undefined;
@@ -110,12 +115,7 @@ export declare const ContextEntrySchema: z.ZodObject<{
         userLevel?: string | undefined;
         workflowStage?: string | undefined;
     } | undefined;
-    relationships?: {
-        type: "follows" | "references" | "contradicts" | "enhances";
-        targetContextId: string;
-        strength: number;
-    }[] | undefined;
-    persistenceLevel?: "user" | "project" | "session" | "global" | undefined;
+    persistenceLevel?: "user" | "session" | "global" | "project" | undefined;
     compressionInfo?: {
         originalLength: number;
         compressedLength: number;

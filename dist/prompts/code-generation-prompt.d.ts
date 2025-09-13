@@ -15,23 +15,23 @@ export declare const CodeGenerationPromptSchema: z.ZodObject<{
     includeComments: z.ZodOptional<z.ZodBoolean>;
     includeDocumentation: z.ZodOptional<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
-    language: string;
     task: string;
-    context?: string | undefined;
-    complexity?: "medium" | "simple" | "complex" | undefined;
-    framework?: string | undefined;
+    language: string;
     requirements?: string[] | undefined;
+    complexity?: "medium" | "complex" | "simple" | undefined;
+    context?: string | undefined;
+    framework?: string | undefined;
     style?: "functional" | "object-oriented" | "procedural" | undefined;
     includeTests?: boolean | undefined;
     includeComments?: boolean | undefined;
     includeDocumentation?: boolean | undefined;
 }, {
-    language: string;
     task: string;
-    context?: string | undefined;
-    complexity?: "medium" | "simple" | "complex" | undefined;
-    framework?: string | undefined;
+    language: string;
     requirements?: string[] | undefined;
+    complexity?: "medium" | "complex" | "simple" | undefined;
+    context?: string | undefined;
+    framework?: string | undefined;
     style?: "functional" | "object-oriented" | "procedural" | undefined;
     includeTests?: boolean | undefined;
     includeComments?: boolean | undefined;

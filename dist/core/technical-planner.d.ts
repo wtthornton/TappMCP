@@ -9,13 +9,13 @@ export declare const ArchitectureSchema: z.ZodObject<{
         dependencies: z.ZodArray<z.ZodString, "many">;
         complexity: z.ZodEnum<["low", "medium", "high"]>;
     }, "strip", z.ZodTypeAny, {
-        type: "database" | "service" | "frontend" | "backend" | "external";
+        type: "frontend" | "service" | "database" | "backend" | "external";
         name: string;
         description: string;
         complexity: "low" | "medium" | "high";
         dependencies: string[];
     }, {
-        type: "database" | "service" | "frontend" | "backend" | "external";
+        type: "frontend" | "service" | "database" | "backend" | "external";
         name: string;
         description: string;
         complexity: "low" | "medium" | "high";
@@ -28,39 +28,39 @@ export declare const ArchitectureSchema: z.ZodObject<{
         justification: z.ZodString;
     }, "strip", z.ZodTypeAny, {
         name: string;
-        category: "database" | "language" | "service" | "tool" | "framework";
+        category: "service" | "database" | "language" | "framework" | "tool";
         justification: string;
     }, {
         name: string;
-        category: "database" | "language" | "service" | "tool" | "framework";
+        category: "service" | "database" | "language" | "framework" | "tool";
         justification: string;
     }>, "many">;
     constraints: z.ZodArray<z.ZodString, "many">;
 }, "strip", z.ZodTypeAny, {
-    patterns: string[];
     constraints: string[];
+    patterns: string[];
     technologies: {
         name: string;
-        category: "database" | "language" | "service" | "tool" | "framework";
+        category: "service" | "database" | "language" | "framework" | "tool";
         justification: string;
     }[];
     components: {
-        type: "database" | "service" | "frontend" | "backend" | "external";
+        type: "frontend" | "service" | "database" | "backend" | "external";
         name: string;
         description: string;
         complexity: "low" | "medium" | "high";
         dependencies: string[];
     }[];
 }, {
-    patterns: string[];
     constraints: string[];
+    patterns: string[];
     technologies: {
         name: string;
-        category: "database" | "language" | "service" | "tool" | "framework";
+        category: "service" | "database" | "language" | "framework" | "tool";
         justification: string;
     }[];
     components: {
-        type: "database" | "service" | "frontend" | "backend" | "external";
+        type: "frontend" | "service" | "database" | "backend" | "external";
         name: string;
         description: string;
         complexity: "low" | "medium" | "high";
@@ -78,23 +78,23 @@ export declare const TaskSchema: z.ZodObject<{
     skills: z.ZodArray<z.ZodString, "many">;
     phase: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    priority: "critical" | "low" | "medium" | "high";
+    phase: string;
+    priority: "low" | "medium" | "high" | "critical";
     type: "development" | "testing" | "deployment" | "documentation" | "research";
     name: string;
     description: string;
     id: string;
     dependencies: string[];
-    phase: string;
     estimatedHours: number;
     skills: string[];
 }, {
-    priority: "critical" | "low" | "medium" | "high";
+    phase: string;
+    priority: "low" | "medium" | "high" | "critical";
     type: "development" | "testing" | "deployment" | "documentation" | "research";
     name: string;
     description: string;
     id: string;
     dependencies: string[];
-    phase: string;
     estimatedHours: number;
     skills: string[];
 }>;
@@ -175,17 +175,17 @@ export declare const TimelineSchema: z.ZodObject<{
     }, "strip", z.ZodTypeAny, {
         name: string;
         id: string;
+        duration: number;
         startDate: string;
         endDate: string;
-        duration: number;
         milestones: string[];
         tasks: string[];
     }, {
         name: string;
         id: string;
+        duration: number;
         startDate: string;
         endDate: string;
-        duration: number;
         milestones: string[];
         tasks: string[];
     }>, "many">;
@@ -196,9 +196,9 @@ export declare const TimelineSchema: z.ZodObject<{
     phases: {
         name: string;
         id: string;
+        duration: number;
         startDate: string;
         endDate: string;
-        duration: number;
         milestones: string[];
         tasks: string[];
     }[];
@@ -209,9 +209,9 @@ export declare const TimelineSchema: z.ZodObject<{
     phases: {
         name: string;
         id: string;
+        duration: number;
         startDate: string;
         endDate: string;
-        duration: number;
         milestones: string[];
         tasks: string[];
     }[];

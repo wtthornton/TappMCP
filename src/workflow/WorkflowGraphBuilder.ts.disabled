@@ -420,8 +420,10 @@ export class WorkflowGraphBuilder {
   private buildEdge(source: string, target: string, type: WorkflowEdgeType, label: string, options: WorkflowVisualizationOptions): WorkflowEdge {
     return {
       id: `edge-${source}-${target}`,
-      source,
-      target,
+      sourceId: source,
+      targetId: target,
+      source: source,
+      target: target,
       type,
       label,
       weight: 1,

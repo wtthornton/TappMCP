@@ -7,12 +7,12 @@ import { WorkflowEvents } from './websocket/events/WorkflowEvents.js';
 import { PerformanceEvents } from './websocket/events/PerformanceEvents.js';
 import { MetricsBroadcaster } from './websocket/MetricsBroadcaster.js';
 import { OrchestrationEngine } from './core/orchestration-engine.js';
-import { NotificationService } from './notifications/NotificationService.js';
-import { WorkflowDataService } from './workflow/WorkflowDataService.js';
-import { WorkflowAPIServer } from './workflow/WorkflowAPIServer.js';
+// import { NotificationService } from './notifications/NotificationService.js';
+// import { WorkflowDataService } from './workflow/WorkflowDataService.js';
+// import { WorkflowAPIServer } from './workflow/WorkflowAPIServer.js';
 
 const PORT = process.env.HEALTH_PORT ?? 3001;
-const WS_PORT = process.env.WS_PORT ?? 3002;
+const WS_PORT = process.env.WS_PORT ?? 3003;
 const API_PORT = process.env.API_PORT ?? 3003;
 
 // Health check server for Docker health checks
@@ -69,9 +69,9 @@ let workflowEvents: WorkflowEvents | null = null;
 let performanceEvents: PerformanceEvents | null = null;
 let metricsBroadcaster: MetricsBroadcaster | null = null;
 let orchestrationEngine: OrchestrationEngine | null = null;
-let notificationService: NotificationService | null = null;
-let workflowDataService: WorkflowDataService | null = null;
-let workflowAPIServer: WorkflowAPIServer | null = null;
+// let notificationService: NotificationService | null = null;
+// let workflowDataService: WorkflowDataService | null = null;
+// let workflowAPIServer: WorkflowAPIServer | null = null;
 
 // Start health server only if not in test environment
 if (
@@ -102,17 +102,17 @@ if (
       orchestrationEngine.setMetricsBroadcaster(metricsBroadcaster);
 
       // Initialize notification service with WebSocket server
-      notificationService = new NotificationService(wsServer);
+      // notificationService = new NotificationService(wsServer);
 
       // Initialize workflow data service
-      workflowDataService = new WorkflowDataService();
-      await workflowDataService.initialize();
-
-      // Initialize workflow API server
-      if (workflowDataService) {
-        workflowAPIServer = new WorkflowAPIServer(workflowDataService);
-        await workflowAPIServer.start(Number(API_PORT));
-      }
+      // workflowDataService = new WorkflowDataService();
+      // workflowDataService.initialize().then(() => {
+      //   // Initialize workflow API server
+      //   if (workflowDataService) {
+      //     workflowAPIServer = new WorkflowAPIServer(workflowDataService);
+      //     workflowAPIServer.start(Number(API_PORT));
+      //   }
+      // });
 
       // Start metrics broadcasting
       if (metricsBroadcaster) {
@@ -189,4 +189,4 @@ process.on('SIGINT', () => {
   });
 });
 
-export { healthServer, wsServer, workflowEvents, performanceEvents, metricsBroadcaster, orchestrationEngine, notificationService, workflowDataService, workflowAPIServer };
+export { healthServer, wsServer, workflowEvents, performanceEvents, metricsBroadcaster, orchestrationEngine };

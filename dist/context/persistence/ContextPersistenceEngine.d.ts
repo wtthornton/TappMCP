@@ -27,31 +27,31 @@ export declare const ContextEntrySchema: z.ZodObject<{
     tags: z.ZodDefault<z.ZodArray<z.ZodString, "many">>;
     metadata: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodAny>>;
 }, "strip", z.ZodTypeAny, {
-    priority: "critical" | "low" | "medium" | "high";
+    timestamp: Date;
+    priority: "low" | "medium" | "high" | "critical";
+    tags: string[];
     version: number;
     content: string;
     id: string;
-    timestamp: Date;
     tokens: number;
-    tags: string[];
-    compressed: boolean;
     metadata: Record<string, any>;
+    compressed: boolean;
     toolName: string;
     sessionId: string;
-    contextType: "intermediate" | "metadata" | "input" | "output";
+    contextType: "intermediate" | "input" | "metadata" | "output";
 }, {
+    timestamp: Date;
     content: string;
     id: string;
-    timestamp: Date;
     toolName: string;
     sessionId: string;
-    contextType: "intermediate" | "metadata" | "input" | "output";
-    priority?: "critical" | "low" | "medium" | "high" | undefined;
+    contextType: "intermediate" | "input" | "metadata" | "output";
+    priority?: "low" | "medium" | "high" | "critical" | undefined;
+    tags?: string[] | undefined;
     version?: number | undefined;
     tokens?: number | undefined;
-    tags?: string[] | undefined;
-    compressed?: boolean | undefined;
     metadata?: Record<string, any> | undefined;
+    compressed?: boolean | undefined;
 }>;
 export type ContextEntry = z.infer<typeof ContextEntrySchema>;
 /**
@@ -100,27 +100,27 @@ export declare const SearchQuerySchema: z.ZodObject<{
     sortOrder: z.ZodDefault<z.ZodEnum<["asc", "desc"]>>;
 }, "strip", z.ZodTypeAny, {
     limit: number;
-    sortBy: "priority" | "timestamp" | "tokens" | "relevance";
+    sortBy: "timestamp" | "priority" | "tokens" | "relevance";
     sortOrder: "asc" | "desc";
-    priority?: "critical" | "low" | "medium" | "high" | undefined;
+    priority?: "low" | "medium" | "high" | "critical" | undefined;
     tags?: string[] | undefined;
     startDate?: Date | undefined;
     endDate?: Date | undefined;
     toolName?: string | undefined;
     sessionId?: string | undefined;
-    contextType?: "intermediate" | "metadata" | "input" | "output" | undefined;
+    contextType?: "intermediate" | "input" | "metadata" | "output" | undefined;
     textSearch?: string | undefined;
 }, {
-    priority?: "critical" | "low" | "medium" | "high" | undefined;
+    priority?: "low" | "medium" | "high" | "critical" | undefined;
     tags?: string[] | undefined;
+    limit?: number | undefined;
     startDate?: Date | undefined;
     endDate?: Date | undefined;
-    limit?: number | undefined;
     toolName?: string | undefined;
     sessionId?: string | undefined;
-    contextType?: "intermediate" | "metadata" | "input" | "output" | undefined;
+    contextType?: "intermediate" | "input" | "metadata" | "output" | undefined;
     textSearch?: string | undefined;
-    sortBy?: "priority" | "timestamp" | "tokens" | "relevance" | undefined;
+    sortBy?: "timestamp" | "priority" | "tokens" | "relevance" | undefined;
     sortOrder?: "asc" | "desc" | undefined;
 }>;
 export type SearchQuery = z.infer<typeof SearchQuerySchema>;

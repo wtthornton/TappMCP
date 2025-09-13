@@ -40,11 +40,11 @@ export declare const BudgetConfigSchema: z.ZodObject<{
         warning: z.ZodDefault<z.ZodNumber>;
         critical: z.ZodDefault<z.ZodNumber>;
     }, "strip", z.ZodTypeAny, {
-        warning: number;
         critical: number;
+        warning: number;
     }, {
-        warning?: number | undefined;
         critical?: number | undefined;
+        warning?: number | undefined;
     }>>;
 }, "strip", z.ZodTypeAny, {
     dailyBudget: number;
@@ -52,8 +52,8 @@ export declare const BudgetConfigSchema: z.ZodObject<{
     maxTokensPerRequest: number;
     reservePercentage: number;
     alertThresholds: {
-        warning: number;
         critical: number;
+        warning: number;
     };
 }, {
     dailyBudget?: number | undefined;
@@ -61,8 +61,8 @@ export declare const BudgetConfigSchema: z.ZodObject<{
     maxTokensPerRequest?: number | undefined;
     reservePercentage?: number | undefined;
     alertThresholds?: {
-        warning?: number | undefined;
         critical?: number | undefined;
+        warning?: number | undefined;
     } | undefined;
 }>;
 export type BudgetConfig = z.infer<typeof BudgetConfigSchema>;

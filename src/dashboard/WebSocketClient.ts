@@ -17,6 +17,16 @@ import {
   WEBSOCKET_EVENTS
 } from '../websocket/types.js';
 
+// WebSocket type declaration for browser compatibility
+declare global {
+  interface WebSocket {
+    send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void;
+    close(code?: number, reason?: string): void;
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject): void;
+    removeEventListener(type: string, listener: EventListenerOrEventListenerObject): void;
+  }
+}
+
 /**
  * WebSocket Client for dashboard real-time communication
  *
