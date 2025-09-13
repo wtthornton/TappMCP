@@ -122,6 +122,7 @@ export const WEBSOCKET_EVENTS = {
 
   // System events
   SYSTEM_STATUS: 'system:status',
+  SYSTEM_HEALTH: 'system_health',
   SYSTEM_MAINTENANCE: 'system:maintenance',
   SYSTEM_ERROR: 'system:error',
 

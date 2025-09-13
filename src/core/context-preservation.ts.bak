@@ -1,0 +1,660 @@
+#!/usr/bin/env node
+
+/**
+ * Enhanced Context Preservation System
+ *
+ * Provides cross-phase context continuity, accuracy measurement,
+ * validation, and history tracking for the TappMCP Smart Vibe system.
+ */
+
+import { EventEmitter } from 'events';
+import { LRUCache } from 'lru-cache';
+import { BusinessContext } from './business-context-broker.js';
+
+export interface ContextSnapshot {
+  id: string;
+  phase: string;
+  role: string;
+  timestamp: string;
+  context: BusinessContext;
+  accuracy: number;
+  validationStatus: 'valid' | 'invalid' | 'warning';
+  issues: ContextIssue[];
+  metadata: {
+    source: string;
+    version: number;
+    checksum: string;
+  };
+}
+
+export interface ContextIssue {
+  id: string;
+  type: 'missing-field' | 'invalid-value' | 'inconsistency' | 'outdated';
+  severity: 'critical' | 'high' | 'medium' | 'low';
+  field: string;
+  message: string;
+  suggestion?: string;
+  detectedAt: string;
+}
+
+export interface ContextValidation {
+  isValid: boolean;
+  accuracy: number;
+  issues: ContextIssue[];
+  warnings: string[];
+  recommendations: string[];
+}
+
+export interface ContextHistory {
+  snapshots: ContextSnapshot[];
+  transitions: ContextTransition[];
+  accuracyTrend: number[];
+  issueTrend: number[];
+}
+
+export interface ContextTransition {
+  fromPhase: string;
+  toPhase: string;
+  timestamp: string;
+  contextChanges: ContextChange[];
+  accuracyChange: number;
+  issuesResolved: number;
+  issuesIntroduced: number;
+}
+
+export interface ContextChange {
+  field: string;
+  oldValue: any;
+  newValue: any;
+  changeType: 'added' | 'modified' | 'removed';
+  reason?: string;
+}
+
+export interface ContextPreservationConfig {
+  maxHistorySize: number;
+  accuracyThreshold: number;
+  validationInterval: number;
+  enableChecksumValidation: boolean;
+  enableAccuracyTracking: boolean;
+  enableIssueTracking: boolean;
+}
+
+export class ContextPreservationSystem extends EventEmitter {
+  private contextHistory: LRUCache<string, ContextSnapshot>;
+  private contextTransitions: LRUCache<string, ContextTransition>;
+  private accuracyHistory: LRUCache<string, number>;
+  private issueHistory: LRUCache<string, ContextIssue[]>;
+  private config: ContextPreservationConfig;
+  private validationInterval: NodeJS.Timeout | null = null;
+  private isMonitoring = false;
+
+  constructor(config: Partial<ContextPreservationConfig> = {}) {
+    super();
+
+    this.config = {
+      maxHistorySize: 1000,
+      accuracyThreshold: 98,
+      validationInterval: 30000, // 30 seconds
+      enableChecksumValidation: true,
+      enableAccuracyTracking: true,
+      enableIssueTracking: true,
+      ...config,
+    };
+
+    // Initialize caches
+    this.contextHistory = new LRUCache<string, ContextSnapshot>({
+      max: this.config.maxHistorySize,
+      ttl: 24 * 60 * 60 * 1000, // 24 hours
+    });
+
+    this.contextTransitions = new LRUCache<string, ContextTransition>({
+      max: 500,
+      ttl: 24 * 60 * 60 * 1000, // 24 hours
+    });
+
+    this.accuracyHistory = new LRUCache<string, number>({
+      max: 1000,
+      ttl: 24 * 60 * 60 * 1000, // 24 hours
+    });
+
+    this.issueHistory = new LRUCache<string, ContextIssue[]>({
+      max: 1000,
+      ttl: 24 * 60 * 60 * 1000, // 24 hours
+    });
+  }
+
+  /**
+   * Capture context snapshot for a phase
+   */
+  captureContextSnapshot(
+    phase: string,
+    role: string,
+    context: BusinessContext,
+    source: string = 'orchestration'
+  ): ContextSnapshot {
+    const timestamp = new Date().toISOString();
+    const snapshotId = `snapshot-${phase}-${Date.now()}`;
+
+    // Validate context
+    const validation = this.validateContext(context);
+
+    // Calculate accuracy
+    const accuracy = this.calculateContextAccuracy(context, validation);
+
+    // Generate checksum
+    const checksum = this.generateContextChecksum(context);
+
+    const snapshot: ContextSnapshot = {
+      id: snapshotId,
+      phase,
+      role,
+      timestamp,
+      context: { ...context },
+      accuracy,
+      validationStatus: validation.isValid ? 'valid' : 'invalid',
+      issues: validation.issues,
+      metadata: {
+        source,
+        version: 1,
+        checksum,
+      },
+    };
+
+    // Store snapshot
+    this.contextHistory.set(snapshotId, snapshot);
+
+    // Track accuracy
+    if (this.config.enableAccuracyTracking) {
+      this.accuracyHistory.set(timestamp, accuracy);
+    }
+
+    // Track issues
+    if (this.config.enableIssueTracking) {
+      this.issueHistory.set(timestamp, validation.issues);
+    }
+
+    // Emit events
+    this.emit('context-snapshot-captured', snapshot);
+
+    if (accuracy < this.config.accuracyThreshold) {
+      this.emit('context-accuracy-warning', { snapshot, accuracy, threshold: this.config.accuracyThreshold });
+    }
+
+    if (!validation.isValid) {
+      this.emit('context-validation-failed', { snapshot, validation });
+    }
+
+    return snapshot;
+  }
+
+  /**
+   * Validate context for completeness and consistency
+   */
+  validateContext(context: BusinessContext): ContextValidation {
+    const issues: ContextIssue[] = [];
+    const warnings: string[] = [];
+    const recommendations: string[] = [];
+
+    // Required field validation
+    if (!context.projectId) {
+      issues.push({
+        id: `missing-project-id-${Date.now()}`,
+        type: 'missing-field',
+        severity: 'critical',
+        field: 'projectId',
+        message: 'Project ID is required',
+        suggestion: 'Provide a unique project identifier',
+        detectedAt: new Date().toISOString(),
+      });
+    }
+
+    if (!context.businessGoals || context.businessGoals.length === 0) {
+      issues.push({
+        id: `missing-business-goals-${Date.now()}`,
+        type: 'missing-field',
+        severity: 'high',
+        field: 'businessGoals',
+        message: 'Business goals are required',
+        suggestion: 'Define clear business objectives',
+        detectedAt: new Date().toISOString(),
+      });
+    }
+
+    if (!context.requirements || context.requirements.length === 0) {
+      issues.push({
+        id: `missing-requirements-${Date.now()}`,
+        type: 'missing-field',
+        severity: 'high',
+        field: 'requirements',
+        message: 'Requirements are required',
+        suggestion: 'Define project requirements',
+        detectedAt: new Date().toISOString(),
+      });
+    }
+
+    // Value validation
+    if (context.projectId && context.projectId.length < 3) {
+      issues.push({
+        id: `invalid-project-id-${Date.now()}`,
+        type: 'invalid-value',
+        severity: 'medium',
+        field: 'projectId',
+        message: 'Project ID is too short',
+        suggestion: 'Use a project ID with at least 3 characters',
+        detectedAt: new Date().toISOString(),
+      });
+    }
+
+    // Consistency validation
+    if (context.businessGoals && context.requirements) {
+      const goalKeywords = context.businessGoals.join(' ').toLowerCase();
+      const requirementKeywords = context.requirements.join(' ').toLowerCase();
+
+      if (goalKeywords.length > 0 && requirementKeywords.length > 0) {
+        const commonKeywords = this.findCommonKeywords(goalKeywords, requirementKeywords);
+        if (commonKeywords.length === 0) {
+          warnings.push('Business goals and requirements appear unrelated');
+          recommendations.push('Ensure business goals align with requirements');
+        }
+      }
+    }
+
+    // Timestamp validation
+    if (context.timestamp) {
+      const contextTime = new Date(context.timestamp);
+      const now = new Date();
+      const timeDiff = now.getTime() - contextTime.getTime();
+
+      if (timeDiff > 24 * 60 * 60 * 1000) { // 24 hours
+        issues.push({
+          id: `outdated-context-${Date.now()}`,
+          type: 'outdated',
+          severity: 'medium',
+          field: 'timestamp',
+          message: 'Context appears to be outdated',
+          suggestion: 'Refresh context with current information',
+          detectedAt: new Date().toISOString(),
+        });
+      }
+    }
+
+    // Calculate accuracy
+    const accuracy = this.calculateValidationAccuracy(issues, warnings);
+
+    return {
+      isValid: issues.filter(i => i.severity === 'critical' || i.severity === 'high').length === 0,
+      accuracy,
+      issues,
+      warnings,
+      recommendations,
+    };
+  }
+
+  /**
+   * Calculate context accuracy based on validation results
+   */
+  private calculateContextAccuracy(context: BusinessContext, validation: ContextValidation): number {
+    let accuracy = 100;
+
+    // Deduct points for issues
+    validation.issues.forEach(issue => {
+      switch (issue.severity) {
+        case 'critical':
+          accuracy -= 20;
+          break;
+        case 'high':
+          accuracy -= 10;
+          break;
+        case 'medium':
+          accuracy -= 5;
+          break;
+        case 'low':
+          accuracy -= 2;
+          break;
+      }
+    });
+
+    // Deduct points for warnings
+    accuracy -= validation.warnings.length * 1;
+
+    // Bonus for completeness
+    if (context.projectId && context.businessGoals && context.requirements) {
+      accuracy += 5;
+    }
+
+    if (context.stakeholders && context.stakeholders.length > 0) {
+      accuracy += 3;
+    }
+
+    if (context.constraints && Object.keys(context.constraints).length > 0) {
+      accuracy += 2;
+    }
+
+    return Math.max(0, Math.min(100, accuracy));
+  }
+
+  /**
+   * Calculate validation accuracy
+   */
+  private calculateValidationAccuracy(issues: ContextIssue[], warnings: string[]): number {
+    let accuracy = 100;
+
+    issues.forEach(issue => {
+      switch (issue.severity) {
+        case 'critical':
+          accuracy -= 25;
+          break;
+        case 'high':
+          accuracy -= 15;
+          break;
+        case 'medium':
+          accuracy -= 8;
+          break;
+        case 'low':
+          accuracy -= 3;
+          break;
+      }
+    });
+
+    accuracy -= warnings.length * 2;
+
+    return Math.max(0, Math.min(100, accuracy));
+  }
+
+  /**
+   * Generate context checksum for integrity validation
+   */
+  private generateContextChecksum(context: BusinessContext): string {
+    const contextString = JSON.stringify({
+      projectId: context.projectId,
+      businessGoals: context.businessGoals,
+      requirements: context.requirements,
+      stakeholders: context.stakeholders,
+      constraints: context.constraints,
+      success: context.success,
+      timestamp: context.timestamp,
+      version: context.version,
+    });
+
+    // Simple hash function (in production, use crypto.createHash)
+    let hash = 0;
+    for (let i = 0; i < contextString.length; i++) {
+      const char = contextString.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+
+    return Math.abs(hash).toString(36);
+  }
+
+  /**
+   * Find common keywords between two strings
+   */
+  private findCommonKeywords(str1: string, str2: string): string[] {
+    const words1 = str1.split(/\s+/).filter(w => w.length > 3);
+    const words2 = str2.split(/\s+/).filter(w => w.length > 3);
+
+    return words1.filter(word => words2.includes(word));
+  }
+
+  /**
+   * Track context transition between phases
+   */
+  trackContextTransition(
+    fromPhase: string,
+    toPhase: string,
+    oldContext: BusinessContext,
+    newContext: BusinessContext
+  ): ContextTransition {
+    const timestamp = new Date().toISOString();
+    const transitionId = `transition-${fromPhase}-${toPhase}-${Date.now()}`;
+
+    // Calculate context changes
+    const changes = this.calculateContextChanges(oldContext, newContext);
+
+    // Calculate accuracy change
+    const oldValidation = this.validateContext(oldContext);
+    const newValidation = this.validateContext(newContext);
+    const accuracyChange = newValidation.accuracy - oldValidation.accuracy;
+
+    // Count issues
+    const issuesResolved = oldValidation.issues.length - newValidation.issues.length;
+    const issuesIntroduced = newValidation.issues.length - oldValidation.issues.length;
+
+    const transition: ContextTransition = {
+      fromPhase,
+      toPhase,
+      timestamp,
+      contextChanges: changes,
+      accuracyChange,
+      issuesResolved,
+      issuesIntroduced,
+    };
+
+    // Store transition
+    this.contextTransitions.set(transitionId, transition);
+
+    // Emit events
+    this.emit('context-transition', transition);
+
+    if (accuracyChange < -10) {
+      this.emit('context-accuracy-degradation', { transition, accuracyChange });
+    }
+
+    if (issuesIntroduced > 0) {
+      this.emit('context-issues-introduced', { transition, issuesIntroduced });
+    }
+
+    return transition;
+  }
+
+  /**
+   * Calculate changes between two contexts
+   */
+  private calculateContextChanges(oldContext: BusinessContext, newContext: BusinessContext): ContextChange[] {
+    const changes: ContextChange[] = [];
+
+    // Compare each field
+    const fields: (keyof BusinessContext)[] = [
+      'projectId', 'businessGoals', 'requirements', 'stakeholders',
+      'constraints', 'success', 'timestamp', 'version'
+    ];
+
+    fields.forEach(field => {
+      const oldValue = oldContext[field];
+      const newValue = newContext[field];
+
+      if (JSON.stringify(oldValue) !== JSON.stringify(newValue)) {
+        if (oldValue === undefined || oldValue === null) {
+          changes.push({
+            field,
+            oldValue,
+            newValue,
+            changeType: 'added',
+            reason: 'Field added to context',
+          });
+        } else if (newValue === undefined || newValue === null) {
+          changes.push({
+            field,
+            oldValue,
+            newValue,
+            changeType: 'removed',
+            reason: 'Field removed from context',
+          });
+        } else {
+          changes.push({
+            field,
+            oldValue,
+            newValue,
+            changeType: 'modified',
+            reason: 'Field value updated',
+          });
+        }
+      }
+    });
+
+    return changes;
+  }
+
+  /**
+   * Get context history for analysis
+   */
+  getContextHistory(limit: number = 100): ContextSnapshot[] {
+    return Array.from(this.contextHistory.values())
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .slice(0, limit);
+  }
+
+  /**
+   * Get context transitions
+   */
+  getContextTransitions(limit: number = 100): ContextTransition[] {
+    return Array.from(this.contextTransitions.values())
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .slice(0, limit);
+  }
+
+  /**
+   * Get accuracy trend
+   */
+  getAccuracyTrend(limit: number = 100): number[] {
+    return Array.from(this.accuracyHistory.values())
+      .sort((a, b) => a - b)
+      .slice(-limit);
+  }
+
+  /**
+   * Get issue trend
+   */
+  getIssueTrend(limit: number = 100): number[] {
+    return Array.from(this.issueHistory.values())
+      .map(issues => issues.length)
+      .sort((a, b) => a - b)
+      .slice(-limit);
+  }
+
+  /**
+   * Get comprehensive context history analysis
+   */
+  getContextHistoryAnalysis(): {
+    totalSnapshots: number;
+    averageAccuracy: number;
+    accuracyTrend: 'improving' | 'stable' | 'degrading';
+    totalIssues: number;
+    issueTrend: 'improving' | 'stable' | 'degrading';
+    recentTransitions: ContextTransition[];
+    criticalIssues: ContextIssue[];
+  } {
+    const snapshots = this.getContextHistory();
+    const transitions = this.getContextTransitions(10);
+    const accuracyTrend = this.getAccuracyTrend();
+    const issueTrend = this.getIssueTrend();
+
+    const totalSnapshots = snapshots.length;
+    const averageAccuracy = snapshots.length > 0
+      ? snapshots.reduce((sum, s) => sum + s.accuracy, 0) / snapshots.length
+      : 0;
+
+    const totalIssues = snapshots.reduce((sum, s) => sum + s.issues.length, 0);
+
+    // Calculate trends
+    const accuracyTrendDirection = this.calculateTrend(accuracyTrend);
+    const issueTrendDirection = this.calculateTrend(issueTrend.map(count => -count)); // Invert for issue count
+
+    // Get critical issues
+    const criticalIssues = snapshots
+      .flatMap(s => s.issues)
+      .filter(issue => issue.severity === 'critical')
+      .slice(0, 10);
+
+    return {
+      totalSnapshots,
+      averageAccuracy,
+      accuracyTrend: accuracyTrendDirection,
+      totalIssues,
+      issueTrend: issueTrendDirection,
+      recentTransitions: transitions,
+      criticalIssues,
+    };
+  }
+
+  /**
+   * Calculate trend direction
+   */
+  private calculateTrend(values: number[]): 'improving' | 'stable' | 'degrading' {
+    if (values.length < 2) return 'stable';
+
+    const firstHalf = values.slice(0, Math.floor(values.length / 2));
+    const secondHalf = values.slice(Math.floor(values.length / 2));
+
+    const firstAvg = firstHalf.reduce((sum, val) => sum + val, 0) / firstHalf.length;
+    const secondAvg = secondHalf.reduce((sum, val) => sum + val, 0) / secondHalf.length;
+
+    const diff = secondAvg - firstAvg;
+
+    if (diff > 5) return 'improving';
+    if (diff < -5) return 'degrading';
+    return 'stable';
+  }
+
+  /**
+   * Start context monitoring
+   */
+  startContextMonitoring(): void {
+    if (this.isMonitoring) return;
+
+    this.isMonitoring = true;
+    this.validationInterval = setInterval(() => {
+      this.performContextValidation();
+    }, this.config.validationInterval);
+
+    this.emit('context-monitoring-started');
+  }
+
+  /**
+   * Stop context monitoring
+   */
+  stopContextMonitoring(): void {
+    if (!this.isMonitoring) return;
+
+    this.isMonitoring = false;
+    if (this.validationInterval) {
+      clearInterval(this.validationInterval);
+      this.validationInterval = null;
+    }
+
+    this.emit('context-monitoring-stopped');
+  }
+
+  /**
+   * Perform periodic context validation
+   */
+  private performContextValidation(): void {
+    const snapshots = this.getContextHistory(10);
+    const recentSnapshot = snapshots[0];
+
+    if (recentSnapshot) {
+      const validation = this.validateContext(recentSnapshot.context);
+
+      if (validation.accuracy < this.config.accuracyThreshold) {
+        this.emit('context-validation-warning', {
+          snapshot: recentSnapshot,
+          validation,
+          threshold: this.config.accuracyThreshold,
+        });
+      }
+    }
+  }
+
+  /**
+   * Clean up resources
+   */
+  destroy(): void {
+    this.stopContextMonitoring();
+    this.contextHistory.clear();
+    this.contextTransitions.clear();
+    this.accuracyHistory.clear();
+    this.issueHistory.clear();
+    this.removeAllListeners();
+  }
+}

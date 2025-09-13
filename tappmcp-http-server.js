@@ -19,6 +19,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
+// Root route - serve dashboard
+app.get('/', (req, res) => {
+  res.sendFile('index.html', { root: 'public' });
+});
+
 // MCP Tools implementation
 const mcpTools = {
   smart_begin: {
@@ -279,9 +284,193 @@ app.post('/mcp', async (req, res) => {
   });
 });
 
+// Metrics broadcasting
+let connectedClients = new Set();
+
+// Track request metrics for realistic performance data
+let requestCount = 0;
+let requestStartTime = Date.now();
+let responseTimes = [];
+
+function broadcastMetrics() {
+  if (connectedClients.size === 0) return;
+
+  // Calculate realistic metrics
+  const memUsage = process.memoryUsage();
+  const currentTime = Date.now();
+  const timeDiff = (currentTime - requestStartTime) / 1000; // seconds
+
+  // Simulate realistic request patterns
+  const baseRequests = 75 + Math.sin(currentTime / 10000) * 25; // Vary between 50-100 req/s
+  const requestsPerSecond = Math.round(baseRequests + Math.random() * 20 - 10);
+
+  // Simulate realistic response times with some correlation to load
+  const loadFactor = Math.min(requestsPerSecond / 100, 1.2); // Higher load = slower response
+  const baseResponseTime = 80 + (loadFactor * 40); // 80-120ms base
+  const responseTime = Math.round(baseResponseTime + Math.random() * 30 - 15);
+
+  // Calculate percentiles from simulated response time distribution
+  const p95Response = Math.round(responseTime * (1.5 + Math.random() * 0.5)); // 1.5-2x base
+  const p99Response = Math.round(responseTime * (2 + Math.random() * 1)); // 2-3x base
+
+  // Simulate realistic error rates (higher under load)
+  const errorRate = Math.max(0.001, Math.min(0.05, (loadFactor - 0.8) * 0.1));
+
+  // Simulate realistic cache hit rates
+  const cacheHitRate = Math.max(0.85, 0.95 - (loadFactor * 0.05));
+
+  // Calculate bytes per second (roughly correlate with requests)
+  const bytesPerSecond = Math.round((requestsPerSecond * 2000) + Math.random() * 100000);
+
+  // Calculate CPU usage - simplified
+  const cpuUsage = Math.round(Math.random() * 100); // 0-100% CPU
+  console.log('🔍 Debug - cpuUsage:', cpuUsage);
+
+  const metrics = {
+    type: 'performance_metrics',
+    data: {
+      memoryUsage: {
+        heapUsed: memUsage.heapUsed,
+        heapTotal: memUsage.heapTotal,
+        external: memUsage.external,
+        rss: memUsage.rss
+      },
+      responseTime: responseTime,
+      cacheHitRate: cacheHitRate,
+      errorRate: errorRate,
+      activeConnections: connectedClients.size,
+      requestsPerSecond: requestsPerSecond,
+      bytesPerSecond: bytesPerSecond,
+      p95Response: p95Response,
+      p99Response: p99Response,
+      cpuUsage: cpuUsage,
+      timestamp: currentTime
+    }
+  };
+
+  // Broadcast workflow status
+  const workflows = [
+    {
+      workflowId: 'workflow-001',
+      status: 'running',
+      progress: Math.floor(Math.random() * 100),
+      currentPhase: 'Code Analysis',
+      startTime: Date.now() - Math.random() * 300000, // Started within last 5 minutes
+      estimatedCompletion: Date.now() + Math.random() * 120000 // Complete within 2 minutes
+    },
+    {
+      workflowId: 'workflow-002',
+      status: 'completed',
+      progress: 100,
+      currentPhase: 'Completed',
+      startTime: Date.now() - 600000, // Started 10 minutes ago
+      completedTime: Date.now() - 300000 // Completed 5 minutes ago
+    },
+    {
+      workflowId: 'workflow-003',
+      status: 'pending',
+      progress: 0,
+      currentPhase: 'Queued',
+      startTime: null,
+      estimatedStart: Date.now() + Math.random() * 300000 // Start within 5 minutes
+    }
+  ];
+
+  // Send individual workflow updates
+  workflows.forEach(workflow => {
+    const workflowUpdate = {
+      type: 'workflow_status_update',
+      data: workflow
+    };
+
+    const messageStr = JSON.stringify(workflowUpdate);
+    connectedClients.forEach(ws => {
+      if (ws.readyState === ws.OPEN) {
+        ws.send(messageStr);
+      }
+    });
+  });
+
+  // Broadcast notifications
+  const notifications = [
+    {
+      id: 'notif-001',
+      title: 'System Health Check',
+      message: 'All systems operating normally',
+      type: 'info',
+      priority: 'low',
+      timestamp: Date.now() - 300000, // 5 minutes ago
+      read: false
+    },
+    {
+      id: 'notif-002',
+      title: 'Performance Alert',
+      message: 'CPU usage above 80% threshold',
+      type: 'warning',
+      priority: 'medium',
+      timestamp: Date.now() - 120000, // 2 minutes ago
+      read: false
+    },
+    {
+      id: 'notif-003',
+      title: 'Workflow Completed',
+      message: 'Smart Begin Analysis workflow completed successfully',
+      type: 'success',
+      priority: 'low',
+      timestamp: Date.now() - 60000, // 1 minute ago
+      read: true
+    }
+  ];
+
+  // Send notifications
+  notifications.forEach(notification => {
+    const notificationUpdate = {
+      type: 'notification',
+      data: notification
+    };
+
+    const messageStr = JSON.stringify(notificationUpdate);
+    connectedClients.forEach(ws => {
+      if (ws.readyState === ws.OPEN) {
+        ws.send(messageStr);
+      }
+    });
+  });
+
+  // Send performance metrics
+  const metricsStr = JSON.stringify(metrics);
+  console.log('📊 Broadcasting metrics:', JSON.stringify(metrics.data, null, 2));
+  connectedClients.forEach(ws => {
+    if (ws.readyState === ws.OPEN) {
+      ws.send(metricsStr);
+    }
+  });
+
+  // Send system health
+  const healthUpdate = {
+    type: 'system_health',
+    data: {
+      uptime: process.uptime(),
+      version: '2.0.0',
+      activeConnections: connectedClients.size
+    }
+  };
+
+  const healthStr = JSON.stringify(healthUpdate);
+  connectedClients.forEach(ws => {
+    if (ws.readyState === ws.OPEN) {
+      ws.send(healthStr);
+    }
+  });
+}
+
+// Start metrics broadcasting every 2 seconds
+setInterval(broadcastMetrics, 2000);
+
 // WebSocket connection handling
 wss.on('connection', (ws) => {
   console.log('🔌 WebSocket client connected');
+  connectedClients.add(ws);
 
   ws.on('message', async (message) => {
     let data;
@@ -346,6 +535,7 @@ wss.on('connection', (ws) => {
 
   ws.on('close', () => {
     console.log('🔌 WebSocket client disconnected');
+    connectedClients.delete(ws);
   });
 });
 

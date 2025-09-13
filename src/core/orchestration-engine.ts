@@ -16,6 +16,13 @@ import { Context7Broker } from '../brokers/context7-broker.js';
 import { LRUCache } from 'lru-cache';
 // Role orchestration removed - implementing real role-specific behavior
 import { handleError, getErrorMessage } from '../utils/errors.js';
+// Real project analysis integration
+import { ProjectScanner, type ProjectAnalysis } from './project-scanner.js';
+import { SecurityScanner, type SecurityScanResult } from './security-scanner.js';
+import { StaticAnalyzer, type StaticAnalysisResult } from './static-analyzer.js';
+import { QualityMonitor, type QualityMetrics, type QualityAlert } from './quality-monitor.js';
+import { ContextPreservationSystem, type ContextSnapshot, type ContextTransition } from './context-preservation.js';
+import { Context7PerformanceOptimizer, type PerformanceMetrics, type PerformanceAlert as Context7PerformanceAlert } from './context7-performance-optimizer.js';
 import { dynamicImportManager } from './dynamic-imports.js';
 import { globalPerformanceMonitor } from '../monitoring/performance-monitor.js';
 import { MetricsBroadcaster } from '../websocket/MetricsBroadcaster.js';
@@ -847,6 +854,14 @@ export class OrchestrationEngine {
   /** Context7 broker for accessing external intelligence and documentation */
   private context7Broker: Context7Broker;
 
+  /** Project analysis tools for real analysis integration */
+  private projectScanner: ProjectScanner;
+  private securityScanner: SecurityScanner;
+  private staticAnalyzer: StaticAnalyzer;
+  private qualityMonitor: QualityMonitor;
+  private contextPreservation: ContextPreservationSystem;
+  private context7Optimizer: Context7PerformanceOptimizer;
+
   /** Map of currently active workflows by workflow ID */
   private activeWorkflows: Map<string, Workflow> = new Map();
 
@@ -948,6 +963,14 @@ export class OrchestrationEngine {
   constructor() {
     this.contextBroker = new BusinessContextBroker();
     this.context7Broker = new Context7Broker();
+
+    // Initialize project analysis tools
+    this.projectScanner = new ProjectScanner();
+    this.securityScanner = new SecurityScanner();
+    this.staticAnalyzer = new StaticAnalyzer();
+    this.qualityMonitor = new QualityMonitor();
+    this.contextPreservation = new ContextPreservationSystem();
+    this.context7Optimizer = new Context7PerformanceOptimizer(this.context7Broker);
 
     // Initialize workflow-specific caches
     this.workflowCache = new LRUCache<string, { data: any; timestamp: number; expiry: number }>({
@@ -1353,6 +1376,7 @@ export class OrchestrationEngine {
           startTime: Date.now(),
           metadata: { executionTime, businessValue: result.businessValue }
         });
+        this.metricsBroadcaster.broadcastWorkflowEvent(
           workflowId,
           result.success,
           result.success ? 'Workflow completed successfully' : 'Workflow execution failed',
@@ -1387,6 +1411,7 @@ export class OrchestrationEngine {
           startTime: Date.now(),
           metadata: { executionTime, businessValue: result.businessValue }
         });
+        this.metricsBroadcaster.broadcastWorkflowEvent(
           workflowId,
           false,
           `Workflow execution failed: ${mcpError.message}`,
@@ -1675,8 +1700,17 @@ export class OrchestrationEngine {
       phase.status = 'running';
       phase.startTime = new Date().toISOString();
 
+      // Capture context snapshot for this phase (temporarily disabled)
+      // const contextSnapshot = this.captureContextSnapshot(phase.name, role, context);
+
       // Real Context7 integration instead of mock execution
       const context7Insights = await this.gatherContext7Insights(phase, role, context);
+
+      // Perform real project analysis (temporarily disabled)
+      // const analysisResults = await this.performComprehensiveAnalysis(context);
+
+      // Generate AI assistant guidance based on role, context, and analysis (temporarily disabled)
+      // const aiGuidance = this.generateAIAssistantGuidance(role, context, analysisResults);
 
       // Generate deliverables based on phase type and Context7 insights
       const deliverables = this.generatePhaseDeliverables(phase.name, context7Insights);
@@ -1699,6 +1733,9 @@ export class OrchestrationEngine {
         qualityMetrics,
         duration,
         context7Insights, // Include Context7 insights in result
+        // analysisResults, // Include real analysis results (temporarily disabled)
+        // aiGuidance, // Include AI assistant guidance (temporarily disabled)
+        // contextSnapshot, // Include context preservation snapshot (temporarily disabled)
       };
     } catch (error) {
       const duration = Date.now() - startTime;
@@ -1756,7 +1793,7 @@ export class OrchestrationEngine {
       // Determine topics based on phase and role (with topic caching)
       const topics = await this.getContext7TopicsCached(phase, role, context);
 
-      // Gather different types of Context7 insights with individual error handling
+      // Gather different types of Context7 insights (simplified for deployment)
       const [documentation, codeExamples, bestPractices, troubleshooting] =
         await Promise.allSettled([
           this.gatherDocumentationCached(topics, 'documentation'),
@@ -3283,6 +3320,261 @@ ${
   }
 
   /**
+   * Start real-time quality monitoring
+   */
+  startQualityMonitoring(intervalMs: number = 60000): void {
+    this.qualityMonitor.startMonitoring(intervalMs);
+
+    // Set up event listeners for quality alerts
+    this.qualityMonitor.on('quality-alert', (alert: QualityAlert) => {
+      console.warn(`Quality Alert: ${alert.title} - ${alert.description}`);
+      // Emit to external systems if needed
+      this.emit('quality-alert', alert);
+    });
+
+    this.qualityMonitor.on('quality-assessment-completed', (data) => {
+      console.log(`Quality assessment completed: Overall score ${data.metrics.overallScore}`);
+      // Emit to external systems if needed
+      this.emit('quality-assessment-completed', data);
+    });
+  }
+
+  /**
+   * Stop real-time quality monitoring
+   */
+  stopQualityMonitoring(): void {
+    this.qualityMonitor.stopMonitoring();
+  }
+
+  /**
+   * Get current quality metrics
+   */
+  getQualityMetrics(): QualityMetrics | null {
+    return this.qualityMonitor.getCurrentMetrics();
+  }
+
+  /**
+   * Get quality trend history
+   */
+  getQualityTrendHistory(limit: number = 100): any[] {
+    return this.qualityMonitor.getTrendHistory(limit);
+  }
+
+  /**
+   * Get active quality alerts
+   */
+  getActiveQualityAlerts(): QualityAlert[] {
+    return this.qualityMonitor.getActiveAlerts();
+  }
+
+  /**
+   * Get quality dashboard data
+   */
+  getQualityDashboardData(): any {
+    return this.qualityMonitor.getDashboardData();
+  }
+
+  /**
+   * Acknowledge quality alert
+   */
+  acknowledgeQualityAlert(alertId: string): boolean {
+    return this.qualityMonitor.acknowledgeAlert(alertId);
+  }
+
+  /**
+   * Resolve quality alert
+   */
+  resolveQualityAlert(alertId: string): boolean {
+    return this.qualityMonitor.resolveAlert(alertId);
+  }
+
+  /**
+   * Start context preservation monitoring
+   */
+  startContextPreservationMonitoring(): void {
+    this.contextPreservation.startContextMonitoring();
+
+    // Set up event listeners
+    this.contextPreservation.on('context-accuracy-warning', (data) => {
+      console.warn(`Context accuracy warning: ${data.accuracy}% (threshold: ${data.threshold}%)`);
+      this.emit('context-accuracy-warning', data);
+    });
+
+    this.contextPreservation.on('context-validation-failed', (data) => {
+      console.error('Context validation failed:', data.validation.issues);
+      this.emit('context-validation-failed', data);
+    });
+
+    this.contextPreservation.on('context-accuracy-degradation', (data) => {
+      console.warn(`Context accuracy degraded by ${data.accuracyChange}%`);
+      this.emit('context-accuracy-degradation', data);
+    });
+  }
+
+  /**
+   * Stop context preservation monitoring
+   */
+  stopContextPreservationMonitoring(): void {
+    this.contextPreservation.stopContextMonitoring();
+  }
+
+  /**
+   * Capture context snapshot for a phase
+   */
+  captureContextSnapshot(phase: string, role: string, context: BusinessContext): ContextSnapshot {
+    return this.contextPreservation.captureContextSnapshot(phase, role, context, 'orchestration');
+  }
+
+  /**
+   * Track context transition between phases
+   */
+  trackContextTransition(
+    fromPhase: string,
+    toPhase: string,
+    oldContext: BusinessContext,
+    newContext: BusinessContext
+  ): ContextTransition {
+    return this.contextPreservation.trackContextTransition(fromPhase, toPhase, oldContext, newContext);
+  }
+
+  /**
+   * Get context history analysis
+   */
+  getContextHistoryAnalysis(): any {
+    return this.contextPreservation.getContextHistoryAnalysis();
+  }
+
+  /**
+   * Get context preservation dashboard data
+   */
+  getContextPreservationDashboard(): {
+    history: ContextSnapshot[];
+    transitions: ContextTransition[];
+    analysis: any;
+  } {
+    return {
+      history: this.contextPreservation.getContextHistory(),
+      transitions: this.contextPreservation.getContextTransitions(),
+      analysis: this.contextPreservation.getContextHistoryAnalysis(),
+    };
+  }
+
+  /**
+   * Get Context7 performance metrics
+   */
+  getContext7PerformanceMetrics(): PerformanceMetrics {
+    return this.context7Optimizer.getPerformanceMetrics();
+  }
+
+  /**
+   * Get Context7 cache statistics
+   */
+  getContext7CacheStats(): any {
+    return this.context7Optimizer.getCacheStats();
+  }
+
+  /**
+   * Get Context7 performance alerts
+   */
+  getContext7PerformanceAlerts(): PerformanceAlert[] {
+    return this.context7Optimizer.getActiveAlerts();
+  }
+
+  /**
+   * Get Context7 optimization recommendations
+   */
+  getContext7OptimizationRecommendations(): string[] {
+    return this.context7Optimizer.getOptimizationRecommendations();
+  }
+
+  /**
+   * Clear Context7 cache
+   */
+  clearContext7Cache(): void {
+    this.context7Optimizer.clearCache();
+  }
+
+  /**
+   * Optimized documentation gathering
+   */
+  private async gatherDocumentationOptimized(topics: string[]): Promise<any[]> {
+    const results: any[] = [];
+
+    for (const topic of topics) {
+      try {
+        const docs = await this.context7Optimizer.getDocumentation(topic, 'medium');
+        if (docs && docs.length > 0) {
+          results.push(...docs);
+        }
+      } catch (error) {
+        console.warn(`Failed to get optimized documentation for ${topic}:`, error);
+      }
+    }
+
+    return results;
+  }
+
+  /**
+   * Optimized code examples gathering
+   */
+  private async gatherCodeExamplesOptimized(topics: string[], role: string): Promise<any[]> {
+    const results: any[] = [];
+
+    for (const topic of topics) {
+      try {
+        const examples = await this.context7Optimizer.getCodeExamples(topic, role, 'medium');
+        if (examples && examples.length > 0) {
+          results.push(...examples);
+        }
+      } catch (error) {
+        console.warn(`Failed to get optimized code examples for ${topic}:`, error);
+      }
+    }
+
+    return results;
+  }
+
+  /**
+   * Optimized best practices gathering
+   */
+  private async gatherBestPracticesOptimized(topics: string[], role: string): Promise<any[]> {
+    const results: any[] = [];
+
+    for (const topic of topics) {
+      try {
+        const practices = await this.context7Optimizer.getBestPractices(topic, role, 'medium');
+        if (practices && practices.length > 0) {
+          results.push(...practices);
+        }
+      } catch (error) {
+        console.warn(`Failed to get optimized best practices for ${topic}:`, error);
+      }
+    }
+
+    return results;
+  }
+
+  /**
+   * Optimized troubleshooting gathering
+   */
+  private async gatherTroubleshootingOptimized(topics: string[], role: string): Promise<any[]> {
+    const results: any[] = [];
+
+    for (const topic of topics) {
+      try {
+        const troubleshooting = await this.context7Optimizer.getTroubleshooting(topic, role, 'medium');
+        if (troubleshooting && troubleshooting.length > 0) {
+          results.push(...troubleshooting);
+        }
+      } catch (error) {
+        console.warn(`Failed to get optimized troubleshooting for ${topic}:`, error);
+      }
+    }
+
+    return results;
+  }
+
+  /**
    * Calculate complexity score for project
    */
   private calculateProjectComplexityScore(context: BusinessContext): number {
@@ -3545,55 +3837,538 @@ ${
   }
 
   /**
-   * Analyze project structure
+   * Analyze project structure using real project scanning
    */
   private async analyzeProjectStructure(context: BusinessContext): Promise<ProjectStructure> {
-    // This would integrate with actual project scanning tools
-    // For now, return a structured analysis based on context
-    const requirements = context.requirements || [];
-    const allText = requirements.join(' ').toLowerCase();
+    try {
+      // Use real project scanner for actual analysis
+      const projectAnalysis: ProjectAnalysis = await this.projectScanner.scanProject(process.cwd());
 
-    return {
-      projectType: this.analyzeProjectType(context),
-      framework: this.detectFramework(allText),
-      architecture: this.detectArchitecture(allText),
-      fileStructure: this.inferFileStructure(allText),
-      complexity: this.calculateProjectComplexity(context),
-      technologies: this.detectTechnologies(allText),
-    };
+      return {
+        projectType: this.analyzeProjectType(context),
+        framework: this.detectFrameworkFromAnalysis(projectAnalysis),
+        architecture: this.detectArchitectureFromAnalysis(projectAnalysis),
+        fileStructure: this.inferFileStructureFromAnalysis(projectAnalysis),
+        complexity: this.calculateProjectComplexityFromAnalysis(projectAnalysis),
+        technologies: projectAnalysis.detectedTechStack,
+        qualityIssues: projectAnalysis.qualityIssues,
+        improvementOpportunities: projectAnalysis.improvementOpportunities,
+        analysisDepth: projectAnalysis.analysisDepth,
+        analysisTimestamp: projectAnalysis.analysisTimestamp,
+      };
+    } catch (error) {
+      console.warn('Project scanning failed, falling back to context-based analysis:', error);
+      // Fallback to context-based analysis
+      const requirements = context.requirements || [];
+      const allText = requirements.join(' ').toLowerCase();
+
+      return {
+        projectType: this.analyzeProjectType(context),
+        framework: this.detectFramework(allText),
+        architecture: this.detectArchitecture(allText),
+        fileStructure: this.inferFileStructure(allText),
+        complexity: this.calculateProjectComplexity(context),
+        technologies: this.detectTechnologies(allText),
+      };
+    }
   }
 
   /**
-   * Perform security analysis
+   * Perform security analysis using real security scanning
    */
   private async performSecurityAnalysis(context: BusinessContext): Promise<SecurityAnalysis> {
-    // This would integrate with security scanning tools
-    const requirements = context.requirements || [];
-    const allText = requirements.join(' ').toLowerCase();
+    try {
+      // Use real security scanner for actual vulnerability detection
+      const securityScanResult: SecurityScanResult = await this.securityScanner.runSecurityScan();
 
-    return {
-      vulnerabilities: this.detectVulnerabilities(allText),
-      securityScore: this.calculateSecurityScore(allText),
-      recommendations: this.generateSecurityRecommendations(allText),
-      compliance: this.checkCompliance(allText),
-    };
+      return {
+        vulnerabilities: securityScanResult.vulnerabilities.map(vuln => ({
+          id: vuln.id,
+          severity: vuln.severity,
+          description: vuln.description,
+          package: vuln.package,
+          version: vuln.version,
+          cve: vuln.cve,
+          fix: vuln.fix,
+        })),
+        securityScore: this.calculateSecurityScoreFromScan(securityScanResult),
+        recommendations: this.generateSecurityRecommendationsFromScan(securityScanResult),
+        compliance: this.checkComplianceFromScan(securityScanResult),
+        scanTime: securityScanResult.scanTime,
+        status: securityScanResult.status,
+        summary: securityScanResult.summary,
+      };
+    } catch (error) {
+      console.warn('Security scanning failed, falling back to context-based analysis:', error);
+      // Fallback to context-based analysis
+      const requirements = context.requirements || [];
+      const allText = requirements.join(' ').toLowerCase();
+
+      return {
+        vulnerabilities: this.detectVulnerabilities(allText),
+        securityScore: this.calculateSecurityScore(allText),
+        recommendations: this.generateSecurityRecommendations(allText),
+        compliance: this.checkCompliance(allText),
+      };
+    }
   }
 
   /**
-   * Analyze code quality
+   * Analyze code quality using real static analysis
    */
   private async analyzeCodeQuality(context: BusinessContext): Promise<CodeQualityAnalysis> {
-    // This would integrate with static analysis tools
-    const requirements = context.requirements || [];
-    const allText = requirements.join(' ').toLowerCase();
+    try {
+      // Use real static analyzer for actual code quality assessment
+      const staticAnalysisResult: StaticAnalysisResult = await this.staticAnalyzer.analyzeCode();
 
-    return {
-      complexity: this.calculateCodeComplexity(allText),
-      maintainability: this.calculateMaintainability(allText),
-      testCoverage: this.estimateTestCoverage(allText),
-      codeSmells: this.detectCodeSmells(allText),
-      qualityScore: this.calculateQualityScoreFromRequirements(allText),
+      return {
+        complexity: staticAnalysisResult.complexity,
+        maintainability: staticAnalysisResult.maintainability,
+        testCoverage: staticAnalysisResult.testCoverage,
+        codeSmells: staticAnalysisResult.codeSmells,
+        qualityScore: staticAnalysisResult.qualityScore,
+        issues: staticAnalysisResult.issues,
+        metrics: staticAnalysisResult.metrics,
+        recommendations: staticAnalysisResult.recommendations,
+        analysisTimestamp: staticAnalysisResult.analysisTimestamp,
+      };
+    } catch (error) {
+      console.warn('Static analysis failed, falling back to context-based analysis:', error);
+      // Fallback to context-based analysis
+      const requirements = context.requirements || [];
+      const allText = requirements.join(' ').toLowerCase();
+
+      return {
+        complexity: this.calculateCodeComplexity(allText),
+        maintainability: this.calculateMaintainability(allText),
+        testCoverage: this.estimateTestCoverage(allText),
+        codeSmells: this.detectCodeSmells(allText),
+        qualityScore: this.calculateQualityScoreFromRequirements(allText),
+      };
+    }
+  }
+
+  /**
+   * Perform comprehensive project analysis using all available tools
+   */
+  private async performComprehensiveAnalysis(context: BusinessContext): Promise<{
+    projectStructure?: ProjectStructure;
+    securityAnalysis?: SecurityAnalysis;
+    codeQuality?: CodeQualityAnalysis;
+    dependencies?: DependencyAnalysis;
+  }> {
+    try {
+      // Run all analysis tools in parallel for efficiency
+      const [projectStructure, securityAnalysis, codeQuality, dependencies] = await Promise.allSettled([
+        this.analyzeProjectStructure(context),
+        this.performSecurityAnalysis(context),
+        this.analyzeCodeQuality(context),
+        this.analyzeDependencies(context),
+      ]);
+
+      return {
+        projectStructure: projectStructure.status === 'fulfilled' ? projectStructure.value : undefined,
+        securityAnalysis: securityAnalysis.status === 'fulfilled' ? securityAnalysis.value : undefined,
+        codeQuality: codeQuality.status === 'fulfilled' ? codeQuality.value : undefined,
+        dependencies: dependencies.status === 'fulfilled' ? dependencies.value : undefined,
+      };
+    } catch (error) {
+      console.warn('Comprehensive analysis failed:', error);
+      return {};
+    }
+  }
+
+  /**
+   * Helper methods for processing real analysis results
+   */
+  private detectFrameworkFromAnalysis(projectAnalysis: ProjectAnalysis): string {
+    const dependencies = projectAnalysis.projectMetadata.dependencies || {};
+    const devDependencies = projectAnalysis.projectMetadata.devDependencies || {};
+    const allDeps = { ...dependencies, ...devDependencies };
+
+    if (allDeps['react']) return 'react';
+    if (allDeps['vue']) return 'vue';
+    if (allDeps['@angular/core']) return 'angular';
+    if (allDeps['next']) return 'next';
+    if (allDeps['nuxt']) return 'nuxt';
+    if (allDeps['svelte']) return 'svelte';
+    if (allDeps['express']) return 'express';
+    if (allDeps['fastify']) return 'fastify';
+    if (allDeps['koa']) return 'koa';
+
+    return 'unknown';
+  }
+
+  private detectArchitectureFromAnalysis(projectAnalysis: ProjectAnalysis): string {
+    const fileStructure = projectAnalysis.projectStructure;
+    const hasSrc = fileStructure.folders.includes('src');
+    const hasComponents = fileStructure.folders.includes('components') || fileStructure.folders.includes('src/components');
+    const hasPages = fileStructure.folders.includes('pages') || fileStructure.folders.includes('src/pages');
+    const hasApi = fileStructure.folders.includes('api') || fileStructure.folders.includes('src/api');
+
+    if (hasComponents && hasPages) return 'spa';
+    if (hasApi && hasSrc) return 'api';
+    if (hasComponents && hasApi) return 'fullstack';
+    if (fileStructure.folders.includes('microservices')) return 'microservices';
+
+    return 'monolithic';
+  }
+
+  private inferFileStructureFromAnalysis(projectAnalysis: ProjectAnalysis): string[] {
+    return projectAnalysis.projectStructure.folders;
+  }
+
+  private calculateProjectComplexityFromAnalysis(projectAnalysis: ProjectAnalysis): number {
+    const fileCount = projectAnalysis.projectStructure.files.length;
+    const folderCount = projectAnalysis.projectStructure.folders.length;
+    const depCount = Object.keys(projectAnalysis.projectMetadata.dependencies || {}).length;
+    const devDepCount = Object.keys(projectAnalysis.projectMetadata.devDependencies || {}).length;
+
+    // Simple complexity calculation based on project size
+    const complexity = Math.min((fileCount * 0.1) + (folderCount * 0.2) + (depCount * 0.3) + (devDepCount * 0.1), 10);
+    return Math.round(complexity * 10) / 10;
+  }
+
+  private calculateSecurityScoreFromScan(securityScanResult: SecurityScanResult): number {
+    const { critical, high, moderate, low } = securityScanResult.summary;
+    const total = critical + high + moderate + low;
+
+    if (total === 0) return 100;
+
+    // Weighted scoring: critical = -20, high = -10, moderate = -5, low = -1
+    const score = 100 - (critical * 20) - (high * 10) - (moderate * 5) - (low * 1);
+    return Math.max(0, Math.min(100, score));
+  }
+
+  private generateSecurityRecommendationsFromScan(securityScanResult: SecurityScanResult): string[] {
+    const recommendations: string[] = [];
+    const { critical, high, moderate, low } = securityScanResult.summary;
+
+    if (critical > 0) {
+      recommendations.push(`Address ${critical} critical vulnerabilities immediately`);
+    }
+    if (high > 0) {
+      recommendations.push(`Fix ${high} high-severity vulnerabilities`);
+    }
+    if (moderate > 0) {
+      recommendations.push(`Consider fixing ${moderate} moderate vulnerabilities`);
+    }
+    if (low > 0) {
+      recommendations.push(`Review ${low} low-severity vulnerabilities`);
+    }
+
+    return recommendations;
+  }
+
+  private checkComplianceFromScan(securityScanResult: SecurityScanResult): string {
+    const { critical, high } = securityScanResult.summary;
+
+    if (critical > 0) return 'non-compliant';
+    if (high > 0) return 'partially-compliant';
+    return 'compliant';
+  }
+
+  /**
+   * Generate AI assistant guidance based on role, context, and analysis results
+   */
+  private generateAIAssistantGuidance(
+    role: string,
+    context: BusinessContext,
+    analysisResults: {
+      projectStructure?: ProjectStructure;
+      securityAnalysis?: SecurityAnalysis;
+      codeQuality?: CodeQualityAnalysis;
+      dependencies?: DependencyAnalysis;
+    }
+  ): {
+    roleSpecificGuidance: string[];
+    contextualRecommendations: string[];
+    priorityActions: Array<{
+      action: string;
+      priority: 'critical' | 'high' | 'medium' | 'low';
+      rationale: string;
+      estimatedTime: string;
+    }>;
+    bestPractices: string[];
+    commonPitfalls: string[];
+    nextSteps: string[];
+  } {
+    const guidance = {
+      roleSpecificGuidance: this.getRoleSpecificGuidance(role, context),
+      contextualRecommendations: this.getContextualRecommendations(role, context, analysisResults),
+      priorityActions: this.getPriorityActions(role, context, analysisResults),
+      bestPractices: this.getBestPractices(role, context),
+      commonPitfalls: this.getCommonPitfalls(role, context),
+      nextSteps: this.getNextSteps(role, context, analysisResults),
     };
+
+    return guidance;
+  }
+
+  /**
+   * Get role-specific guidance for AI assistants
+   */
+  private getRoleSpecificGuidance(role: string, context: BusinessContext): string[] {
+    const guidance: string[] = [];
+    const projectType = this.analyzeProjectType(context);
+
+    switch (role) {
+      case 'developer':
+        guidance.push('Focus on clean, maintainable code with proper error handling');
+        guidance.push('Implement comprehensive testing strategies');
+        guidance.push('Follow coding standards and best practices');
+        if (projectType === 'frontend') {
+          guidance.push('Ensure responsive design and accessibility compliance');
+          guidance.push('Optimize for performance and user experience');
+        } else if (projectType === 'backend') {
+          guidance.push('Implement proper API design and security measures');
+          guidance.push('Focus on scalability and performance optimization');
+        }
+        break;
+
+      case 'product-strategist':
+        guidance.push('Align technical decisions with business objectives');
+        guidance.push('Consider user needs and market requirements');
+        guidance.push('Plan for scalability and future growth');
+        guidance.push('Define clear success metrics and KPIs');
+        break;
+
+      case 'qa-engineer':
+        guidance.push('Implement comprehensive testing strategies');
+        guidance.push('Focus on quality gates and validation');
+        guidance.push('Ensure security and performance standards');
+        guidance.push('Create detailed test documentation');
+        break;
+
+      case 'operations-engineer':
+        guidance.push('Plan for deployment and monitoring');
+        guidance.push('Ensure system reliability and availability');
+        guidance.push('Implement proper logging and alerting');
+        guidance.push('Focus on security and compliance');
+        break;
+
+      case 'designer':
+        guidance.push('Focus on user experience and interface design');
+        guidance.push('Ensure accessibility and usability standards');
+        guidance.push('Create consistent design systems');
+        guidance.push('Consider responsive and mobile-first design');
+        break;
+
+      default:
+        guidance.push('Follow general best practices and standards');
+        guidance.push('Consider project requirements and constraints');
+        guidance.push('Focus on quality and maintainability');
+    }
+
+    return guidance;
+  }
+
+  /**
+   * Get contextual recommendations based on analysis results
+   */
+  private getContextualRecommendations(
+    role: string,
+    context: BusinessContext,
+    analysisResults: any
+  ): string[] {
+    const recommendations: string[] = [];
+
+    // Security recommendations
+    if (analysisResults.securityAnalysis?.vulnerabilities?.length > 0) {
+      const criticalVulns = analysisResults.securityAnalysis.vulnerabilities.filter(
+        (v: any) => v.severity === 'critical'
+      ).length;
+      if (criticalVulns > 0) {
+        recommendations.push(`Address ${criticalVulns} critical security vulnerabilities immediately`);
+      }
+    }
+
+    // Code quality recommendations
+    if (analysisResults.codeQuality?.qualityScore < 70) {
+      recommendations.push('Improve code quality - current score is below acceptable threshold');
+    }
+
+    // Project structure recommendations
+    if (analysisResults.projectStructure?.complexity > 7) {
+      recommendations.push('Consider refactoring - project complexity is high');
+    }
+
+    // Role-specific contextual recommendations
+    if (role === 'developer' && analysisResults.codeQuality?.testCoverage < 80) {
+      recommendations.push('Increase test coverage to improve code reliability');
+    }
+
+    if (role === 'qa-engineer' && analysisResults.securityAnalysis?.status === 'fail') {
+      recommendations.push('Security scan failed - investigate and fix security issues');
+    }
+
+    return recommendations;
+  }
+
+  /**
+   * Get priority actions based on role and analysis
+   */
+  private getPriorityActions(
+    role: string,
+    context: BusinessContext,
+    analysisResults: any
+  ): Array<{
+    action: string;
+    priority: 'critical' | 'high' | 'medium' | 'low';
+    rationale: string;
+    estimatedTime: string;
+  }> {
+    const actions: Array<{
+      action: string;
+      priority: 'critical' | 'high' | 'medium' | 'low';
+      rationale: string;
+      estimatedTime: string;
+    }> = [];
+
+    // Critical security issues
+    if (analysisResults.securityAnalysis?.vulnerabilities?.some((v: any) => v.severity === 'critical')) {
+      actions.push({
+        action: 'Fix critical security vulnerabilities',
+        priority: 'critical',
+        rationale: 'Critical vulnerabilities pose immediate security risks',
+        estimatedTime: '2-4 hours',
+      });
+    }
+
+    // High priority based on role
+    if (role === 'developer') {
+      if (analysisResults.codeQuality?.qualityScore < 60) {
+        actions.push({
+          action: 'Refactor low-quality code',
+          priority: 'high',
+          rationale: 'Low code quality affects maintainability and reliability',
+          estimatedTime: '4-8 hours',
+        });
+      }
+    }
+
+    if (role === 'qa-engineer') {
+      if (analysisResults.codeQuality?.testCoverage < 70) {
+        actions.push({
+          action: 'Increase test coverage',
+          priority: 'high',
+          rationale: 'Low test coverage increases risk of bugs in production',
+          estimatedTime: '6-12 hours',
+        });
+      }
+    }
+
+    return actions;
+  }
+
+  /**
+   * Get best practices for the role and project type
+   */
+  private getBestPractices(role: string, context: BusinessContext): string[] {
+    const practices: string[] = [];
+    const projectType = this.analyzeProjectType(context);
+
+    // General best practices
+    practices.push('Write clear, self-documenting code');
+    practices.push('Implement proper error handling and logging');
+    practices.push('Follow consistent coding standards');
+
+    // Role-specific best practices
+    switch (role) {
+      case 'developer':
+        practices.push('Write comprehensive unit tests');
+        practices.push('Use version control effectively');
+        practices.push('Implement code reviews');
+        break;
+      case 'product-strategist':
+        practices.push('Define clear user stories and acceptance criteria');
+        practices.push('Regular stakeholder communication');
+        practices.push('Data-driven decision making');
+        break;
+      case 'qa-engineer':
+        practices.push('Implement automated testing');
+        practices.push('Create comprehensive test plans');
+        practices.push('Regular security and performance testing');
+        break;
+    }
+
+    // Project type specific practices
+    if (projectType === 'frontend') {
+      practices.push('Implement responsive design');
+      practices.push('Ensure accessibility compliance (WCAG)');
+      practices.push('Optimize for performance and Core Web Vitals');
+    } else if (projectType === 'backend') {
+      practices.push('Implement proper API documentation');
+      practices.push('Use proper authentication and authorization');
+      practices.push('Implement rate limiting and security headers');
+    }
+
+    return practices;
+  }
+
+  /**
+   * Get common pitfalls to avoid
+   */
+  private getCommonPitfalls(role: string, context: BusinessContext): string[] {
+    const pitfalls: string[] = [];
+
+    // General pitfalls
+    pitfalls.push('Avoid hardcoded values and secrets');
+    pitfalls.push('Don\'t skip error handling');
+    pitfalls.push('Avoid over-engineering solutions');
+
+    // Role-specific pitfalls
+    switch (role) {
+      case 'developer':
+        pitfalls.push('Don\'t skip writing tests');
+        pitfalls.push('Avoid premature optimization');
+        pitfalls.push('Don\'t ignore code reviews');
+        break;
+      case 'product-strategist':
+        pitfalls.push('Don\'t ignore user feedback');
+        pitfalls.push('Avoid scope creep');
+        pitfalls.push('Don\'t skip market research');
+        break;
+      case 'qa-engineer':
+        pitfalls.push('Don\'t rely only on manual testing');
+        pitfalls.push('Avoid testing only happy paths');
+        pitfalls.push('Don\'t skip security testing');
+        break;
+    }
+
+    return pitfalls;
+  }
+
+  /**
+   * Get next steps based on current state
+   */
+  private getNextSteps(role: string, context: BusinessContext, analysisResults: any): string[] {
+    const nextSteps: string[] = [];
+
+    // Immediate next steps
+    nextSteps.push('Review and validate current analysis results');
+    nextSteps.push('Plan implementation based on recommendations');
+
+    // Role-specific next steps
+    switch (role) {
+      case 'developer':
+        nextSteps.push('Set up development environment and tools');
+        nextSteps.push('Create initial project structure');
+        nextSteps.push('Implement core functionality');
+        break;
+      case 'product-strategist':
+        nextSteps.push('Define detailed requirements and specifications');
+        nextSteps.push('Create user stories and acceptance criteria');
+        nextSteps.push('Plan project timeline and milestones');
+        break;
+      case 'qa-engineer':
+        nextSteps.push('Create comprehensive test plan');
+        nextSteps.push('Set up testing environment and tools');
+        nextSteps.push('Implement automated testing pipeline');
+        break;
+    }
+
+    return nextSteps;
   }
 
   /**

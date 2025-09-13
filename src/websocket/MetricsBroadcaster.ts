@@ -215,7 +215,7 @@ export class MetricsBroadcaster {
         timestamp: Date.now()
       };
 
-      this.wsServer.broadcast('performance_metrics', metrics);
+      this.wsServer.broadcast('performance:metrics', metrics);
     } catch (error) {
       console.error('Error broadcasting performance metrics:', error);
     }
@@ -240,7 +240,7 @@ export class MetricsBroadcaster {
           timestamp: Date.now()
         };
 
-        this.wsServer.broadcast('workflow_status_update', update);
+        this.wsServer.broadcast('workflow:status:update', update);
       });
     } catch (error) {
       console.error('Error broadcasting workflow statuses:', error);
@@ -261,7 +261,7 @@ export class MetricsBroadcaster {
         timestamp: Date.now()
       };
 
-      this.wsServer.broadcast('workflow_status_update', update);
+      this.wsServer.broadcast('workflow:status:update', update);
     } catch (error) {
       console.error('Error broadcasting workflow status update:', error);
     }
@@ -316,7 +316,7 @@ export class MetricsBroadcaster {
       errors: {
         count: this.getErrorCount(),
         rate: this.getErrorRate(),
-        lastError: this.getLastError() || undefined
+        lastError: this.getLastError() || ''
       },
       throughput: {
         requestsPerSecond: this.calculateRequestsPerSecond(),

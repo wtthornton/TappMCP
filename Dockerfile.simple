@@ -1,4 +1,4 @@
-# TappMCP Core Dockerfile - Essential MCP functionality without external dependencies
+# Simple TappMCP Dockerfile
 FROM node:20-alpine
 
 # Set working directory
@@ -10,23 +10,20 @@ COPY package*.json ./
 # Install dependencies
 RUN npm ci --only=production
 
-# Copy core server
-COPY tappmcp-core.js ./
+# Copy application files
+COPY tappmcp-http-server.js ./
+COPY public/ ./public/
+COPY src/ ./src/
 
-# Create non-root user
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S tappmcp -u 1001
+# Create data and logs directories
+RUN mkdir -p /app/data /app/logs
 
-# Change ownership
-RUN chown -R tappmcp:nodejs /app
-USER tappmcp
-
-# Expose port
-EXPOSE 3000
+# Expose ports
+EXPOSE 3000 3001
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD node -e "console.log('Health check passed')"
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
 
-# Start core server
-CMD ["node", "tappmcp-core.js"]
+# Start the application
+CMD ["node", "tappmcp-http-server.js"]
