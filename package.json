@@ -84,6 +84,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^0.4.0",
     "@types/cors": "^2.8.19",
+    "@types/d3": "^7.4.3",
     "@types/express": "^5.0.3",
     "@types/handlebars": "^4.0.40",
     "@types/react": "^19.1.13",
@@ -92,6 +93,7 @@
     "@types/ws": "^8.18.1",
     "axios": "^1.6.0",
     "cors": "^2.8.5",
+    "d3": "^7.9.0",
     "express": "^5.1.0",
     "handlebars": "^4.7.8",
     "lru-cache": "^11.2.1",

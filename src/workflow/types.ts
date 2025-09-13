@@ -178,7 +178,7 @@ export interface WorkflowGraph {
   /** Layout configuration */
   layout: {
     /** Layout algorithm */
-    algorithm: 'force' | 'hierarchical' | 'circular' | 'grid' | 'custom';
+    algorithm: 'force' | 'hierarchical' | 'circular' | 'grid' | 'timeline' | 'custom';
     /** Layout parameters */
     parameters: Record<string, any>;
     /** Auto-layout enabled */
@@ -197,7 +197,7 @@ export interface WorkflowTimelineEvent {
   /** Event ID */
   id: string;
   /** Event timestamp */
-  timestamp: Date;
+  timestamp: number;
   /** Event type */
   type: 'start' | 'phase_start' | 'phase_complete' | 'task_start' | 'task_complete' | 'error' | 'milestone' | 'end';
   /** Event title */
@@ -207,7 +207,7 @@ export interface WorkflowTimelineEvent {
   /** Related node ID */
   nodeId?: string;
   /** Event severity */
-  severity: 'info' | 'warning' | 'error' | 'success';
+  severity: 'info' | 'warning' | 'error' | 'success' | 'critical';
   /** Event data */
   data: Record<string, any>;
   /** Visual properties */
@@ -233,12 +233,12 @@ export interface WorkflowTimeline {
   workflowId: string;
   /** Timeline events */
   events: WorkflowTimelineEvent[];
+  /** Start time */
+  startTime: number;
+  /** End time */
+  endTime?: number;
   /** Timeline metadata */
-  metadata: {
-    /** Start time */
-    startTime: Date;
-    /** End time */
-    endTime?: Date;
+  metadata?: {
     /** Total duration */
     duration: number;
     /** Event count */
@@ -247,6 +247,8 @@ export interface WorkflowTimeline {
     errorCount: number;
     /** Milestone count */
     milestoneCount: number;
+    /** Additional metadata */
+    [key: string]: any;
   };
 }
 
@@ -507,5 +509,102 @@ export interface WorkflowStatisticsResponse {
     message: string;
     /** Error details */
     details?: any;
+  };
+}
+
+/**
+ * Workflow Visualization Options
+ *
+ * Configuration options for workflow graph visualization.
+ *
+ * @since 2.0.0
+ */
+export interface WorkflowVisualizationOptions {
+  /** Layout algorithm to use */
+  layout: 'force' | 'hierarchical' | 'circular' | 'grid' | 'timeline';
+  /** Visibility settings */
+  visibility: {
+    showLabels: boolean;
+    showEdgeLabels: boolean;
+    showProgress: boolean;
+    showStatus: boolean;
+    showTimeEstimates: boolean;
+    showCriticalPath: boolean;
+  };
+  /** Color schemes */
+  colors: {
+    status: {
+      pending: string;
+      running: string;
+      completed: string;
+      failed: string;
+      paused: string;
+      cancelled: string;
+    };
+    priority: {
+      low: string;
+      medium: string;
+      high: string;
+      critical: string;
+    };
+    roles: Record<string, string>;
+  };
+  /** Animation settings */
+  animation: {
+    enabled: boolean;
+    duration: number;
+    easing: string;
+  };
+  /** Interaction settings */
+  interaction: {
+    zoom: boolean;
+    pan: boolean;
+    selection: boolean;
+    dragDrop: boolean;
+  };
+}
+
+/**
+ * Workflow Timeline Options
+ *
+ * Configuration options for workflow timeline visualization.
+ *
+ * @since 2.0.0
+ */
+export interface WorkflowTimelineOptions {
+  /** Show event labels */
+  showLabels: boolean;
+  /** Show grid lines */
+  showGrid: boolean;
+  /** Show axis */
+  showAxis: boolean;
+  /** Show tooltips */
+  showTooltips: boolean;
+  /** Filter settings */
+  filter: {
+    eventTypes: string[];
+    severity: string[];
+    timeRange: [number, number] | null;
+  };
+  /** Color schemes for event types */
+  colors: {
+    start: string;
+    end: string;
+    status_change: string;
+    alert: string;
+    milestone: string;
+  };
+  /** Animation settings */
+  animation: {
+    enabled: boolean;
+    duration: number;
+    easing: string;
+  };
+  /** Interaction settings */
+  interaction: {
+    zoom: boolean;
+    pan: boolean;
+    selection: boolean;
+    tooltips: boolean;
   };
 }
