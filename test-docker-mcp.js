@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-// Test script to verify MCP server connection
+// Test script to verify Docker MCP server connection
 import { spawn } from 'child_process';
 
-console.log('🧪 Testing MCP server connection...\n');
+console.log('🐳 Testing Docker MCP server connection...\n');
 
 // Test the tools/list method
 const testRequest = {
@@ -13,8 +13,7 @@ const testRequest = {
   params: {}
 };
 
-const server = spawn('node', ['dist/simple-mcp-server.js'], {
-  cwd: 'C:\\cursor\\TappMCP',
+const server = spawn('docker', ['exec', '-i', 'tappmcp-tappmcp-1', 'node', 'dist/simple-mcp-server.js'], {
   stdio: ['pipe', 'pipe', 'pipe']
 });
 
@@ -39,11 +38,12 @@ server.on('close', (code) => {
   try {
     const response = JSON.parse(output);
     if (response.result && response.result.tools) {
-      console.log('✅ MCP server is working correctly!');
+      console.log('✅ Docker MCP server is working correctly!');
       console.log(`📋 Found ${response.result.tools.length} tools:`);
       response.result.tools.forEach(tool => {
         console.log(`  • ${tool.name} - ${tool.description}`);
       });
+      console.log('\n🎉 Ready for Cursor integration!');
     } else {
       console.log('❌ Invalid response format:', response);
     }

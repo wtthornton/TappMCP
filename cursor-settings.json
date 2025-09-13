@@ -1,13 +1,14 @@
 {
   "mcp.servers": {
     "tappmcp": {
-      "command": "docker",
-      "args": ["exec", "-i", "tappmcp-smart-mcp-1", "node", "dist/server.js"],
+      "command": "node",
+      "args": ["dist/simple-mcp-server.js"],
+      "cwd": "C:\\cursor\\TappMCP",
       "env": {
         "NODE_ENV": "production"
       },
       "stdio": true,
-      "description": "TappMCP Smart Vibe - AI-powered development assistant (Docker)"
+      "description": "TappMCP Smart Vibe - AI-powered development assistant"
     }
   },
   "mcp.enabled": true,
