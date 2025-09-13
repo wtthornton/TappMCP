@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TappMCP v2.0 - AI Assistant Enhancement Platform</title>
+    <title>TappMCP v2.0 - AI Assistant Enhancement Platform with Real-Time Monitoring</title>
     <style>
         :root {
             --primary-color: #2563eb;
@@ -451,6 +451,7 @@
         <div class="container">
             <ul>
                 <li><a href="#quick-start">Quick Start</a></li>
+                <li><a href="#real-time-dashboard">Real-Time Dashboard</a></li>
                 <li><a href="#smart-tools">7 Smart Tools</a></li>
                 <li><a href="#roles">5 Roles</a></li>
                 <li><a href="#features">Features</a></li>
@@ -472,6 +473,7 @@
                 <h3>📚 Table of Contents</h3>
                 <ul>
                     <li><a href="#quick-start">🚀 Quick Start</a></li>
+                    <li><a href="#real-time-dashboard">🌐 Real-Time Dashboard</a></li>
                     <li><a href="#smart-tools">🛠️ 7 Smart Tools - AI Assistant Enhancement</a></li>
                     <li><a href="#roles">👥 5 Specialized Roles</a></li>
                     <li><a href="#features">🎯 Key Features - AI Assistant Enhancement</a></li>
@@ -574,6 +576,53 @@ docker build -t smart-mcp:latest .</div>
   }
 }</div>
                     </div>
+                </div>
+            </section>
+
+            <section id="real-time-dashboard" class="section">
+                <h2>🌐 Real-Time Dashboard</h2>
+
+                <p>Access the live monitoring dashboard at: <strong>http://localhost:3000</strong></p>
+
+                <h3>📊 Dashboard Features</h3>
+                <ul>
+                    <li><strong>Real-time Performance Metrics</strong> - Memory usage, CPU utilization, response times</li>
+                    <li><strong>Active Workflow Monitoring</strong> - Live workflow status with progress bars and phase information</li>
+                    <li><strong>System Health Overview</strong> - Uptime, version, active connections, error rates</li>
+                    <li><strong>Notification Center</strong> - Real-time alerts and system notifications</li>
+                    <li><strong>WebSocket Integration</strong> - Live data updates without page refresh</li>
+                    <li><strong>Auto-Reconnection</strong> - Handles connection drops gracefully</li>
+                    <li><strong>Mobile Responsive</strong> - Works perfectly on desktop and mobile devices</li>
+                </ul>
+
+                <h3>🎨 Visual Status System</h3>
+                <ul>
+                    <li><strong>Contextual Status Icons</strong> - Comprehensive icon library for all status types</li>
+                    <li><strong>Color-Coded Indicators</strong> - Success (Green), Warning (Yellow), Error (Red), Info (Blue)</li>
+                    <li><strong>Workflow Status Icons</strong> - Pending, Running, Completed, Failed, Cancelled, Paused, Queued</li>
+                    <li><strong>Performance Status Icons</strong> - Excellent, Good, Warning, Critical, Unknown</li>
+                    <li><strong>Notification Priority Icons</strong> - Critical, High, Medium, Low, Info</li>
+                    <li><strong>System Status Icons</strong> - Server, Database, Network, Loading</li>
+                    <li><strong>Animation Support</strong> - Pulse, spin, bounce animations for dynamic states</li>
+                </ul>
+
+                <h3>🔔 Smart Notifications</h3>
+                <ul>
+                    <li><strong>Multi-Channel Delivery</strong> - WebSocket, Email, Push, In-App notifications</li>
+                    <li><strong>Priority Levels</strong> - Critical, High, Medium, Low, Info with proper weighting</li>
+                    <li><strong>Template System</strong> - Reusable notification templates with variable substitution</li>
+                    <li><strong>User Preferences</strong> - Configurable notification preferences and quiet hours</li>
+                    <li><strong>Analytics Support</strong> - Delivery rates, read rates, engagement tracking</li>
+                    <li><strong>Intelligent Filtering</strong> - ML-powered notification filtering and prioritization</li>
+                </ul>
+
+                <div class="code-block">
+# Access the dashboard
+open http://localhost:3000
+
+# Or use curl to check health
+curl http://localhost:3000/health
+curl http://localhost:3000/tools
                 </div>
             </section>
 

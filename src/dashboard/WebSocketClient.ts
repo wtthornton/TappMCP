@@ -49,7 +49,7 @@ export class WebSocketClient {
   private eventListeners: Map<string, Function[]> = new Map();
   private heartbeatInterval: NodeJS.Timeout | null = null;
 
-  constructor(url: string = 'ws://localhost:3002') {
+  constructor(url: string = 'ws://localhost:3000') {
     this.url = url;
   }
 

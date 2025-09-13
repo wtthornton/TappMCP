@@ -13,8 +13,9 @@ COPY package*.json ./
 # Install dependencies
 RUN npm ci --only=production
 
-# Copy HTTP server
+# Copy HTTP server and public files
 COPY tappmcp-http-server.js ./
+COPY public/ ./public/
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \

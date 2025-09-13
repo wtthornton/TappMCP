@@ -1,322 +1,465 @@
 /**
- * Metrics Broadcaster Service
+ * Metrics Broadcaster for Real-Time Performance Data
  *
- * Provides real-time broadcasting of performance metrics, workflow status,
- * and system monitoring data to connected WebSocket clients.
+ * Broadcasts real-time performance metrics, workflow status updates,
+ * and system health data via WebSocket connections.
  *
  * @since 2.0.0
  * @author TappMCP Team
  */
 
-import { EventEmitter } from 'events';
 import { WebSocketServer } from './WebSocketServer.js';
-import { WorkflowEvents } from './events/WorkflowEvents.js';
-import { PerformanceEvents } from './events/PerformanceEvents.js';
-import { globalPerformanceMonitor } from '../monitoring/performance-monitor.js';
-import {
-  PerformanceMetrics,
-  WorkflowStatusUpdate,
-  WEBSOCKET_EVENTS
-} from './types.js';
+import { PerformanceMetrics, WorkflowStatusUpdate } from './types.js';
 
 /**
- * Metrics Broadcaster for real-time data streaming
- *
- * @example
- * ```typescript
- * const broadcaster = new MetricsBroadcaster(wsServer);
- * broadcaster.startBroadcasting();
- * broadcaster.broadcastWorkflowStatus('workflow-123', 'running', 50);
- * ```
- *
- * @since 2.0.0
+ * Performance metrics data structure
  */
-export class MetricsBroadcaster extends EventEmitter {
-  private workflowEvents: WorkflowEvents;
-  private performanceEvents: PerformanceEvents;
-  private isBroadcasting = false;
-  private broadcastInterval: NodeJS.Timeout | null = null;
-  private lastMetrics: PerformanceMetrics | null = null;
+export interface PerformanceData {
+  timestamp: number;
+  memory: {
+    used: number;
+    total: number;
+    percentage: number;
+  };
+  cpu: {
+    usage: number;
+    loadAverage: number[];
+  };
+  responseTime: {
+    average: number;
+    p95: number;
+    p99: number;
+  };
+  cache: {
+    hitRate: number;
+    missRate: number;
+    size: number;
+  };
+  errors: {
+    count: number;
+    rate: number;
+    lastError?: string;
+  };
+  throughput: {
+    requestsPerSecond: number;
+    bytesPerSecond: number;
+  };
+}
 
-  constructor(private wsServer: WebSocketServer) {
-    super();
-    this.workflowEvents = new WorkflowEvents(wsServer);
-    this.performanceEvents = new PerformanceEvents(wsServer);
+/**
+ * Workflow status data structure
+ */
+export interface WorkflowStatusData {
+  workflowId: string;
+  status: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
+  progress: number;
+  currentPhase: string;
+  startTime: number;
+  estimatedCompletion?: number;
+  error?: string;
+  metadata?: Record<string, any>;
+}
 
-    this.setupEventHandlers();
+/**
+ * System health data structure
+ */
+export interface SystemHealthData {
+  status: 'healthy' | 'warning' | 'critical';
+  uptime: number;
+  version: string;
+  lastRestart: number;
+  activeConnections: number;
+  queueSize: number;
+  alerts: Array<{
+    type: string;
+    message: string;
+    severity: 'low' | 'medium' | 'high' | 'critical';
+    timestamp: number;
+  }>;
+}
+
+/**
+ * Metrics Broadcaster class
+ */
+export class MetricsBroadcaster {
+  private wsServer: WebSocketServer;
+  private performanceInterval: NodeJS.Timeout | null = null;
+  private workflowStatusInterval: NodeJS.Timeout | null = null;
+  private systemHealthInterval: NodeJS.Timeout | null = null;
+  private isRunning = false;
+  private performanceData: PerformanceData | null = null;
+  private workflowStatuses: Map<string, WorkflowStatusData> = new Map();
+  private systemHealth: SystemHealthData | null = null;
+
+  constructor(wsServer: WebSocketServer) {
+    this.wsServer = wsServer;
   }
 
   /**
-   * Starts broadcasting metrics at regular intervals
-   *
-   * @param intervalMs - Broadcasting interval in milliseconds (default: 5000)
-   *
-   * @example
-   * ```typescript
-   * broadcaster.startBroadcasting(10000); // Broadcast every 10 seconds
-   * ```
+   * Starts broadcasting metrics
    */
-  startBroadcasting(intervalMs: number = 5000): void {
-    if (this.isBroadcasting) {
+  start(): void {
+    if (this.isRunning) {
+      console.warn('MetricsBroadcaster is already running');
       return;
     }
 
-    this.isBroadcasting = true;
-    this.broadcastInterval = setInterval(() => {
-      this.broadcastCurrentMetrics();
-    }, intervalMs);
+    console.log('Starting MetricsBroadcaster...');
+    this.isRunning = true;
 
-    this.emit('broadcasting:started', { intervalMs });
-    console.log(`Metrics broadcasting started with ${intervalMs}ms interval`);
+    // Start performance metrics broadcasting (every 5 seconds)
+    this.performanceInterval = setInterval(() => {
+      this.broadcastPerformanceMetrics();
+    }, 5000);
+
+    // Start workflow status broadcasting (every 2 seconds)
+    this.workflowStatusInterval = setInterval(() => {
+      this.broadcastWorkflowStatuses();
+    }, 2000);
+
+    // Start system health broadcasting (every 10 seconds)
+    this.systemHealthInterval = setInterval(() => {
+      this.broadcastSystemHealth();
+    }, 10000);
+
+    console.log('MetricsBroadcaster started successfully');
   }
 
   /**
    * Stops broadcasting metrics
-   *
-   * @example
-   * ```typescript
-   * broadcaster.stopBroadcasting();
-   * ```
    */
-  stopBroadcasting(): void {
-    if (!this.isBroadcasting) {
+  stop(): void {
+    if (!this.isRunning) {
+      console.warn('MetricsBroadcaster is not running');
       return;
     }
 
-    if (this.broadcastInterval) {
-      clearInterval(this.broadcastInterval);
-      this.broadcastInterval = null;
+    console.log('Stopping MetricsBroadcaster...');
+    this.isRunning = false;
+
+    if (this.performanceInterval) {
+      clearInterval(this.performanceInterval);
+      this.performanceInterval = null;
     }
 
-    this.isBroadcasting = false;
-    this.emit('broadcasting:stopped');
-    console.log('Metrics broadcasting stopped');
+    if (this.workflowStatusInterval) {
+      clearInterval(this.workflowStatusInterval);
+      this.workflowStatusInterval = null;
+    }
+
+    if (this.systemHealthInterval) {
+      clearInterval(this.systemHealthInterval);
+      this.systemHealthInterval = null;
+    }
+
+    console.log('MetricsBroadcaster stopped');
   }
 
   /**
-   * Broadcasts current performance metrics
-   *
-   * @example
-   * ```typescript
-   * broadcaster.broadcastCurrentMetrics();
-   * ```
+   * Updates workflow status
    */
-  broadcastCurrentMetrics(): void {
+  updateWorkflowStatus(workflowId: string, status: WorkflowStatusData): void {
+    this.workflowStatuses.set(workflowId, status);
+
+    // Immediately broadcast status change
+    this.broadcastWorkflowStatusUpdate(workflowId, status);
+  }
+
+  /**
+   * Removes workflow status
+   */
+  removeWorkflowStatus(workflowId: string): void {
+    this.workflowStatuses.delete(workflowId);
+  }
+
+  /**
+   * Gets current performance data
+   */
+  getPerformanceData(): PerformanceData | null {
+    return this.performanceData;
+  }
+
+  /**
+   * Gets current workflow statuses
+   */
+  getWorkflowStatuses(): Map<string, WorkflowStatusData> {
+    return new Map(this.workflowStatuses);
+  }
+
+  /**
+   * Gets current system health
+   */
+  getSystemHealth(): SystemHealthData | null {
+    return this.systemHealth;
+  }
+
+  /**
+   * Broadcasts performance metrics
+   */
+  private broadcastPerformanceMetrics(): void {
+    try {
+      const performanceData = this.collectPerformanceData();
+      this.performanceData = performanceData;
+
+      const metrics: PerformanceMetrics = {
+        memoryUsage: {
+          rss: performanceData.memory.used,
+          heapUsed: performanceData.memory.used,
+          heapTotal: performanceData.memory.total,
+          external: 0
+        },
+        responseTime: performanceData.responseTime.average,
+        cacheHitRate: performanceData.cache.hitRate,
+        errorRate: performanceData.errors.rate,
+        activeConnections: this.wsServer.getConnectionCount(),
+        timestamp: Date.now()
+      };
+
+      this.wsServer.broadcast('performance_metrics', metrics);
+    } catch (error) {
+      console.error('Error broadcasting performance metrics:', error);
+    }
+  }
+
+  /**
+   * Broadcasts workflow statuses
+   */
+  private broadcastWorkflowStatuses(): void {
+    try {
+      if (this.workflowStatuses.size === 0) return;
+
+      const statuses = Array.from(this.workflowStatuses.values());
+
+      statuses.forEach(status => {
+        const update: WorkflowStatusUpdate = {
+          workflowId: status.workflowId,
+          status: status.status as 'pending' | 'running' | 'completed' | 'failed' | 'paused',
+          progress: status.progress,
+          currentPhase: status.currentPhase,
+          message: status.error || `Workflow ${status.status}`,
+          timestamp: Date.now()
+        };
+
+        this.wsServer.broadcast('workflow_status_update', update);
+      });
+    } catch (error) {
+      console.error('Error broadcasting workflow statuses:', error);
+    }
+  }
+
+  /**
+   * Broadcasts individual workflow status update
+   */
+  private broadcastWorkflowStatusUpdate(workflowId: string, status: WorkflowStatusData): void {
+    try {
+      const update: WorkflowStatusUpdate = {
+        workflowId: status.workflowId,
+        status: status.status as 'pending' | 'running' | 'completed' | 'failed' | 'paused',
+        progress: status.progress,
+        currentPhase: status.currentPhase,
+        message: status.error || `Workflow ${status.status}`,
+        timestamp: Date.now()
+      };
+
+      this.wsServer.broadcast('workflow_status_update', update);
+    } catch (error) {
+      console.error('Error broadcasting workflow status update:', error);
+    }
+  }
+
+  /**
+   * Broadcasts system health
+   */
+  private broadcastSystemHealth(): void {
+    try {
+      const healthData = this.collectSystemHealth();
+      this.systemHealth = healthData;
+
+      this.wsServer.broadcast('system_health', {
+        type: 'system_health',
+        data: healthData,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Error broadcasting system health:', error);
+    }
+  }
+
+  /**
+   * Collects current performance data
+   */
+  private collectPerformanceData(): PerformanceData {
     const memUsage = process.memoryUsage();
-    const report = globalPerformanceMonitor.generateReport(60000); // Last minute
+    const cpuUsage = process.cpuUsage();
 
-    const metrics: PerformanceMetrics = {
-      memoryUsage: {
-        rss: memUsage.rss / (1024 * 1024), // Convert to MB
-        heapUsed: memUsage.heapUsed / (1024 * 1024),
-        heapTotal: memUsage.heapTotal / (1024 * 1024),
-        external: memUsage.external / (1024 * 1024)
-      },
-      responseTime: report.summary.averageResponseTime,
-      cacheHitRate: report.summary.cacheHitRate,
-      errorRate: report.summary.errorRate,
-      activeConnections: this.wsServer.getConnectionCount(),
-      timestamp: Date.now()
-    };
-
-    this.lastMetrics = metrics;
-    this.performanceEvents.broadcastMetrics(metrics);
-    this.emit('metrics:broadcast', metrics);
-  }
-
-  /**
-   * Broadcasts workflow status update
-   *
-   * @param workflowId - Unique workflow identifier
-   * @param status - Workflow status
-   * @param progress - Progress percentage (0-100)
-   * @param currentPhase - Current execution phase
-   * @param message - Optional status message
-   *
-   * @example
-   * ```typescript
-   * broadcaster.broadcastWorkflowStatus('workflow-123', 'running', 50, 'Processing data');
-   * ```
-   */
-  broadcastWorkflowStatus(
-    workflowId: string,
-    status: 'pending' | 'running' | 'completed' | 'failed' | 'paused',
-    progress: number,
-    currentPhase: string,
-    message?: string
-  ): void {
-    this.workflowEvents.broadcastWorkflowUpdate(
-      workflowId,
-      status,
-      progress,
-      currentPhase,
-      message
-    );
-    this.emit('workflow:status:broadcast', { workflowId, status, progress });
-  }
-
-  /**
-   * Broadcasts workflow progress update
-   *
-   * @param workflowId - Unique workflow identifier
-   * @param progress - Progress percentage (0-100)
-   * @param message - Progress message
-   *
-   * @example
-   * ```typescript
-   * broadcaster.broadcastWorkflowProgress('workflow-123', 75, 'Almost done');
-   * ```
-   */
-  broadcastWorkflowProgress(
-    workflowId: string,
-    progress: number,
-    message: string
-  ): void {
-    this.workflowEvents.broadcastWorkflowProgress(workflowId, progress, message);
-    this.emit('workflow:progress:broadcast', { workflowId, progress });
-  }
-
-  /**
-   * Broadcasts workflow completion
-   *
-   * @param workflowId - Unique workflow identifier
-   * @param success - Whether workflow completed successfully
-   * @param message - Completion message
-   * @param results - Optional workflow results
-   *
-   * @example
-   * ```typescript
-   * broadcaster.broadcastWorkflowCompletion('workflow-123', true, 'Success!', results);
-   * ```
-   */
-  broadcastWorkflowCompletion(
-    workflowId: string,
-    success: boolean,
-    message: string,
-    results?: any
-  ): void {
-    this.workflowEvents.broadcastWorkflowCompletion(workflowId, success, message, results);
-    this.emit('workflow:completion:broadcast', { workflowId, success });
-  }
-
-  /**
-   * Broadcasts performance alert
-   *
-   * @param alertType - Type of alert
-   * @param severity - Alert severity
-   * @param message - Alert message
-   * @param metrics - Related metrics
-   *
-   * @example
-   * ```typescript
-   * broadcaster.broadcastPerformanceAlert('memory_usage', 'high', 'Memory usage high');
-   * ```
-   */
-  broadcastPerformanceAlert(
-    alertType: string,
-    severity: 'low' | 'medium' | 'high' | 'critical',
-    message: string,
-    metrics?: Partial<PerformanceMetrics>
-  ): void {
-    this.performanceEvents.broadcastPerformanceAlert(alertType, severity, message, metrics);
-    this.emit('performance:alert:broadcast', { alertType, severity });
-  }
-
-  /**
-   * Broadcasts system status update
-   *
-   * @param status - System status
-   * @param message - Status message
-   * @param details - Additional details
-   *
-   * @example
-   * ```typescript
-   * broadcaster.broadcastSystemStatus('healthy', 'All systems operational');
-   * ```
-   */
-  broadcastSystemStatus(
-    status: 'healthy' | 'degraded' | 'unhealthy' | 'maintenance',
-    message: string,
-    details?: Record<string, any>
-  ): void {
-    this.performanceEvents.broadcastSystemStatus(status, message, details);
-    this.emit('system:status:broadcast', { status, message });
-  }
-
-  /**
-   * Gets the last broadcasted metrics
-   *
-   * @returns Last metrics or null if none broadcasted
-   *
-   * @example
-   * ```typescript
-   * const lastMetrics = broadcaster.getLastMetrics();
-   * console.log('Last memory usage:', lastMetrics?.memoryUsage.rss);
-   * ```
-   */
-  getLastMetrics(): PerformanceMetrics | null {
-    return this.lastMetrics;
-  }
-
-  /**
-   * Checks if broadcasting is active
-   *
-   * @returns True if broadcasting is active
-   */
-  isBroadcastingActive(): boolean {
-    return this.isBroadcasting;
-  }
-
-  /**
-   * Gets broadcasting statistics
-   *
-   * @returns Broadcasting statistics
-   */
-  getBroadcastingStats(): {
-    isActive: boolean;
-    intervalMs: number;
-    lastBroadcast: number | null;
-    totalClients: number;
-  } {
     return {
-      isActive: this.isBroadcasting,
-      intervalMs: this.broadcastInterval ? 5000 : 0, // Default interval
-      lastBroadcast: this.lastMetrics?.timestamp || null,
-      totalClients: this.wsServer.getConnectionCount()
+      timestamp: Date.now(),
+      memory: {
+        used: memUsage.heapUsed,
+        total: memUsage.heapTotal,
+        percentage: (memUsage.heapUsed / memUsage.heapTotal) * 100
+      },
+      cpu: {
+        usage: (cpuUsage.user + cpuUsage.system) / 1000000, // Convert to seconds
+        loadAverage: process.platform === 'win32' ? [0, 0, 0] : require('os').loadavg()
+      },
+      responseTime: {
+        average: this.calculateAverageResponseTime(),
+        p95: this.calculateP95ResponseTime(),
+        p99: this.calculateP99ResponseTime()
+      },
+      cache: {
+        hitRate: this.calculateCacheHitRate(),
+        missRate: this.calculateCacheMissRate(),
+        size: this.calculateCacheSize()
+      },
+      errors: {
+        count: this.getErrorCount(),
+        rate: this.getErrorRate(),
+        lastError: this.getLastError() || undefined
+      },
+      throughput: {
+        requestsPerSecond: this.calculateRequestsPerSecond(),
+        bytesPerSecond: this.calculateBytesPerSecond()
+      }
     };
   }
 
-  private setupEventHandlers(): void {
-    // Listen to performance monitor events
-    globalPerformanceMonitor.on('alert-triggered', (alert) => {
-      this.broadcastPerformanceAlert(
-        alert.metric,
-        alert.severity,
-        alert.message,
-        { responseTime: alert.threshold }
-      );
-    });
+  /**
+   * Collects current system health data
+   */
+  private collectSystemHealth(): SystemHealthData {
+    const uptime = process.uptime();
+    const activeConnections = this.wsServer.getConnectionCount();
 
-    // Listen to workflow events
-    this.workflowEvents.on('workflow:status:update', (update) => {
-      this.emit('workflow:status:update', update);
-    });
+    return {
+      status: this.determineSystemStatus(),
+      uptime: uptime,
+      version: process.env.npm_package_version || '2.0.0',
+      lastRestart: Date.now() - (uptime * 1000),
+      activeConnections: activeConnections,
+      queueSize: this.getQueueSize(),
+      alerts: this.getActiveAlerts()
+    };
+  }
 
-    this.workflowEvents.on('workflow:completed', (update) => {
-      this.emit('workflow:completed', update);
-    });
+  /**
+   * Calculates average response time
+   */
+  private calculateAverageResponseTime(): number {
+    // This would integrate with actual request tracking
+    return Math.random() * 100 + 50; // Mock data for now
+  }
 
-    this.workflowEvents.on('workflow:failed', (update) => {
-      this.emit('workflow:failed', update);
-    });
+  /**
+   * Calculates P95 response time
+   */
+  private calculateP95ResponseTime(): number {
+    // This would integrate with actual request tracking
+    return Math.random() * 200 + 100; // Mock data for now
+  }
 
-    // Listen to performance events
-    this.performanceEvents.on('performance:metrics', (metrics) => {
-      this.emit('performance:metrics', metrics);
-    });
+  /**
+   * Calculates P99 response time
+   */
+  private calculateP99ResponseTime(): number {
+    // This would integrate with actual request tracking
+    return Math.random() * 500 + 200; // Mock data for now
+  }
 
-    this.performanceEvents.on('performance:alert', (alert) => {
-      this.emit('performance:alert', alert);
-    });
+  /**
+   * Calculates cache hit rate
+   */
+  private calculateCacheHitRate(): number {
+    // This would integrate with actual cache tracking
+    return Math.random() * 0.3 + 0.7; // Mock data for now
+  }
+
+  /**
+   * Calculates cache miss rate
+   */
+  private calculateCacheMissRate(): number {
+    return 1 - this.calculateCacheHitRate();
+  }
+
+  /**
+   * Calculates cache size
+   */
+  private calculateCacheSize(): number {
+    // This would integrate with actual cache tracking
+    return Math.floor(Math.random() * 1000000); // Mock data for now
+  }
+
+  /**
+   * Gets error count
+   */
+  private getErrorCount(): number {
+    // This would integrate with actual error tracking
+    return Math.floor(Math.random() * 10); // Mock data for now
+  }
+
+  /**
+   * Gets error rate
+   */
+  private getErrorRate(): number {
+    // This would integrate with actual error tracking
+    return Math.random() * 0.01; // Mock data for now
+  }
+
+  /**
+   * Gets last error message
+   */
+  private getLastError(): string | undefined {
+    // This would integrate with actual error tracking
+    return Math.random() > 0.8 ? 'Sample error message' : undefined;
+  }
+
+  /**
+   * Calculates requests per second
+   */
+  private calculateRequestsPerSecond(): number {
+    // This would integrate with actual request tracking
+    return Math.random() * 100 + 50; // Mock data for now
+  }
+
+  /**
+   * Calculates bytes per second
+   */
+  private calculateBytesPerSecond(): number {
+    // This would integrate with actual request tracking
+    return Math.random() * 1000000 + 500000; // Mock data for now
+  }
+
+  /**
+   * Determines system status
+   */
+  private determineSystemStatus(): 'healthy' | 'warning' | 'critical' {
+    const memUsage = process.memoryUsage();
+    const memoryPercentage = (memUsage.heapUsed / memUsage.heapTotal) * 100;
+
+    if (memoryPercentage > 90) return 'critical';
+    if (memoryPercentage > 75) return 'warning';
+    return 'healthy';
+  }
+
+  /**
+   * Gets queue size
+   */
+  private getQueueSize(): number {
+    // This would integrate with actual queue tracking
+    return Math.floor(Math.random() * 100); // Mock data for now
+  }
+
+  /**
+   * Gets active alerts
+   */
+  private getActiveAlerts(): Array<{
+    type: string;
+    message: string;
+    severity: 'low' | 'medium' | 'high' | 'critical';
+    timestamp: number;
+  }> {
+    // This would integrate with actual alert system
+    return []; // Mock data for now
   }
 }

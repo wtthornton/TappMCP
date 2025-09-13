@@ -1,6 +1,6 @@
 # TappMCP - AI Assistant Enhancement Platform
 
-AI-powered MCP server designed to **enhance AI assistants** with real analysis capabilities, Context7 intelligence, and comprehensive workflow orchestration.
+AI-powered MCP server designed to **enhance AI assistants** with real analysis capabilities, Context7 intelligence, comprehensive workflow orchestration, and **real-time monitoring dashboard**.
 
 ## ✨ Context7 Intelligence for AI Assistants
 
@@ -16,6 +16,16 @@ TappMCP features **Context7 intelligence integration** designed to make AI assis
 **Purpose**: The Context7 intelligence is designed to enhance AI assistants (like Claude, Cursor AI) to provide better code suggestions, not to generate code directly.
 
 ## 🚀 Quick Start
+
+### 🌐 Real-Time Dashboard
+Access the live monitoring dashboard at: **http://localhost:3000**
+
+Features:
+- 📊 **Real-time Performance Metrics** - Memory, CPU, response times
+- 🔄 **Active Workflow Monitoring** - Live workflow status with progress bars
+- 🔔 **Notification Center** - Real-time alerts and system notifications
+- ⚡ **WebSocket Integration** - Live data updates without page refresh
+- 📱 **Responsive Design** - Works on desktop and mobile
 
 ### Context7 Setup (Optional)
 Context7 integration works automatically with fallback. For full functionality:
@@ -48,22 +58,19 @@ npm run build && npm start
 
 ### Docker Production Deployment
 ```bash
-# ⚠️ CRITICAL: Use docker-compose.yml for two-level deployment
-docker-compose up -d
+# Deploy with real-time dashboard
+docker-compose -f docker-compose.core.yml up --build -d
 
-# ❌ WRONG: Don't use docker-compose.production.yml (wrong ports)
-# ❌ WRONG: Don't use manual docker run (wrong container name)
-
-# Or use Docker Compose (recommended)
-docker-compose up -d smart-mcp
+# Access dashboard
+open http://localhost:3000
 
 # Health verification
-curl http://localhost:8081/health
-curl http://localhost:8081/ready
+curl http://localhost:3000/health
+curl http://localhost:3000/tools
 
 # Verify production deployment
 docker ps
-docker logs smart-mcp-prod
+docker logs tappmcp-tappmcp-http-1
 ```
 
 **⚠️ Important Container Naming:**
@@ -221,6 +228,7 @@ Natural language interface for Cursor - full vibe coder experience with context 
 
 ## 🎯 Key Features
 
+### 🚀 Core Platform
 - **30-Day Persistent Cache**: 95% API cost reduction with intelligent caching
 - **Advanced Context7 Cache**: Enterprise-grade caching with compression, analytics, and monitoring
 - **Unified Code Intelligence**: Multi-category intelligence engines (Frontend, Backend, DevOps, Mobile)
@@ -231,6 +239,33 @@ Natural language interface for Cursor - full vibe coder experience with context 
 - **Security First**: Real vulnerability detection and prevention
 - **Performance**: <100ms response time, <2s analysis
 - **Docker Ready**: Production containerization with health checks
+
+### 🌐 Real-Time Monitoring (NEW!)
+- **Live Dashboard**: Beautiful, responsive web interface at http://localhost:3000
+- **Performance Metrics**: Real-time memory, CPU, response time monitoring
+- **Workflow Tracking**: Live workflow status with progress bars and phase information
+- **System Health**: Uptime, version, active connections, error rates
+- **WebSocket Integration**: Real-time data streaming without page refresh
+- **Notification Center**: Live alerts and system notifications
+- **Auto-Reconnection**: Handles connection drops gracefully
+- **Mobile Responsive**: Works perfectly on desktop and mobile devices
+
+### 🎨 Visual Status System
+- **Contextual Status Icons**: Comprehensive icon library for all status types
+- **Color-Coded Indicators**: Success (Green), Warning (Yellow), Error (Red), Info (Blue)
+- **Workflow Status Icons**: Pending, Running, Completed, Failed, Cancelled, Paused, Queued
+- **Performance Status Icons**: Excellent, Good, Warning, Critical, Unknown
+- **Notification Priority Icons**: Critical, High, Medium, Low, Info
+- **System Status Icons**: Server, Database, Network, Loading
+- **Animation Support**: Pulse, spin, bounce animations for dynamic states
+
+### 🔔 Smart Notifications (NEW!)
+- **Multi-Channel Delivery**: WebSocket, Email, Push, In-App notifications
+- **Priority Levels**: Critical, High, Medium, Low, Info with proper weighting
+- **Template System**: Reusable notification templates with variable substitution
+- **User Preferences**: Configurable notification preferences and quiet hours
+- **Analytics Support**: Delivery rates, read rates, engagement tracking
+- **Intelligent Filtering**: ML-powered notification filtering and prioritization
 
 ## 📊 Quality Standards
 

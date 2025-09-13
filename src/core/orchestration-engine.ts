@@ -1220,13 +1220,14 @@ export class OrchestrationEngine {
 
       // Broadcast workflow start
       if (this.metricsBroadcaster) {
-        this.metricsBroadcaster.broadcastWorkflowStatus(
+        this.metricsBroadcaster.updateWorkflowStatus(workflowId, {
           workflowId,
-          'running',
-          0,
-          'Initializing workflow',
-          'Workflow execution started'
-        );
+          status: 'running',
+          progress: 0,
+          currentPhase: 'Initializing workflow',
+          startTime: Date.now(),
+          metadata: { message: 'Workflow execution started' }
+        });
       }
 
       // Set up business context
@@ -1268,13 +1269,14 @@ export class OrchestrationEngine {
 
         // Broadcast phase start
         if (this.metricsBroadcaster) {
-          this.metricsBroadcaster.broadcastWorkflowStatus(
-            workflowId,
-            'running',
-            progress,
-            `Executing ${phase.name}`,
-            `Starting ${phase.name} phase (${i + 1}/${totalPhases})`
-          );
+            this.metricsBroadcaster.updateWorkflowStatus(workflowId, {
+              workflowId,
+              status: 'running',
+              progress,
+              currentPhase: `Executing ${phase.name}`,
+              startTime: Date.now(),
+              metadata: { message: `Starting ${phase.name} phase (${i + 1}/${totalPhases})` }
+            });
         }
 
         // Execute phase tasks
@@ -1292,12 +1294,15 @@ export class OrchestrationEngine {
 
           // Broadcast workflow failure
           if (this.metricsBroadcaster) {
-            this.metricsBroadcaster.broadcastWorkflowCompletion(
+            this.metricsBroadcaster.updateWorkflowStatus(workflowId, {
               workflowId,
-              false,
-              `Workflow failed during ${phase.name} phase`,
-              { failedPhase: phase.name, error: phaseResult.issues?.[0] }
-            );
+              status: 'failed',
+              progress: 100,
+              currentPhase: `Workflow failed during ${phase.name} phase`,
+              startTime: Date.now(),
+              error: phaseResult.issues?.[0]?.message || 'Unknown error',
+              metadata: { failedPhase: phase.name, error: phaseResult.issues?.[0] }
+            });
           }
           break;
         }
@@ -1307,11 +1312,13 @@ export class OrchestrationEngine {
 
         // Broadcast phase completion
         if (this.metricsBroadcaster) {
-          this.metricsBroadcaster.broadcastWorkflowProgress(
+          this.metricsBroadcaster.updateWorkflowStatus(workflowId, {
             workflowId,
-            Math.round(((i + 1) / totalPhases) * 100),
-            `Completed ${phase.name} phase`
-          );
+            status: 'running',
+            progress: Math.round(((i + 1) / totalPhases) * 100),
+            currentPhase: `Completed ${phase.name} phase`,
+            startTime: Date.now()
+          });
         }
       }
 
@@ -1338,7 +1345,14 @@ export class OrchestrationEngine {
 
       // Broadcast workflow completion
       if (this.metricsBroadcaster) {
-        this.metricsBroadcaster.broadcastWorkflowCompletion(
+        this.metricsBroadcaster.updateWorkflowStatus(workflowId, {
+          workflowId,
+          status: 'completed',
+          progress: 100,
+          currentPhase: 'Workflow completed',
+          startTime: Date.now(),
+          metadata: { executionTime, businessValue: result.businessValue }
+        });
           workflowId,
           result.success,
           result.success ? 'Workflow completed successfully' : 'Workflow execution failed',
@@ -1365,7 +1379,14 @@ export class OrchestrationEngine {
 
       // Broadcast workflow error
       if (this.metricsBroadcaster) {
-        this.metricsBroadcaster.broadcastWorkflowCompletion(
+        this.metricsBroadcaster.updateWorkflowStatus(workflowId, {
+          workflowId,
+          status: 'completed',
+          progress: 100,
+          currentPhase: 'Workflow completed',
+          startTime: Date.now(),
+          metadata: { executionTime, businessValue: result.businessValue }
+        });
           workflowId,
           false,
           `Workflow execution failed: ${mcpError.message}`,

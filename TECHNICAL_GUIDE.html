@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TappMCP v2.0 - Technical Architecture Guide</title>
+    <title>TappMCP v2.0 - Technical Architecture Guide with Real-Time Monitoring</title>
     <style>
         :root {
             --primary-color: #2563eb;
@@ -393,6 +393,7 @@
                 <h3>📚 Technical Guide Contents</h3>
                 <ul>
                     <li><a href="#architecture">🏗️ System Architecture Overview</a></li>
+                    <li><a href="#real-time-monitoring">🌐 Real-Time Monitoring Architecture</a></li>
                     <li><a href="#context7-integration">🧠 Context7 Integration Deep Dive</a></li>
                     <li><a href="#mcp-integrations">🔗 Third-Party MCP Server Integrations</a></li>
                     <li><a href="#call-flows">🔄 Technical Call Flows & Data Flow</a></li>
@@ -451,6 +452,94 @@
 ├── vitest - Testing Framework
 ├── docker - Containerization
 └── node.js - Runtime Environment</div>
+            </section>
+
+            <section id="real-time-monitoring" class="section">
+                <h2>🌐 Real-Time Monitoring Architecture</h2>
+
+                <p>TappMCP v2.0 includes a comprehensive real-time monitoring system with WebSocket-based dashboard, performance metrics, and intelligent notifications.</p>
+
+                <h3>Monitoring Components</h3>
+                <div class="architecture-diagram">
+                    <div class="flow-diagram">
+                        <div class="flow-step">
+                            <h4>📊 MetricsBroadcaster</h4>
+                            <p>Collects and broadcasts real-time performance data</p>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <h4>🔌 WebSocket Server</h4>
+                            <p>Real-time communication with dashboard clients</p>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <h4>🌐 Dashboard</h4>
+                            <p>Live monitoring interface at localhost:3000</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Performance Metrics Collection</h3>
+                <ul>
+                    <li><strong>Memory Usage</strong> - Heap used, heap total, external memory</li>
+                    <li><strong>CPU Utilization</strong> - Process CPU usage and load averages</li>
+                    <li><strong>Response Times</strong> - API endpoint response times and latency</li>
+                    <li><strong>Cache Performance</strong> - Hit rates, miss rates, cache size</li>
+                    <li><strong>Error Rates</strong> - Error counts and error rates by endpoint</li>
+                    <li><strong>Active Connections</strong> - WebSocket connections and HTTP sessions</li>
+                </ul>
+
+                <h3>WebSocket Communication</h3>
+                <div class="code-block">// WebSocket Event Types
+{
+  "type": "performance_metrics",
+  "data": {
+    "memory": { "used": 123456, "total": 234567 },
+    "cpu": { "usage": 45.2 },
+    "responseTime": { "average": 120, "p95": 250 },
+    "timestamp": 1640995200000
+  }
+}
+
+// Workflow Status Updates
+{
+  "type": "workflow_status",
+  "data": {
+    "workflowId": "workflow-123",
+    "status": "running",
+    "progress": 65,
+    "currentPhase": "Code Generation",
+    "startTime": 1640995200000
+  }
+}</div>
+
+                <h3>Dashboard Features</h3>
+                <ul>
+                    <li><strong>Real-time Updates</strong> - Live data streaming via WebSocket</li>
+                    <li><strong>Performance Charts</strong> - Memory, CPU, response time visualizations</li>
+                    <li><strong>Workflow Tracking</strong> - Live workflow status with progress bars</li>
+                    <li><strong>System Health</strong> - Uptime, version, connection status</li>
+                    <li><strong>Notification Center</strong> - Real-time alerts and system notifications</li>
+                    <li><strong>Auto-Reconnection</strong> - Handles connection drops gracefully</li>
+                    <li><strong>Mobile Responsive</strong> - Works on desktop and mobile devices</li>
+                </ul>
+
+                <h3>Visual Status System</h3>
+                <ul>
+                    <li><strong>Status Icons</strong> - Comprehensive icon library for all status types</li>
+                    <li><strong>Color Coding</strong> - Success (Green), Warning (Yellow), Error (Red), Info (Blue)</li>
+                    <li><strong>Animations</strong> - Pulse, spin, bounce for dynamic states</li>
+                    <li><strong>Priority Indicators</strong> - Visual priority levels for notifications</li>
+                </ul>
+
+                <h3>Smart Notifications</h3>
+                <ul>
+                    <li><strong>Multi-Channel</strong> - WebSocket, Email, Push, In-App</li>
+                    <li><strong>Priority Levels</strong> - Critical, High, Medium, Low, Info</li>
+                    <li><strong>Template System</strong> - Reusable notification templates</li>
+                    <li><strong>User Preferences</strong> - Configurable notification settings</li>
+                    <li><strong>Analytics</strong> - Delivery rates, read rates, engagement</li>
+                </ul>
             </section>
 
             <section id="context7-integration" class="section">

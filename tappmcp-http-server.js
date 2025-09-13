@@ -17,6 +17,7 @@ const wss = new WebSocketServer({ server });
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.static('public'));
 
 // MCP Tools implementation
 const mcpTools = {
@@ -337,7 +338,7 @@ wss.on('connection', (ws) => {
     } catch (error) {
       ws.send(JSON.stringify({
         jsonrpc: '2.0',
-        id: data?.id || null,
+        id: null,
         error: { message: error.message }
       }));
     }
