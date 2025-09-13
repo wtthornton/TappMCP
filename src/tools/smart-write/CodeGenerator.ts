@@ -53,7 +53,8 @@ export class CodeGenerator {
       });
 
       // Transform result into our format
-      const primaryFile = `src/${this.generateFeatureName(input.featureDescription)}.ts`;
+      const featureName = this.generateFeatureName(input.featureDescription);
+      const primaryFile = this.getPrimaryFilePath(featureName, input.techStack);
       const files: GeneratedFile[] = [
         {
           path: primaryFile,
@@ -74,7 +75,10 @@ export class CodeGenerator {
         },
       };
     } catch (error) {
-      console.warn('UnifiedCodeIntelligenceEngine failed, falling back to legacy generation:', error);
+      console.warn(
+        'UnifiedCodeIntelligenceEngine failed, falling back to legacy generation:',
+        error
+      );
       return this.generateLegacyCode(input);
     }
   }
@@ -89,7 +93,8 @@ export class CodeGenerator {
     let primaryContent: string;
 
     // Choose generation method based on tech stack
-    if (input.techStack.includes('HTML') || input.techStack.includes('CSS')) {
+    if (input.techStack.includes('HTML') || input.techStack.includes('html') ||
+        input.techStack.includes('CSS') || input.techStack.includes('css')) {
       primaryContent = this.generateHtmlContent(input, featureName);
     } else {
       primaryContent = this.generateTypeScriptContent(input, featureName, functionName);
@@ -163,7 +168,11 @@ export class CodeGenerator {
   /**
    * Generate TypeScript content
    */
-  private generateTypeScriptContent(input: EnhancedInput, featureName: string, functionName: string): string {
+  private generateTypeScriptContent(
+    input: EnhancedInput,
+    featureName: string,
+    functionName: string
+  ): string {
     const roleSpecificCode = this.getRoleSpecificCode(input, functionName);
 
     return `/**
@@ -618,14 +627,14 @@ function optimizeUX(requirement: string): any {
     files.push({
       path: `src/${featureName}.test.ts`,
       content: this.getRoleSpecificTests(functionName, input.targetRole),
-      type: 'test'
+      type: 'test',
     });
 
     // Generate documentation
     files.push({
       path: `docs/${featureName}.md`,
       content: this.getRoleSpecificDocumentation(input, functionName),
-      type: 'documentation'
+      type: 'documentation',
     });
 
     return files;
@@ -643,7 +652,7 @@ function optimizeUX(requirement: string): any {
         files.push({
           path: `tests/${featureName}.e2e.ts`,
           content: this.generateE2ETests(input),
-          type: 'test'
+          type: 'test',
         });
         break;
 
@@ -651,7 +660,7 @@ function optimizeUX(requirement: string): any {
         files.push({
           path: `deploy/${featureName}.yml`,
           content: this.generateDeploymentConfig(input),
-          type: 'config'
+          type: 'config',
         });
         break;
 
@@ -659,7 +668,7 @@ function optimizeUX(requirement: string): any {
         files.push({
           path: `design/${featureName}.css`,
           content: this.generateDesignTokens(input),
-          type: 'style'
+          type: 'style',
         });
         break;
     }
@@ -683,13 +692,16 @@ function optimizeUX(requirement: string): any {
       .toLowerCase()
       .replace(/[^a-z0-9\s]/g, '')
       .split(' ')
-      .map((word, index) => index === 0 ? word : this.capitalize(word))
+      .map((word, index) => (index === 0 ? word : this.capitalize(word)))
       .join('')
       .substring(0, 30);
   }
 
   private toPascalCase(str: string): string {
-    return str.split('-').map(word => this.capitalize(word)).join('');
+    return str
+      .split('-')
+      .map(word => this.capitalize(word))
+      .join('');
   }
 
   private capitalize(str: string): string {
@@ -704,7 +716,7 @@ function optimizeUX(requirement: string): any {
     }
 
     if (techStack.includes('TypeScript')) {
-      imports.push("// TypeScript interfaces and types");
+      imports.push('// TypeScript interfaces and types');
     }
 
     return imports.length > 0 ? imports.join('\n') + '\n\n' : '';
@@ -748,7 +760,9 @@ export default ${functionName};`;
     if (techStack.includes('JavaScript')) return 'js';
     if (techStack.includes('Python')) return 'py';
     if (techStack.includes('Java')) return 'java';
-    if (techStack.includes('HTML')) return 'html';
+    if (techStack.includes('HTML') || techStack.includes('html')) return 'html';
+    if (techStack.includes('CSS') || techStack.includes('css')) return 'css';
+    if (techStack.includes('JavaScript') || techStack.includes('javascript')) return 'js';
     return 'ts'; // Default to TypeScript
   }
 
@@ -777,11 +791,11 @@ export default ${functionName};`;
 
   private getDependenciesForTechnology(technology: string): string[] {
     const deps: Record<string, string[]> = {
-      'React': ['react', '@types/react'],
-      'TypeScript': ['typescript', '@types/node'],
-      'Express': ['express', '@types/express'],
+      React: ['react', '@types/react'],
+      TypeScript: ['typescript', '@types/node'],
+      Express: ['express', '@types/express'],
       'Node.js': ['@types/node'],
-      'Jest': ['jest', '@types/jest'],
+      Jest: ['jest', '@types/jest'],
     };
 
     return deps[technology] || [];
@@ -789,11 +803,11 @@ export default ${functionName};`;
 
   private getRoleFocus(role: string): string {
     const focuses: Record<string, string> = {
-      'developer': 'Code quality, performance, and maintainability',
+      developer: 'Code quality, performance, and maintainability',
       'qa-engineer': 'Testing, validation, and quality assurance',
       'operations-engineer': 'Deployment, monitoring, and infrastructure',
       'product-strategist': 'Business value, user impact, and metrics',
-      'designer': 'User experience, accessibility, and design systems',
+      designer: 'User experience, accessibility, and design systems',
     };
 
     return focuses[role] || focuses['developer'];
@@ -824,7 +838,10 @@ describe('${functionName}', () => {
 });`;
   }
 
-  private generateRoleSpecificTestCases(role: string, functionName: string = 'testFunction'): string {
+  private generateRoleSpecificTestCases(
+    role: string,
+    functionName: string = 'testFunction'
+  ): string {
     switch (role) {
       case 'qa-engineer':
         return `it('should meet quality gates', () => {
@@ -935,7 +952,9 @@ ${this.getRoleSpecificFeatures(input.targetRole)}
 
 ## Dependencies
 
-${this.extractDependencies('', input.techStack).map(dep => `- ${dep}`).join('\n')}
+${this.extractDependencies('', input.techStack)
+  .map(dep => `- ${dep}`)
+  .join('\n')}
 
 ## Generated
 

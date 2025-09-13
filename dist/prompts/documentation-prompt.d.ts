@@ -19,11 +19,11 @@ export declare const DocumentationPromptSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     code: string;
     language: string;
-    docType: "function" | "api" | "class" | "module" | "tutorial" | "guide" | "readme";
+    docType: "function" | "api" | "class" | "module" | "readme" | "tutorial" | "guide";
     requirements?: string[] | undefined;
     style?: "markdown" | "jsdoc" | "tsdoc" | "sphinx" | "asciidoc" | "plain" | undefined;
     includeExamples?: boolean | undefined;
-    audience?: "beginner" | "developer" | "end-user" | "maintainer" | "expert" | undefined;
+    audience?: "beginner" | "developer" | "expert" | "end-user" | "maintainer" | undefined;
     includeParameters?: boolean | undefined;
     includeReturnValues?: boolean | undefined;
     includeErrors?: boolean | undefined;
@@ -32,11 +32,11 @@ export declare const DocumentationPromptSchema: z.ZodObject<{
 }, {
     code: string;
     language: string;
-    docType: "function" | "api" | "class" | "module" | "tutorial" | "guide" | "readme";
+    docType: "function" | "api" | "class" | "module" | "readme" | "tutorial" | "guide";
     requirements?: string[] | undefined;
     style?: "markdown" | "jsdoc" | "tsdoc" | "sphinx" | "asciidoc" | "plain" | undefined;
     includeExamples?: boolean | undefined;
-    audience?: "beginner" | "developer" | "end-user" | "maintainer" | "expert" | undefined;
+    audience?: "beginner" | "developer" | "expert" | "end-user" | "maintainer" | undefined;
     includeParameters?: boolean | undefined;
     includeReturnValues?: boolean | undefined;
     includeErrors?: boolean | undefined;

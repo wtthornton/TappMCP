@@ -8,19 +8,6 @@ import {
   Tool,
 } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
-import { handleError, getErrorMessage } from './utils/errors.js';
-
-// Import health server for Docker health checks (skip for tests and when explicitly disabled)
-// Skip HTTP servers for MCP stdio mode to avoid port conflicts
-if (
-  process.env.NODE_ENV !== 'test' &&
-  process.env.VITEST !== 'true' &&
-  process.env.SKIP_HEALTH_SERVER !== 'true' &&
-  process.env.MCP_STDIO_MODE !== 'true'
-) {
-  import('./health-server.js');
-  import('./http-server.js');
-}
 
 // Import tool handlers
 import { smartBeginTool, handleSmartBegin } from './tools/smart-begin.js';
@@ -81,7 +68,7 @@ const ToolResponseSchema = z.object({
   timestamp: z.string(),
 });
 
-class SmartMCPServer {
+class MCPStdioServer {
   private server: Server;
 
   constructor() {
@@ -106,8 +93,8 @@ class SmartMCPServer {
           tools,
         };
       } catch (error) {
-        const mcpError = handleError(error, { operation: 'list_tools' });
-        throw mcpError;
+        console.error('Error listing tools:', error);
+        throw error;
       }
     });
 
@@ -135,8 +122,6 @@ class SmartMCPServer {
         // Get tool and handler
         const { tool, handler } = TOOLS[name];
 
-        // Note: MCP SDK handles input validation automatically based on inputSchema
-
         // Execute tool handler
         const result = (await handler(args)) as {
           success?: boolean;
@@ -162,8 +147,7 @@ class SmartMCPServer {
           ],
         };
       } catch (error) {
-        const mcpError = handleError(error, { operation: 'call_tool', toolName });
-        const errorMessage = getErrorMessage(mcpError);
+        const errorMessage = error instanceof Error ? error.message : String(error);
 
         return {
           content: [
@@ -173,7 +157,6 @@ class SmartMCPServer {
                 {
                   success: false,
                   error: errorMessage,
-                  code: mcpError.code,
                   timestamp: new Date().toISOString(),
                 },
                 null,
@@ -193,11 +176,8 @@ class SmartMCPServer {
       await this.server.connect(transport);
 
       // Server started successfully - don't log to stdout in MCP mode
-      // console.log(`MCP Server ${SERVER_NAME} started successfully`);
     } catch (error) {
-      const mcpError = handleError(error, { operation: 'start_server' });
-      // eslint-disable-next-line no-console
-      console.error(`Failed to start ${SERVER_NAME}:`, mcpError.message);
+      console.error(`Failed to start ${SERVER_NAME}:`, error);
       process.exit(1);
     }
   }
@@ -206,11 +186,8 @@ class SmartMCPServer {
 // Start server if this file is run directly
 const normalizedPath = process.argv[1].replace(/\\/g, '/');
 const expectedUrl = `file://${normalizedPath}`;
-// Handle Windows path format with three slashes
 const isMainModule =
   import.meta.url === expectedUrl || import.meta.url === `file:///${normalizedPath}`;
-
-// Debug info removed for production
 
 if (isMainModule) {
   // Disable console.log in MCP stdio mode to prevent interference with JSON-RPC protocol
@@ -220,13 +197,12 @@ if (isMainModule) {
   // Keep console.error for important messages
   console.error('🚀 Starting MCP Server...');
 
-  const server = new SmartMCPServer();
+  const server = new MCPStdioServer();
   server.start().catch(error => {
     console.error('❌ Server startup failed:', error);
     process.exit(1);
   });
-} else {
-  console.error('❌ Server not started - condition not met');
 }
 
-export { SmartMCPServer };
+export { MCPStdioServer };
+

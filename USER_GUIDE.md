@@ -1,6 +1,6 @@
 # TappMCP v2.0 - Complete User Guide
 
-**Welcome to TappMCP v2.0!** This comprehensive guide will help you get started with the AI assistant enhancement platform that features Smart Vibe natural language interface, Context7 intelligence for AI assistants, and production-ready deployment.
+**Welcome to TappMCP v2.0!** This comprehensive guide will help you get started with the AI assistant enhancement platform that features 7 Smart Tools, 5 Specialized Roles, Context7 intelligence for AI assistants, and production-ready deployment.
 
 **Purpose**: TappMCP enhances AI assistants (like Claude, Cursor AI) with Context7 intelligence to provide better code suggestions and domain expertise, not to generate code directly.
 
@@ -85,79 +85,12 @@ Add to your Cursor MCP configuration (`~/.cursor/mcp_config.json`):
 }
 ```
 
-## 🎵 Smart Vibe - AI Assistant Enhancement Interface
+## 🛠️ 7 Smart Tools - AI Assistant Enhancement
 
-Smart Vibe is the flagship feature that enhances AI assistants (like Claude, Cursor AI) with Context7 intelligence to provide better code suggestions and domain expertise.
+All 7 smart tools are designed to enhance AI assistants with Context7 intelligence, providing better code suggestions and domain expertise.
 
-### How It Works for AI Assistants
-
-```typescript
-// AI assistants use smart_vibe to get enhanced context and suggestions:
-smart_vibe "make me a React todo app with TypeScript"
-// → Provides AI assistant with React/TypeScript best practices and patterns
-
-smart_vibe "check my code quality"
-// → Gives AI assistant quality analysis tools and security insights
-
-smart_vibe "improve this function"
-// → Supplies AI assistant with optimization patterns and Context7 expertise
-```
-
-### Advanced Configuration
-
-```typescript
-// Specify role and quality level
-smart_vibe "create a login system" {
-  role: "developer",
-  quality: "enterprise",
-  verbosity: "detailed",
-  mode: "advanced"
-}
-
-// Quality assurance focused
-smart_vibe "analyze my test coverage" {
-  role: "qa-engineer",
-  quality: "production",
-  verbosity: "detailed"
-}
-
-// Operations focused
-smart_vibe "deploy my application" {
-  role: "operations-engineer",
-  quality: "production",
-  mode: "power"
-}
-```
-
-### Available Options
-
-**Roles:**
-- `developer` - Code generation and development tasks
-- `designer` - UX/UI focused tasks
-- `qa-engineer` - Quality assurance and testing
-- `operations-engineer` - Deployment and infrastructure
-- `product-strategist` - Business and strategic planning
-
-**Quality Levels:**
-- `basic` - Simple, functional code
-- `standard` - Production-ready with best practices
-- `enterprise` - Enterprise-grade with full testing
-- `production` - Maximum quality with security focus
-
-**Verbosity:**
-- `minimal` - Concise responses
-- `standard` - Balanced detail
-- `detailed` - Comprehensive explanations
-
-**Modes:**
-- `basic` - Single-step operations
-- `advanced` - Multi-step workflows
-- `power` - Full orchestration with all tools
-
-## 🛠️ Core Tools Reference - AI Assistant Enhancement
-
-### smart_begin - Project Analysis for AI Assistants
-Provides AI assistants with comprehensive project analysis and Context7-enhanced insights.
+### 🔍 smart_begin - Project Analysis for AI Assistants
+Provides AI assistants with comprehensive project analysis and Context7-enhanced insights for better architectural suggestions.
 
 ```typescript
 smart_begin {
@@ -174,8 +107,25 @@ smart_begin {
 - ✅ Technology-specific best practices and patterns
 - ✅ Quality analysis tools for AI assistant recommendations
 
-### smart_write - Code Enhancement for AI Assistants
-Supplies AI assistants with Context7 intelligence for better code suggestions.
+### 📋 smart_plan - Planning Intelligence for AI Assistants
+Provides AI assistants with Context7-enhanced planning and implementation guidance for better project roadmaps.
+
+```typescript
+smart_plan {
+  projectId: "project-123",
+  task: "Add real-time messaging",
+  targetQualityLevel: "enterprise"
+}
+```
+
+**AI Assistant Benefits:**
+- ✅ Context7 domain expertise for better planning
+- ✅ Implementation strategy patterns
+- ✅ Quality-driven approach guidance
+- ✅ Technology-specific planning insights
+
+### ✍️ smart_write - Code Enhancement for AI Assistants
+Supplies AI assistants with Context7 intelligence for better code suggestions and framework-specific guidance.
 
 ```typescript
 smart_write {
@@ -192,8 +142,8 @@ smart_write {
 - ✅ Framework-specific implementation guidance
 - ✅ Quality metrics for AI assistant evaluation
 
-### smart_finish - Quality Assurance for AI Assistants
-Provides AI assistants with comprehensive quality analysis tools.
+### ✅ smart_finish - Quality Assurance for AI Assistants
+Provides AI assistants with comprehensive quality analysis tools and production readiness criteria.
 
 ```typescript
 smart_finish {
@@ -213,8 +163,8 @@ smart_finish {
 - ✅ Performance benchmarking data for optimization advice
 - ✅ Production readiness criteria for AI guidance
 
-### smart_orchestrate - Workflow Intelligence for AI Assistants
-Supplies AI assistants with workflow orchestration knowledge and patterns.
+### 🎭 smart_orchestrate - Workflow Intelligence for AI Assistants
+Supplies AI assistants with workflow orchestration knowledge and SDLC patterns for better project guidance.
 
 ```typescript
 smart_orchestrate {
@@ -231,22 +181,74 @@ smart_orchestrate {
 - ✅ Process optimization insights
 - ✅ Monitoring and quality patterns
 
-### smart_plan - Planning Intelligence for AI Assistants
-Provides AI assistants with Context7-enhanced planning and implementation guidance.
+### 💬 smart_converse - Conversational Interface for AI Assistants
+Provides AI assistants with natural language conversation mapping to existing TappMCP tools using keyword matching.
 
 ```typescript
-smart_plan {
-  projectId: "project-123",
-  task: "Add real-time messaging",
-  targetQualityLevel: "enterprise"
+smart_converse {
+  userMessage: "I want to build a React todo app with TypeScript"
 }
 ```
 
 **AI Assistant Benefits:**
-- ✅ Context7 domain expertise for better planning
-- ✅ Implementation strategy patterns
-- ✅ Quality-driven approach guidance
-- ✅ Technology-specific planning insights
+- ✅ Natural language to tool mapping
+- ✅ Project type detection and configuration
+- ✅ Tech stack identification and setup
+- ✅ Conversational workflow automation
+
+### 🎯 smart_vibe - Full VibeTapp Natural Language Interface
+The flagship tool that provides complete VibeTapp natural language interface with visual status indicators and context management.
+
+```typescript
+smart_vibe {
+  command: "make me a React todo app with TypeScript",
+  options: {
+    role: "developer",
+    quality: "enterprise",
+    verbosity: "detailed",
+    mode: "advanced"
+  }
+}
+```
+
+**AI Assistant Benefits:**
+- ✅ Complete natural language interface
+- ✅ Visual status indicators and progress tracking
+- ✅ Context management across calls
+- ✅ Role switching and configuration
+- ✅ Rich responses with learning content
+
+## 👥 5 Specialized Roles
+
+TappMCP supports 5 specialized roles, each optimized for different aspects of development and AI assistant enhancement.
+
+### 🔧 Developer - AI-Augmented Developer (Default)
+Code generation and development tasks with focus on quality, performance, and maintainability.
+
+### 🎨 Designer - UX/Product Designer
+UX/UI focused tasks with emphasis on user experience, accessibility, and design systems.
+
+### 🧪 QA Engineer - Quality Assurance Engineer
+Quality assurance and testing with focus on testing, validation, and quality assurance.
+
+### 🚀 Operations Engineer - AI Operations Engineer
+Deployment and infrastructure with emphasis on deployment, monitoring, and infrastructure.
+
+### 📊 Product Strategist - Product Strategist
+Business and strategic planning with focus on business value, user impact, and metrics.
+
+### Role Switching
+Switch roles by saying:
+
+```bash
+"you are now a developer"           # AI-Augmented Developer (default)
+"you are now a designer"            # UX/Product Designer
+"you are now a qa engineer"         # Quality Assurance Engineer
+"you are now an operations engineer" # AI Operations Engineer
+"you are now a product strategist"   # Product Strategist
+```
+
+Each role has specialized priorities, tools, and quality standards optimized for different aspects of development and AI assistant enhancement.
 
 ## 🎯 Key Features - AI Assistant Enhancement
 
@@ -333,19 +335,187 @@ npm run lint               # ESLint fix
 npm run format             # Prettier fix
 ```
 
-### Role-Based Development
+## 🎯 Cursor Setup & Integration
 
-TappMCP supports 5 specialized roles. Switch roles by saying:
+TappMCP integrates seamlessly with Cursor through the Model Context Protocol (MCP), providing AI assistants with enhanced intelligence and domain expertise.
+
+### 🚀 Quick Setup (3 Methods)
+
+#### Method 1: Automated PowerShell Setup (Recommended)
+
+Run the automated setup script for Windows:
 
 ```bash
-"you are now a developer"           # AI-Augmented Developer (default)
-"you are now a designer"            # UX/Product Designer
-"you are now a qa engineer"         # Quality Assurance Engineer
-"you are now an operations engineer" # AI Operations Engineer
-"you are now a product strategist"   # Product Strategist
+# Ensure Docker container is running
+docker-compose up -d
+
+# Run the setup script
+.\setup-cursor-mcp.ps1
 ```
 
-Each role has specialized priorities, tools, and quality standards optimized for different aspects of development.
+**What it does:**
+- ✅ Checks and starts Docker container if needed
+- ✅ Backs up existing Cursor settings
+- ✅ Configures MCP server connection
+- ✅ Tests the connection automatically
+
+#### Method 2: Copy Settings File
+
+Copy the pre-configured settings file:
+
+```bash
+# Windows
+copy cursor-settings.json "%APPDATA%\Cursor\User\settings.json"
+
+# Or manually copy the contents to:
+# C:\Users\[YourUsername]\AppData\Roaming\Cursor\User\settings.json
+```
+
+**Then restart Cursor** to activate the MCP server.
+
+#### Method 3: Manual Configuration
+
+Configure manually in Cursor settings:
+
+1. Open Cursor Settings (Ctrl+,)
+2. Go to Extensions → MCP
+3. Add this configuration:
+
+```json
+{
+  "mcp.servers": {
+    "tappmcp": {
+      "command": "docker",
+      "args": ["exec", "-i", "tappmcp-smart-mcp-1", "node", "dist/server.js"],
+      "env": {
+        "NODE_ENV": "production"
+      },
+      "stdio": true,
+      "description": "TappMCP Smart Vibe - AI-powered development assistant"
+    }
+  },
+  "mcp.enabled": true,
+  "mcp.defaultServer": "tappmcp"
+}
+```
+
+### 🔧 Configuration Options
+
+#### 🐳 Docker Compose (Recommended)
+**Best for: Production use**
+
+```json
+"tappmcp": {
+  "command": "docker",
+  "args": ["exec", "-i", "tappmcp-smart-mcp-1", "node", "dist/server.js"],
+  "env": { "NODE_ENV": "production" },
+  "stdio": true
+}
+```
+
+#### 💻 Local Development
+**Best for: Development**
+
+```json
+"smart-mcp": {
+  "command": "node",
+  "args": ["dist/server.js"],
+  "cwd": "C:\\cursor\\TappMCP",
+  "env": { "NODE_ENV": "production" },
+  "stdio": true
+}
+```
+
+#### 📦 NPM Package
+**Best for: Global installation**
+
+```json
+"smart-mcp-npm": {
+  "command": "npx",
+  "args": ["smart-mcp"],
+  "env": { "NODE_ENV": "production" },
+  "stdio": true
+}
+```
+
+### ✅ Verification & Testing
+
+After setup, verify TappMCP is working in Cursor:
+
+```bash
+smart_vibe "create a React todo app with TypeScript"
+smart_begin "analyze my current project"
+smart_plan "add user authentication"
+```
+
+### 🎯 How to Use TappMCP in Cursor
+
+#### 🎵 Smart Vibe Commands
+- `smart_vibe "build me a REST API"`
+- `smart_vibe "add authentication to my app"`
+- `smart_vibe "optimize my database queries"`
+- `smart_vibe "create a mobile app with React Native"`
+
+#### 🛠️ Direct Tool Commands
+- `smart_begin` - Project analysis and setup
+- `smart_plan` - Technical planning and roadmaps
+- `smart_write` - Code generation and enhancement
+- `smart_finish` - Quality assurance and completion
+- `smart_orchestrate` - Workflow automation
+- `smart_converse` - Natural language interface
+
+#### 👥 Role Switching
+- `"you are now a developer"`
+- `"you are now a designer"`
+- `"you are now a qa engineer"`
+- `"you are now an operations engineer"`
+- `"you are now a product strategist"`
+
+### 🔍 Troubleshooting Cursor Integration
+
+#### Issue: "smart_vibe command not found"
+**Solution:**
+1. Check Docker container is running: `docker ps`
+2. Verify Cursor settings: Ctrl+, then search "mcp"
+3. Restart Cursor completely
+4. Check container name matches configuration
+
+#### Issue: "Failed to connect to MCP server"
+**Solution:**
+1. Ensure Docker container is healthy: `docker logs tappmcp-smart-mcp-1`
+2. Check port conflicts: `docker ps`
+3. Verify MCP configuration syntax
+4. Try restarting Docker: `docker-compose restart`
+
+#### Issue: "Container not found"
+**Solution:**
+1. Start Docker Compose: `docker-compose up -d`
+2. Check container name: `docker ps --format "table {{.Names}}"`
+3. Update configuration if container name differs
+
+### 📊 Health Monitoring in Cursor
+
+Monitor TappMCP health directly from Cursor:
+
+```bash
+curl http://localhost:8081/health
+curl http://localhost:8081/ready
+```
+
+Or check Docker container status:
+
+```bash
+docker ps --filter "name=tappmcp"
+docker logs tappmcp-smart-mcp-1
+```
+
+### 🎉 Success Indicators
+
+- ✅ MCP server listed in Cursor settings under Extensions → MCP
+- ✅ `smart_vibe` commands work without errors
+- ✅ No "command not found" or connection errors
+- ✅ TappMCP tools appear in Cursor's tool palette
+- ✅ Context7 intelligence enhances AI assistant responses
 
 ## 🚀 Production Deployment Guide
 

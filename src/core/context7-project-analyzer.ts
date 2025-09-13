@@ -1015,13 +1015,14 @@ export class Context7ProjectAnalyzer {
         'Optimize for maintainability',
         'Follow security best practices',
       ],
-      techStackSpecific: analysis.project?.detectedTechStack?.reduce(
-        (acc, tech) => {
-          acc[tech] = [`Follow ${tech} best practices`, 'Review official documentation'];
-          return acc;
-        },
-        {} as Record<string, string[]>
-      ) || {},
+      techStackSpecific:
+        analysis.project?.detectedTechStack?.reduce(
+          (acc, tech) => {
+            acc[tech] = [`Follow ${tech} best practices`, 'Review official documentation'];
+            return acc;
+          },
+          {} as Record<string, string[]>
+        ) || {},
       qualityMetrics: {
         overall: 70,
         complexity: analysis.static?.metrics?.complexity || 5,

@@ -12,10 +12,13 @@ import {
   ContextualAnalyzer,
   EnhancedInput,
   ProjectAnalysisResult,
-  Context7ProjectData
+  Context7ProjectData,
 } from './ContextualAnalyzer.js';
 import { CodeGenerator, GeneratedCode } from './CodeGenerator.js';
 import { QualityValidator, ValidatedGeneratedCode } from './QualityValidator.js';
+
+// Disable Context7 by default
+process.env.SKIP_CONTEXT7_INIT = 'true';
 
 // Input schema for smart_write tool
 const SmartWriteInputSchema = z.object({
@@ -51,12 +54,12 @@ const SmartWriteInputSchema = z.object({
     .default('backup-first'),
   externalSources: z
     .object({
-      useContext7: z.boolean().default(true),
+      useContext7: z.boolean().default(false),
       useProjectAnalysis: z.boolean().default(true),
       cacheResults: z.boolean().default(true),
     })
     .default({
-      useContext7: true,
+      useContext7: false,
       useProjectAnalysis: true,
       cacheResults: true,
     }),
@@ -124,7 +127,9 @@ export class SmartWriteCore {
         executionLog.projectAnalysisPerformed = true;
 
         if (projectAnalysis) {
-          console.log(`Project analysis completed: ${projectAnalysis.summary.status} (${projectAnalysis.summary.overallScore})`);
+          console.log(
+            `Project analysis completed: ${projectAnalysis.summary.status} (${projectAnalysis.summary.overallScore})`
+          );
         }
       }
 
@@ -139,7 +144,9 @@ export class SmartWriteCore {
         executionLog.context7IntegrationPerformed = true;
 
         if (context7ProjectData) {
-          console.log(`Context7 enhanced smart_write for: ${validatedInput.featureDescription} (${validatedInput.writeMode})`);
+          console.log(
+            `Context7 enhanced smart_write for: ${validatedInput.featureDescription} (${validatedInput.writeMode})`
+          );
         }
       }
 
@@ -157,7 +164,10 @@ export class SmartWriteCore {
 
       // Validate quality
       executionLog.operations.push('Quality validation');
-      const validatedCode = await this.qualityValidator.validateQuality(generatedCode, enhancedInput);
+      const validatedCode = await this.qualityValidator.validateQuality(
+        generatedCode,
+        enhancedInput
+      );
       executionLog.qualityValidationPerformed = true;
 
       // Update execution log
@@ -221,7 +231,9 @@ export class SmartWriteCore {
         overallScore: validatedCode.qualityValidation.score,
         metrics: validatedCode.qualityValidation.metrics,
         issues: validatedCode.qualityValidation.issues.length,
-        criticalIssues: validatedCode.qualityValidation.issues.filter(i => i.severity === 'critical').length,
+        criticalIssues: validatedCode.qualityValidation.issues.filter(
+          i => i.severity === 'critical'
+        ).length,
         recommendations: validatedCode.qualityValidation.recommendations.slice(0, 5),
         hasQualityEnhancements: !!validatedCode.qualityEnhancements,
       },
@@ -236,31 +248,35 @@ export class SmartWriteCore {
       },
 
       // Project analysis integration
-      projectAnalysisIntegration: projectAnalysis ? {
-        analysisPerformed: true,
-        securityStatus: projectAnalysis.security.status,
-        staticStatus: projectAnalysis.static.status,
-        overallScore: projectAnalysis.summary.overallScore,
-        criticalIssues: projectAnalysis.summary.criticalIssues,
-        recommendations: projectAnalysis.summary.recommendations.slice(0, 3),
-      } : {
-        analysisPerformed: false,
-        message: 'Provide projectPath to enable real analysis',
-      },
+      projectAnalysisIntegration: projectAnalysis
+        ? {
+            analysisPerformed: true,
+            securityStatus: projectAnalysis.security.status,
+            staticStatus: projectAnalysis.static.status,
+            overallScore: projectAnalysis.summary.overallScore,
+            criticalIssues: projectAnalysis.summary.criticalIssues,
+            recommendations: projectAnalysis.summary.recommendations.slice(0, 3),
+          }
+        : {
+            analysisPerformed: false,
+            message: 'Provide projectPath to enable real analysis',
+          },
 
       // Context7 integration
-      context7ProjectIntegration: context7ProjectData ? {
-        context7ProjectAnalysisPerformed: true,
-        topicsGenerated: context7ProjectData.topics.length,
-        insightsCount: context7ProjectData.data.length,
-        patterns: context7ProjectData.insights.patterns.slice(0, 3),
-        warnings: context7ProjectData.insights.warnings,
-        techStackInsights: Object.keys(context7ProjectData.insights.techStackSpecific).length,
-        fetchTime: context7ProjectData.metadata.fetchTime,
-      } : {
-        context7ProjectAnalysisPerformed: false,
-        message: 'Project analysis required for Context7 project insights',
-      },
+      context7ProjectIntegration: context7ProjectData
+        ? {
+            context7ProjectAnalysisPerformed: true,
+            topicsGenerated: context7ProjectData.topics.length,
+            insightsCount: context7ProjectData.data.length,
+            patterns: context7ProjectData.insights.patterns.slice(0, 3),
+            warnings: context7ProjectData.insights.warnings,
+            techStackInsights: Object.keys(context7ProjectData.insights.techStackSpecific).length,
+            fetchTime: context7ProjectData.metadata.fetchTime,
+          }
+        : {
+            context7ProjectAnalysisPerformed: false,
+            message: 'Project analysis required for Context7 project insights',
+          },
     };
   }
 }

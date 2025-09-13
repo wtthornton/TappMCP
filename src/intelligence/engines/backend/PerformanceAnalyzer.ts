@@ -111,7 +111,12 @@ export class PerformanceAnalyzer {
     const loadBalancingScore = this.analyzeLoadBalancing(code, optimizations);
 
     // 9. Technology-specific Performance
-    score += this.analyzeTechnologySpecificPerformance(code, technology, bottlenecks, optimizations);
+    score += this.analyzeTechnologySpecificPerformance(
+      code,
+      technology,
+      bottlenecks,
+      optimizations
+    );
 
     // 10. Microservices Performance
     if (this.isMicroservicesArchitecture(code)) {
@@ -179,9 +184,18 @@ export class PerformanceAnalyzer {
    */
   private hasDatabaseAccess(code: string): boolean {
     const dbPatterns = [
-      'mongoose', 'sequelize', 'typeorm', 'prisma',
-      'mysql', 'postgres', 'mongodb', 'redis',
-      '.find(', '.query(', '.exec(', '.save(',
+      'mongoose',
+      'sequelize',
+      'typeorm',
+      'prisma',
+      'mysql',
+      'postgres',
+      'mongodb',
+      'redis',
+      '.find(',
+      '.query(',
+      '.exec(',
+      '.save(',
     ];
 
     return dbPatterns.some(pattern => code.includes(pattern));
@@ -192,8 +206,12 @@ export class PerformanceAnalyzer {
    */
   private hasConnectionPooling(code: string): boolean {
     const poolPatterns = [
-      'connectionPool', 'pool', 'maxConnections',
-      'minConnections', 'poolSize', 'createPool',
+      'connectionPool',
+      'pool',
+      'maxConnections',
+      'minConnections',
+      'poolSize',
+      'createPool',
     ];
 
     return poolPatterns.some(pattern => code.includes(pattern));
@@ -205,8 +223,13 @@ export class PerformanceAnalyzer {
   private analyzeCaching(code: string, optimizations: string[]): number {
     let cachingScore = 0;
     const cachePatterns = [
-      'redis', 'memcached', 'cache', 'Cache',
-      'getCache', 'setCache', 'memoize',
+      'redis',
+      'memcached',
+      'cache',
+      'Cache',
+      'getCache',
+      'setCache',
+      'memoize',
     ];
 
     if (cachePatterns.some(pattern => code.includes(pattern))) {
@@ -232,8 +255,15 @@ export class PerformanceAnalyzer {
    */
   private isApiCode(code: string): boolean {
     const apiPatterns = [
-      'express', 'fastify', 'koa', 'app.get', 'app.post',
-      'router.', 'res.json', 'req.body', 'middleware',
+      'express',
+      'fastify',
+      'koa',
+      'app.get',
+      'app.post',
+      'router.',
+      'res.json',
+      'req.body',
+      'middleware',
     ];
 
     return apiPatterns.some(pattern => code.includes(pattern));
@@ -244,8 +274,12 @@ export class PerformanceAnalyzer {
    */
   private hasRateLimiting(code: string): boolean {
     const rateLimitPatterns = [
-      'rate-limit', 'rateLimit', 'throttle', 'limiter',
-      'express-rate-limit', 'rate_limit',
+      'rate-limit',
+      'rateLimit',
+      'throttle',
+      'limiter',
+      'express-rate-limit',
+      'rate_limit',
     ];
 
     return rateLimitPatterns.some(pattern => code.includes(pattern));
@@ -275,9 +309,11 @@ export class PerformanceAnalyzer {
       /new\s+EventEmitter/g, // EventEmitter without cleanup
     ];
 
-    return memoryLeakPatterns.some(pattern => pattern.test(code)) ||
-           (code.includes('addEventListener') && !code.includes('removeEventListener')) ||
-           (code.includes('setInterval') && !code.includes('clearInterval'));
+    return (
+      memoryLeakPatterns.some(pattern => pattern.test(code)) ||
+      (code.includes('addEventListener') && !code.includes('removeEventListener')) ||
+      (code.includes('setInterval') && !code.includes('clearInterval'))
+    );
   }
 
   /**
@@ -529,8 +565,12 @@ export class PerformanceAnalyzer {
    * Check if code is Node.js specific
    */
   private isNodeJsCode(code: string): boolean {
-    return code.includes('require(') || code.includes('process.') ||
-           code.includes('module.exports') || code.includes('__dirname');
+    return (
+      code.includes('require(') ||
+      code.includes('process.') ||
+      code.includes('module.exports') ||
+      code.includes('__dirname')
+    );
   }
 
   /**
@@ -543,8 +583,10 @@ export class PerformanceAnalyzer {
       /var\s+\w+\s*=.*(?=\n(?!.*function))/g, // Global variables
     ];
 
-    return globalStatePatterns.some(pattern => pattern.test(code)) ||
-           (code.includes('var ') && !code.includes('function'));
+    return (
+      globalStatePatterns.some(pattern => pattern.test(code)) ||
+      (code.includes('var ') && !code.includes('function'))
+    );
   }
 
   /**
@@ -552,9 +594,15 @@ export class PerformanceAnalyzer {
    */
   private isMicroservicesArchitecture(code: string): boolean {
     const microservicesPatterns = [
-      'service', 'microservice', 'api-gateway',
-      'service-discovery', 'circuit-breaker', 'kubernetes',
-      'docker', 'container', 'orchestration',
+      'service',
+      'microservice',
+      'api-gateway',
+      'service-discovery',
+      'circuit-breaker',
+      'kubernetes',
+      'docker',
+      'container',
+      'orchestration',
     ];
 
     return microservicesPatterns.some(pattern => code.includes(pattern));

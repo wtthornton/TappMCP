@@ -177,12 +177,12 @@ export class QualityValidator {
     const documentation = this.assessDocumentation(generatedCode);
 
     const overall = Math.round(
-      (codeQuality * 0.25 +
-        testCoverage * 0.20 +
-        security * 0.20 +
+      codeQuality * 0.25 +
+        testCoverage * 0.2 +
+        security * 0.2 +
         performance * 0.15 +
         maintainability * 0.15 +
-        documentation * 0.05)
+        documentation * 0.05
     );
 
     return {
@@ -375,7 +375,9 @@ export class QualityValidator {
     recommendations: string[]
   ): void {
     const testFiles = generatedCode.files.filter(file => file.type === 'test');
-    const codeFiles = generatedCode.files.filter(file => file.type !== 'test' && file.type !== 'documentation');
+    const codeFiles = generatedCode.files.filter(
+      file => file.type !== 'test' && file.type !== 'documentation'
+    );
 
     // Check test coverage
     const estimatedCoverage = this.estimateTestCoverage(testFiles, codeFiles);
@@ -534,9 +536,14 @@ export class QualityValidator {
     return fileCount > 0 ? Math.round(totalScore / fileCount) : 70;
   }
 
-  private assessTestCoverage(generatedCode: GeneratedCode, _requirements: QualityRequirements): number {
+  private assessTestCoverage(
+    generatedCode: GeneratedCode,
+    _requirements: QualityRequirements
+  ): number {
     const testFiles = generatedCode.files.filter(file => file.type === 'test');
-    const codeFiles = generatedCode.files.filter(file => file.type !== 'test' && file.type !== 'documentation');
+    const codeFiles = generatedCode.files.filter(
+      file => file.type !== 'test' && file.type !== 'documentation'
+    );
 
     return this.estimateTestCoverage(testFiles, codeFiles);
   }
@@ -573,7 +580,10 @@ export class QualityValidator {
     return Math.max(0, Math.min(100, score));
   }
 
-  private assessMaintainability(generatedCode: GeneratedCode, requirements: QualityRequirements): number {
+  private assessMaintainability(
+    generatedCode: GeneratedCode,
+    requirements: QualityRequirements
+  ): number {
     let totalScore = 0;
     let fileCount = 0;
 
@@ -632,7 +642,7 @@ export class QualityValidator {
   }
 
   private hasSQLInjectionRisk(content: string): boolean {
-    return /query.*\+.*['\"]/.test(content) || /SELECT.*\+/.test(content);
+    return /query.*\+.*['"]/.test(content) || /SELECT.*\+/.test(content);
   }
 
   private hasXSSRisk(content: string): boolean {
@@ -750,7 +760,8 @@ export class QualityValidator {
     let totalTestCases = 0;
 
     codeFiles.forEach(file => {
-      const functions = file.content.match(/function\s+\w+|const\s+\w+\s*=\s*async|export\s+function/g) || [];
+      const functions =
+        file.content.match(/function\s+\w+|const\s+\w+\s*=\s*async|export\s+function/g) || [];
       totalFunctions += functions.length;
     });
 
@@ -759,31 +770,40 @@ export class QualityValidator {
       totalTestCases += testCases.length;
     });
 
-    return totalFunctions > 0 ? Math.min(100, Math.round((totalTestCases / totalFunctions) * 100)) : 0;
+    return totalFunctions > 0
+      ? Math.min(100, Math.round((totalTestCases / totalFunctions) * 100))
+      : 0;
   }
 
   private hasUnitTests(testFiles: any[]): boolean {
-    return testFiles.some(file =>
-      file.content.includes('it(') ||
-      file.content.includes('test(') ||
-      file.content.includes('describe(')
+    return testFiles.some(
+      file =>
+        file.content.includes('it(') ||
+        file.content.includes('test(') ||
+        file.content.includes('describe(')
     );
   }
 
   private hasIntegrationTests(testFiles: any[]): boolean {
-    return testFiles.some(file =>
-      file.path.includes('integration') ||
-      file.path.includes('e2e') ||
-      file.content.includes('integration')
+    return testFiles.some(
+      file =>
+        file.path.includes('integration') ||
+        file.path.includes('e2e') ||
+        file.content.includes('integration')
     );
   }
 
   /**
    * Role-specific validation methods
    */
-  private validateQASpecific(generatedCode: GeneratedCode, issues: QualityIssue[], recommendations: string[]): void {
-    const hasComprehensiveTests = generatedCode.files.some(file =>
-      file.type === 'test' && file.content.includes('describe') && file.content.includes('it')
+  private validateQASpecific(
+    generatedCode: GeneratedCode,
+    issues: QualityIssue[],
+    recommendations: string[]
+  ): void {
+    const hasComprehensiveTests = generatedCode.files.some(
+      file =>
+        file.type === 'test' && file.content.includes('describe') && file.content.includes('it')
     );
 
     if (!hasComprehensiveTests) {
@@ -797,9 +817,13 @@ export class QualityValidator {
     }
   }
 
-  private validateOpsSpecific(generatedCode: GeneratedCode, issues: QualityIssue[], recommendations: string[]): void {
-    const hasMonitoring = generatedCode.files.some(file =>
-      file.content.includes('monitoring') || file.content.includes('metrics')
+  private validateOpsSpecific(
+    generatedCode: GeneratedCode,
+    issues: QualityIssue[],
+    recommendations: string[]
+  ): void {
+    const hasMonitoring = generatedCode.files.some(
+      file => file.content.includes('monitoring') || file.content.includes('metrics')
     );
 
     if (!hasMonitoring) {
@@ -813,9 +837,13 @@ export class QualityValidator {
     }
   }
 
-  private validateProductSpecific(generatedCode: GeneratedCode, issues: QualityIssue[], recommendations: string[]): void {
-    const hasBusinessMetrics = generatedCode.files.some(file =>
-      file.content.includes('businessValue') || file.content.includes('metrics')
+  private validateProductSpecific(
+    generatedCode: GeneratedCode,
+    issues: QualityIssue[],
+    recommendations: string[]
+  ): void {
+    const hasBusinessMetrics = generatedCode.files.some(
+      file => file.content.includes('businessValue') || file.content.includes('metrics')
     );
 
     if (!hasBusinessMetrics) {
@@ -829,9 +857,13 @@ export class QualityValidator {
     }
   }
 
-  private validateDesignSpecific(generatedCode: GeneratedCode, issues: QualityIssue[], recommendations: string[]): void {
-    const hasAccessibility = generatedCode.files.some(file =>
-      file.content.includes('accessibility') || file.content.includes('aria-')
+  private validateDesignSpecific(
+    generatedCode: GeneratedCode,
+    issues: QualityIssue[],
+    recommendations: string[]
+  ): void {
+    const hasAccessibility = generatedCode.files.some(
+      file => file.content.includes('accessibility') || file.content.includes('aria-')
     );
 
     if (!hasAccessibility) {
@@ -845,9 +877,13 @@ export class QualityValidator {
     }
   }
 
-  private validateDeveloperSpecific(generatedCode: GeneratedCode, issues: QualityIssue[], recommendations: string[]): void {
-    const hasPerformanceMetrics = generatedCode.files.some(file =>
-      file.content.includes('performance') || file.content.includes('metrics')
+  private validateDeveloperSpecific(
+    generatedCode: GeneratedCode,
+    issues: QualityIssue[],
+    recommendations: string[]
+  ): void {
+    const hasPerformanceMetrics = generatedCode.files.some(
+      file => file.content.includes('performance') || file.content.includes('metrics')
     );
 
     if (!hasPerformanceMetrics) {

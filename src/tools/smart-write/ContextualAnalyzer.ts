@@ -83,7 +83,7 @@ export interface Context7ProjectData {
  * Contextual Analyzer for smart code generation
  */
 export class ContextualAnalyzer {
-  private cache = new Context7Cache();
+  private cache: Context7Cache | null = null;
   private simpleAnalyzer = new SimpleAnalyzer();
   private securityScanner!: SecurityScanner;
   private staticAnalyzer!: StaticAnalyzer;
@@ -135,14 +135,14 @@ export class ContextualAnalyzer {
         simple: simpleResults,
         project: {
           detectedTechStack,
-          qualityIssues
+          qualityIssues,
         },
         summary: {
           status,
           overallScore,
           criticalIssues: this.countCriticalIssues(securityResults, qualityIssues),
-          recommendations
-        }
+          recommendations,
+        },
       };
     } catch (error) {
       console.error('Project analysis failed:', error);
@@ -162,13 +162,17 @@ export class ContextualAnalyzer {
     }
 
     try {
-      const context7Data = await enhanceWithContext7({
-        featureDescription: input.featureDescription,
-        role: input.targetRole,
-        techStack: input.techStack?.length > 0 ? input.techStack : ['generic'],
-        businessGoals: input.businessContext?.goals || [],
-        priority: input.businessContext?.priority || 'medium',
-      }, input.featureDescription, { maxResults: 3 });
+      const context7Data = await enhanceWithContext7(
+        {
+          featureDescription: input.featureDescription,
+          role: input.targetRole,
+          techStack: input.techStack?.length > 0 ? input.techStack : ['generic'],
+          businessGoals: input.businessContext?.goals || [],
+          priority: input.businessContext?.priority || 'medium',
+        },
+        input.featureDescription,
+        { maxResults: 3 }
+      );
 
       // Transform Context7 data into structured insights
       const insights = this.extractContext7Insights(context7Data, projectAnalysis);
@@ -178,8 +182,8 @@ export class ContextualAnalyzer {
         data: context7Data?.context7Data || [],
         insights,
         metadata: {
-          fetchTime: context7Data?.enhancementMetadata?.timestamp || Date.now()
-        }
+          fetchTime: context7Data?.enhancementMetadata?.timestamp || Date.now(),
+        },
       };
     } catch (error) {
       console.warn('Context7 integration failed:', error);
@@ -199,19 +203,23 @@ export class ContextualAnalyzer {
       ...input,
       featureDescription: input.featureDescription, // Ensure required field is present
       targetRole: input.targetRole, // Ensure required field is present
-      projectAnalysis: projectAnalysis ? {
-        techStack: projectAnalysis.project.detectedTechStack,
-        qualityIssues: projectAnalysis.project.qualityIssues,
-        recommendations: projectAnalysis.summary.recommendations,
-        securityLevel: this.determineSecurityLevel(projectAnalysis)
-      } : null,
-      context7Insights: context7ProjectData ? {
-        patterns: context7ProjectData.insights.patterns,
-        bestPractices: context7ProjectData.insights.bestPractices,
-        warnings: context7ProjectData.insights.warnings,
-        recommendations: context7ProjectData.insights.recommendations,
-        techStackSpecific: context7ProjectData.insights.techStackSpecific,
-      } : null,
+      projectAnalysis: projectAnalysis
+        ? {
+            techStack: projectAnalysis.project.detectedTechStack,
+            qualityIssues: projectAnalysis.project.qualityIssues,
+            recommendations: projectAnalysis.summary.recommendations,
+            securityLevel: this.determineSecurityLevel(projectAnalysis),
+          }
+        : null,
+      context7Insights: context7ProjectData
+        ? {
+            patterns: context7ProjectData.insights.patterns,
+            bestPractices: context7ProjectData.insights.bestPractices,
+            warnings: context7ProjectData.insights.warnings,
+            recommendations: context7ProjectData.insights.recommendations,
+            techStackSpecific: context7ProjectData.insights.techStackSpecific,
+          }
+        : null,
     };
   }
 
@@ -249,16 +257,18 @@ export class ContextualAnalyzer {
 
     // Extract security issues
     if (securityResults?.vulnerabilities) {
-      issues.push(...securityResults.vulnerabilities.map((vuln: any) =>
-        `Security: ${vuln.type || vuln.message}`
-      ));
+      issues.push(
+        ...securityResults.vulnerabilities.map(
+          (vuln: any) => `Security: ${vuln.type || vuln.message}`
+        )
+      );
     }
 
     // Extract static analysis issues
     if (staticResults?.issues) {
-      issues.push(...staticResults.issues.map((issue: any) =>
-        `Code Quality: ${issue.type || issue.message}`
-      ));
+      issues.push(
+        ...staticResults.issues.map((issue: any) => `Code Quality: ${issue.type || issue.message}`)
+      );
     }
 
     return issues;
@@ -348,14 +358,16 @@ export class ContextualAnalyzer {
     }
 
     // Count critical quality issues (those mentioning "critical" or "error")
-    criticalCount += qualityIssues.filter(issue =>
-      issue.toLowerCase().includes('critical') || issue.toLowerCase().includes('error')
+    criticalCount += qualityIssues.filter(
+      issue => issue.toLowerCase().includes('critical') || issue.toLowerCase().includes('error')
     ).length;
 
     return criticalCount;
   }
 
-  private determineSecurityLevel(projectAnalysis: ProjectAnalysisResult): 'low' | 'medium' | 'high' {
+  private determineSecurityLevel(
+    projectAnalysis: ProjectAnalysisResult
+  ): 'low' | 'medium' | 'high' {
     if (projectAnalysis.summary.status === 'fail') {
       return 'high';
     } else if (projectAnalysis.summary.status === 'warning') {
@@ -373,7 +385,7 @@ export class ContextualAnalyzer {
       bestPractices: [] as string[],
       warnings: [] as string[],
       recommendations: [] as string[],
-      techStackSpecific: {} as any
+      techStackSpecific: {} as any,
     };
 
     if (!context7Data) {
@@ -408,7 +420,7 @@ export class ContextualAnalyzer {
       projectAnalysis.project.detectedTechStack.forEach(tech => {
         insights.techStackSpecific[tech] = {
           detected: true,
-          recommendations: context7Data.insights?.techStackSpecific?.[tech] || []
+          recommendations: context7Data.insights?.techStackSpecific?.[tech] || [],
         };
       });
     }

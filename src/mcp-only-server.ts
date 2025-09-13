@@ -10,6 +10,9 @@ import {
 import { z } from 'zod';
 import { handleError, getErrorMessage } from './utils/errors.js';
 
+// Set environment variable to skip Context7 initialization
+process.env.SKIP_CONTEXT7_INIT = 'true';
+
 // Import tool handlers
 import { smartBeginTool, handleSmartBegin } from './tools/smart-begin.js';
 import { smartPlanTool, handleSmartPlan } from './tools/smart-plan.js';

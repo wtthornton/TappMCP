@@ -413,8 +413,8 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
             documentation: number;
             research: number;
         };
-        totalHours: number;
         assumptions: string[];
+        totalHours: number;
     }, {
         confidence: "low" | "medium" | "high";
         breakdown: {
@@ -424,8 +424,8 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
             documentation: number;
             research: number;
         };
-        totalHours: number;
         assumptions: string[];
+        totalHours: number;
     }>;
     optimization: z.ZodObject<{
         originalEffort: z.ZodNumber;
@@ -654,8 +654,8 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
             documentation: number;
             research: number;
         };
-        totalHours: number;
         assumptions: string[];
+        totalHours: number;
     };
 }, {
     name: string;
@@ -786,8 +786,8 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
             documentation: number;
             research: number;
         };
-        totalHours: number;
         assumptions: string[];
+        totalHours: number;
     };
 }>;
 export type PlanPhase = z.infer<typeof PlanPhaseSchema>;

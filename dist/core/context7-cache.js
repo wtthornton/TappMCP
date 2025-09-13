@@ -24,7 +24,19 @@ export class Context7Cache extends MCPCoordinator {
         responseTimes: [],
     };
     constructor(cacheConfig = {}) {
-        super(); // Initialize MCPCoordinator
+        // Skip Context7 initialization if flag is set
+        if (process.env.SKIP_CONTEXT7_INIT === 'true') {
+            // Initialize with minimal config to avoid Context7 connections
+            super({
+                timeout: 100,
+                maxConcurrentRequests: 1,
+                enableFallbacks: false,
+                healthCheckInterval: 0,
+            });
+        }
+        else {
+            super(); // Initialize MCPCoordinator
+        }
         this.cacheConfig = {
             maxCacheSize: cacheConfig.maxCacheSize ?? 1000,
             defaultExpiryHours: cacheConfig.defaultExpiryHours ?? 7 * 24, // 7 DAYS

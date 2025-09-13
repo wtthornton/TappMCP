@@ -5,9 +5,11 @@ import { CallToolRequestSchema, ListToolsRequestSchema, } from '@modelcontextpro
 import { z } from 'zod';
 import { handleError, getErrorMessage } from './utils/errors.js';
 // Import health server for Docker health checks (skip for tests and when explicitly disabled)
+// Skip HTTP servers for MCP stdio mode to avoid port conflicts
 if (process.env.NODE_ENV !== 'test' &&
     process.env.VITEST !== 'true' &&
-    process.env.SKIP_HEALTH_SERVER !== 'true') {
+    process.env.SKIP_HEALTH_SERVER !== 'true' &&
+    process.env.MCP_STDIO_MODE !== 'true') {
     import('./health-server.js');
     import('./http-server.js');
 }

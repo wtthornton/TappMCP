@@ -130,8 +130,8 @@ export declare const EffortEstimateSchema: z.ZodObject<{
         documentation: number;
         research: number;
     };
-    totalHours: number;
     assumptions: string[];
+    totalHours: number;
 }, {
     confidence: "low" | "medium" | "high";
     breakdown: {
@@ -141,8 +141,8 @@ export declare const EffortEstimateSchema: z.ZodObject<{
         documentation: number;
         research: number;
     };
-    totalHours: number;
     assumptions: string[];
+    totalHours: number;
 }>;
 export declare const DependencySchema: z.ZodObject<{
     id: z.ZodString;

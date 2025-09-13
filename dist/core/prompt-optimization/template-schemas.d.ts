@@ -62,7 +62,7 @@ export declare const TemplateContextSchema: z.ZodObject<{
     toolName: string;
     userLevel: "beginner" | "intermediate" | "advanced";
     taskType: "planning" | "analysis" | "generation" | "transformation" | "debugging";
-    outputFormat: "text" | "code" | "structured" | "markdown";
+    outputFormat: "text" | "code" | "markdown" | "structured";
     contextHistory: string[];
     timeConstraint: "standard" | "immediate" | "thorough";
     sessionId?: string | undefined;
@@ -88,7 +88,7 @@ export declare const TemplateContextSchema: z.ZodObject<{
     preferences?: Record<string, any> | undefined;
     sessionId?: string | undefined;
     userLevel?: "beginner" | "intermediate" | "advanced" | undefined;
-    outputFormat?: "text" | "code" | "structured" | "markdown" | undefined;
+    outputFormat?: "text" | "code" | "markdown" | "structured" | undefined;
     contextHistory?: string[] | undefined;
     timeConstraint?: "standard" | "immediate" | "thorough" | undefined;
     projectContext?: {
@@ -145,15 +145,15 @@ export declare const SessionContextSchema: z.ZodObject<{
     userSatisfaction: z.ZodOptional<z.ZodNumber>;
     contextPreservation: z.ZodDefault<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
-    sessionId: string;
     startTime: Date;
+    sessionId: string;
     templatesUsed: string[];
     successRate: number;
     contextPreservation: boolean;
     userSatisfaction?: number | undefined;
 }, {
-    sessionId: string;
     startTime: Date;
+    sessionId: string;
     templatesUsed: string[];
     successRate: number;
     userSatisfaction?: number | undefined;

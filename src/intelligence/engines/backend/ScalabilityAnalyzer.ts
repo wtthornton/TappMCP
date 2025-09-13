@@ -48,7 +48,11 @@ export class ScalabilityAnalyzer {
     const cloudNativeScore = this.analyzeCloudNativePatterns(code, optimizations);
 
     // 5. Distributed Systems Patterns
-    const distributedSystemsScore = this.analyzeDistributedSystems(code, bottlenecks, optimizations);
+    const distributedSystemsScore = this.analyzeDistributedSystems(
+      code,
+      bottlenecks,
+      optimizations
+    );
 
     // 6. State Management for Scalability
     this.analyzeStateManagement(code, bottlenecks, optimizations);
@@ -66,10 +70,21 @@ export class ScalabilityAnalyzer {
     this.analyzeContainerization(code, optimizations);
 
     // 11. Technology-specific Scalability
-    score += this.analyzeTechnologySpecificScalability(code, technology, bottlenecks, optimizations);
+    score += this.analyzeTechnologySpecificScalability(
+      code,
+      technology,
+      bottlenecks,
+      optimizations
+    );
 
     // Calculate overall score
-    const avgSpecificScore = (horizontalScaling + loadBalancing + microservicesReadiness + cloudNativeScore + distributedSystemsScore) / 5;
+    const avgSpecificScore =
+      (horizontalScaling +
+        loadBalancing +
+        microservicesReadiness +
+        cloudNativeScore +
+        distributedSystemsScore) /
+      5;
     score = Math.max(0, Math.min(100, (score + avgSpecificScore) / 2));
 
     return {
@@ -578,18 +593,25 @@ export class ScalabilityAnalyzer {
   private isStateless(code: string): boolean {
     // Check for stateless patterns vs stateful patterns
     const statefulPatterns = [
-      'global.', 'this.cache', 'static', 'singleton',
-      'session.*memory', 'state =', 'cache = {}'
+      'global.',
+      'this.cache',
+      'static',
+      'singleton',
+      'session.*memory',
+      'state =',
+      'cache = {}',
     ];
 
     const statelessIndicators = [
-      'req, res', 'request, response', 'ctx', 'context',
-      'pure function', 'functional'
+      'req, res',
+      'request, response',
+      'ctx',
+      'context',
+      'pure function',
+      'functional',
     ];
 
-    const hasStatefulPatterns = statefulPatterns.some(pattern =>
-      new RegExp(pattern).test(code)
-    );
+    const hasStatefulPatterns = statefulPatterns.some(pattern => new RegExp(pattern).test(code));
 
     const hasStatelessIndicators = statelessIndicators.some(pattern =>
       new RegExp(pattern).test(code)
@@ -599,14 +621,22 @@ export class ScalabilityAnalyzer {
   }
 
   private isNodeJsCode(code: string): boolean {
-    return code.includes('require(') || code.includes('process.') ||
-           code.includes('module.exports') || code.includes('__dirname');
+    return (
+      code.includes('require(') ||
+      code.includes('process.') ||
+      code.includes('module.exports') ||
+      code.includes('__dirname')
+    );
   }
 
   private hasServiceBoundaries(code: string): boolean {
     const boundaryPatterns = [
-      'service', 'domain', 'bounded-context',
-      'microservice', 'api', 'endpoint'
+      'service',
+      'domain',
+      'bounded-context',
+      'microservice',
+      'api',
+      'endpoint',
     ];
 
     return boundaryPatterns.some(pattern => code.includes(pattern));
@@ -614,9 +644,17 @@ export class ScalabilityAnalyzer {
 
   private hasCloudProviderIntegration(code: string): boolean {
     const cloudProviders = [
-      'aws', 'azure', 'gcp', 'google-cloud',
-      's3', 'ec2', 'lambda', 'functions',
-      'blob', 'storage', 'cloud'
+      'aws',
+      'azure',
+      'gcp',
+      'google-cloud',
+      's3',
+      'ec2',
+      'lambda',
+      'functions',
+      'blob',
+      'storage',
+      'cloud',
     ];
 
     return cloudProviders.some(provider => code.includes(provider));
@@ -624,8 +662,14 @@ export class ScalabilityAnalyzer {
 
   private hasDatabaseAccess(code: string): boolean {
     const dbPatterns = [
-      'database', 'db.', 'query', 'find(',
-      'mysql', 'postgres', 'mongodb', 'redis'
+      'database',
+      'db.',
+      'query',
+      'find(',
+      'mysql',
+      'postgres',
+      'mongodb',
+      'redis',
     ];
 
     return dbPatterns.some(pattern => code.includes(pattern));
@@ -635,7 +679,10 @@ export class ScalabilityAnalyzer {
     const cpuIntensivePatterns = [
       /for\s*\([^)]*;\s*i\s*<\s*\d{4,}/g, // Large loops
       /while\s*\([^)]*\.length\s*>\s*\d{3,}/g, // Large while loops
-      'sort()', 'JSON.parse', 'crypto.', 'hash'
+      'sort()',
+      'JSON.parse',
+      'crypto.',
+      'hash',
     ];
 
     return cpuIntensivePatterns.some(pattern => {

@@ -38,6 +38,7 @@
     "qa:tests": "npm run test:coverage",
     "qa:all": "npm run qa:eslint && npm run qa:typescript && npm run qa:format && npm run qa:tests",
     "early-check": "node scripts/early-quality-check.js",
+    "start:no-check": "node scripts/start-without-check.js",
     "status": "node scripts/show-tappmcp-status.js",
     "vibe-status": "node scripts/show-tappmcp-status.js",
     "security:scan": "gitleaks detect --source . --verbose",
