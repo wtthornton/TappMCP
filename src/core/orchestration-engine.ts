@@ -18,6 +18,7 @@ import { LRUCache } from 'lru-cache';
 import { handleError, getErrorMessage } from '../utils/errors.js';
 import { dynamicImportManager } from './dynamic-imports.js';
 import { globalPerformanceMonitor } from '../monitoring/performance-monitor.js';
+import { MetricsBroadcaster } from '../websocket/MetricsBroadcaster.js';
 
 /**
  * Represents a complete workflow with phases, tasks, and business context
@@ -754,6 +755,12 @@ export interface WorkflowResult {
   roleTransitions: RoleTransition[];
   technicalMetrics: OrchestrationMetrics;
   errors?: string[];
+  iconData?: {
+    status: 'pending' | 'running' | 'completed' | 'failed' | 'paused' | 'cancelled';
+    progress: number;
+    currentPhase: string;
+    systemHealth: 'healthy' | 'degraded' | 'unhealthy' | 'maintenance';
+  };
 }
 
 export interface WorkflowPhaseResult {
@@ -854,6 +861,9 @@ export class OrchestrationEngine {
 
   /** Context7 response cache to reduce API calls and improve performance */
   private context7Cache: LRUCache<string, { data: any; timestamp: number; expiry: number }>;
+
+  /** Metrics broadcaster for real-time workflow updates */
+  private metricsBroadcaster: MetricsBroadcaster | null = null;
 
   /** Cache for Context7 topics to optimize topic discovery */
   private topicCache: LRUCache<string, string[]>; // Cache for Context7 topics
@@ -1081,6 +1091,22 @@ export class OrchestrationEngine {
   }
 
   /**
+   * Sets the metrics broadcaster for real-time workflow updates
+   *
+   * @param broadcaster - Metrics broadcaster instance
+   *
+   * @example
+   * ```typescript
+   * orchestrationEngine.setMetricsBroadcaster(metricsBroadcaster);
+   * ```
+   *
+   * @since 2.0.0
+   */
+  setMetricsBroadcaster(broadcaster: MetricsBroadcaster): void {
+    this.metricsBroadcaster = broadcaster;
+  }
+
+  /**
    * Dynamically loads an intelligence engine with caching
    *
    * @param engineName - Name of the engine to load
@@ -1192,6 +1218,17 @@ export class OrchestrationEngine {
       workflow.businessContext = context;
       this.activeWorkflows.set(workflowId, workflow);
 
+      // Broadcast workflow start
+      if (this.metricsBroadcaster) {
+        this.metricsBroadcaster.broadcastWorkflowStatus(
+          workflowId,
+          'running',
+          0,
+          'Initializing workflow',
+          'Workflow execution started'
+        );
+      }
+
       // Set up business context
       this.contextBroker.setContext(`project:${context.projectId}:context`, context, 'system');
 
@@ -1223,10 +1260,24 @@ export class OrchestrationEngine {
 
       // Execute workflow phases
       const currentRole = 'product-strategist'; // Start with strategic planning
+      const totalPhases = workflow.phases.length;
 
-      for (const phase of workflow.phases) {
+      for (let i = 0; i < workflow.phases.length; i++) {
+        const phase = workflow.phases[i];
+        const progress = Math.round((i / totalPhases) * 100);
+
+        // Broadcast phase start
+        if (this.metricsBroadcaster) {
+          this.metricsBroadcaster.broadcastWorkflowStatus(
+            workflowId,
+            'running',
+            progress,
+            `Executing ${phase.name}`,
+            `Starting ${phase.name} phase (${i + 1}/${totalPhases})`
+          );
+        }
+
         // Execute phase tasks
-
         // Role switching now handled by individual tools based on context
         // No complex orchestration needed - tools determine their own role behavior
 
@@ -1238,11 +1289,30 @@ export class OrchestrationEngine {
         if (!phaseResult.success) {
           result.success = false;
           workflow.status = 'failed';
+
+          // Broadcast workflow failure
+          if (this.metricsBroadcaster) {
+            this.metricsBroadcaster.broadcastWorkflowCompletion(
+              workflowId,
+              false,
+              `Workflow failed during ${phase.name} phase`,
+              { failedPhase: phase.name, error: phaseResult.issues?.[0] }
+            );
+          }
           break;
         }
 
         phase.status = 'completed';
         phase.endTime = new Date().toISOString();
+
+        // Broadcast phase completion
+        if (this.metricsBroadcaster) {
+          this.metricsBroadcaster.broadcastWorkflowProgress(
+            workflowId,
+            Math.round(((i + 1) / totalPhases) * 100),
+            `Completed ${phase.name} phase`
+          );
+        }
       }
 
       // Calculate final metrics and business value
@@ -1254,9 +1324,31 @@ export class OrchestrationEngine {
       );
       result.technicalMetrics = this.calculateTechnicalMetrics(result, executionTime);
 
+      // Add icon data for visual representation
+      result.iconData = {
+        status: result.success ? 'completed' : 'failed',
+        progress: 100,
+        currentPhase: result.phases.length > 0 ? result.phases[result.phases.length - 1].phase : 'Unknown',
+        systemHealth: this.determineSystemHealth(result.technicalMetrics)
+      };
+
       // Update workflow status
       workflow.status = result.success ? 'completed' : 'failed';
       this.workflowResults.set(workflowId, result);
+
+      // Broadcast workflow completion
+      if (this.metricsBroadcaster) {
+        this.metricsBroadcaster.broadcastWorkflowCompletion(
+          workflowId,
+          result.success,
+          result.success ? 'Workflow completed successfully' : 'Workflow execution failed',
+          {
+            executionTime: Date.now() - startTime,
+            phasesCompleted: result.phases.length,
+            businessScore: result.businessValue.businessScore
+          }
+        );
+      }
 
       // End performance monitoring
       const workflowExecutionTime = globalPerformanceMonitor.endTimer('workflow-execution', {
@@ -1270,6 +1362,16 @@ export class OrchestrationEngine {
       workflow.status = 'failed';
       const executionTime = Date.now() - startTime;
       const mcpError = handleError(error, { operation: 'execute_workflow', workflowId });
+
+      // Broadcast workflow error
+      if (this.metricsBroadcaster) {
+        this.metricsBroadcaster.broadcastWorkflowCompletion(
+          workflowId,
+          false,
+          `Workflow execution failed: ${mcpError.message}`,
+          { error: mcpError.message, executionTime }
+        );
+      }
 
       // End performance monitoring for error case
       globalPerformanceMonitor.endTimer('workflow-execution', {
@@ -9603,5 +9705,43 @@ ${
     this.effectivenessMetricsCache.delete(workflowId);
     this.continuousImprovementState.delete(workflowId);
     this.relevanceLearningData.delete(workflowId);
+  }
+
+  /**
+   * Determines system health based on technical metrics
+   *
+   * @param metrics - Technical metrics from workflow execution
+   * @returns System health status
+   *
+   * @example
+   * ```typescript
+   * const health = this.determineSystemHealth(metrics);
+   * ```
+   *
+   * @since 2.0.0
+   */
+  private determineSystemHealth(metrics: OrchestrationMetrics): 'healthy' | 'degraded' | 'unhealthy' | 'maintenance' {
+    // Check performance score
+    if (metrics.performanceScore < 0.5) {
+      return 'unhealthy';
+    }
+
+    // Check phase success rate
+    if (metrics.phaseSuccessRate < 0.8) {
+      return 'degraded';
+    }
+
+    // Check business alignment
+    if (metrics.businessAlignmentScore < 0.7) {
+      return 'degraded';
+    }
+
+    // Check context preservation
+    if (metrics.contextPreservationAccuracy < 0.6) {
+      return 'degraded';
+    }
+
+    // All metrics are good
+    return 'healthy';
   }
 }
