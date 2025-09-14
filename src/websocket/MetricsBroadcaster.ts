@@ -462,4 +462,24 @@ export class MetricsBroadcaster {
     // This would integrate with actual alert system
     return []; // Mock data for now
   }
+
+  /**
+   * Broadcast workflow event
+   */
+  broadcastWorkflowEvent(event: {
+    workflowId: string;
+    eventType: string;
+    data: any;
+    timestamp: number;
+  }): void {
+    if (!this.isRunning) return;
+
+    const message = {
+      type: 'workflow-event',
+      data: event,
+      timestamp: Date.now(),
+    };
+
+    this.wsServer.broadcast('workflow:event', message);
+  }
 }

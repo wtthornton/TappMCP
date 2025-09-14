@@ -95,6 +95,66 @@
             font-weight: 300;
         }
 
+        .nav-links {
+            display: flex;
+            gap: 16px;
+            margin: 20px 0;
+            padding: 16px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 24px;
+            background: var(--accent-bg);
+            color: var(--secondary-text);
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-4);
+            opacity: 0.1;
+            transition: left 0.3s ease;
+        }
+
+        .nav-link:hover::before {
+            left: 0;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-text);
+            background: var(--secondary-bg);
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: var(--glow);
+        }
+
+        .nav-link.active {
+            background: var(--gradient-4);
+            color: var(--primary-text);
+            border-color: var(--accent-color);
+            box-shadow: var(--glow);
+        }
+
+        .nav-link.active::before {
+            display: none;
+        }
+
         .status-bar {
             display: flex;
             gap: 20px;
@@ -514,6 +574,502 @@
             color: var(--secondary-text);
             font-weight: 400;
         }
+
+        .workflow-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: var(--accent-bg);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient-4);
+            color: var(--primary-bg);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--accent-bg);
+            color: var(--primary-text);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .workflow-stats {
+            display: flex;
+            gap: 16px;
+        }
+
+        .stat-item {
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+        }
+
+        .stat-item strong {
+            color: var(--primary-text);
+        }
+
+        .workflow-item {
+            background: var(--accent-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-left: 4px solid var(--accent-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .workflow-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gradient-3);
+            transition: all 0.3s ease;
+        }
+
+        .workflow-item.completed {
+            border-left-color: var(--success-color);
+        }
+
+        .workflow-item.completed::before {
+            background: var(--gradient-4);
+        }
+
+        .workflow-item.failed {
+            border-left-color: var(--error-color);
+        }
+
+        .workflow-item.failed::before {
+            background: var(--gradient-2);
+        }
+
+        .workflow-item.running {
+            border-left-color: var(--warning-color);
+        }
+
+        .workflow-item.running::before {
+            background: var(--gradient-5);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .workflow-item.paused {
+            border-left-color: #6c757d;
+        }
+
+        .workflow-item.paused::before {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        }
+
+        .workflow-item:hover {
+            transform: translateX(8px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .workflow-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .workflow-title {
+            font-weight: 700;
+            color: var(--primary-text);
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+
+        .workflow-description {
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .workflow-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .workflow-status.running {
+            background: #fef5e7;
+            color: #c05621;
+        }
+
+        .workflow-status.completed {
+            background: #f0fff4;
+            color: #2f855a;
+        }
+
+        .workflow-status.failed {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .workflow-status.pending {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .workflow-status.paused {
+            background: #f7fafc;
+            color: #6c757d;
+        }
+
+        .workflow-status.cancelled {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .workflow-progress {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+
+        .workflow-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4299e1, #63b3ed);
+            transition: width 0.3s ease;
+            border-radius: 3px;
+        }
+
+        .workflow-phase {
+            font-size: 0.9rem;
+            color: #718096;
+            margin-bottom: 8px;
+        }
+
+        .workflow-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .workflow-actions .btn {
+            padding: 4px 8px;
+            font-size: 0.8rem;
+        }
+
+        .workflow-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: var(--secondary-text);
+        }
+
+        .workflow-duration {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .workflow-error {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-top: 8px;
+            font-size: 0.9rem;
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .insight-item {
+            background: var(--accent-bg);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .insight-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .insight-label {
+            font-size: 0.9rem;
+            color: var(--secondary-text);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .insight-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-text);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .trend-indicators {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 16px;
+            background: var(--accent-bg);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .trend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .trend-label {
+            font-size: 0.9rem;
+            color: var(--secondary-text);
+            font-weight: 500;
+        }
+
+        .trend-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-text);
+        }
+
+        .notification-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .notification-channels h3,
+        .notification-preferences h3,
+        .notification-history h3 {
+            margin: 0 0 16px 0;
+            color: var(--primary-text);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .channel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .channel-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--accent-bg);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .channel-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .channel-icon {
+            font-size: 1.5rem;
+            width: 32px;
+            text-align: center;
+        }
+
+        .channel-info {
+            flex: 1;
+        }
+
+        .channel-name {
+            font-weight: 600;
+            color: var(--primary-text);
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+
+        .channel-status {
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .preference-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+        }
+
+        .preference-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .preference-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--primary-text);
+            font-weight: 500;
+        }
+
+        .preference-label input[type="checkbox"] {
+            display: none;
+        }
+
+        .checkmark {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--accent-color);
+            border-radius: 4px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .preference-label input[type="checkbox"]:checked + .checkmark {
+            background: var(--gradient-4);
+            border-color: var(--gradient-4);
+        }
+
+        .preference-label input[type="checkbox"]:checked + .checkmark::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--primary-bg);
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .notification-history {
+            margin-top: 24px;
+        }
+
+        .notification-history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .notification-history-header h3 {
+            margin: 0;
+        }
+
+        .notification-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            background: var(--accent-bg);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--accent-color);
+            transition: all 0.3s ease;
+        }
+
+        .notification-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .notification-item.critical {
+            border-left-color: var(--error-color);
+        }
+
+        .notification-item.warning {
+            border-left-color: var(--warning-color);
+        }
+
+        .notification-item.success {
+            border-left-color: var(--success-color);
+        }
+
+        .notification-item.info {
+            border-left-color: var(--accent-color);
+        }
+
+        .notification-icon {
+            font-size: 1.2rem;
+            margin-top: 2px;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: var(--primary-text);
+            margin-bottom: 4px;
+            font-size: 0.95rem;
+        }
+
+        .notification-message {
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .notification-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--secondary-text);
+        }
+
+        .notification-channel {
+            background: var(--primary-bg);
+            color: var(--primary-text);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .notification-time {
+            font-size: 0.8rem;
+        }
     </style>
 </head>
 <body>
@@ -521,6 +1077,13 @@
         <div class="header">
             <h1>🚀 TappMCP Command Center</h1>
             <p>Advanced AI-powered development assistant with real-time monitoring and intelligent workflow orchestration</p>
+
+            <!-- Navigation Links -->
+            <div class="nav-links">
+                <a href="index.html" class="nav-link active">📊 Main Dashboard</a>
+                <a href="d3-visualizations.html" class="nav-link">📈 D3.js Visualizations</a>
+            </div>
+
             <div class="status-bar">
                 <div class="status-item">
                     <div class="status-dot" id="connectionStatus"></div>
@@ -565,6 +1128,22 @@
                     <span class="metric-label">Cache Hit Rate</span>
                     <span class="metric-value" id="cacheHitRate">--</span>
                 </div>
+                <div class="metric">
+                    <span class="metric-label">Token Count (Current)</span>
+                    <span class="metric-value" id="tokenCount">--</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Total Tokens Processed</span>
+                    <span class="metric-value" id="totalTokensProcessed">--</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Hourly Average (tokens/min)</span>
+                    <span class="metric-value" id="hourlyAverageTokens">--</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Queue Size</span>
+                    <span class="metric-value" id="queueSize">--</span>
+                </div>
             </div>
 
             <!-- Performance Metrics Card -->
@@ -590,15 +1169,74 @@
                     <span class="metric-label">P99 Response</span>
                     <span class="metric-value" id="p99Response">--</span>
                 </div>
+                <div class="metric">
+                    <span class="metric-label">Throughput</span>
+                    <span class="metric-value" id="throughput">--</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Latency</span>
+                    <span class="metric-value" id="latency">--</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Success Rate</span>
+                    <span class="metric-value" id="successRate">--</span>
+                </div>
             </div>
 
-            <!-- Active Workflows Card -->
+            <!-- System Workflows Monitor -->
             <div class="card">
-                <h2>🎭 Workflow Orchestra</h2>
+                <h2>📊 System Workflow Monitor</h2>
+                <div class="workflow-stats" id="workflowStats">
+                    <span class="stat-item">Total: <strong id="totalWorkflows">0</strong></span>
+                    <span class="stat-item">Active: <strong id="activeWorkflows">0</strong></span>
+                    <span class="stat-item">Completed: <strong id="completedWorkflows">0</strong></span>
+                    <span class="stat-item">Success Rate: <strong id="successRate">0%</strong></span>
+                </div>
                 <div id="workflowsContainer">
                     <div class="loading">
                         <div class="spinner"></div>
-                        <span>Conducting workflows...</span>
+                        <span>Monitoring system workflows...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Insights & Analytics -->
+            <div class="card">
+                <h2>🔍 System Insights & Analytics</h2>
+                <div class="insights-grid">
+                    <div class="insight-item">
+                        <div class="insight-label">System Uptime</div>
+                        <div class="insight-value" id="systemUptime">--</div>
+                    </div>
+                    <div class="insight-item">
+                        <div class="insight-label">Memory Usage</div>
+                        <div class="insight-value" id="memoryUsage">--</div>
+                    </div>
+                    <div class="insight-item">
+                        <div class="insight-label">CPU Load</div>
+                        <div class="insight-value" id="cpuLoad">--</div>
+                    </div>
+                    <div class="insight-item">
+                        <div class="insight-label">Response Time</div>
+                        <div class="insight-value" id="avgResponseTime">--</div>
+                    </div>
+                    <div class="insight-item">
+                        <div class="insight-label">Error Rate</div>
+                        <div class="insight-value" id="errorRate">--</div>
+                    </div>
+                    <div class="insight-item">
+                        <div class="insight-label">Throughput</div>
+                        <div class="insight-value" id="throughput">--</div>
+                    </div>
+                </div>
+                <div class="trend-indicators">
+                    <div class="trend-item">
+                        <span class="trend-label">Performance Trend:</span>
+                        <span class="trend-value" id="performanceTrend">📈 Improving</span>
+                    </div>
+                    <div class="trend-item">
+                        <span class="trend-label">System Health:</span>
+                        <span class="trend-value" id="systemHealthTrend">🟢 Healthy</span>
                     </div>
                 </div>
             </div>
@@ -614,13 +1252,87 @@
                 </div>
             </div>
 
-            <!-- Notifications Card -->
+            <!-- Notification Management -->
             <div class="card">
-                <h2>🔔 Smart Alerts</h2>
-                <div id="notificationsContainer">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                        <span>Scanning for alerts...</span>
+                <h2>🔔 Notification Center</h2>
+                <div class="notification-controls">
+                    <div class="notification-channels">
+                        <h3>📡 Notification Channels</h3>
+                        <div class="channel-grid">
+                            <div class="channel-item">
+                                <div class="channel-icon">🌐</div>
+                                <div class="channel-info">
+                                    <div class="channel-name">Real-time (WebSocket)</div>
+                                    <div class="channel-status" id="websocketStatus">🟢 Active</div>
+                                </div>
+                            </div>
+                            <div class="channel-item">
+                                <div class="channel-icon">📧</div>
+                                <div class="channel-info">
+                                    <div class="channel-name">Email Notifications</div>
+                                    <div class="channel-status" id="emailStatus">🔴 Not Configured</div>
+                                </div>
+                            </div>
+                            <div class="channel-item">
+                                <div class="channel-icon">📱</div>
+                                <div class="channel-info">
+                                    <div class="channel-name">Push Notifications</div>
+                                    <div class="channel-status" id="pushStatus">🔴 Not Configured</div>
+                                </div>
+                            </div>
+                            <div class="channel-item">
+                                <div class="channel-icon">💬</div>
+                                <div class="channel-info">
+                                    <div class="channel-name">In-App Messages</div>
+                                    <div class="channel-status" id="inappStatus">🟢 Active</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="notification-preferences">
+                        <h3>⚙️ Notification Preferences</h3>
+                        <div class="preference-grid">
+                            <div class="preference-item">
+                                <label class="preference-label">
+                                    <input type="checkbox" id="criticalAlerts" checked>
+                                    <span class="checkmark"></span>
+                                    Critical Alerts
+                                </label>
+                            </div>
+                            <div class="preference-item">
+                                <label class="preference-label">
+                                    <input type="checkbox" id="performanceAlerts" checked>
+                                    <span class="checkmark"></span>
+                                    Performance Alerts
+                                </label>
+                            </div>
+                            <div class="preference-item">
+                                <label class="preference-label">
+                                    <input type="checkbox" id="workflowAlerts" checked>
+                                    <span class="checkmark"></span>
+                                    Workflow Alerts
+                                </label>
+                            </div>
+                            <div class="preference-item">
+                                <label class="preference-label">
+                                    <input type="checkbox" id="securityAlerts" checked>
+                                    <span class="checkmark"></span>
+                                    Security Alerts
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="notification-history">
+                    <div class="notification-history-header">
+                        <h3>📋 Recent Notifications</h3>
+                        <button id="testNotificationBtn" class="btn btn-secondary">🧪 Test Notification</button>
+                    </div>
+                    <div id="notificationsContainer">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <span>Loading notifications...</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -645,6 +1357,10 @@
                 this.connectWebSocket();
                 this.startHealthCheck();
                 this.loadTools();
+                this.loadWorkflows();
+                this.loadNotificationStatus();
+                this.loadNotificationHistory();
+                this.setupNotificationPreferences();
                 this.updateLastUpdateTime();
             }
 
@@ -692,6 +1408,7 @@
                 switch (data.type) {
                     case 'performance_metrics':
                         this.updatePerformanceMetrics(data);
+                        this.updateSystemInsights(data);
                         break;
                     case 'workflow_status_update':
                         this.updateWorkflowStatus(data);
@@ -730,6 +1447,37 @@
 
                 if (metrics.errorRate) {
                     document.getElementById('errorRate').textContent = `${(metrics.errorRate * 100).toFixed(2)}%`;
+                }
+
+                // Update token metrics
+                if (metrics.tokenCount !== undefined) {
+                    document.getElementById('tokenCount').textContent = metrics.tokenCount.toLocaleString();
+                }
+
+                if (metrics.totalTokensProcessed !== undefined) {
+                    document.getElementById('totalTokensProcessed').textContent = metrics.totalTokensProcessed.toLocaleString();
+                }
+
+                if (metrics.hourlyAverageTokens !== undefined) {
+                    document.getElementById('hourlyAverageTokens').textContent = metrics.hourlyAverageTokens.toLocaleString();
+                }
+
+                if (metrics.queueSize !== undefined) {
+                    document.getElementById('queueSize').textContent = metrics.queueSize;
+                }
+
+                if (metrics.throughput !== undefined) {
+                    document.getElementById('throughput').textContent = `${metrics.throughput} ops/s`;
+                }
+
+                if (metrics.latency !== undefined) {
+                    document.getElementById('latency').textContent = `${metrics.latency.toFixed(2)}ms`;
+                }
+
+                if (metrics.successRate !== undefined) {
+                    const successRate = document.getElementById('successRate');
+                    successRate.textContent = `${(metrics.successRate * 100).toFixed(1)}%`;
+                    successRate.className = `metric-value ${metrics.successRate > 0.95 ? 'success' : metrics.successRate > 0.8 ? 'warning' : 'error'}`;
                 }
 
                 // Update performance metrics
@@ -791,26 +1539,46 @@
                 const container = document.getElementById('workflowsContainer');
 
                 if (this.workflows.size === 0) {
-                    container.innerHTML = '<div class="loading">No active workflows</div>';
+                    container.innerHTML = '<div class="loading">No system workflows detected</div>';
                     return;
                 }
 
                 const workflows = Array.from(this.workflows.values());
-                container.innerHTML = workflows.map(workflow => `
-                    <div class="workflow-item ${workflow.status}">
-                        <div class="workflow-header">
-                            <span class="workflow-id">${workflow.workflowId}</span>
-                            <span class="workflow-status ${workflow.status}">${workflow.status}</span>
+                container.innerHTML = workflows.map(workflow => {
+                    const duration = workflow.startTime ?
+                        Math.round((Date.now() - workflow.startTime) / 1000) : 0;
+                    const durationText = duration > 60 ?
+                        `${Math.floor(duration / 60)}m ${duration % 60}s` :
+                        `${duration}s`;
+
+                    return `
+                        <div class="workflow-item ${workflow.status}">
+                            <div class="workflow-header">
+                                <div>
+                                    <div class="workflow-title">${workflow.name || workflow.workflowId}</div>
+                                    <div class="workflow-description">${workflow.description || 'System workflow'}</div>
+                                </div>
+                                <span class="workflow-status ${workflow.status}">${workflow.status}</span>
+                            </div>
+                            <div class="workflow-progress">
+                                <div class="workflow-progress-bar" style="width: ${workflow.progress || 0}%"></div>
+                            </div>
+                            <div class="workflow-phase">
+                                ${workflow.currentPhase || 'Unknown phase'}
+                            </div>
+                            <div class="workflow-meta">
+                                <div class="workflow-duration">
+                                    <span>⏱️ ${durationText}</span>
+                                </div>
+                                <div>Type: ${workflow.type || 'unknown'}</div>
+                                <div>Priority: ${workflow.metadata?.priority || 'medium'}</div>
+                            </div>
+                            ${workflow.error ? `<div class="workflow-error">Error: ${workflow.error}</div>` : ''}
                         </div>
-                        <div class="workflow-progress">
-                            <div class="workflow-progress-bar" style="width: ${workflow.progress || 0}%"></div>
-                        </div>
-                        <div style="font-size: 0.9rem; color: #718096;">
-                            ${workflow.currentPhase || 'Unknown phase'}
-                        </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             }
+
 
             renderNotifications() {
                 const container = document.getElementById('notificationsContainer');
@@ -820,15 +1588,40 @@
                     return;
                 }
 
-                container.innerHTML = this.notifications.map(notification => `
-                    <div class="notification ${notification.priority || 'info'}">
-                        <div class="notification-header">
-                            <span class="notification-title">${notification.title || 'Notification'}</span>
-                            <span class="notification-time">${new Date(notification.timestamp || Date.now()).toLocaleTimeString()}</span>
+                container.innerHTML = this.notifications.map(notification => {
+                    const icon = this.getNotificationIcon(notification.type || 'info');
+                    const channel = notification.channel || 'websocket';
+                    const time = new Date(notification.timestamp || Date.now()).toLocaleTimeString();
+
+                    return `
+                        <div class="notification-item ${notification.priority || 'info'}">
+                            <div class="notification-icon">${icon}</div>
+                            <div class="notification-content">
+                                <div class="notification-title">${notification.title || 'Notification'}</div>
+                                <div class="notification-message">${notification.message || 'No message'}</div>
+                                <div class="notification-meta">
+                                    <span class="notification-channel">${channel.toUpperCase()}</span>
+                                    <span class="notification-time">${time}</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="notification-message">${notification.message || 'No message'}</div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
+            }
+
+            getNotificationIcon(type) {
+                const icons = {
+                    'info': 'ℹ️',
+                    'warning': '⚠️',
+                    'error': '❌',
+                    'success': '✅',
+                    'critical': '🚨',
+                    'performance': '📊',
+                    'workflow': '🎭',
+                    'security': '🔒',
+                    'update': '🔄'
+                };
+                return icons[type] || 'ℹ️';
             }
 
             updateConnectionStatus(connected) {
@@ -924,11 +1717,207 @@
                     }
                 }, 30000);
             }
+
+
+            async loadWorkflows() {
+                try {
+                    const response = await fetch('http://localhost:3000/workflows');
+                    const data = await response.json();
+                    if (data.success) {
+                        this.workflows = new Map(data.workflows.map(w => [w.workflowId, w]));
+                        this.renderWorkflows();
+                        this.updateWorkflowStats(data.stats);
+                    }
+                } catch (error) {
+                    console.error('Failed to load workflows:', error);
+                }
+            }
+
+            updateWorkflowStats(stats) {
+                document.getElementById('totalWorkflows').textContent = stats.total || 0;
+                document.getElementById('activeWorkflows').textContent = stats.active || 0;
+                document.getElementById('completedWorkflows').textContent = stats.completed || 0;
+                document.getElementById('successRate').textContent = `${Math.round(stats.successRate || 0)}%`;
+            }
+
+            updateSystemInsights(metrics) {
+                // Update system uptime
+                const uptime = metrics.uptime || 0;
+                const uptimeText = uptime > 3600 ?
+                    `${Math.floor(uptime / 3600)}h ${Math.floor((uptime % 3600) / 60)}m` :
+                    `${Math.floor(uptime / 60)}m ${Math.floor(uptime % 60)}s`;
+                document.getElementById('systemUptime').textContent = uptimeText;
+
+                // Update memory usage
+                const memoryMB = Math.round((metrics.memoryUsage?.heapUsed || 0) / 1024 / 1024);
+                document.getElementById('memoryUsage').textContent = `${memoryMB} MB`;
+
+                // Update CPU load
+                const cpuPercent = Math.round((metrics.cpuUsage || 0) * 100);
+                document.getElementById('cpuLoad').textContent = `${cpuPercent}%`;
+
+                // Update response time
+                const avgResponseTime = metrics.latency || 0;
+                document.getElementById('avgResponseTime').textContent = `${Math.round(avgResponseTime)}ms`;
+
+                // Update error rate
+                const errorRate = (1 - (metrics.successRate || 0.95)) * 100;
+                document.getElementById('errorRate').textContent = `${errorRate.toFixed(2)}%`;
+
+                // Update throughput
+                const throughput = metrics.throughput || 0;
+                document.getElementById('throughput').textContent = `${throughput} ops/s`;
+
+                // Update trend indicators
+                this.updateTrendIndicators(metrics);
+            }
+
+            updateTrendIndicators(metrics) {
+                // Performance trend based on latency and throughput
+                const latency = metrics.latency || 0;
+                const throughput = metrics.throughput || 0;
+                const cpuUsage = metrics.cpuUsage || 0;
+
+                let performanceTrend = '📈 Improving';
+                if (latency > 100 || throughput < 20) {
+                    performanceTrend = '📉 Declining';
+                } else if (latency > 50 || throughput < 40) {
+                    performanceTrend = '➡️ Stable';
+                }
+
+                // System health based on multiple factors
+                let systemHealth = '🟢 Healthy';
+                if (cpuUsage > 0.8 || latency > 200 || (1 - (metrics.successRate || 0.95)) > 0.1) {
+                    systemHealth = '🔴 Critical';
+                } else if (cpuUsage > 0.6 || latency > 100 || (1 - (metrics.successRate || 0.95)) > 0.05) {
+                    systemHealth = '🟡 Warning';
+                }
+
+                document.getElementById('performanceTrend').textContent = performanceTrend;
+                document.getElementById('systemHealthTrend').textContent = systemHealth;
+            }
+
+            // Notification management methods
+            async loadNotificationStatus() {
+                try {
+                    const response = await fetch('http://localhost:3000/notifications/status');
+                    const data = await response.json();
+                    if (data.success) {
+                        this.updateNotificationChannels(data.channels);
+                    }
+                } catch (error) {
+                    console.error('Failed to load notification status:', error);
+                }
+            }
+
+            async loadNotificationHistory() {
+                try {
+                    const response = await fetch('http://localhost:3000/notifications/history?limit=20');
+                    const data = await response.json();
+                    if (data.success) {
+                        this.notifications = data.notifications;
+                        this.renderNotifications();
+                    }
+                } catch (error) {
+                    console.error('Failed to load notification history:', error);
+                }
+            }
+
+            updateNotificationChannels(channels) {
+                // Update WebSocket status
+                const wsStatus = channels.websocket;
+                document.getElementById('websocketStatus').textContent =
+                    wsStatus.available ? `🟢 ${wsStatus.status}` : '🔴 Not Available';
+
+                // Update Email status
+                const emailStatus = channels.email;
+                document.getElementById('emailStatus').textContent =
+                    emailStatus.available ? `🟢 ${emailStatus.status}` : '🔴 Not Configured';
+
+                // Update Push status
+                const pushStatus = channels.push;
+                document.getElementById('pushStatus').textContent =
+                    pushStatus.available ? `🟢 ${pushStatus.status}` : '🔴 Not Configured';
+
+                // Update In-App status (always active)
+                document.getElementById('inappStatus').textContent = '🟢 Active';
+            }
+
+            setupNotificationPreferences() {
+                // Load saved preferences from localStorage
+                const savedPrefs = localStorage.getItem('notificationPreferences');
+                if (savedPrefs) {
+                    const prefs = JSON.parse(savedPrefs);
+                    Object.keys(prefs).forEach(key => {
+                        const checkbox = document.getElementById(key);
+                        if (checkbox) {
+                            checkbox.checked = prefs[key];
+                        }
+                    });
+                }
+
+                // Add event listeners for preference changes
+                ['criticalAlerts', 'performanceAlerts', 'workflowAlerts', 'securityAlerts'].forEach(id => {
+                    const checkbox = document.getElementById(id);
+                    if (checkbox) {
+                        checkbox.addEventListener('change', (e) => {
+                            this.saveNotificationPreferences();
+                        });
+                    }
+                });
+
+                // Add test notification button listener
+                const testBtn = document.getElementById('testNotificationBtn');
+                if (testBtn) {
+                    testBtn.addEventListener('click', () => {
+                        this.sendTestNotification();
+                    });
+                }
+            }
+
+            saveNotificationPreferences() {
+                const prefs = {
+                    criticalAlerts: document.getElementById('criticalAlerts').checked,
+                    performanceAlerts: document.getElementById('performanceAlerts').checked,
+                    workflowAlerts: document.getElementById('workflowAlerts').checked,
+                    securityAlerts: document.getElementById('securityAlerts').checked
+                };
+
+                localStorage.setItem('notificationPreferences', JSON.stringify(prefs));
+                console.log('Notification preferences saved:', prefs);
+            }
+
+            async sendTestNotification() {
+                try {
+                    const response = await fetch('http://localhost:3000/notifications/send', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            type: 'info',
+                            priority: 'medium',
+                            title: 'Test Notification',
+                            message: 'This is a test notification from the TappMCP dashboard',
+                            userId: 'dashboard-user'
+                        })
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        console.log('Test notification sent successfully');
+                    } else {
+                        console.error('Failed to send test notification:', result.message);
+                    }
+                } catch (error) {
+                    console.error('Error sending test notification:', error);
+                }
+            }
         }
 
         // Initialize dashboard when page loads
         document.addEventListener('DOMContentLoaded', () => {
-            new TappMCPDashboard();
+            window.dashboard = new TappMCPDashboard();
         });
     </script>
 </body>

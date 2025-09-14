@@ -4,6 +4,7 @@ import TimelineView from '../visualization/TimelineView';
 import PerformanceOverlay from '../visualization/PerformanceOverlay';
 import TappMCPValueDashboard from '../visualization/TappMCPValueDashboard';
 import DrillDownModal from '../visualization/DrillDownModal';
+import ExportPanel from '../visualization/ExportPanel';
 import RealTimeDataManager, { RealTimeData, WorkflowData } from './RealTimeDataManager';
 
 interface DashboardProps {
@@ -12,7 +13,7 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ width = 1200, height = 800 }) => {
-  const [activeTab, setActiveTab] = useState<'workflow' | 'timeline' | 'performance' | 'value'>('value');
+  const [activeTab, setActiveTab] = useState<'workflow' | 'timeline' | 'performance' | 'value' | 'export'>('value');
   const [realTimeData, setRealTimeData] = useState<RealTimeData | null>(null);
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [connectionStatus, setConnectionStatus] = useState<{
@@ -178,7 +179,8 @@ const Dashboard: React.FC<DashboardProps> = ({ width = 1200, height = 800 }) => 
           { id: 'value', label: '💰 Value Metrics', icon: '💰' },
           { id: 'workflow', label: '🔄 Workflow Graph', icon: '🔄' },
           { id: 'timeline', label: '⏱️ Timeline', icon: '⏱️' },
-          { id: 'performance', label: '📈 Performance', icon: '📈' }
+          { id: 'performance', label: '📈 Performance', icon: '📈' },
+          { id: 'export', label: '📤 Export', icon: '📤' }
         ].map(tab => (
           <button
             key={tab.id}
@@ -284,6 +286,66 @@ const Dashboard: React.FC<DashboardProps> = ({ width = 1200, height = 800 }) => 
               onMetricClick={handleMetricClick}
               showAlerts={true}
             />
+          </div>
+        )}
+
+        {activeTab === 'export' && (
+          <div style={{ display: 'flex', gap: '24px' }}>
+            <div style={{ flex: 1 }}>
+              <h2 style={{ margin: '0 0 16px 0', color: '#1f2937' }}>Export Dashboard Data</h2>
+              <p style={{ margin: '0 0 24px 0', color: '#6b7280' }}>
+                Export visualizations and data in multiple formats for sharing and analysis
+              </p>
+              <ExportPanel
+                data={{
+                  type: 'dashboard',
+                  data: realTimeData,
+                  metadata: {
+                    timestamp: Date.now(),
+                    version: '2.0',
+                    exportFormat: 'dashboard',
+                    generatedBy: 'TappMCP Dashboard'
+                  }
+                }}
+                onExport={(format, success) => {
+                  console.log(`Export ${success ? 'successful' : 'failed'} for format: ${format}`);
+                }}
+              />
+            </div>
+            <div style={{ flex: 1 }}>
+              <h3 style={{ margin: '0 0 16px 0', color: '#1f2937' }}>Export Preview</h3>
+              <div style={{
+                background: '#f8fafc',
+                border: '1px solid #e5e7eb',
+                borderRadius: '8px',
+                padding: '16px',
+                minHeight: '300px'
+              }}>
+                <p style={{ color: '#6b7280', margin: '0 0 16px 0' }}>
+                  Preview of current dashboard data that will be exported:
+                </p>
+                <div style={{ fontSize: '14px', color: '#374151' }}>
+                  <div style={{ marginBottom: '8px' }}>
+                    <strong>Data Type:</strong> Dashboard Export
+                  </div>
+                  <div style={{ marginBottom: '8px' }}>
+                    <strong>Timestamp:</strong> {new Date().toLocaleString()}
+                  </div>
+                  <div style={{ marginBottom: '8px' }}>
+                    <strong>Active Connections:</strong> {connectionStatus.connected ? 'Connected' : 'Disconnected'}
+                  </div>
+                  <div style={{ marginBottom: '8px' }}>
+                    <strong>Available Data:</strong>
+                  </div>
+                  <ul style={{ margin: '0 0 0 20px', color: '#6b7280' }}>
+                    <li>Value Metrics: {realTimeData?.valueMetrics ? 'Available' : 'Not Available'}</li>
+                    <li>Workflow Data: {realTimeData?.workflows?.length || 0} workflows</li>
+                    <li>Performance Metrics: {realTimeData?.metrics ? 'Available' : 'Not Available'}</li>
+                    <li>System Health: {realTimeData?.systemHealth ? 'Available' : 'Not Available'}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>

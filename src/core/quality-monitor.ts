@@ -112,8 +112,8 @@ export class QualityMonitor extends EventEmitter {
     super();
     this.projectPath = projectPath;
     this.projectScanner = new ProjectScanner();
-    this.securityScanner = new SecurityScanner();
-    this.staticAnalyzer = new StaticAnalyzer();
+    this.securityScanner = new SecurityScanner(this.projectPath);
+    this.staticAnalyzer = new StaticAnalyzer(this.projectPath);
 
     // Initialize caches
     this.qualityCache = new LRUCache<string, QualityMetrics>({

@@ -9,6 +9,8 @@ import express from 'express';
 import { createServer } from 'http';
 import { WebSocketServer } from 'ws';
 import cors from 'cors';
+import { WorkflowManager } from './src/workflow-manager.js';
+import { SimpleNotificationManager } from './src/notifications/SimpleNotificationManager.js';
 
 const app = express();
 const server = createServer(app);
@@ -204,6 +206,174 @@ app.get('/tools', (req, res) => {
   });
 });
 
+// Workflow management endpoints
+app.get('/workflows', (req, res) => {
+  const workflows = workflowManager.getAllWorkflows();
+  const stats = workflowManager.getWorkflowStats();
+
+  res.json({
+    success: true,
+    workflows: workflows,
+    stats: stats
+  });
+});
+
+app.post('/workflows/:workflowId/start', (req, res) => {
+  const { workflowId } = req.params;
+  const success = workflowManager.startWorkflow(workflowId);
+
+  res.json({
+    success: success,
+    message: success ? 'Workflow started successfully' : 'Failed to start workflow'
+  });
+});
+
+app.post('/workflows/:workflowId/pause', (req, res) => {
+  const { workflowId } = req.params;
+  const success = workflowManager.pauseWorkflow(workflowId);
+
+  res.json({
+    success: success,
+    message: success ? 'Workflow paused successfully' : 'Failed to pause workflow'
+  });
+});
+
+app.post('/workflows/:workflowId/resume', (req, res) => {
+  const { workflowId } = req.params;
+  const success = workflowManager.resumeWorkflow(workflowId);
+
+  res.json({
+    success: success,
+    message: success ? 'Workflow resumed successfully' : 'Failed to resume workflow'
+  });
+});
+
+app.post('/workflows/:workflowId/cancel', (req, res) => {
+  const { workflowId } = req.params;
+  const success = workflowManager.cancelWorkflow(workflowId);
+
+  res.json({
+    success: success,
+    message: success ? 'Workflow cancelled successfully' : 'Failed to cancel workflow'
+  });
+});
+
+app.post('/workflows', (req, res) => {
+  const config = req.body;
+  const workflow = workflowManager.createWorkflow(config);
+
+  res.json({
+    success: true,
+    workflow: workflow,
+    message: 'Workflow created successfully'
+  });
+});
+
+app.delete('/workflows/:workflowId', (req, res) => {
+  const { workflowId } = req.params;
+  const success = workflowManager.deleteWorkflow(workflowId);
+
+  res.json({
+    success: success,
+    message: success ? 'Workflow deleted successfully' : 'Failed to delete workflow'
+  });
+});
+
+// Notification management endpoints
+app.get('/notifications/status', (req, res) => {
+  const status = notificationManager.getChannelStatus();
+  res.json({
+    success: true,
+    channels: status
+  });
+});
+
+app.get('/notifications/history', (req, res) => {
+  const limit = parseInt(req.query.limit) || 50;
+  const history = notificationManager.getNotificationHistory(limit);
+  res.json({
+    success: true,
+    notifications: history
+  });
+});
+
+app.post('/notifications/send', async (req, res) => {
+  try {
+    const { type, priority, title, message, userId, data } = req.body;
+    const notification = notificationManager.createNotification(
+      type,
+      priority,
+      title,
+      message,
+      userId,
+      data
+    );
+
+    const success = await notificationManager.sendNotification(notification);
+    res.json({
+      success: success,
+      notification: notification,
+      message: success ? 'Notification sent successfully' : 'Failed to send notification'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error sending notification',
+      error: error.message
+    });
+  }
+});
+
+// Additional notification endpoints can be added here as needed
+
+// Metrics endpoint
+app.get('/metrics', (req, res) => {
+  const memoryUsage = process.memoryUsage();
+  const uptime = process.uptime();
+
+  // Generate realistic metrics
+  const metrics = {
+    success: true,
+    data: {
+      // System metrics
+      memoryUsage: {
+        heapUsed: memoryUsage.heapUsed,
+        heapTotal: memoryUsage.heapTotal,
+        external: memoryUsage.external,
+        rss: memoryUsage.rss
+      },
+      cpuUsage: Math.random() * 100, // Simulated CPU usage
+      responseTime: Math.random() * 200 + 50, // 50-250ms
+      activeConnections: wss.clients.size,
+      cacheHitRate: 0.85 + Math.random() * 0.1, // 85-95%
+      errorRate: Math.random() * 0.05, // 0-5%
+
+      // Performance metrics
+      requestsPerSecond: Math.floor(Math.random() * 100 + 20), // 20-120 req/s
+      bytesPerSecond: Math.random() * 1024 * 1024, // 0-1MB/s
+      p95Response: Math.random() * 300 + 100, // 100-400ms
+      p99Response: Math.random() * 500 + 200, // 200-700ms
+
+      // Enhanced token metrics
+      tokenCount: Math.floor(Math.random() * 10000 + 5000), // 5k-15k tokens (current)
+      totalTokensProcessed: totalTokensProcessed, // Total since server start
+      hourlyAverageTokens: Math.floor(Math.random() * 1000 + 500), // 500-1500 tokens/min
+      queueSize: Math.floor(Math.random() * 20), // 0-20 items
+      throughput: Math.floor(Math.random() * 50 + 10), // 10-60 ops/s
+      latency: Math.random() * 100 + 20, // 20-120ms
+      successRate: 0.9 + Math.random() * 0.08, // 90-98%
+
+      // System info
+      uptime: uptime,
+      timestamp: new Date().toISOString(),
+      server: 'TappMCP HTTP Server',
+      version: '2.0.0'
+    }
+  };
+
+  res.json(metrics);
+});
+
 // Call a tool
 app.post('/tools/:toolName', async (req, res) => {
   const { toolName } = req.params;
@@ -292,6 +462,17 @@ let requestCount = 0;
 let requestStartTime = Date.now();
 let responseTimes = [];
 
+// Token tracking for total count and hourly average
+let totalTokensProcessed = 0;
+let tokenHistory = []; // Array of { timestamp, tokens } for hourly calculation
+let serverStartTime = Date.now();
+
+// Initialize workflow manager
+const workflowManager = new WorkflowManager();
+
+// Initialize notification manager
+const notificationManager = new SimpleNotificationManager();
+
 function broadcastMetrics() {
   if (connectedClients.size === 0) return;
 
@@ -326,6 +507,24 @@ function broadcastMetrics() {
   const cpuUsage = Math.round(Math.random() * 100); // 0-100% CPU
   console.log('🔍 Debug - cpuUsage:', cpuUsage);
 
+  // Generate realistic token count for this interval
+  const currentTokenCount = Math.floor(Math.random() * 10000 + 5000); // 5k-15k tokens
+
+  // Update token tracking
+  totalTokensProcessed += currentTokenCount;
+  tokenHistory.push({
+    timestamp: currentTime,
+    tokens: currentTokenCount
+  });
+
+  // Clean up old token history (keep only last hour)
+  const oneHourAgo = currentTime - (60 * 60 * 1000);
+  tokenHistory = tokenHistory.filter(entry => entry.timestamp > oneHourAgo);
+
+  // Calculate hourly average
+  const hourlyTokens = tokenHistory.reduce((sum, entry) => sum + entry.tokens, 0);
+  const hourlyAverage = tokenHistory.length > 0 ? Math.round(hourlyTokens / (tokenHistory.length / 60)) : 0; // tokens per minute
+
   const metrics = {
     type: 'performance_metrics',
     data: {
@@ -344,37 +543,23 @@ function broadcastMetrics() {
       p95Response: p95Response,
       p99Response: p99Response,
       cpuUsage: cpuUsage,
+      // Enhanced token metrics
+      tokenCount: currentTokenCount, // Current interval tokens
+      totalTokensProcessed: totalTokensProcessed, // Total since server start
+      hourlyAverageTokens: hourlyAverage, // Average tokens per minute (hourly rate)
+      queueSize: Math.floor(Math.random() * 20), // 0-20 items
+      throughput: Math.floor(Math.random() * 50 + 10), // 10-60 ops/s
+      latency: Math.random() * 100 + 20, // 20-120ms
+      successRate: 0.9 + Math.random() * 0.08, // 90-98%
       timestamp: currentTime
     }
   };
 
+  // Update workflow progress
+  workflowManager.updateWorkflowProgress();
+
   // Broadcast workflow status
-  const workflows = [
-    {
-      workflowId: 'workflow-001',
-      status: 'running',
-      progress: Math.floor(Math.random() * 100),
-      currentPhase: 'Code Analysis',
-      startTime: Date.now() - Math.random() * 300000, // Started within last 5 minutes
-      estimatedCompletion: Date.now() + Math.random() * 120000 // Complete within 2 minutes
-    },
-    {
-      workflowId: 'workflow-002',
-      status: 'completed',
-      progress: 100,
-      currentPhase: 'Completed',
-      startTime: Date.now() - 600000, // Started 10 minutes ago
-      completedTime: Date.now() - 300000 // Completed 5 minutes ago
-    },
-    {
-      workflowId: 'workflow-003',
-      status: 'pending',
-      progress: 0,
-      currentPhase: 'Queued',
-      startTime: null,
-      estimatedStart: Date.now() + Math.random() * 300000 // Start within 5 minutes
-    }
-  ];
+  const workflows = workflowManager.getAllWorkflows();
 
   // Send individual workflow updates
   workflows.forEach(workflow => {

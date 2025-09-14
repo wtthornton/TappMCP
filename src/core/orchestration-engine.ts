@@ -26,6 +26,7 @@ import { Context7PerformanceOptimizer, type PerformanceMetrics, type Performance
 import { dynamicImportManager } from './dynamic-imports.js';
 import { globalPerformanceMonitor } from '../monitoring/performance-monitor.js';
 import { MetricsBroadcaster } from '../websocket/MetricsBroadcaster.js';
+import { EventEmitter } from 'events';
 
 /**
  * Represents a complete workflow with phases, tasks, and business context
@@ -847,7 +848,7 @@ export interface OptimizedWorkflow {
  * @since 2.0.0
  * @author TappMCP Team
  */
-export class OrchestrationEngine {
+export class OrchestrationEngine extends EventEmitter {
   /** Business context broker for managing role transitions and business requirements */
   private contextBroker: BusinessContextBroker;
 
@@ -855,6 +856,7 @@ export class OrchestrationEngine {
   private context7Broker: Context7Broker;
 
   /** Project analysis tools for real analysis integration */
+  private projectPath: string;
   private projectScanner: ProjectScanner;
   private securityScanner: SecurityScanner;
   private staticAnalyzer: StaticAnalyzer;
@@ -960,14 +962,16 @@ export class OrchestrationEngine {
    *
    * @since 2.0.0
    */
-  constructor() {
+  constructor(projectPath: string = process.cwd()) {
+    super();
+    this.projectPath = projectPath;
     this.contextBroker = new BusinessContextBroker();
     this.context7Broker = new Context7Broker();
 
     // Initialize project analysis tools
     this.projectScanner = new ProjectScanner();
-    this.securityScanner = new SecurityScanner();
-    this.staticAnalyzer = new StaticAnalyzer();
+    this.securityScanner = new SecurityScanner(this.projectPath);
+    this.staticAnalyzer = new StaticAnalyzer(this.projectPath);
     this.qualityMonitor = new QualityMonitor();
     this.contextPreservation = new ContextPreservationSystem();
     this.context7Optimizer = new Context7PerformanceOptimizer(this.context7Broker);
@@ -1376,16 +1380,16 @@ export class OrchestrationEngine {
           startTime: Date.now(),
           metadata: { executionTime, businessValue: result.businessValue }
         });
-        this.metricsBroadcaster.broadcastWorkflowEvent(
+        this.metricsBroadcaster.broadcastWorkflowEvent({
           workflowId,
-          result.success,
-          result.success ? 'Workflow completed successfully' : 'Workflow execution failed',
-          {
+          eventType: result.success ? 'workflow-completed' : 'workflow-failed',
+          data: {
             executionTime: Date.now() - startTime,
             phasesCompleted: result.phases.length,
             businessScore: result.businessValue.businessScore
-          }
-        );
+          },
+          timestamp: Date.now()
+        });
       }
 
       // End performance monitoring
@@ -1405,18 +1409,18 @@ export class OrchestrationEngine {
       if (this.metricsBroadcaster) {
         this.metricsBroadcaster.updateWorkflowStatus(workflowId, {
           workflowId,
-          status: 'completed',
-          progress: 100,
-          currentPhase: 'Workflow completed',
+          status: 'failed',
+          progress: 0,
+          currentPhase: 'Workflow failed',
           startTime: Date.now(),
-          metadata: { executionTime, businessValue: result.businessValue }
+          metadata: { executionTime, businessValue: 0 }
         });
-        this.metricsBroadcaster.broadcastWorkflowEvent(
+        this.metricsBroadcaster.broadcastWorkflowEvent({
           workflowId,
-          false,
-          `Workflow execution failed: ${mcpError.message}`,
-          { error: mcpError.message, executionTime }
-        );
+          eventType: 'workflow-failed',
+          data: { error: mcpError.message, executionTime },
+          timestamp: Date.now()
+        });
       }
 
       // End performance monitoring for error case
@@ -3319,32 +3323,7 @@ ${
     };
   }
 
-  /**
-   * Start real-time quality monitoring
-   */
-  startQualityMonitoring(intervalMs: number = 60000): void {
-    this.qualityMonitor.startMonitoring(intervalMs);
 
-    // Set up event listeners for quality alerts
-    this.qualityMonitor.on('quality-alert', (alert: QualityAlert) => {
-      console.warn(`Quality Alert: ${alert.title} - ${alert.description}`);
-      // Emit to external systems if needed
-      this.emit('quality-alert', alert);
-    });
-
-    this.qualityMonitor.on('quality-assessment-completed', (data) => {
-      console.log(`Quality assessment completed: Overall score ${data.metrics.overallScore}`);
-      // Emit to external systems if needed
-      this.emit('quality-assessment-completed', data);
-    });
-  }
-
-  /**
-   * Stop real-time quality monitoring
-   */
-  stopQualityMonitoring(): void {
-    this.qualityMonitor.stopMonitoring();
-  }
 
   /**
    * Get current quality metrics
@@ -3476,7 +3455,7 @@ ${
   /**
    * Get Context7 performance alerts
    */
-  getContext7PerformanceAlerts(): PerformanceAlert[] {
+  getContext7PerformanceAlerts(): Context7PerformanceAlert[] {
     return this.context7Optimizer.getActiveAlerts();
   }
 
@@ -5952,7 +5931,7 @@ ${
             state.qualityHistory[state.qualityHistory.length - 2].categoryScores
           ),
         },
-        timestamp: Date.now(),
+        timestamp: new Date().toISOString(),
       };
 
       state.alerts.push(alert);
@@ -5969,14 +5948,14 @@ ${
     if (criticalIssues.length > 0) {
       const alert: QualityAlert = {
         id: `critical-${Date.now()}`,
-        type: 'critical',
+        type: 'critical-issue',
         severity: 'critical',
         message: `${criticalIssues.length} critical quality issues detected`,
         details: {
           issues: criticalIssues,
           overallScore: assessment.overallScore,
         },
-        timestamp: Date.now(),
+        timestamp: new Date().toISOString(),
       };
 
       const state = this.qualityMonitoringState.get(workflowId);
@@ -6856,7 +6835,7 @@ ${
       // Create initial context history entry
       const initialEntry: ContextHistoryEntry = {
         id: `ctx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        timestamp: Date.now(),
+        timestamp: new Date().toISOString(),
         phase: initialContext.phase,
         context: { ...initialContext },
         accuracy: 1.0,
@@ -6932,7 +6911,7 @@ ${
       // Create new context history entry
       const entry: ContextHistoryEntry = {
         id: `ctx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        timestamp: Date.now(),
+        timestamp: new Date().toISOString(),
         phase: newContext.phase,
         context: newContext,
         accuracy: await this.calculateContextAccuracy(newContext),
@@ -7559,7 +7538,7 @@ ${
           missingElements: ['Context not found for one or both phases'],
           conflictingElements: [],
           recommendations: ['Ensure context is properly preserved between phases'],
-          timestamp: Date.now(),
+          timestamp: new Date().toISOString(),
         };
       }
 
@@ -7609,7 +7588,7 @@ ${
         missingElements,
         conflictingElements,
         recommendations,
-        timestamp: Date.now(),
+        timestamp: new Date().toISOString(),
       };
     } catch (error) {
       console.error('Failed to check context continuity:', error);
@@ -7891,7 +7870,7 @@ ${
         templateType: templateType || 'generic',
         detectedPatterns,
         suggestions,
-        timestamp: Date.now(),
+        timestamp: new Date().toISOString(),
       };
     } catch (error) {
       console.error('Failed to detect template response:', error);

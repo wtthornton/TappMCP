@@ -18,6 +18,14 @@ export interface StaticAnalysisResult {
     maintainability: number;
     duplication: number;
   };
+  // Additional properties for compatibility
+  complexity: number;
+  maintainability: number;
+  testCoverage: number;
+  codeSmells: number;
+  qualityScore: number;
+  recommendations: string[];
+  analysisTimestamp: number;
 }
 
 export interface StaticIssue {
@@ -36,6 +44,13 @@ export class StaticAnalyzer {
 
   constructor(projectPath: string) {
     this.projectPath = projectPath;
+  }
+
+  /**
+   * Analyze code quality (alias for runStaticAnalysis)
+   */
+  async analyzeCode(): Promise<StaticAnalysisResult> {
+    return this.runStaticAnalysis();
   }
 
   /**
@@ -97,7 +112,64 @@ export class StaticAnalyzer {
       status,
       summary,
       metrics,
+      // Additional properties for compatibility
+      complexity: metrics.complexity,
+      maintainability: metrics.maintainability,
+      testCoverage: 0, // Default value, would need test coverage tool
+      codeSmells: summary.warning + summary.error,
+      qualityScore: this.calculateQualityScore(metrics, summary),
+      recommendations: this.generateRecommendations(issues, metrics),
+      analysisTimestamp: Date.now(),
     };
+  }
+
+  /**
+   * Calculate quality score based on metrics and summary
+   */
+  private calculateQualityScore(metrics: any, summary: any): number {
+    let score = 100;
+
+    // Deduct points for issues
+    score -= summary.error * 5;
+    score -= summary.warning * 2;
+    score -= summary.info * 0.5;
+
+    // Deduct points for complexity
+    if (metrics.complexity > 10) score -= 10;
+    if (metrics.complexity > 20) score -= 20;
+
+    // Deduct points for low maintainability
+    if (metrics.maintainability < 50) score -= 15;
+    if (metrics.maintainability < 30) score -= 25;
+
+    return Math.max(0, Math.min(100, score));
+  }
+
+  /**
+   * Generate recommendations based on issues and metrics
+   */
+  private generateRecommendations(issues: StaticIssue[], metrics: any): string[] {
+    const recommendations: string[] = [];
+
+    if (metrics.complexity > 10) {
+      recommendations.push('Consider refactoring complex functions to improve maintainability');
+    }
+
+    if (metrics.maintainability < 50) {
+      recommendations.push('Improve code structure and add documentation');
+    }
+
+    const errorCount = issues.filter(i => i.severity === 'error').length;
+    if (errorCount > 0) {
+      recommendations.push(`Fix ${errorCount} critical errors to improve code quality`);
+    }
+
+    const warningCount = issues.filter(i => i.severity === 'warning').length;
+    if (warningCount > 5) {
+      recommendations.push(`Address ${warningCount} warnings to improve code quality`);
+    }
+
+    return recommendations;
   }
 
   /**
