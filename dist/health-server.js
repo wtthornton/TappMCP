@@ -101,7 +101,7 @@ if (process.env.NODE_ENV !== 'test' &&
             // });
             // Start metrics broadcasting
             if (metricsBroadcaster) {
-                metricsBroadcaster.startBroadcasting(5000); // Broadcast every 5 seconds
+                metricsBroadcaster.start(); // Start metrics broadcasting
             }
             // Set up performance metrics broadcasting
             globalPerformanceMonitor.on('metric-recorded', (metric) => {

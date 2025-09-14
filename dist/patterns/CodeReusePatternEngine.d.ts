@@ -68,16 +68,16 @@ declare const CodePatternSchema: z.ZodObject<{
     name: string;
     description: string;
     id: string;
-    complexity: "low" | "medium" | "high";
+    dependencies: string[];
+    pattern: string;
     metrics: {
         tokensPerUse: number;
         avgComplexity: number;
         reuseOpportunities: number;
         potentialSavings: number;
     };
-    pattern: string;
+    complexity: "low" | "medium" | "high";
     category: "function" | "type" | "testing" | "async" | "class" | "module" | "error-handling" | "utility" | "control-flow";
-    dependencies: string[];
     examples: string[];
     variables: {
         type: string;
@@ -89,16 +89,16 @@ declare const CodePatternSchema: z.ZodObject<{
     name: string;
     description: string;
     id: string;
-    complexity: "low" | "medium" | "high";
+    dependencies: string[];
+    pattern: string;
     metrics: {
         tokensPerUse: number;
         avgComplexity: number;
         reuseOpportunities: number;
         potentialSavings: number;
     };
-    pattern: string;
+    complexity: "low" | "medium" | "high";
     category: "function" | "type" | "testing" | "async" | "class" | "module" | "error-handling" | "utility" | "control-flow";
-    dependencies: string[];
     examples: string[];
     variables: {
         type: string;

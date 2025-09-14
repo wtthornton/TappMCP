@@ -9,17 +9,17 @@ export declare const ArchitectureSchema: z.ZodObject<{
         dependencies: z.ZodArray<z.ZodString, "many">;
         complexity: z.ZodEnum<["low", "medium", "high"]>;
     }, "strip", z.ZodTypeAny, {
-        type: "frontend" | "service" | "database" | "backend" | "external";
+        type: "external" | "frontend" | "service" | "database" | "backend";
         name: string;
         description: string;
-        complexity: "low" | "medium" | "high";
         dependencies: string[];
+        complexity: "low" | "medium" | "high";
     }, {
-        type: "frontend" | "service" | "database" | "backend" | "external";
+        type: "external" | "frontend" | "service" | "database" | "backend";
         name: string;
         description: string;
-        complexity: "low" | "medium" | "high";
         dependencies: string[];
+        complexity: "low" | "medium" | "high";
     }>, "many">;
     patterns: z.ZodArray<z.ZodString, "many">;
     technologies: z.ZodArray<z.ZodObject<{
@@ -45,11 +45,11 @@ export declare const ArchitectureSchema: z.ZodObject<{
         justification: string;
     }[];
     components: {
-        type: "frontend" | "service" | "database" | "backend" | "external";
+        type: "external" | "frontend" | "service" | "database" | "backend";
         name: string;
         description: string;
-        complexity: "low" | "medium" | "high";
         dependencies: string[];
+        complexity: "low" | "medium" | "high";
     }[];
 }, {
     constraints: string[];
@@ -60,11 +60,11 @@ export declare const ArchitectureSchema: z.ZodObject<{
         justification: string;
     }[];
     components: {
-        type: "frontend" | "service" | "database" | "backend" | "external";
+        type: "external" | "frontend" | "service" | "database" | "backend";
         name: string;
         description: string;
-        complexity: "low" | "medium" | "high";
         dependencies: string[];
+        complexity: "low" | "medium" | "high";
     }[];
 }>;
 export declare const TaskSchema: z.ZodObject<{

@@ -37,9 +37,10 @@ export declare const ToolDefinitionSchema: z.ZodObject<{
     version: string;
     description: string;
     inputSchema: Record<string, any>;
+    dependencies: string[];
     reliability: number;
     category: "validation" | "planning" | "orchestration" | "analysis" | "generation" | "transformation";
-    dependencies: string[];
+    cacheEnabled: boolean;
     outputSchema: Record<string, any>;
     estimatedExecutionTime: number;
     resourceRequirements: {
@@ -49,7 +50,6 @@ export declare const ToolDefinitionSchema: z.ZodObject<{
     };
     costPerExecution: number;
     parallelizable: boolean;
-    cacheEnabled: boolean;
 }, {
     name: string;
     description: string;
@@ -57,8 +57,9 @@ export declare const ToolDefinitionSchema: z.ZodObject<{
     category: "validation" | "planning" | "orchestration" | "analysis" | "generation" | "transformation";
     outputSchema: Record<string, any>;
     version?: string | undefined;
-    reliability?: number | undefined;
     dependencies?: string[] | undefined;
+    reliability?: number | undefined;
+    cacheEnabled?: boolean | undefined;
     estimatedExecutionTime?: number | undefined;
     resourceRequirements?: {
         memory?: number | undefined;
@@ -67,7 +68,6 @@ export declare const ToolDefinitionSchema: z.ZodObject<{
     } | undefined;
     costPerExecution?: number | undefined;
     parallelizable?: boolean | undefined;
-    cacheEnabled?: boolean | undefined;
 }>;
 export type ToolDefinition = z.infer<typeof ToolDefinitionSchema>;
 export declare const ExecutionPlanSchema: z.ZodObject<{
@@ -131,6 +131,7 @@ export declare const ExecutionPlanSchema: z.ZodObject<{
     name: string;
     description: string;
     id: string;
+    dependencies: Record<string, string[]>;
     optimization: {
         enableParallel: boolean;
         enableCaching: boolean;
@@ -148,13 +149,13 @@ export declare const ExecutionPlanSchema: z.ZodObject<{
         requiredReliability?: number | undefined;
     };
     metadata: Record<string, any>;
-    dependencies: Record<string, string[]>;
     steps: any[];
 }, {
     name: string;
     description: string;
     id: string;
     steps: any[];
+    dependencies?: Record<string, string[]> | undefined;
     optimization?: {
         enableParallel?: boolean | undefined;
         enableCaching?: boolean | undefined;
@@ -172,7 +173,6 @@ export declare const ExecutionPlanSchema: z.ZodObject<{
         requiredReliability?: number | undefined;
     } | undefined;
     metadata?: Record<string, any> | undefined;
-    dependencies?: Record<string, string[]> | undefined;
 }>;
 export type ExecutionPlan = z.infer<typeof ExecutionPlanSchema>;
 export interface ExecutionResult {

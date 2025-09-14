@@ -20,12 +20,23 @@ TappMCP features **Context7 intelligence integration** designed to make AI assis
 ### 🌐 Real-Time Dashboard
 Access the live monitoring dashboard at: **http://localhost:3000**
 
-Features:
+**Main Dashboard Features:**
 - 📊 **Real-time Performance Metrics** - Memory, CPU, response times
 - 🔄 **Active Workflow Monitoring** - Live workflow status with progress bars
 - 🔔 **Notification Center** - Real-time alerts and system notifications
 - ⚡ **WebSocket Integration** - Live data updates without page refresh
 - 📱 **Responsive Design** - Works on desktop and mobile
+
+**🎯 D3.js Visualizations Dashboard:**
+Access advanced visualizations at: **http://localhost:3000/d3-visualizations.html**
+
+- 🕸️ **Interactive Workflow Graph** - Force-directed graph with zoom, pan, drag-and-drop
+- 📈 **Performance Monitoring Charts** - Multi-metric CPU, memory, response time charts
+- 💰 **Value Dashboard** - Token tracking, cost savings, quality metrics
+- ⏰ **Timeline View** - Gantt-style workflow event timeline
+- 🔍 **Interactive Filtering** - Time range, status, phase, and layout filters
+- 📤 **Export Functionality** - CSV export for all visualizations
+- 🎨 **Real-time Updates** - Live data streaming via WebSocket
 
 ### Context7 Setup (Optional)
 Context7 integration works automatically with fallback. For full functionality:
@@ -78,23 +89,47 @@ docker logs tappmcp-tappmcp-http-1
 - **Manual Docker run**: Creates container named `smart-mcp-prod` (as specified with --name)
 - **Always check actual container name**: `docker ps` to see the real container name
 
-## 🎯 Visual Status System
+## 🎯 Smart Vibe Visual System
 
-TappMCP includes a comprehensive visual status system to provide clear visibility of system availability and health.
+TappMCP features an enhanced visual indicator system to clearly show when smart_vibe is active vs regular assistance.
+
+### Smart Vibe Indicators
+When smart_vibe is active, responses include:
+```
+🎯 SMART_VIBE ACTIVE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 Quality Scorecard: 95/100 ✅
+🛠️ Tech Stack: React 18, TypeScript, D3.js
+👤 Target Role: Senior Developer
+🚀 Next Steps: [Numbered list]
+💡 Tips: [Learning insights]
+⏱️ Response Time: 1,247ms
+```
 
 ### Status Commands
 - `smart_vibe "status"` - Show full status dashboard in Cursor
+- `smart_vibe "your request"` - Use enhanced smart_vibe mode
 - `npm run status` - Show status in terminal
 - `npm run vibe-status` - Alternative status command
 
 ### Visual Indicators
-- 🎯 Smart Vibe - Natural language interface
-- 🔍 Smart Begin - Project initialization
-- ✍️ Smart Write - Code generation
-- 📋 Smart Plan - Technical planning
-- 🎭 Smart Orchestrate - Full SDLC automation
-- ✅ Smart Finish - Project completion
-- 💬 Smart Converse - Advanced conversation
+- 🎯 **Smart Vibe** - Enhanced natural language interface with quality analysis
+- 🔍 **Smart Begin** - Project initialization with comprehensive setup
+- ✍️ **Smart Write** - Code generation with best practices
+- 📋 **Smart Plan** - Technical planning with architecture insights
+- 🎭 **Smart Orchestrate** - Full SDLC automation with workflow management
+- ✅ **Smart Finish** - Project completion with quality validation
+- 💬 **Smart Converse** - Advanced conversation with context awareness
+
+### Auto Smart Vibe Mode
+Configure `.cursorrules` to always use smart_vibe:
+```bash
+# TappMCP Project Rules - Always Use Smart Vibe
+- ALWAYS_USE_SMART_VIBE: true
+- DEFAULT_RESPONSE_MODE: enhanced
+- PREFERRED_TOOL: smart_vibe
+```
 
 ### Cursor MCP Integration
 

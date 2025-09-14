@@ -208,9 +208,9 @@ export declare const TemplateMetadataSchema: z.ZodObject<{
     name: string;
     description: string;
     id: string;
+    qualityScore: number;
     lastUpdated: Date;
     usageCount: number;
-    qualityScore: number;
     toolName: string;
     compressionRatio: number;
     taskType: string;
@@ -233,9 +233,9 @@ export declare const TemplateMetadataSchema: z.ZodObject<{
     name: string;
     description: string;
     id: string;
+    qualityScore: number;
     lastUpdated: Date;
     usageCount: number;
-    qualityScore: number;
     toolName: string;
     compressionRatio: number;
     taskType: string;
@@ -268,21 +268,21 @@ export declare const TemplateEngineMetricsSchema: z.ZodObject<{
     adaptationEnabled: z.ZodBoolean;
     performanceScore: z.ZodNumber;
 }, "strip", z.ZodTypeAny, {
+    performanceScore: number;
     totalTemplates: number;
     activeTemplates: number;
     averageQualityScore: number;
     totalUsage: number;
     crossSessionLearning: boolean;
     adaptationEnabled: boolean;
-    performanceScore: number;
 }, {
+    performanceScore: number;
     totalTemplates: number;
     activeTemplates: number;
     averageQualityScore: number;
     totalUsage: number;
     crossSessionLearning: boolean;
     adaptationEnabled: boolean;
-    performanceScore: number;
 }>;
 export type TemplateEngineMetrics = z.infer<typeof TemplateEngineMetricsSchema>;
 //# sourceMappingURL=template-schemas.d.ts.map

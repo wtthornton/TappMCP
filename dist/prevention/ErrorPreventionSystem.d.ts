@@ -44,8 +44,8 @@ export declare const ErrorPatternSchema: z.ZodObject<{
     name: string;
     description: string;
     id: string;
-    confidence: number;
     pattern: string;
+    confidence: number;
     category: "memory" | "data" | "dependency" | "timeout" | "validation" | "authentication" | "network" | "configuration" | "logic";
     historicalOccurrences: number;
     preventionStrategies: {
@@ -62,8 +62,8 @@ export declare const ErrorPatternSchema: z.ZodObject<{
     name: string;
     description: string;
     id: string;
-    confidence: number;
     pattern: string;
+    confidence: number;
     category: "memory" | "data" | "dependency" | "timeout" | "validation" | "authentication" | "network" | "configuration" | "logic";
     preventionStrategies: {
         description: string;

@@ -6,6 +6,9 @@
  * and business context management for complete SDLC orchestration.
  */
 import { type BusinessContext, type RoleTransition } from './business-context-broker.js';
+import { type QualityMetrics, type QualityAlert } from './quality-monitor.js';
+import { type ContextSnapshot, type ContextTransition } from './context-preservation.js';
+import { type PerformanceMetrics } from './context7-performance-optimizer.js';
 import { MetricsBroadcaster } from '../websocket/MetricsBroadcaster.js';
 /**
  * Represents a complete workflow with phases, tasks, and business context
@@ -759,6 +762,13 @@ export declare class OrchestrationEngine {
     private contextBroker;
     /** Context7 broker for accessing external intelligence and documentation */
     private context7Broker;
+    /** Project analysis tools for real analysis integration */
+    private projectScanner;
+    private securityScanner;
+    private staticAnalyzer;
+    private qualityMonitor;
+    private contextPreservation;
+    private context7Optimizer;
     /** Map of currently active workflows by workflow ID */
     private activeWorkflows;
     /** Map of completed workflow results by workflow ID */
@@ -1144,6 +1154,94 @@ export declare class OrchestrationEngine {
         complexityScore: number;
     };
     /**
+     * Get current quality metrics
+     */
+    getQualityMetrics(): QualityMetrics | null;
+    /**
+     * Get quality trend history
+     */
+    getQualityTrendHistory(limit?: number): any[];
+    /**
+     * Get active quality alerts
+     */
+    getActiveQualityAlerts(): QualityAlert[];
+    /**
+     * Get quality dashboard data
+     */
+    getQualityDashboardData(): any;
+    /**
+     * Acknowledge quality alert
+     */
+    acknowledgeQualityAlert(alertId: string): boolean;
+    /**
+     * Resolve quality alert
+     */
+    resolveQualityAlert(alertId: string): boolean;
+    /**
+     * Start context preservation monitoring
+     */
+    startContextPreservationMonitoring(): void;
+    /**
+     * Stop context preservation monitoring
+     */
+    stopContextPreservationMonitoring(): void;
+    /**
+     * Capture context snapshot for a phase
+     */
+    captureContextSnapshot(phase: string, role: string, context: BusinessContext): ContextSnapshot;
+    /**
+     * Track context transition between phases
+     */
+    trackContextTransition(fromPhase: string, toPhase: string, oldContext: BusinessContext, newContext: BusinessContext): ContextTransition;
+    /**
+     * Get context history analysis
+     */
+    getContextHistoryAnalysis(): any;
+    /**
+     * Get context preservation dashboard data
+     */
+    getContextPreservationDashboard(): {
+        history: ContextSnapshot[];
+        transitions: ContextTransition[];
+        analysis: any;
+    };
+    /**
+     * Get Context7 performance metrics
+     */
+    getContext7PerformanceMetrics(): PerformanceMetrics;
+    /**
+     * Get Context7 cache statistics
+     */
+    getContext7CacheStats(): any;
+    /**
+     * Get Context7 performance alerts
+     */
+    getContext7PerformanceAlerts(): PerformanceAlert[];
+    /**
+     * Get Context7 optimization recommendations
+     */
+    getContext7OptimizationRecommendations(): string[];
+    /**
+     * Clear Context7 cache
+     */
+    clearContext7Cache(): void;
+    /**
+     * Optimized documentation gathering
+     */
+    private gatherDocumentationOptimized;
+    /**
+     * Optimized code examples gathering
+     */
+    private gatherCodeExamplesOptimized;
+    /**
+     * Optimized best practices gathering
+     */
+    private gatherBestPracticesOptimized;
+    /**
+     * Optimized troubleshooting gathering
+     */
+    private gatherTroubleshootingOptimized;
+    /**
      * Calculate complexity score for project
      */
     private calculateProjectComplexityScore;
@@ -1215,17 +1313,59 @@ export declare class OrchestrationEngine {
         recommendations: ProjectRecommendation[];
     }>;
     /**
-     * Analyze project structure
+     * Analyze project structure using real project scanning
      */
     private analyzeProjectStructure;
     /**
-     * Perform security analysis
+     * Perform security analysis using real security scanning
      */
     private performSecurityAnalysis;
     /**
-     * Analyze code quality
+     * Analyze code quality using real static analysis
      */
     private analyzeCodeQuality;
+    /**
+     * Perform comprehensive project analysis using all available tools
+     */
+    private performComprehensiveAnalysis;
+    /**
+     * Helper methods for processing real analysis results
+     */
+    private detectFrameworkFromAnalysis;
+    private detectArchitectureFromAnalysis;
+    private inferFileStructureFromAnalysis;
+    private calculateProjectComplexityFromAnalysis;
+    private calculateSecurityScoreFromScan;
+    private generateSecurityRecommendationsFromScan;
+    private checkComplianceFromScan;
+    /**
+     * Generate AI assistant guidance based on role, context, and analysis results
+     */
+    private generateAIAssistantGuidance;
+    /**
+     * Get role-specific guidance for AI assistants
+     */
+    private getRoleSpecificGuidance;
+    /**
+     * Get contextual recommendations based on analysis results
+     */
+    private getContextualRecommendations;
+    /**
+     * Get priority actions based on role and analysis
+     */
+    private getPriorityActions;
+    /**
+     * Get best practices for the role and project type
+     */
+    private getBestPractices;
+    /**
+     * Get common pitfalls to avoid
+     */
+    private getCommonPitfalls;
+    /**
+     * Get next steps based on current state
+     */
+    private getNextSteps;
     /**
      * Analyze dependencies
      */
@@ -1354,17 +1494,6 @@ export declare class OrchestrationEngine {
     private hasMonitoring;
     private getExpectedIntelligenceLevel;
     private getFallbackQualityGateResult;
-    /**
-     * Real-time quality monitoring
-     */
-    /**
-     * Start real-time quality monitoring for a workflow
-     */
-    startQualityMonitoring(workflowId: string, context: BusinessContext): void;
-    /**
-     * Stop quality monitoring for a workflow
-     */
-    stopQualityMonitoring(workflowId: string): void;
     /**
      * Perform a quality check for monitoring
      */

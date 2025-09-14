@@ -23,16 +23,16 @@ export declare const OptimizerConfigSchema: z.ZodObject<{
     costOptimizationEnabled: z.ZodDefault<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
     maxRetries: number;
-    learningEnabled: boolean;
     cacheEnabled: boolean;
+    learningEnabled: boolean;
     maxConcurrentSteps: number;
     timeoutMs: number;
     parallelizationThreshold: number;
     costOptimizationEnabled: boolean;
 }, {
     maxRetries?: number | undefined;
-    learningEnabled?: boolean | undefined;
     cacheEnabled?: boolean | undefined;
+    learningEnabled?: boolean | undefined;
     maxConcurrentSteps?: number | undefined;
     timeoutMs?: number | undefined;
     parallelizationThreshold?: number | undefined;
