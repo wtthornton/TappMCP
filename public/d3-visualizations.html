@@ -196,6 +196,69 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .visualization-container {
+                padding: 16px;
+                margin-bottom: 16px;
+                border-radius: 12px;
+                min-height: 300px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .nav-link {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .control-group {
+                width: 100%;
+            }
+
+            .control-group select,
+            .control-group input {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 16px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .visualization-container {
+                padding: 12px;
+                min-height: 250px;
+            }
+
+            .controls {
+                padding: 12px;
+            }
         }
 
         .workflow-graph {
@@ -396,6 +459,94 @@
             .visualization-section {
                 padding: 20px;
             }
+        }
+
+        /* Enhanced Loading and Error States */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+            color: var(--secondary-text);
+            font-size: 1.1rem;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(0, 255, 136, 0.3);
+            border-top: 3px solid var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+            color: var(--error-color);
+            font-size: 1.1rem;
+            flex-direction: column;
+            gap: 16px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .error-icon {
+            font-size: 3rem;
+            opacity: 0.7;
+        }
+
+        .retry-button {
+            background: var(--error-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .retry-button:hover {
+            background: #ff6666;
+            transform: translateY(-2px);
+        }
+
+        /* Performance Metrics */
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .metric-card {
+            background: var(--secondary-bg);
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            text-align: center;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: var(--secondary-text);
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-color);
         }
     </style>
 </head>
@@ -653,10 +804,33 @@
                     </div>
                 </div>
             </div>
-            <div class="visualization-container">
-                <div id="timeline-view-container"></div>
+        <div class="visualization-container">
+            <div id="timeline-view-container"></div>
+        </div>
+
+        <!-- Performance Monitoring Section -->
+        <div class="visualization-container">
+            <h3>📊 Performance Metrics</h3>
+            <div class="performance-metrics">
+                <div class="metric-card">
+                    <div class="metric-label">WebSocket Status</div>
+                    <div class="metric-value" id="ws-status">Connecting...</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Data Points</div>
+                    <div class="metric-value" id="data-points">0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Last Update</div>
+                    <div class="metric-value" id="last-update">Never</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Memory Usage</div>
+                    <div class="metric-value" id="memory-usage">0 MB</div>
+                </div>
             </div>
         </div>
+    </div>
 
         <!-- Features Overview -->
         <div class="visualization-section">
@@ -714,13 +888,60 @@
 
     <script type="text/babel">
         // Global data store for live metrics
+        // Enhanced Live Data Store for real-time updates
         const LiveDataStore = {
             performanceMetrics: [],
             workflowData: { nodes: [], connections: [] },
             valueMetrics: [],
             timelineEvents: [],
             isConnected: false,
-            lastUpdate: null
+            lastUpdate: null,
+            connectionRetries: 0,
+            maxRetries: 5,
+            retryDelay: 3000,
+            dataBuffer: {
+                performance: [],
+                workflows: [],
+                values: [],
+                timeline: []
+            },
+            subscribers: new Set(),
+
+            // Enhanced data management methods
+            addData(type, data) {
+                if (!this.dataBuffer[type]) this.dataBuffer[type] = [];
+                this.dataBuffer[type].push({
+                    ...data,
+                    timestamp: new Date(),
+                    id: Math.random().toString(36).substr(2, 9)
+                });
+
+                // Keep only last 1000 items per type
+                if (this.dataBuffer[type].length > 1000) {
+                    this.dataBuffer[type] = this.dataBuffer[type].slice(-1000);
+                }
+
+                this.notifySubscribers(type, data);
+            },
+
+            notifySubscribers(type, data) {
+                this.subscribers.forEach(callback => {
+                    try {
+                        callback(type, data);
+                    } catch (error) {
+                        console.error('Error in subscriber callback:', error);
+                    }
+                });
+            },
+
+            subscribe(callback) {
+                this.subscribers.add(callback);
+                return () => this.subscribers.delete(callback);
+            },
+
+            getData(type, limit = 100) {
+                return this.dataBuffer[type] ? this.dataBuffer[type].slice(-limit) : [];
+            }
         };
 
         // WebSocket connection for live data
@@ -730,8 +951,8 @@
                 ws = new WebSocket('ws://localhost:3000');
 
                 ws.onopen = () => {
-                    console.log('WebSocket connected');
                     LiveDataStore.isConnected = true;
+                    LiveDataStore.connectionRetries = 0;
                     updateConnectionStatus();
                 };
 
@@ -801,12 +1022,16 @@
                     }
                 };
 
-                ws.onclose = () => {
-                    console.log('WebSocket disconnected');
+                ws.onclose = (event) => {
                     LiveDataStore.isConnected = false;
                     updateConnectionStatus();
-                    // Attempt to reconnect after 3 seconds
-                    setTimeout(connectWebSocket, 3000);
+
+                    // Enhanced reconnection logic
+                    if (event.code !== 1000 && LiveDataStore.connectionRetries < LiveDataStore.maxRetries) {
+                        LiveDataStore.connectionRetries++;
+                        const delay = LiveDataStore.retryDelay * LiveDataStore.connectionRetries;
+                        setTimeout(connectWebSocket, delay);
+                    }
                 };
 
                 ws.onerror = (error) => {
@@ -860,6 +1085,35 @@
                 updateNotice('timeline', 'Demo Data Mode', 'This visualization is currently showing simulated timeline data.');
             }
         };
+
+        // Performance monitoring functions
+        const updatePerformanceMetrics = () => {
+            const dataPointsElement = document.getElementById('data-points');
+            const lastUpdateElement = document.getElementById('last-update');
+            const memoryUsageElement = document.getElementById('memory-usage');
+
+            if (dataPointsElement) {
+                const totalDataPoints = Object.values(LiveDataStore.dataBuffer).reduce((sum, arr) => sum + arr.length, 0);
+                dataPointsElement.textContent = totalDataPoints.toLocaleString();
+            }
+
+            if (lastUpdateElement) {
+                if (LiveDataStore.lastUpdate) {
+                    const timeAgo = Math.floor((Date.now() - LiveDataStore.lastUpdate) / 1000);
+                    lastUpdateElement.textContent = timeAgo < 60 ? `${timeAgo}s ago` : `${Math.floor(timeAgo / 60)}m ago`;
+                } else {
+                    lastUpdateElement.textContent = 'Never';
+                }
+            }
+
+            if (memoryUsageElement && performance.memory) {
+                const memoryMB = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
+                memoryUsageElement.textContent = `${memoryMB} MB`;
+            }
+        };
+
+        // Update performance metrics every second
+        setInterval(updatePerformanceMetrics, 1000);
 
         // Initialize WebSocket connection
         connectWebSocket();
@@ -969,12 +1223,14 @@
             const [loading, setLoading] = React.useState(true);
 
             React.useEffect(() => {
-                // Initial demo data
+                // Initial demo data with better names and more nodes
                 const initialNodes = [
                     { id: "start", name: "Start", status: "completed", phase: "Initialization", progress: 100, x: 100, y: 200 },
-                    { id: "process1", name: "Data Processing", status: "running", phase: "Processing", progress: 65, x: 300, y: 150 },
+                    { id: "process1", name: "Data Process", status: "running", phase: "Processing", progress: 65, x: 300, y: 150 },
                     { id: "process2", name: "Analysis", status: "pending", phase: "Analysis", progress: 0, x: 300, y: 250 },
                     { id: "process3", name: "Validation", status: "pending", phase: "Validation", progress: 0, x: 500, y: 200 },
+                    { id: "process4", name: "Review", status: "pending", phase: "Review", progress: 0, x: 500, y: 100 },
+                    { id: "process5", name: "Testing", status: "pending", phase: "Testing", progress: 0, x: 500, y: 300 },
                     { id: "end", name: "Complete", status: "pending", phase: "Finalization", progress: 0, x: 700, y: 200 }
                 ];
 
@@ -982,34 +1238,38 @@
                     { source: "start", target: "process1", type: "sequence" },
                     { source: "process1", target: "process2", type: "dependency" },
                     { source: "process1", target: "process3", type: "data-flow" },
+                    { source: "process1", target: "process4", type: "review" },
+                    { source: "process1", target: "process5", type: "testing" },
                     { source: "process2", target: "end", type: "sequence" },
-                    { source: "process3", target: "end", type: "sequence" }
+                    { source: "process3", target: "end", type: "sequence" },
+                    { source: "process4", target: "end", type: "sequence" },
+                    { source: "process5", target: "end", type: "sequence" }
                 ];
 
                 setData({ nodes: initialNodes, connections: initialConnections });
 
-                // Update data every 2 seconds
+                // Subscribe to live data updates
+                const unsubscribe = LiveDataStore.subscribe((type, data) => {
+                    if (type === 'workflows' && LiveDataStore.workflowData.nodes.length > 0) {
+                        setData(LiveDataStore.workflowData);
+                    }
+                });
+
+                // Update data every 5 seconds for demo data
                 const interval = setInterval(() => {
                     if (LiveDataStore.workflowData.nodes.length > 0) {
                         setData(LiveDataStore.workflowData);
                     }
-                }, 2000);
+                }, 5000);
 
-                return () => clearInterval(interval);
+                return () => {
+                    clearInterval(interval);
+                    unsubscribe();
+                };
             }, []);
 
             React.useEffect(() => {
-                console.log('WorkflowGraph useEffect triggered', {
-                    hasSvgRef: !!svgRef.current,
-                    dataLength: data.nodes ? data.nodes.length : 0,
-                    data: data,
-                    dataType: typeof data,
-                    hasNodes: !!data.nodes,
-                    hasConnections: !!data.connections
-                });
-
                 if (!svgRef.current || !data.nodes || data.nodes.length === 0) {
-                    console.log('WorkflowGraph: No svg ref or no data, setting loading false');
                     setLoading(false);
                     return;
                 }
@@ -1017,10 +1277,17 @@
                 try {
                     setError(null);
                     setLoading(false);
-                    console.log('WorkflowGraph: Starting D3 rendering');
 
                     const svg = d3.select(svgRef.current);
-                    svg.selectAll("*").remove();
+
+                    // Performance optimization: only clear if needed
+                    if (svg.selectAll(".node").empty()) {
+                        svg.selectAll("*").remove();
+                    } else {
+                        // Only remove specific elements for better performance
+                        svg.selectAll(".connection").remove();
+                        svg.selectAll(".node").remove();
+                    }
 
                 const width = 800;
                 const height = 400;
@@ -1032,7 +1299,7 @@
                 // Create main group
                 const g = svg.append("g");
 
-                // Add zoom behavior
+                // Add zoom behavior with better performance
                 const zoom = d3.zoom()
                     .scaleExtent([0.5, 3])
                     .on("zoom", (event) => {
@@ -1040,6 +1307,23 @@
                     });
 
                 svg.call(zoom);
+
+                // Add drag behavior for nodes
+                const drag = d3.drag()
+                    .on("start", (event, d) => {
+                        d3.select(event.sourceEvent.target).raise();
+                        event.subject.fx = event.subject.x;
+                        event.subject.fy = event.subject.y;
+                    })
+                    .on("drag", (event, d) => {
+                        event.subject.fx = event.x;
+                        event.subject.fy = event.y;
+                        updateNodePositions();
+                    })
+                    .on("end", (event, d) => {
+                        event.subject.fx = null;
+                        event.subject.fy = null;
+                    });
 
                 // Draw connections
                 const connections = g.selectAll(".connection")
@@ -1083,7 +1367,32 @@
                     .attr("class", "node");
 
                 const nodeGroupsUpdate = nodeGroupsEnter.merge(nodeGroups)
-                    .attr("transform", d => `translate(${xScale(d.x / 800 * 700 + 50)}, ${yScale(d.y / 400 * 300 + 50)})`);
+                    .attr("transform", d => `translate(${xScale(d.x / 800 * 700 + 50)}, ${yScale(d.y / 400 * 300 + 50)})`)
+                    .call(drag);
+
+                // Function to update node positions
+                const updateNodePositions = () => {
+                    nodeGroupsUpdate.attr("transform", d => `translate(${xScale(d.x / 800 * 700 + 50)}, ${yScale(d.y / 400 * 300 + 50)})`);
+
+                    // Update connections
+                    connections
+                        .attr("x1", d => {
+                            const sourceNode = data.nodes.find(n => n.id === d.source);
+                            return xScale(sourceNode.x / 800 * 700 + 50);
+                        })
+                        .attr("y1", d => {
+                            const sourceNode = data.nodes.find(n => n.id === d.source);
+                            return yScale(sourceNode.y / 400 * 300 + 50);
+                        })
+                        .attr("x2", d => {
+                            const targetNode = data.nodes.find(n => n.id === d.target);
+                            return xScale(targetNode.x / 800 * 700 + 50);
+                        })
+                        .attr("y2", d => {
+                            const targetNode = data.nodes.find(n => n.id === d.target);
+                            return yScale(targetNode.y / 400 * 300 + 50);
+                        });
+                };
 
                 // Node circles
                 const circles = nodeGroupsUpdate.selectAll("circle.node-circle")
@@ -1096,7 +1405,7 @@
                     .attr("class", "node-circle");
 
                 circlesEnter.merge(circles)
-                    .attr("r", 30)
+                    .attr("r", 35)
                     .attr("fill", d => {
                         const colors = {
                             completed: "#00ff88",
@@ -1125,7 +1434,16 @@
                     .attr("font-weight", "bold");
 
                 labelsEnter.merge(labels)
-                    .text(d => d.name || 'Unknown');
+                    .text(d => {
+                        const name = d.name || 'Unknown';
+                        // Ensure text fits within node
+                        return name.length > 12 ? name.substring(0, 12) + '...' : name;
+                    })
+                    .attr('font-size', '10px')
+                    .attr('text-anchor', 'middle')
+                    .attr('dy', '0.35em')
+                    .attr('fill', '#ffffff')
+                    .attr('font-weight', 'bold');
 
                 // Progress rings
                 const progressRings = nodeGroupsUpdate.selectAll("circle.progress-ring")
@@ -1138,16 +1456,15 @@
                     .attr("class", "progress-ring");
 
                 progressRingsEnter.merge(progressRings)
-                    .attr("r", 35)
+                    .attr("r", 40)
                     .attr("fill", "none")
                     .attr("stroke", "#00ff88")
                     .attr("stroke-width", 3)
                     .attr("opacity", 0.3)
-                    .attr("stroke-dasharray", d => `${2 * Math.PI * 35}`)
-                    .attr("stroke-dashoffset", d => `${2 * Math.PI * 35 * (1 - d.progress / 100)}`);
+                    .attr("stroke-dasharray", d => `${2 * Math.PI * 40}`)
+                    .attr("stroke-dashoffset", d => `${2 * Math.PI * 40 * (1 - d.progress / 100)}`);
 
                 } catch (err) {
-                    console.error('Error rendering workflow graph:', err);
                     setError('Failed to render workflow graph. Please try refreshing the page.');
                 }
             }, [data]);
