@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🚀 TappMCP D3.js Visualizations Showcase</title>
-    <script src="https://unpkg.com/react@19/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@19/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/d3@7/dist/d3.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
@@ -474,7 +474,7 @@
                 </div>
             </div>
             <div class="visualization-container">
-                <svg class="workflow-graph" id="workflow-graph-svg"></svg>
+                <div id="workflow-graph-container"></div>
             </div>
         </div>
 
@@ -533,7 +533,7 @@
                 </div>
             </div>
             <div class="visualization-container">
-                <svg class="performance-chart" id="performance-chart-svg"></svg>
+                <div id="performance-chart-container"></div>
             </div>
         </div>
 
@@ -593,7 +593,7 @@
                 </div>
             </div>
             <div class="visualization-container">
-                <svg class="value-dashboard" id="value-dashboard-svg"></svg>
+                <div id="value-dashboard-container"></div>
             </div>
         </div>
 
@@ -654,7 +654,7 @@
                 </div>
             </div>
             <div class="visualization-container">
-                <svg class="timeline-view" id="timeline-view-svg"></svg>
+                <div id="timeline-view-container"></div>
             </div>
         </div>
 
@@ -999,7 +999,14 @@
             }, []);
 
             React.useEffect(() => {
+                console.log('WorkflowGraph useEffect triggered', {
+                    hasSvgRef: !!svgRef.current,
+                    dataLength: data.nodes.length,
+                    data: data
+                });
+
                 if (!svgRef.current || data.nodes.length === 0) {
+                    console.log('WorkflowGraph: No svg ref or no data, setting loading false');
                     setLoading(false);
                     return;
                 }
@@ -1007,6 +1014,7 @@
                 try {
                     setError(null);
                     setLoading(false);
+                    console.log('WorkflowGraph: Starting D3 rendering');
 
                     const svg = d3.select(svgRef.current);
                     svg.selectAll("*").remove();
@@ -1031,25 +1039,30 @@
                 svg.call(zoom);
 
                 // Draw connections
-                g.selectAll(".connection")
-                    .data(connections)
-                    .enter()
+                const connections = g.selectAll(".connection")
+                    .data(data.connections);
+
+                connections.exit().remove();
+
+                const connectionsEnter = connections.enter()
                     .append("line")
-                    .attr("class", "connection")
+                    .attr("class", "connection");
+
+                connectionsEnter.merge(connections)
                     .attr("x1", d => {
-                        const sourceNode = nodes.find(n => n.id === d.source);
+                        const sourceNode = data.nodes.find(n => n.id === d.source);
                         return xScale(sourceNode.x / 800 * 700 + 50);
                     })
                     .attr("y1", d => {
-                        const sourceNode = nodes.find(n => n.id === d.source);
+                        const sourceNode = data.nodes.find(n => n.id === d.source);
                         return yScale(sourceNode.y / 400 * 300 + 50);
                     })
                     .attr("x2", d => {
-                        const targetNode = nodes.find(n => n.id === d.target);
+                        const targetNode = data.nodes.find(n => n.id === d.target);
                         return xScale(targetNode.x / 800 * 700 + 50);
                     })
                     .attr("y2", d => {
-                        const targetNode = nodes.find(n => n.id === d.target);
+                        const targetNode = data.nodes.find(n => n.id === d.target);
                         return yScale(targetNode.y / 400 * 300 + 50);
                     })
                     .attr("stroke", "#00ff88")
@@ -1058,14 +1071,28 @@
 
                 // Draw nodes
                 const nodeGroups = g.selectAll(".node")
-                    .data(nodes)
-                    .enter()
+                    .data(data.nodes);
+
+                nodeGroups.exit().remove();
+
+                const nodeGroupsEnter = nodeGroups.enter()
                     .append("g")
-                    .attr("class", "node")
+                    .attr("class", "node");
+
+                const nodeGroupsUpdate = nodeGroupsEnter.merge(nodeGroups)
                     .attr("transform", d => `translate(${xScale(d.x / 800 * 700 + 50)}, ${yScale(d.y / 400 * 300 + 50)})`);
 
                 // Node circles
-                nodeGroups.append("circle")
+                const circles = nodeGroupsUpdate.selectAll("circle.node-circle")
+                    .data(d => [d]);
+
+                circles.exit().remove();
+
+                const circlesEnter = circles.enter()
+                    .append("circle")
+                    .attr("class", "node-circle");
+
+                circlesEnter.merge(circles)
                     .attr("r", 30)
                     .attr("fill", d => {
                         const colors = {
@@ -1080,16 +1107,34 @@
                     .attr("stroke-width", 2);
 
                 // Node labels
-                nodeGroups.append("text")
+                const labels = nodeGroupsUpdate.selectAll("text.node-label")
+                    .data(d => [d]);
+
+                labels.exit().remove();
+
+                const labelsEnter = labels.enter()
+                    .append("text")
+                    .attr("class", "node-label")
                     .attr("text-anchor", "middle")
                     .attr("dy", "0.35em")
                     .attr("fill", "#ffffff")
                     .attr("font-size", "12px")
-                    .attr("font-weight", "bold")
+                    .attr("font-weight", "bold");
+
+                labelsEnter.merge(labels)
                     .text(d => d.name);
 
                 // Progress rings
-                nodeGroups.append("circle")
+                const progressRings = nodeGroupsUpdate.selectAll("circle.progress-ring")
+                    .data(d => [d]);
+
+                progressRings.exit().remove();
+
+                const progressRingsEnter = progressRings.enter()
+                    .append("circle")
+                    .attr("class", "progress-ring");
+
+                progressRingsEnter.merge(progressRings)
                     .attr("r", 35)
                     .attr("fill", "none")
                     .attr("stroke", "#00ff88")
@@ -1163,8 +1208,18 @@
             }, []);
 
             React.useEffect(() => {
-                if (!svgRef.current || data.length === 0) return;
+                console.log('PerformanceChart useEffect triggered', {
+                    hasSvgRef: !!svgRef.current,
+                    dataLength: data.length,
+                    data: data
+                });
 
+                if (!svgRef.current || data.length === 0) {
+                    console.log('PerformanceChart: No svg ref or no data');
+                    return;
+                }
+
+                console.log('PerformanceChart: Starting D3 rendering');
                 const svg = d3.select(svgRef.current);
                 svg.selectAll("*").remove();
 
@@ -1209,8 +1264,16 @@
                     .y(d => yScale(d.cpu))
                     .curve(d3.curveMonotoneX);
 
-                g.append("path")
-                    .datum(data)
+                const cpuPath = g.selectAll(".cpu-line")
+                    .data([data]);
+
+                cpuPath.exit().remove();
+
+                const cpuPathEnter = cpuPath.enter()
+                    .append("path")
+                    .attr("class", "cpu-line");
+
+                cpuPathEnter.merge(cpuPath)
                     .attr("fill", "none")
                     .attr("stroke", "#ff6b6b")
                     .attr("stroke-width", 2)
@@ -1222,8 +1285,16 @@
                     .y(d => yScale(d.memory))
                     .curve(d3.curveMonotoneX);
 
-                g.append("path")
-                    .datum(data)
+                const memoryPath = g.selectAll(".memory-line")
+                    .data([data]);
+
+                memoryPath.exit().remove();
+
+                const memoryPathEnter = memoryPath.enter()
+                    .append("path")
+                    .attr("class", "memory-line");
+
+                memoryPathEnter.merge(memoryPath)
                     .attr("fill", "none")
                     .attr("stroke", "#4ecdc4")
                     .attr("stroke-width", 2)
@@ -1501,8 +1572,43 @@
             );
         };
 
-        // Render the app
-        ReactDOM.render(<App />, document.body);
+        // Render the app components to their respective containers
+        console.log('Starting React component rendering...');
+
+        const workflowContainer = document.getElementById('workflow-graph-container');
+        const performanceContainer = document.getElementById('performance-chart-container');
+        const valueContainer = document.getElementById('value-dashboard-container');
+        const timelineContainer = document.getElementById('timeline-view-container');
+
+        console.log('Containers found:', {
+            workflow: !!workflowContainer,
+            performance: !!performanceContainer,
+            value: !!valueContainer,
+            timeline: !!timelineContainer
+        });
+
+        if (workflowContainer) {
+            console.log('Rendering WorkflowGraph...');
+            const root = ReactDOM.createRoot(workflowContainer);
+            root.render(<WorkflowGraph />);
+        }
+        if (performanceContainer) {
+            console.log('Rendering PerformanceChart...');
+            const root = ReactDOM.createRoot(performanceContainer);
+            root.render(<PerformanceChart />);
+        }
+        if (valueContainer) {
+            console.log('Rendering ValueDashboard...');
+            const root = ReactDOM.createRoot(valueContainer);
+            root.render(<ValueDashboard />);
+        }
+        if (timelineContainer) {
+            console.log('Rendering TimelineView...');
+            const root = ReactDOM.createRoot(timelineContainer);
+            root.render(<TimelineView />);
+        }
+
+        console.log('React component rendering completed');
     </script>
 </body>
 </html>
