@@ -16,7 +16,7 @@ import {
   IconColor,
   IconSize,
   COLOR_MAPPING,
-  SIZE_MAPPING
+  SIZE_MAPPING,
 } from './types.js';
 
 /**
@@ -32,7 +32,7 @@ export function createIconConfig(
     size,
     animated,
     className: '',
-    title: ''
+    title: '',
   };
 }
 
@@ -47,7 +47,7 @@ export function getWorkflowStatusColor(status: WorkflowStatus): IconColor {
     failed: 'error',
     cancelled: 'warning',
     paused: 'warning',
-    queued: 'neutral'
+    queued: 'neutral',
   };
 
   return colorMap[status] || 'neutral';
@@ -62,7 +62,7 @@ export function getPerformanceStatusColor(status: PerformanceStatus): IconColor 
     good: 'success',
     warning: 'warning',
     critical: 'error',
-    unknown: 'neutral'
+    unknown: 'neutral',
   };
 
   return colorMap[status] || 'neutral';
@@ -77,7 +77,7 @@ export function getNotificationPriorityColor(priority: NotificationPriority): Ic
     high: 'warning',
     medium: 'info',
     low: 'neutral',
-    info: 'info'
+    info: 'info',
   };
 
   return colorMap[priority] || 'neutral';
@@ -94,7 +94,7 @@ export function getWorkflowStatusIconName(status: WorkflowStatus): string {
     failed: 'Failed',
     cancelled: 'Cancelled',
     paused: 'Paused',
-    queued: 'Queued'
+    queued: 'Queued',
   };
 
   return iconMap[status] || 'Pending';
@@ -109,7 +109,7 @@ export function getPerformanceStatusIconName(status: PerformanceStatus): string 
     good: 'Good',
     warning: 'Warning',
     critical: 'Critical',
-    unknown: 'Unknown'
+    unknown: 'Unknown',
   };
 
   return iconMap[status] || 'Unknown';
@@ -124,7 +124,7 @@ export function getNotificationPriorityIconName(priority: NotificationPriority):
     high: 'High',
     medium: 'Medium',
     low: 'Low',
-    info: 'Info'
+    info: 'Info',
   };
 
   return iconMap[priority] || 'Info';
@@ -138,11 +138,7 @@ export function createWorkflowStatusIconConfig(
   size: IconSize = 'md',
   animated: boolean = false
 ): IconConfig {
-  return createIconConfig(
-    getWorkflowStatusColor(status),
-    size,
-    animated || status === 'running'
-  );
+  return createIconConfig(getWorkflowStatusColor(status), size, animated || status === 'running');
 }
 
 /**
@@ -189,13 +185,10 @@ export function validateIconConfig(config: IconConfig): boolean {
 /**
  * Merges two icon configurations
  */
-export function mergeIconConfigs(
-  base: IconConfig,
-  override: Partial<IconConfig>
-): IconConfig {
+export function mergeIconConfigs(base: IconConfig, override: Partial<IconConfig>): IconConfig {
   return {
     ...base,
-    ...override
+    ...override,
   };
 }
 
@@ -208,7 +201,7 @@ export function getAnimationClass(animated: boolean, animationType: string = 'pu
   const animationClasses: Record<string, string> = {
     pulse: 'icon-pulse',
     spin: 'icon-spin',
-    bounce: 'icon-bounce'
+    bounce: 'icon-bounce',
   };
 
   return animationClasses[animationType] || 'icon-pulse';
@@ -224,13 +217,15 @@ export function generateIconId(prefix: string = 'icon'): string {
 /**
  * Checks if an icon should be animated based on status
  */
-export function shouldAnimateIcon(status: string, type: 'workflow' | 'performance' | 'notification'): boolean {
+export function shouldAnimateIcon(
+  status: string,
+  type: 'workflow' | 'performance' | 'notification'
+): boolean {
   const animatedStatuses = {
     workflow: ['running', 'pending'],
     performance: ['critical', 'warning'],
-    notification: ['critical', 'high']
+    notification: ['critical', 'high'],
   };
 
   return animatedStatuses[type]?.includes(status) || false;
 }
-

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JavaScript Execution Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #1a1a1a; color: white; }
+        .test { margin: 10px 0; padding: 10px; border: 1px solid #333; border-radius: 5px; }
+        .success { border-color: #00ff88; background: rgba(0, 255, 136, 0.1); }
+        .error { border-color: #ff4444; background: rgba(255, 68, 68, 0.1); }
+    </style>
+</head>
+<body>
+    <h1>JavaScript Execution Test</h1>
+    <div id="results"></div>
+
+    <script>
+        const results = document.getElementById('results');
+
+        function addResult(message, success = true) {
+            const div = document.createElement('div');
+            div.className = `test ${success ? 'success' : 'error'}`;
+            div.textContent = message;
+            results.appendChild(div);
+        }
+
+        // Test 1: Basic JavaScript execution
+        addResult('✅ JavaScript is executing');
+
+        // Test 2: WebSocket availability
+        if (typeof WebSocket !== 'undefined') {
+            addResult('✅ WebSocket is available');
+        } else {
+            addResult('❌ WebSocket is not available', false);
+        }
+
+        // Test 3: Try to create WebSocket
+        try {
+            const ws = new WebSocket('ws://localhost:8080');
+            addResult('✅ WebSocket object created successfully');
+
+            ws.onopen = () => {
+                addResult('✅ WebSocket connection opened');
+            };
+
+            ws.onerror = (error) => {
+                addResult('❌ WebSocket connection error: ' + error, false);
+            };
+
+            ws.onclose = (event) => {
+                addResult('❌ WebSocket connection closed: ' + event.code + ' - ' + event.reason, false);
+            };
+
+        } catch (error) {
+            addResult('❌ Failed to create WebSocket: ' + error.message, false);
+        }
+
+        // Test 4: Check if we can make HTTP requests
+        fetch('http://localhost:8080/health')
+            .then(response => response.json())
+            .then(data => {
+                addResult('✅ HTTP request successful: ' + data.status);
+            })
+            .catch(error => {
+                addResult('❌ HTTP request failed: ' + error.message, false);
+            });
+
+        // Test 5: Simulate dashboard initialization
+        setTimeout(() => {
+            addResult('✅ Dashboard simulation: All tests completed');
+        }, 1000);
+    </script>
+</body>
+</html>

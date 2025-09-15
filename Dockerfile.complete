@@ -1,0 +1,37 @@
+# TappMCP Complete Production Container
+FROM node:20-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install all dependencies (including dev dependencies for src files)
+RUN npm ci
+
+# Copy all necessary files
+COPY working-mcp-server.cjs ./
+COPY tappmcp-http-server.js ./
+COPY src/ ./src/
+COPY public/ ./public/
+
+# Create non-root user for security
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S smartmcp -u 1001
+
+# Create data and logs directories with proper permissions
+RUN mkdir -p /app/data /app/logs && chown -R smartmcp:nodejs /app/data /app/logs
+
+# Switch to non-root user
+USER smartmcp
+
+# Expose ports
+EXPOSE 3000 3001
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3001/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })" || exit 1
+
+# Start the HTTP server (for dashboard access)
+CMD ["node", "tappmcp-http-server.js"]

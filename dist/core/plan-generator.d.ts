@@ -552,6 +552,13 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
             complexity: "low" | "medium" | "high";
         }[];
     };
+    businessValue: {
+        estimatedROI: number;
+        timeToMarket: number;
+        riskMitigation: number;
+        qualityImprovement: number;
+        costSavings: number;
+    };
     optimization: {
         optimizations: {
             type: "parallel" | "reuse" | "simplify" | "automate";
@@ -581,13 +588,6 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         criticalPath: string[];
         totalDuration: number;
         bufferTime: number;
-    };
-    businessValue: {
-        estimatedROI: number;
-        timeToMarket: number;
-        riskMitigation: number;
-        qualityImprovement: number;
-        costSavings: number;
     };
     phases: {
         name: string;
@@ -684,6 +684,13 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
             complexity: "low" | "medium" | "high";
         }[];
     };
+    businessValue: {
+        estimatedROI: number;
+        timeToMarket: number;
+        riskMitigation: number;
+        qualityImprovement: number;
+        costSavings: number;
+    };
     optimization: {
         optimizations: {
             type: "parallel" | "reuse" | "simplify" | "automate";
@@ -713,13 +720,6 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         criticalPath: string[];
         totalDuration: number;
         bufferTime: number;
-    };
-    businessValue: {
-        estimatedROI: number;
-        timeToMarket: number;
-        riskMitigation: number;
-        qualityImprovement: number;
-        costSavings: number;
     };
     phases: {
         name: string;

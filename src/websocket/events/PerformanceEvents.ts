@@ -10,10 +10,7 @@
 
 import { EventEmitter } from 'events';
 import { WebSocketServer } from '../WebSocketServer.js';
-import {
-  PerformanceMetrics,
-  WEBSOCKET_EVENTS
-} from '../types.js';
+import { PerformanceMetrics, WEBSOCKET_EVENTS } from '../types.js';
 
 /**
  * Performance Events Manager for WebSocket communication
@@ -50,7 +47,7 @@ export class PerformanceEvents extends EventEmitter {
   broadcastMetrics(metrics: Omit<PerformanceMetrics, 'timestamp'>): void {
     const performanceData: PerformanceMetrics = {
       ...metrics,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     this.wsServer.broadcast(WEBSOCKET_EVENTS.PERFORMANCE_METRICS, performanceData);
@@ -77,7 +74,7 @@ export class PerformanceEvents extends EventEmitter {
       severity,
       message,
       metrics,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     this.wsServer.broadcast(WEBSOCKET_EVENTS.PERFORMANCE_ALERT, alert);
@@ -160,7 +157,7 @@ export class PerformanceEvents extends EventEmitter {
       status,
       message,
       details,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     this.wsServer.broadcast(WEBSOCKET_EVENTS.SYSTEM_STATUS, systemStatus);
@@ -186,7 +183,7 @@ export class PerformanceEvents extends EventEmitter {
       endTime,
       message,
       affectedServices: affectedServices || [],
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     this.wsServer.broadcast(WEBSOCKET_EVENTS.SYSTEM_MAINTENANCE, maintenance);
@@ -212,7 +209,7 @@ export class PerformanceEvents extends EventEmitter {
       message,
       details,
       severity,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     this.wsServer.broadcast(WEBSOCKET_EVENTS.SYSTEM_ERROR, systemError);

@@ -206,13 +206,13 @@ export class MetricsBroadcaster {
           rss: performanceData.memory.used,
           heapUsed: performanceData.memory.used,
           heapTotal: performanceData.memory.total,
-          external: 0
+          external: 0,
         },
         responseTime: performanceData.responseTime.average,
         cacheHitRate: performanceData.cache.hitRate,
         errorRate: performanceData.errors.rate,
         activeConnections: this.wsServer.getConnectionCount(),
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
 
       this.wsServer.broadcast('performance:metrics', metrics);
@@ -237,7 +237,7 @@ export class MetricsBroadcaster {
           progress: status.progress,
           currentPhase: status.currentPhase,
           message: status.error || `Workflow ${status.status}`,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         };
 
         this.wsServer.broadcast('workflow:status:update', update);
@@ -258,7 +258,7 @@ export class MetricsBroadcaster {
         progress: status.progress,
         currentPhase: status.currentPhase,
         message: status.error || `Workflow ${status.status}`,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
 
       this.wsServer.broadcast('workflow:status:update', update);
@@ -278,7 +278,7 @@ export class MetricsBroadcaster {
       this.wsServer.broadcast('system_health', {
         type: 'system_health',
         data: healthData,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     } catch (error) {
       console.error('Error broadcasting system health:', error);
@@ -297,31 +297,31 @@ export class MetricsBroadcaster {
       memory: {
         used: memUsage.heapUsed,
         total: memUsage.heapTotal,
-        percentage: (memUsage.heapUsed / memUsage.heapTotal) * 100
+        percentage: (memUsage.heapUsed / memUsage.heapTotal) * 100,
       },
       cpu: {
         usage: (cpuUsage.user + cpuUsage.system) / 1000000, // Convert to seconds
-        loadAverage: process.platform === 'win32' ? [0, 0, 0] : require('os').loadavg()
+        loadAverage: process.platform === 'win32' ? [0, 0, 0] : require('os').loadavg(),
       },
       responseTime: {
         average: this.calculateAverageResponseTime(),
         p95: this.calculateP95ResponseTime(),
-        p99: this.calculateP99ResponseTime()
+        p99: this.calculateP99ResponseTime(),
       },
       cache: {
         hitRate: this.calculateCacheHitRate(),
         missRate: this.calculateCacheMissRate(),
-        size: this.calculateCacheSize()
+        size: this.calculateCacheSize(),
       },
       errors: {
         count: this.getErrorCount(),
         rate: this.getErrorRate(),
-        lastError: this.getLastError() || ''
+        lastError: this.getLastError() || '',
       },
       throughput: {
         requestsPerSecond: this.calculateRequestsPerSecond(),
-        bytesPerSecond: this.calculateBytesPerSecond()
-      }
+        bytesPerSecond: this.calculateBytesPerSecond(),
+      },
     };
   }
 
@@ -336,10 +336,10 @@ export class MetricsBroadcaster {
       status: this.determineSystemStatus(),
       uptime: uptime,
       version: process.env.npm_package_version || '2.0.0',
-      lastRestart: Date.now() - (uptime * 1000),
+      lastRestart: Date.now() - uptime * 1000,
       activeConnections: activeConnections,
       queueSize: this.getQueueSize(),
-      alerts: this.getActiveAlerts()
+      alerts: this.getActiveAlerts(),
     };
   }
 

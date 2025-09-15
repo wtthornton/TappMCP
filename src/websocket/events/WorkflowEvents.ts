@@ -10,11 +10,7 @@
 
 import { EventEmitter } from 'events';
 import { WebSocketServer } from '../WebSocketServer.js';
-import {
-  WorkflowStatusUpdate,
-  WorkflowGraphUpdate,
-  WEBSOCKET_EVENTS
-} from '../types.js';
+import { WorkflowStatusUpdate, WorkflowGraphUpdate, WEBSOCKET_EVENTS } from '../types.js';
 
 /**
  * Workflow Events Manager for WebSocket communication
@@ -59,11 +55,11 @@ export class WorkflowEvents extends EventEmitter {
       progress: Math.max(0, Math.min(100, progress)),
       currentPhase,
       message: message || this.getDefaultMessage(status),
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     this.wsServer.broadcast(WEBSOCKET_EVENTS.WORKFLOW_STATUS_UPDATE, update, {
-      workflowId
+      workflowId,
     });
 
     this.emit('workflow:status:update', update);
@@ -76,20 +72,16 @@ export class WorkflowEvents extends EventEmitter {
    * @param progress - Progress percentage (0-100)
    * @param message - Progress message
    */
-  broadcastWorkflowProgress(
-    workflowId: string,
-    progress: number,
-    message: string
-  ): void {
+  broadcastWorkflowProgress(workflowId: string, progress: number, message: string): void {
     const update = {
       workflowId,
       progress: Math.max(0, Math.min(100, progress)),
       message,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     this.wsServer.broadcast(WEBSOCKET_EVENTS.WORKFLOW_PROGRESS_UPDATE, update, {
-      workflowId
+      workflowId,
     });
 
     this.emit('workflow:progress:update', update);
@@ -118,7 +110,7 @@ export class WorkflowEvents extends EventEmitter {
       success,
       message,
       results,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     this.wsServer.broadcast(eventType, update, { workflowId });
@@ -144,11 +136,11 @@ export class WorkflowEvents extends EventEmitter {
       nodes,
       connections,
       status,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     this.wsServer.broadcast(WEBSOCKET_EVENTS.WORKFLOW_GRAPH_UPDATE, update, {
-      workflowId
+      workflowId,
     });
 
     this.emit('workflow:graph:update', update);
@@ -161,21 +153,17 @@ export class WorkflowEvents extends EventEmitter {
    * @param nodeId - Unique identifier for the node
    * @param nodeData - Updated node data
    */
-  broadcastWorkflowNodeUpdate(
-    workflowId: string,
-    nodeId: string,
-    nodeData: any
-  ): void {
+  broadcastWorkflowNodeUpdate(workflowId: string, nodeId: string, nodeData: any): void {
     const update = {
       workflowId,
       nodeId,
       nodeData,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     this.wsServer.broadcast(WEBSOCKET_EVENTS.WORKFLOW_NODE_UPDATE, update, {
       workflowId,
-      nodeId
+      nodeId,
     });
 
     this.emit('workflow:node:update', update);
@@ -197,12 +185,12 @@ export class WorkflowEvents extends EventEmitter {
       workflowId,
       connectionId,
       connectionData,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     this.wsServer.broadcast(WEBSOCKET_EVENTS.WORKFLOW_CONNECTION_UPDATE, update, {
       workflowId,
-      connectionId
+      connectionId,
     });
 
     this.emit('workflow:connection:update', update);
@@ -220,7 +208,7 @@ export class WorkflowEvents extends EventEmitter {
       running: 'Workflow is currently running',
       completed: 'Workflow completed successfully',
       failed: 'Workflow execution failed',
-      paused: 'Workflow execution is paused'
+      paused: 'Workflow execution is paused',
     };
 
     return messages[status as keyof typeof messages] || 'Unknown workflow status';

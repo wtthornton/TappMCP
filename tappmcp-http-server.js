@@ -19,12 +19,29 @@ const wss = new WebSocketServer({ server });
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
 
-// Root route - serve dashboard
+// Root route - serve working dashboard (must be before static middleware)
 app.get('/', (req, res) => {
-  res.sendFile('index.html', { root: 'public' });
+  res.sendFile('working-dashboard.html', { root: 'public' });
 });
+
+// D3 visualizations route
+app.get('/d3-visualizations.html', (req, res) => {
+  res.sendFile('working-d3.html', { root: 'public' });
+});
+
+// Enhanced modular D3 visualizations route
+app.get('/d3-enhanced-modular.html', (req, res) => {
+  res.sendFile('d3-enhanced-modular.html', { root: 'public' });
+});
+
+// Phase 1 testing suite route
+app.get('/test-phase1-d3-enhancements.html', (req, res) => {
+  res.sendFile('test-phase1-d3-enhancements.html', { root: 'public' });
+});
+
+// Static file serving
+app.use(express.static('public'));
 
 // MCP Tools implementation
 const mcpTools = {
@@ -560,6 +577,8 @@ function broadcastMetrics() {
 
   // Broadcast workflow status
   const workflows = workflowManager.getAllWorkflows();
+  console.log('🔍 Debug - Workflows count:', workflows.length);
+  console.log('🔍 Debug - Workflows:', workflows.map(w => ({ id: w.workflowId, name: w.name, status: w.status })));
 
   // Send individual workflow updates
   workflows.forEach(workflow => {
@@ -568,6 +587,7 @@ function broadcastMetrics() {
       data: workflow
     };
 
+    console.log('🔍 Debug - Sending workflow update:', workflowUpdate);
     const messageStr = JSON.stringify(workflowUpdate);
     connectedClients.forEach(ws => {
       if (ws.readyState === ws.OPEN) {

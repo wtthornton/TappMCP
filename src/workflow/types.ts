@@ -171,4 +171,3 @@ export type WorkflowEdgeType =
   | 'exception'
   | 'compensation'
   | 'message';
-

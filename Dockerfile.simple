@@ -1,4 +1,4 @@
-# Simple TappMCP Dockerfile
+# TappMCP Simple Production Container
 FROM node:20-alpine
 
 # Set working directory
@@ -10,20 +10,26 @@ COPY package*.json ./
 # Install dependencies
 RUN npm ci --only=production
 
-# Copy application files
+# Copy the working MCP server and required files
+COPY working-mcp-server.cjs ./
 COPY tappmcp-http-server.js ./
-COPY public/ ./public/
-COPY src/ ./src/
 
-# Create data and logs directories
-RUN mkdir -p /app/data /app/logs
+# Create non-root user for security
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S smartmcp -u 1001
+
+# Create data and logs directories with proper permissions
+RUN mkdir -p /app/data /app/logs && chown -R smartmcp:nodejs /app/data /app/logs
+
+# Switch to non-root user
+USER smartmcp
 
 # Expose ports
 EXPOSE 3000 3001
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
+  CMD node -e "require('http').get('http://localhost:3001/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })" || exit 1
 
-# Start the application
+# Start the HTTP server (for dashboard access)
 CMD ["node", "tappmcp-http-server.js"]

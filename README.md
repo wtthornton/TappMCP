@@ -18,7 +18,7 @@ TappMCP features **Context7 intelligence integration** designed to make AI assis
 ## 🚀 Quick Start
 
 ### 🌐 Real-Time Dashboard
-Access the live monitoring dashboard at: **http://localhost:3000**
+Access the live monitoring dashboard at: **http://localhost:8080**
 
 **Main Dashboard Features:**
 - 📊 **Real-time Performance Metrics** - Memory, CPU, response times
@@ -28,7 +28,7 @@ Access the live monitoring dashboard at: **http://localhost:3000**
 - 📱 **Responsive Design** - Works on desktop and mobile
 
 **🎯 D3.js Visualizations Dashboard:**
-Access advanced visualizations at: **http://localhost:3000/d3-visualizations.html**
+Access advanced visualizations at: **http://localhost:8080/d3-visualizations.html**
 
 - 🕸️ **Interactive Workflow Graph** - Force-directed graph with zoom, pan, drag-and-drop
 - 📈 **Performance Monitoring Charts** - Multi-metric CPU, memory, response time charts
@@ -73,11 +73,11 @@ npm run build && npm start
 docker-compose -f docker-compose.core.yml up --build -d
 
 # Access dashboard
-open http://localhost:3000
+open http://localhost:8080
 
 # Health verification
-curl http://localhost:3000/health
-curl http://localhost:3000/tools
+curl http://localhost:8080/health
+curl http://localhost:8080/tools
 
 # Verify production deployment
 docker ps
@@ -276,7 +276,7 @@ Natural language interface for Cursor - full vibe coder experience with context 
 - **Docker Ready**: Production containerization with health checks
 
 ### 🌐 Real-Time Monitoring (NEW!)
-- **Live Dashboard**: Beautiful, responsive web interface at http://localhost:3000
+- **Live Dashboard**: Beautiful, responsive web interface at http://localhost:8080
 - **Performance Metrics**: Real-time memory, CPU, response time monitoring
 - **Workflow Tracking**: Live workflow status with progress bars and phase information
 - **System Health**: Uptime, version, active connections, error rates

@@ -48,7 +48,7 @@ export class NotificationManager extends EventEmitter {
       const results = await Promise.allSettled([
         this.sendToWebSocket(notification, userPrefs),
         this.sendToEmail(notification, userPrefs),
-        this.sendToPush(notification, userPrefs)
+        this.sendToPush(notification, userPrefs),
       ]);
 
       const successCount = results.filter(r => r.status === 'fulfilled' && r.value).length;
@@ -58,7 +58,7 @@ export class NotificationManager extends EventEmitter {
 
       this.emit('notification-sent', {
         notification,
-        results: results.map(r => r.status === 'fulfilled' ? r.value : false)
+        results: results.map(r => (r.status === 'fulfilled' ? r.value : false)),
       });
 
       return successCount > 0;
@@ -69,28 +69,41 @@ export class NotificationManager extends EventEmitter {
     }
   }
 
-  private async sendToWebSocket(notification: NotificationMessage, prefs: NotificationPreference[]): Promise<boolean> {
+  private async sendToWebSocket(
+    notification: NotificationMessage,
+    prefs: NotificationPreference[]
+  ): Promise<boolean> {
     if (!this.shouldSendToChannel('websocket', notification, prefs)) {
       return false;
     }
     return await this.websocketChannel.send(notification);
   }
 
-  private async sendToEmail(notification: NotificationMessage, prefs: NotificationPreference[]): Promise<boolean> {
+  private async sendToEmail(
+    notification: NotificationMessage,
+    prefs: NotificationPreference[]
+  ): Promise<boolean> {
     if (!this.shouldSendToChannel('email', notification, prefs)) {
       return false;
     }
     return await this.emailChannel.send(notification);
   }
 
-  private async sendToPush(notification: NotificationMessage, prefs: NotificationPreference[]): Promise<boolean> {
+  private async sendToPush(
+    notification: NotificationMessage,
+    prefs: NotificationPreference[]
+  ): Promise<boolean> {
     if (!this.shouldSendToChannel('push', notification, prefs)) {
       return false;
     }
     return await this.pushChannel.send(notification);
   }
 
-  private shouldSendToChannel(channel: NotificationChannel, notification: NotificationMessage, prefs: NotificationPreference[]): boolean {
+  private shouldSendToChannel(
+    channel: NotificationChannel,
+    notification: NotificationMessage,
+    prefs: NotificationPreference[]
+  ): boolean {
     const channelPref = prefs.find(p => p.channel === channel && p.type === notification.type);
     if (!channelPref) {
       return false; // No preference found, don't send
@@ -106,10 +119,6 @@ export class NotificationManager extends EventEmitter {
     const minPriority = priorityLevels[channelPref.priority] || 1;
 
     return notificationPriority >= minPriority;
-  }
-
-  private getUserPreferences(userId: string): NotificationPreference[] {
-    return this.preferences.get(userId) || this.preferences.get('default') || [];
   }
 
   private addToHistory(notification: NotificationMessage): void {
@@ -145,7 +154,7 @@ export class NotificationManager extends EventEmitter {
   }
 
   getUserPreferences(userId: string): NotificationPreference[] {
-    return this.getUserPreferences(userId);
+    return this.preferences.get(userId) || [];
   }
 
   // Status and history
@@ -153,16 +162,16 @@ export class NotificationManager extends EventEmitter {
     return {
       websocket: {
         available: this.websocketChannel.isAvailable(),
-        status: this.websocketChannel.getClientCount() > 0 ? 'Active' : 'No clients'
+        status: this.websocketChannel.getClientCount() > 0 ? 'Active' : 'No clients',
       },
       email: {
         available: this.emailChannel.isAvailable(),
-        status: this.emailChannel.isAvailable() ? 'Configured' : 'Not configured'
+        status: this.emailChannel.isAvailable() ? 'Configured' : 'Not configured',
       },
       push: {
         available: this.pushChannel.isAvailable(),
-        status: this.pushChannel.getSubscriptionCount() > 0 ? 'Active' : 'No subscriptions'
-      }
+        status: this.pushChannel.getSubscriptionCount() > 0 ? 'Active' : 'No subscriptions',
+      },
     };
   }
 
@@ -195,7 +204,7 @@ export class NotificationManager extends EventEmitter {
       status: 'pending',
       createdAt: new Date(),
       retryCount: 0,
-      maxRetries: 3
+      maxRetries: 3,
     };
   }
 }

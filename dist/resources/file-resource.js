@@ -143,7 +143,9 @@ export class FileResource extends MCPResource {
      */
     async readFile(path, config) {
         try {
-            const data = await fs.readFile(path, { encoding: config.encoding });
+            const data = await fs.readFile(path, {
+                encoding: config.encoding,
+            });
             const stats = await fs.stat(path);
             return {
                 success: true,
@@ -160,7 +162,9 @@ export class FileResource extends MCPResource {
         catch (error) {
             if (error.code === 'ENOENT' && config.createIfNotExists) {
                 // Create empty file if it doesn't exist and createIfNotExists is true
-                await fs.writeFile(path, '', { encoding: config.encoding });
+                await fs.writeFile(path, '', {
+                    encoding: config.encoding,
+                });
                 return {
                     success: true,
                     data: '',
@@ -188,7 +192,9 @@ export class FileResource extends MCPResource {
         await fs.mkdir(dirname(path), { recursive: true });
         // Write file
         const data = config.data || '';
-        await fs.writeFile(path, data, { encoding: config.encoding });
+        await fs.writeFile(path, data, {
+            encoding: config.encoding,
+        });
         // Set permissions if specified
         if (config.permissions) {
             await fs.chmod(path, parseInt(config.permissions, 8));
@@ -214,7 +220,9 @@ export class FileResource extends MCPResource {
         await fs.mkdir(dirname(path), { recursive: true });
         // Append to file
         const data = config.data || '';
-        await fs.appendFile(path, data, { encoding: config.encoding });
+        await fs.appendFile(path, data, {
+            encoding: config.encoding,
+        });
         const stats = await fs.stat(path);
         return {
             success: true,

@@ -1,0 +1,4008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 TappMCP Working Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary-bg: #0a0a0a;
+            --secondary-bg: #1a1a1a;
+            --accent-bg: #2a2a2a;
+            --primary-text: #ffffff;
+            --secondary-text: #b0b0b0;
+            --accent-color: #00ff88;
+            --error-color: #ff4444;
+            --warning-color: #ffaa00;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--primary-bg);
+            color: var(--primary-text);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--secondary-bg);
+            padding: 20px;
+            border-bottom: 1px solid var(--accent-bg);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--accent-color), #4facfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--accent-bg);
+            border-radius: 8px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            box-shadow: 0 0 10px var(--accent-color);
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.disconnected {
+            background: var(--error-color);
+            box-shadow: 0 0 10px var(--error-color);
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .card {
+            background: var(--secondary-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--accent-bg);
+            transition: all 0.3s ease;
+            transform: translateY(0);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 255, 136, 0.15);
+            border-color: var(--accent-color);
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            margin-bottom: 16px;
+            color: var(--accent-color);
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--accent-bg);
+        }
+
+        .metric:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            color: var(--secondary-text);
+        }
+
+        .metric-value {
+            color: var(--primary-text);
+            font-weight: 600;
+            position: relative;
+            cursor: help;
+        }
+
+        .metric-value:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-bg);
+            color: var(--primary-text);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            z-index: 1000;
+            border: 1px solid var(--accent-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .trend-indicator {
+            display: inline-block;
+            margin-left: 8px;
+            font-size: 0.8rem;
+        }
+
+        .trend-up {
+            color: var(--accent-color);
+        }
+
+        .trend-down {
+            color: var(--error-color);
+        }
+
+        .trend-stable {
+            color: var(--secondary-text);
+        }
+
+        .loading {
+            text-align: center;
+            color: var(--secondary-text);
+            padding: 20px;
+            position: relative;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--accent-bg);
+            border-radius: 50%;
+            border-top-color: var(--accent-color);
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, var(--accent-bg) 25%, var(--secondary-bg) 50%, var(--accent-bg) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 4px;
+            height: 20px;
+            margin: 8px 0;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .error {
+            text-align: center;
+            color: var(--error-color);
+            padding: 20px;
+        }
+
+        .workflow-item {
+            background: var(--accent-bg);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+
+        .workflow-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .workflow-status {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: var(--accent-color);
+        }
+
+        .tool-item {
+            background: var(--accent-bg);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+
+        .tool-name {
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-bottom: 4px;
+        }
+
+        .tool-description {
+            font-size: 0.9rem;
+            color: var(--secondary-text);
+        }
+
+        .export-controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: var(--accent-bg);
+            border-radius: 8px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            background: var(--accent-color);
+            color: var(--primary-bg);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background: #00cc6a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--accent-bg);
+            color: var(--primary-text);
+            border: 1px solid var(--accent-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--accent-color);
+            color: var(--primary-bg);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .nav-link {
+            padding: 8px 16px;
+            background: var(--accent-bg);
+            color: var(--primary-text);
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .nav-link:hover {
+            background: var(--accent-color);
+            color: var(--primary-bg);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+        }
+
+        .nav-link.active {
+            background: var(--accent-color);
+            color: var(--primary-bg);
+            border-color: var(--accent-color);
+        }
+
+        .metrics-tier {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--accent-bg);
+        }
+
+        .critical-tier {
+            background: linear-gradient(135deg, rgba(255, 68, 68, 0.1), rgba(204, 0, 0, 0.05));
+            border-color: rgba(255, 68, 68, 0.3);
+        }
+
+        .performance-tier {
+            background: linear-gradient(135deg, rgba(255, 170, 0, 0.1), rgba(255, 136, 0, 0.05));
+            border-color: rgba(255, 170, 0, 0.3);
+        }
+
+        .tier-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--primary-text);
+            text-align: center;
+            padding: 8px 16px;
+            background: var(--accent-bg);
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+        }
+
+        .critical-metric {
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+            border: 2px solid #ff6666;
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.3);
+        }
+
+        .performance-metric {
+            background: linear-gradient(135deg, #ffaa00, #ff8800);
+            border: 2px solid #ffbb33;
+            box-shadow: 0 0 20px rgba(255, 170, 0, 0.3);
+        }
+
+        .critical-metric:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(255, 68, 68, 0.4);
+        }
+
+        .performance-metric:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(255, 170, 0, 0.4);
+        }
+
+        .ai-tier {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 204, 106, 0.05));
+            border-color: rgba(0, 255, 136, 0.3);
+        }
+
+        .system-tier {
+            background: linear-gradient(135deg, rgba(79, 172, 254, 0.1), rgba(0, 242, 254, 0.05));
+            border-color: rgba(79, 172, 254, 0.3);
+        }
+
+        .ai-metric {
+            background: linear-gradient(135deg, #00ff88, #00cc6a);
+            border: 2px solid #33ff99;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .system-metric {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            border: 2px solid #66b3ff;
+            box-shadow: 0 0 20px rgba(79, 172, 254, 0.3);
+        }
+
+        .ai-metric:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(0, 255, 136, 0.4);
+        }
+
+        .system-metric:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+        }
+
+        .trend-percentage {
+            font-size: 0.7rem;
+            color: var(--secondary-text);
+            margin-left: 4px;
+            opacity: 0.8;
+        }
+
+        .trend-critical {
+            color: var(--error-color);
+            animation: pulse-critical 2s infinite;
+        }
+
+        .trend-warning {
+            color: var(--warning-color);
+            animation: pulse-warning 3s infinite;
+        }
+
+        @keyframes pulse-critical {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+
+        @keyframes pulse-warning {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+
+        .alerts-container {
+            margin: 20px 0;
+            padding: 16px;
+            background: var(--accent-bg);
+            border-radius: 8px;
+            border: 1px solid var(--accent-bg);
+        }
+
+        .no-alerts {
+            text-align: center;
+            color: var(--accent-color);
+            font-weight: 600;
+            padding: 12px;
+        }
+
+        .alert {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border-left: 4px solid;
+            background: var(--secondary-bg);
+            transition: all 0.3s ease;
+        }
+
+        .alert-critical {
+            border-left-color: var(--error-color);
+            background: linear-gradient(135deg, rgba(255, 68, 68, 0.1), rgba(204, 0, 0, 0.05));
+        }
+
+        .alert-warning {
+            border-left-color: var(--warning-color);
+            background: linear-gradient(135deg, rgba(255, 170, 0, 0.1), rgba(255, 136, 0, 0.05));
+        }
+
+        .alert:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .alert-icon {
+            font-size: 1.2rem;
+        }
+
+        .alert-metric {
+            font-weight: 600;
+            color: var(--primary-text);
+            min-width: 80px;
+        }
+
+        .alert-message {
+            flex: 1;
+            color: var(--secondary-text);
+        }
+
+        .alert-time {
+            font-size: 0.8rem;
+            color: var(--secondary-text);
+            opacity: 0.7;
+        }
+
+        .metric-subtext {
+            font-size: 0.7rem;
+            color: var(--secondary-text);
+            opacity: 0.8;
+            font-style: italic;
+            margin-top: 2px;
+        }
+
+        .notification-metrics {
+            padding: 16px;
+        }
+
+        .notification-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .notification-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px;
+            background: var(--secondary-bg);
+            border-radius: 8px;
+            border: 1px solid var(--accent-bg);
+            transition: all 0.3s ease;
+        }
+
+        .notification-stat:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-icon {
+            font-size: 1.5rem;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--secondary-text);
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-text);
+        }
+
+        .recent-notifications {
+            margin-top: 20px;
+        }
+
+        .recent-notifications h4 {
+            margin: 0 0 12px 0;
+            color: var(--primary-text);
+            font-size: 1rem;
+        }
+
+        .notification-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            margin: 6px 0;
+            border-radius: 6px;
+            background: var(--secondary-bg);
+            border-left: 3px solid;
+            transition: all 0.3s ease;
+        }
+
+        .notification-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .notification-critical {
+            border-left-color: var(--error-color);
+            background: linear-gradient(135deg, rgba(255, 68, 68, 0.1), rgba(204, 0, 0, 0.05));
+        }
+
+        .notification-warning {
+            border-left-color: var(--warning-color);
+            background: linear-gradient(135deg, rgba(255, 170, 0, 0.1), rgba(255, 136, 0, 0.05));
+        }
+
+        .notification-info {
+            border-left-color: var(--accent-color);
+            background: linear-gradient(135deg, rgba(79, 172, 254, 0.1), rgba(79, 172, 254, 0.05));
+        }
+
+        .notification-icon {
+            font-size: 1.1rem;
+        }
+
+        .notification-message {
+            flex: 1;
+            font-size: 0.9rem;
+            color: var(--primary-text);
+        }
+
+        .notification-time {
+            font-size: 0.8rem;
+            color: var(--secondary-text);
+            opacity: 0.7;
+        }
+
+        .no-notifications {
+            text-align: center;
+            color: var(--accent-color);
+            font-style: italic;
+            padding: 20px;
+            background: var(--secondary-bg);
+            border-radius: 8px;
+            border: 1px solid var(--accent-bg);
+        }
+
+        .workflow-controls {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 8px 16px;
+            background: var(--accent-color);
+            color: var(--primary-bg);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .control-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(79, 172, 254, 0.3);
+        }
+
+        .control-btn:disabled {
+            background: var(--secondary-text);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .interactive-metric {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .interactive-metric:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .metric-detail {
+            position: absolute;
+            background: var(--primary-bg);
+            border: 1px solid var(--accent-bg);
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            min-width: 200px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .metric-detail.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+        }
+
+        .detail-header {
+            font-weight: 600;
+            color: var(--primary-text);
+            margin-bottom: 8px;
+            border-bottom: 1px solid var(--accent-bg);
+            padding-bottom: 4px;
+        }
+
+        .detail-content {
+            font-size: 0.9rem;
+            color: var(--secondary-text);
+            line-height: 1.4;
+        }
+
+        .detail-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .detail-stat {
+            font-size: 0.8rem;
+            color: var(--secondary-text);
+        }
+
+        .detail-stat-value {
+            font-weight: 600;
+            color: var(--primary-text);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-bg);
+            border: 1px solid var(--accent-bg);
+            border-radius: 8px;
+            padding: 12px 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 250px;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .notification-success {
+            border-left: 4px solid var(--accent-color);
+            background: linear-gradient(135deg, rgba(79, 172, 254, 0.1), rgba(79, 172, 254, 0.05));
+        }
+
+        .notification-warning {
+            border-left: 4px solid var(--warning-color);
+            background: linear-gradient(135deg, rgba(255, 170, 0, 0.1), rgba(255, 136, 0, 0.05));
+        }
+
+        .notification-error {
+            border-left: 4px solid var(--error-color);
+            background: linear-gradient(135deg, rgba(255, 68, 68, 0.1), rgba(204, 0, 0, 0.05));
+        }
+
+        .notification-info {
+            border-left: 4px solid var(--accent-color);
+            background: linear-gradient(135deg, rgba(79, 172, 254, 0.1), rgba(79, 172, 254, 0.05));
+        }
+
+        .export-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .export-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--primary-bg);
+            border: 1px solid var(--accent-bg);
+            border-radius: 8px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .export-dropdown:hover .export-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .export-option {
+            display: block;
+            width: 100%;
+            padding: 12px 16px;
+            background: none;
+            border: none;
+            text-align: left;
+            color: var(--primary-text);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 0;
+        }
+
+        .export-option:hover {
+            background: var(--accent-bg);
+            color: var(--accent-color);
+        }
+
+        .export-option:first-child {
+            border-radius: 8px 8px 0 0;
+        }
+
+        .export-option:last-child {
+            border-radius: 0 0 8px 8px;
+        }
+
+        .settings-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .settings-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .settings-content {
+            background: var(--primary-bg);
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--accent-bg);
+            padding-bottom: 12px;
+        }
+
+        .settings-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-text);
+        }
+
+        .settings-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--secondary-text);
+            transition: color 0.3s ease;
+        }
+
+        .settings-close:hover {
+            color: var(--primary-text);
+        }
+
+        .settings-section {
+            margin-bottom: 24px;
+        }
+
+        .settings-section h3 {
+            margin: 0 0 12px 0;
+            color: var(--primary-text);
+            font-size: 1.1rem;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--accent-bg);
+        }
+
+        .setting-label {
+            color: var(--primary-text);
+            font-weight: 500;
+        }
+
+        .setting-description {
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+        .setting-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: var(--secondary-bg);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: var(--accent-color);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: var(--primary-bg);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(26px);
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .header {
+                padding: 12px 16px;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+                margin: 0;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .nav-link {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+            }
+
+            .export-controls {
+                flex-direction: column;
+                gap: 8px;
+                align-items: stretch;
+            }
+
+            .export-dropdown {
+                width: 100%;
+            }
+
+            .export-menu {
+                left: 0;
+                right: 0;
+                min-width: auto;
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .status-bar {
+                flex-direction: column;
+                gap: 8px;
+                padding: 12px 16px;
+            }
+
+            .status-item {
+                justify-content: center;
+            }
+
+            .dashboard {
+                padding: 16px;
+                gap: 16px;
+            }
+
+            .card {
+                padding: 16px;
+            }
+
+            .card h2 {
+                font-size: 1.2rem;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .metric {
+                padding: 12px;
+                flex-direction: column;
+                text-align: center;
+                gap: 8px;
+            }
+
+            .metric-label {
+                font-size: 0.9rem;
+            }
+
+            .metric-value {
+                font-size: 1.1rem;
+            }
+
+            .trend-indicator {
+                font-size: 1.2rem;
+            }
+
+            .trend-percentage {
+                font-size: 0.8rem;
+            }
+
+            .workflow-controls {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .control-btn {
+                width: 100%;
+                justify-content: center;
+                padding: 12px 16px;
+            }
+
+            .notification-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .notification-stat {
+                padding: 16px 12px;
+            }
+
+            .stat-icon {
+                font-size: 1.3rem;
+            }
+
+            .stat-value {
+                font-size: 1.1rem;
+            }
+
+            .settings-content {
+                width: 95%;
+                max-width: none;
+                padding: 20px;
+            }
+
+            .settings-title {
+                font-size: 1.3rem;
+            }
+
+            .setting-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .setting-control {
+                align-self: flex-end;
+            }
+
+            .notification {
+                left: 16px;
+                right: 16px;
+                width: auto;
+                min-width: auto;
+            }
+
+            .metric-detail {
+                left: 16px;
+                right: 16px;
+                width: auto;
+                min-width: auto;
+                max-width: calc(100vw - 32px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 10px 12px;
+            }
+
+            .header h1 {
+                font-size: 1.3rem;
+            }
+
+            .dashboard {
+                padding: 12px;
+                gap: 12px;
+            }
+
+            .card {
+                padding: 12px;
+            }
+
+            .card h2 {
+                font-size: 1.1rem;
+            }
+
+            .metrics-grid {
+                gap: 10px;
+            }
+
+            .metric {
+                padding: 10px;
+            }
+
+            .metric-label {
+                font-size: 0.8rem;
+            }
+
+            .metric-value {
+                font-size: 1rem;
+            }
+
+            .notification-stats {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .notification-stat {
+                padding: 12px 10px;
+            }
+
+            .settings-content {
+                padding: 16px;
+                width: 98%;
+            }
+
+            .settings-title {
+                font-size: 1.2rem;
+            }
+
+            .notification {
+                left: 12px;
+                right: 12px;
+            }
+
+            .metric-detail {
+                left: 12px;
+                right: 12px;
+                max-width: calc(100vw - 24px);
+            }
+        }
+
+        /* Touch-friendly interactions */
+        @media (hover: none) and (pointer: coarse) {
+            .metric {
+                min-height: 60px;
+                padding: 16px;
+            }
+
+            .control-btn {
+                min-height: 44px;
+                padding: 12px 20px;
+            }
+
+            .btn {
+                min-height: 44px;
+                padding: 12px 20px;
+            }
+
+            .nav-link {
+                min-height: 44px;
+                padding: 12px 16px;
+            }
+
+            .export-option {
+                min-height: 44px;
+                padding: 16px;
+            }
+
+            .toggle-switch {
+                width: 60px;
+                height: 32px;
+            }
+
+            .toggle-switch::after {
+                width: 28px;
+                height: 28px;
+            }
+
+            .toggle-switch.active::after {
+                transform: translateX(28px);
+            }
+        }
+
+        /* Landscape orientation optimization */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .header {
+                padding: 8px 16px;
+                flex-direction: row;
+                justify-content: space-between;
+            }
+
+            .header h1 {
+                font-size: 1.3rem;
+            }
+
+            .nav-links {
+                flex-direction: row;
+                gap: 12px;
+            }
+
+            .dashboard {
+                padding: 12px;
+                gap: 12px;
+            }
+
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .notification-stats {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* Mobile context menu */
+        .mobile-context-menu {
+            position: fixed;
+            background: var(--primary-bg);
+            border: 1px solid var(--accent-bg);
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            z-index: 10000;
+            min-width: 250px;
+            max-width: 90vw;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .context-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid var(--accent-bg);
+        }
+
+        .context-menu-header h4 {
+            margin: 0;
+            color: var(--primary-text);
+            font-size: 1.1rem;
+        }
+
+        .context-menu-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--secondary-text);
+            transition: color 0.3s ease;
+        }
+
+        .context-menu-close:hover {
+            color: var(--primary-text);
+        }
+
+        .context-menu-content {
+            padding: 16px;
+            color: var(--primary-text);
+        }
+
+        .context-menu-content p {
+            margin: 8px 0;
+            font-size: 0.9rem;
+        }
+
+        .context-menu-actions {
+            display: flex;
+            gap: 8px;
+            padding: 16px;
+            border-top: 1px solid var(--accent-bg);
+        }
+
+        .context-action {
+            flex: 1;
+            padding: 10px 16px;
+            background: var(--accent-color);
+            color: var(--primary-bg);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .context-action:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        /* Touch interactions */
+        .touch-active {
+            transform: scale(0.98);
+            opacity: 0.8;
+        }
+
+        .mobile-view .metric {
+            touch-action: manipulation;
+        }
+
+        /* Mobile-specific animations */
+        @media (max-width: 768px) {
+            .metric {
+                transition: transform 0.1s ease, opacity 0.1s ease;
+            }
+
+            .control-btn, .btn {
+                transition: transform 0.1s ease, background 0.2s ease;
+            }
+
+            .notification {
+                animation: slideInRight 0.3s ease;
+            }
+
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        }
+
+        /* Accessibility improvements for mobile */
+        @media (max-width: 768px) {
+            .metric:focus {
+                outline: 2px solid var(--accent-color);
+                outline-offset: 2px;
+            }
+
+            .control-btn:focus,
+            .btn:focus {
+                outline: 2px solid var(--accent-color);
+                outline-offset: 2px;
+            }
+
+            .nav-link:focus {
+                outline: 2px solid var(--accent-color);
+                outline-offset: 2px;
+            }
+        }
+
+        /* Error handling styles */
+        .error-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-bg);
+            border: 2px solid var(--error-color);
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(255, 68, 68, 0.3);
+            z-index: 10001;
+            min-width: 300px;
+            max-width: 90vw;
+            animation: slideInError 0.3s ease;
+        }
+
+        @keyframes slideInError {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .error-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: linear-gradient(135deg, rgba(255, 68, 68, 0.1), rgba(204, 0, 0, 0.05));
+            border-bottom: 1px solid var(--error-color);
+        }
+
+        .error-icon {
+            font-size: 1.5rem;
+        }
+
+        .error-title {
+            font-weight: 600;
+            color: var(--error-color);
+            flex: 1;
+        }
+
+        .error-dismiss {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--secondary-text);
+            transition: color 0.3s ease;
+        }
+
+        .error-dismiss:hover {
+            color: var(--error-color);
+        }
+
+        .error-content {
+            padding: 16px;
+        }
+
+        .error-message {
+            font-weight: 500;
+            color: var(--primary-text);
+            margin: 0 0 8px 0;
+        }
+
+        .error-context,
+        .error-time {
+            font-size: 0.9rem;
+            color: var(--secondary-text);
+            margin: 4px 0;
+        }
+
+        .error-actions {
+            display: flex;
+            gap: 8px;
+            padding: 16px;
+            border-top: 1px solid var(--accent-bg);
+        }
+
+        .error-action {
+            flex: 1;
+            padding: 8px 12px;
+            background: var(--error-color);
+            color: var(--primary-bg);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .error-action:hover {
+            background: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        .error-details-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10002;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .error-modal-content {
+            background: var(--primary-bg);
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .error-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid var(--accent-bg);
+        }
+
+        .error-modal-header h3 {
+            margin: 0;
+            color: var(--error-color);
+            font-size: 1.3rem;
+        }
+
+        .error-modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--secondary-text);
+            transition: color 0.3s ease;
+        }
+
+        .error-modal-close:hover {
+            color: var(--primary-text);
+        }
+
+        .error-modal-body {
+            padding: 20px;
+        }
+
+        .error-detail-item {
+            margin: 12px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--accent-bg);
+        }
+
+        .error-detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .error-detail-item strong {
+            color: var(--primary-text);
+            display: inline-block;
+            min-width: 100px;
+        }
+
+        .error-modal-actions {
+            display: flex;
+            gap: 12px;
+            padding: 20px;
+            border-top: 1px solid var(--accent-bg);
+        }
+
+        .error-modal-action {
+            flex: 1;
+            padding: 12px 20px;
+            background: var(--accent-color);
+            color: var(--primary-bg);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .error-modal-action:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        /* Mobile error handling */
+        @media (max-width: 768px) {
+            .error-notification {
+                left: 16px;
+                right: 16px;
+                top: 16px;
+                min-width: auto;
+                width: auto;
+            }
+
+            .error-actions {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .error-action {
+                width: 100%;
+            }
+
+            .error-modal-content {
+                width: 95%;
+                margin: 20px;
+            }
+
+            .error-modal-actions {
+                flex-direction: column;
+            }
+
+            .error-modal-action {
+                width: 100%;
+            }
+        }
+
+        /* Offline indicator */
+        .offline-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--warning-color);
+            color: var(--primary-bg);
+            text-align: center;
+            padding: 8px;
+            font-weight: 500;
+            z-index: 10003;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .offline-indicator.show {
+            transform: translateY(0);
+        }
+
+        /* Loading fallback */
+        .loading-fallback {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .loading-fallback h3 {
+            color: var(--primary-text);
+            margin: 0 0 16px 0;
+        }
+
+        .loading-fallback p {
+            color: var(--secondary-text);
+            margin: 8px 0;
+        }
+
+        .loading-fallback button {
+            margin-top: 16px;
+            padding: 12px 24px;
+            background: var(--accent-color);
+            color: var(--primary-bg);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .loading-fallback button:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 TappMCP Working Dashboard</h1>
+        <p>Real-time monitoring and system status</p>
+
+        <div class="nav-links">
+            <a href="index.html" class="nav-link active">📊 Main Dashboard</a>
+            <a href="d3-visualizations.html" class="nav-link">📈 D3.js Visualizations</a>
+        </div>
+
+        <div class="export-controls">
+            <div class="export-dropdown">
+                <button id="exportBtn" class="btn">📤 Export Data</button>
+                <div class="export-menu">
+                    <button class="export-option" data-format="json">📄 JSON Format</button>
+                    <button class="export-option" data-format="csv">📊 CSV Format</button>
+                    <button class="export-option" data-format="pdf">📋 PDF Report</button>
+                    <button class="export-option" data-format="workflows">🔄 Workflows Only</button>
+                    <button class="export-option" data-format="metrics">📈 Metrics Only</button>
+                    <button class="export-option" data-format="notifications">🔔 Notifications</button>
+                </div>
+            </div>
+            <button class="btn btn-secondary" onclick="dashboard.refreshAllData()">🔄 Refresh All</button>
+            <button class="btn btn-secondary" onclick="dashboard.toggleAutoRefresh()">⏰ Auto-refresh: <span id="autoRefreshStatus">ON</span></button>
+            <button id="dashboardSettings" class="btn btn-secondary">⚙️ Settings</button>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot" id="connectionStatus"></div>
+                <span id="connectionText">Connecting...</span>
+            </div>
+            <div class="status-item">
+                <span>Server: <strong id="serverVersion">v2.0.0</strong></span>
+            </div>
+            <div class="status-item">
+                <span>Uptime: <strong id="serverUptime">--</strong></span>
+            </div>
+            <div class="status-item">
+                <span>Tools: <strong id="toolCount">7</strong></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid">
+        <!-- System Status Card -->
+        <div class="card">
+            <h2>🧠 System Status</h2>
+            <div id="systemContainer">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    Loading system status...
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Metrics Card -->
+        <div class="card">
+            <h2>⚡ Performance</h2>
+            <div id="alertsContainer" class="alerts-container">
+                <div class="no-alerts">✅ All systems normal</div>
+            </div>
+            <div id="performanceContainer">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    Loading performance data...
+                </div>
+            </div>
+        </div>
+
+        <!-- Notification Metrics Card -->
+        <div class="card">
+            <h2>🔔 Notifications</h2>
+            <div id="notificationContainer">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    Loading notification data...
+                </div>
+            </div>
+        </div>
+
+        <!-- Workflows Card -->
+        <div class="card">
+            <h2>📊 Workflows</h2>
+            <div class="workflow-controls">
+                <button id="pauseWorkflows" class="control-btn">⏸️ Pause All</button>
+                <button id="resumeWorkflows" class="control-btn">▶️ Resume All</button>
+                <button id="clearCompleted" class="control-btn">🗑️ Clear Completed</button>
+                <button id="exportWorkflows" class="control-btn">📤 Export</button>
+            </div>
+            <div id="workflowsContainer">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    Loading workflows...
+                </div>
+            </div>
+        </div>
+
+        <!-- Tools Card -->
+        <div class="card">
+            <h2>🛠️ Tools</h2>
+            <div id="toolsContainer">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    Loading tools...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="settings-modal">
+        <div class="settings-content">
+            <div class="settings-header">
+                <h2 class="settings-title">Dashboard Settings</h2>
+                <button class="settings-close" onclick="dashboard.closeSettings()">&times;</button>
+            </div>
+
+            <div class="settings-section">
+                <h3>Display Settings</h3>
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Dark Mode</div>
+                        <div class="setting-description">Switch between light and dark themes</div>
+                    </div>
+                    <div class="setting-control">
+                        <div class="toggle-switch" onclick="dashboard.toggleDarkMode()"></div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Auto-refresh</div>
+                        <div class="setting-description">Automatically refresh data every 30 seconds</div>
+                    </div>
+                    <div class="setting-control">
+                        <div class="toggle-switch active" onclick="dashboard.toggleAutoRefreshSetting()"></div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Trend Indicators</div>
+                        <div class="setting-description">Show trend analysis for metrics</div>
+                    </div>
+                    <div class="setting-control">
+                        <div class="toggle-switch active" onclick="dashboard.toggleTrendIndicators()"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3>Alert Settings</h3>
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Critical Alerts</div>
+                        <div class="setting-description">Show critical system alerts</div>
+                    </div>
+                    <div class="setting-control">
+                        <div class="toggle-switch active" onclick="dashboard.toggleCriticalAlerts()"></div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Warning Alerts</div>
+                        <div class="setting-description">Show warning notifications</div>
+                    </div>
+                    <div class="setting-control">
+                        <div class="toggle-switch active" onclick="dashboard.toggleWarningAlerts()"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Offline Indicator -->
+    <div id="offlineIndicator" class="offline-indicator">
+        📡 You are currently offline. Some features may be unavailable.
+    </div>
+
+    <script>
+        class WorkingDashboard {
+            constructor() {
+                this.ws = null;
+                this.reconnectAttempts = 0;
+                this.maxReconnectAttempts = 5;
+                this.reconnectDelay = 1000;
+                this.workflows = new Map();
+                this.autoRefreshInterval = null;
+                this.autoRefreshEnabled = true;
+                this.lastData = {};
+                this.metricHistory = {
+                    performance: [],
+                    trends: {},
+                    alerts: [],
+                    notifications: {
+                        total: 0,
+                        unread: 0,
+                        critical: 0,
+                        warning: 0,
+                        info: 0,
+                        recent: []
+                    }
+                };
+                this.cache = new Map();
+                this.cacheTimeout = 30000; // 30 seconds
+                this.debounceTimers = new Map();
+                this.performanceMetrics = {
+                    renderTime: 0,
+                    updateCount: 0,
+                    averageUpdateTime: 0
+                };
+                this.errorHandler = {
+                    errors: [],
+                    maxErrors: 50,
+                    retryAttempts: 3,
+                    retryDelay: 1000
+                };
+                this.trendThresholds = {
+                    cpu: { warning: 70, critical: 90 },
+                    memory: { warning: 80, critical: 95 },
+                    responseTime: { warning: 200, critical: 500 },
+                    errorRate: { warning: 2, critical: 5 },
+                    successRate: { warning: 95, critical: 90 }
+                };
+
+                console.log('🚀 Initializing Working Dashboard...');
+                this.init();
+            }
+
+            init() {
+                this.connectWebSocket();
+                this.loadData();
+                this.setupKeyboardShortcuts();
+                this.setupInteractiveFeatures();
+                this.startAutoRefresh();
+            }
+
+            connectWebSocket() {
+                console.log('🔌 Connecting to WebSocket...');
+
+                try {
+                    this.ws = new WebSocket('ws://localhost:8080');
+
+                    this.ws.onopen = () => {
+                        console.log('✅ WebSocket connected!');
+                        this.updateConnectionStatus(true);
+                        this.reconnectAttempts = 0;
+                    };
+
+                    this.ws.onmessage = (event) => {
+                        try {
+                            const data = JSON.parse(event.data);
+                            console.log('📨 Received:', data.type);
+                            this.handleMessage(data);
+                        } catch (error) {
+                            console.error('❌ Message parse error:', error);
+                        }
+                    };
+
+                    this.ws.onclose = (event) => {
+                        console.log('❌ WebSocket disconnected. Code:', event.code);
+                        this.updateConnectionStatus(false);
+                        this.scheduleReconnect();
+                    };
+
+                    this.ws.onerror = (error) => {
+                        console.error('❌ WebSocket error:', error);
+                        this.updateConnectionStatus(false);
+                    };
+
+                } catch (error) {
+                    console.error('❌ WebSocket connection failed:', error);
+                    this.updateConnectionStatus(false);
+                    this.scheduleReconnect();
+                }
+            }
+
+            handleMessage(data) {
+                switch (data.type) {
+                    case 'performance_metrics':
+                        this.updatePerformanceMetrics(data.data);
+                        break;
+                    case 'workflow_status_update':
+                        this.updateWorkflowStatus(data.data);
+                        break;
+                    case 'system_health':
+                        this.updateSystemHealth(data.data);
+                        break;
+                    default:
+                        console.log('Unknown message type:', data.type);
+                }
+            }
+
+            updateConnectionStatus(connected) {
+                const statusDot = document.getElementById('connectionStatus');
+                const statusText = document.getElementById('connectionText');
+
+                if (connected) {
+                    statusDot.classList.remove('disconnected');
+                    statusText.textContent = 'Connected';
+                } else {
+                    statusDot.classList.add('disconnected');
+                    statusText.textContent = 'Disconnected';
+                }
+            }
+
+            updatePerformanceMetrics(data) {
+                const container = document.getElementById('performanceContainer');
+
+                // Store data for trend comparison
+                this.lastData.performance = data;
+
+                // Calculate trends for all metrics
+                const cpuTrend = this.calculateTrend(data.cpuUsage || 0, 'cpu');
+                const memoryTrend = this.calculateTrend(data.memoryUsage ? data.memoryUsage.heapUsed / 1024 / 1024 : 0, 'memory');
+                const responseTimeTrend = this.calculateTrend(data.responseTime || 0, 'responseTime');
+                const successRateTrend = this.calculateTrend(data.successRate ? data.successRate * 100 : 0, 'successRate');
+                const errorRateTrend = this.calculateTrend(data.errorRate ? data.errorRate * 100 : 0, 'errorRate');
+
+                // Check for alerts
+                this.checkAlerts(data);
+                this.checkAITokenAlerts(data);
+                this.checkWorkflowAlerts();
+
+                // High Priority Metrics (Tier 1 - Critical System Health)
+                const memoryMB = data.memoryUsage ? Math.round(data.memoryUsage.heapUsed / 1024 / 1024) : 0;
+                const cpuPercent = data.cpuUsage ? data.cpuUsage.toFixed(1) : 0;
+                const responseTime = data.responseTime ? data.responseTime.toFixed(2) : 0;
+                const connections = data.activeConnections || 0;
+                const successRate = data.successRate ? (data.successRate * 100).toFixed(1) : 0;
+                const errorRate = data.errorRate ? (data.errorRate * 100).toFixed(2) : 0;
+
+                // Performance Metrics (Tier 2 - Performance)
+                const rps = data.requestsPerSecond || 0;
+                const bytesPerSec = data.bytesPerSecond ? Math.round(data.bytesPerSecond / 1024) : 0; // Convert to KB/s
+                const p95Response = data.p95Response ? data.p95Response.toFixed(1) : 0;
+                const p99Response = data.p99Response ? data.p99Response.toFixed(1) : 0;
+                const cacheHitRate = data.cacheHitRate ? (data.cacheHitRate * 100).toFixed(1) : 0;
+                const queueSize = data.queueSize || 0;
+
+                container.innerHTML = `
+                    <!-- Tier 1: Critical System Health -->
+                    <div class="metrics-tier critical-tier">
+                        <h3 class="tier-title">🔴 Critical System Health</h3>
+                        <div class="metrics-grid">
+                            <div class="metric critical-metric interactive-metric">
+                                <span class="metric-label">Memory Usage</span>
+                                <span class="metric-value" data-tooltip="Heap memory currently in use">${memoryMB} MB</span>
+                                <span class="trend-indicator ${this.getTrendColor(memoryTrend, 'memory')}">${this.getTrendIndicator(memoryTrend)}</span>
+                                <span class="trend-percentage">${memoryTrend.percentage.toFixed(1)}%</span>
+                            </div>
+                            <div class="metric critical-metric interactive-metric">
+                                <span class="metric-label">CPU Usage</span>
+                                <span class="metric-value" data-tooltip="Current CPU utilization percentage">${cpuPercent}%</span>
+                                <span class="trend-indicator ${this.getTrendColor(cpuTrend, 'cpu')}">${this.getTrendIndicator(cpuTrend)}</span>
+                                <span class="trend-percentage">${cpuTrend.percentage.toFixed(1)}%</span>
+                            </div>
+                            <div class="metric critical-metric">
+                                <span class="metric-label">Response Time</span>
+                                <span class="metric-value" data-tooltip="Average response time in milliseconds">${responseTime}ms</span>
+                                <span class="trend-indicator ${this.getTrendColor(responseTimeTrend, 'responseTime')}">${this.getTrendIndicator(responseTimeTrend)}</span>
+                                <span class="trend-percentage">${responseTimeTrend.percentage.toFixed(1)}%</span>
+                            </div>
+                            <div class="metric critical-metric">
+                                <span class="metric-label">Active Connections</span>
+                                <span class="metric-value" data-tooltip="Number of active WebSocket connections">${connections}</span>
+                                <span class="trend-indicator trend-stable">🔗</span>
+                            </div>
+                            <div class="metric critical-metric">
+                                <span class="metric-label">Success Rate</span>
+                                <span class="metric-value" data-tooltip="Percentage of successful requests">${successRate}%</span>
+                                <span class="trend-indicator ${successRate > 95 ? 'trend-up' : successRate < 90 ? 'trend-down' : 'trend-stable'}">${successRate > 95 ? '📈' : successRate < 90 ? '📉' : '📊'}</span>
+                            </div>
+                            <div class="metric critical-metric">
+                                <span class="metric-label">Error Rate</span>
+                                <span class="metric-value" data-tooltip="Percentage of failed requests">${errorRate}%</span>
+                                <span class="trend-indicator ${errorRate > 5 ? 'trend-up' : errorRate < 1 ? 'trend-down' : 'trend-stable'}">${errorRate > 5 ? '📈' : errorRate < 1 ? '📉' : '📊'}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tier 2: Performance Metrics -->
+                    <div class="metrics-tier performance-tier">
+                        <h3 class="tier-title">⚡ Performance Metrics</h3>
+                        <div class="metrics-grid">
+                            <div class="metric performance-metric">
+                                <span class="metric-label">Requests/sec</span>
+                                <span class="metric-value" data-tooltip="Current requests per second">${rps}</span>
+                                <span class="trend-indicator trend-stable">📊</span>
+                            </div>
+                            <div class="metric performance-metric">
+                                <span class="metric-label">Bytes/sec</span>
+                                <span class="metric-value" data-tooltip="Data transfer rate">${bytesPerSec} KB/s</span>
+                                <span class="trend-indicator trend-stable">📊</span>
+                            </div>
+                            <div class="metric performance-metric">
+                                <span class="metric-label">P95 Response</span>
+                                <span class="metric-value" data-tooltip="95th percentile response time">${p95Response}ms</span>
+                                <span class="trend-indicator ${p95Response > 300 ? 'trend-up' : p95Response < 100 ? 'trend-down' : 'trend-stable'}">${p95Response > 300 ? '📈' : p95Response < 100 ? '📉' : '📊'}</span>
+                            </div>
+                            <div class="metric performance-metric">
+                                <span class="metric-label">P99 Response</span>
+                                <span class="metric-value" data-tooltip="99th percentile response time">${p99Response}ms</span>
+                                <span class="trend-indicator ${p99Response > 500 ? 'trend-up' : p99Response < 200 ? 'trend-down' : 'trend-stable'}">${p99Response > 500 ? '📈' : p99Response < 200 ? '📉' : '📊'}</span>
+                            </div>
+                            <div class="metric performance-metric">
+                                <span class="metric-label">Cache Hit Rate</span>
+                                <span class="metric-value" data-tooltip="Cache efficiency percentage">${cacheHitRate}%</span>
+                                <span class="trend-indicator ${cacheHitRate > 90 ? 'trend-up' : cacheHitRate < 70 ? 'trend-down' : 'trend-stable'}">${cacheHitRate > 90 ? '📈' : cacheHitRate < 70 ? '📉' : '📊'}</span>
+                            </div>
+                            <div class="metric performance-metric">
+                                <span class="metric-label">Queue Size</span>
+                                <span class="metric-value" data-tooltip="Pending operations in queue">${queueSize}</span>
+                                <span class="trend-indicator ${queueSize > 10 ? 'trend-up' : queueSize < 2 ? 'trend-down' : 'trend-stable'}">${queueSize > 10 ? '📈' : queueSize < 2 ? '📉' : '📊'}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tier 3: AI/Token Metrics -->
+                    <div class="metrics-tier ai-tier">
+                        <h3 class="tier-title">🤖 AI/Token Metrics</h3>
+                        <div class="metrics-grid">
+                            <div class="metric ai-metric">
+                                <span class="metric-label">Token Count</span>
+                                <span class="metric-value" data-tooltip="Current token usage">${data.tokenCount || 0}</span>
+                                <span class="trend-indicator ${this.getTrendColor(this.calculateTrend(data.tokenCount || 0, 'tokenCount'), 'tokenCount')}">${this.getTrendIndicator(this.calculateTrend(data.tokenCount || 0, 'tokenCount'))}</span>
+                                <span class="trend-percentage">${this.calculateTrend(data.tokenCount || 0, 'tokenCount').percentage.toFixed(1)}%</span>
+                            </div>
+                            <div class="metric ai-metric">
+                                <span class="metric-label">Total Tokens</span>
+                                <span class="metric-value" data-tooltip="Lifetime tokens processed">${this.formatNumber(data.totalTokensProcessed || 0)}</span>
+                                <span class="trend-indicator trend-stable">📊</span>
+                                <span class="metric-subtext">Since startup</span>
+                            </div>
+                            <div class="metric ai-metric">
+                                <span class="metric-label">Hourly Average</span>
+                                <span class="metric-value" data-tooltip="Tokens per hour">${data.hourlyAverageTokens || 0}</span>
+                                <span class="trend-indicator ${this.getTrendColor(this.calculateTrend(data.hourlyAverageTokens || 0, 'hourlyTokens'), 'hourlyTokens')}">${this.getTrendIndicator(this.calculateTrend(data.hourlyAverageTokens || 0, 'hourlyTokens'))}</span>
+                                <span class="trend-percentage">${this.calculateTrend(data.hourlyAverageTokens || 0, 'hourlyTokens').percentage.toFixed(1)}%</span>
+                            </div>
+                            <div class="metric ai-metric">
+                                <span class="metric-label">Throughput</span>
+                                <span class="metric-value" data-tooltip="Operations per second">${data.throughput || 0}</span>
+                                <span class="trend-indicator ${this.getTrendColor(this.calculateTrend(data.throughput || 0, 'throughput'), 'throughput')}">${this.getTrendIndicator(this.calculateTrend(data.throughput || 0, 'throughput'))}</span>
+                                <span class="trend-percentage">${this.calculateTrend(data.throughput || 0, 'throughput').percentage.toFixed(1)}%</span>
+                            </div>
+                            <div class="metric ai-metric">
+                                <span class="metric-label">Latency</span>
+                                <span class="metric-value" data-tooltip="Processing latency">${data.latency ? data.latency.toFixed(1) : 0}ms</span>
+                                <span class="trend-indicator ${this.getTrendColor(this.calculateTrend(data.latency || 0, 'latency'), 'latency')}">${this.getTrendIndicator(this.calculateTrend(data.latency || 0, 'latency'))}</span>
+                                <span class="trend-percentage">${this.calculateTrend(data.latency || 0, 'latency').percentage.toFixed(1)}%</span>
+                            </div>
+                            <div class="metric ai-metric">
+                                <span class="metric-label">Efficiency</span>
+                                <span class="metric-value" data-tooltip="Token processing efficiency">${this.calculateEfficiency(data).toFixed(1)}%</span>
+                                <span class="trend-indicator ${this.getTrendColor(this.calculateTrend(this.calculateEfficiency(data), 'efficiency'), 'efficiency')}">${this.getTrendIndicator(this.calculateTrend(this.calculateEfficiency(data), 'efficiency'))}</span>
+                                <span class="trend-percentage">${this.calculateTrend(this.calculateEfficiency(data), 'efficiency').percentage.toFixed(1)}%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tier 4: System & Workflow Metrics -->
+                    <div class="metrics-tier system-tier">
+                        <h3 class="tier-title">⚙️ System & Workflow Metrics</h3>
+                        <div class="metrics-grid">
+                            <div class="metric system-metric">
+                                <span class="metric-label">Active Workflows</span>
+                                <span class="metric-value" data-tooltip="Currently running workflows">${this.workflows.size}</span>
+                                <span class="trend-indicator ${this.getTrendColor(this.calculateTrend(this.workflows.size, 'activeWorkflows'), 'activeWorkflows')}">${this.getTrendIndicator(this.calculateTrend(this.workflows.size, 'activeWorkflows'))}</span>
+                                <span class="trend-percentage">${this.calculateTrend(this.workflows.size, 'activeWorkflows').percentage.toFixed(1)}%</span>
+                            </div>
+                            <div class="metric system-metric">
+                                <span class="metric-label">Pending Workflows</span>
+                                <span class="metric-value" data-tooltip="Queued workflows">${Array.from(this.workflows.values()).filter(w => w.status === 'pending').length}</span>
+                                <span class="trend-indicator ${this.getTrendColor(this.calculateTrend(Array.from(this.workflows.values()).filter(w => w.status === 'pending').length, 'pendingWorkflows'), 'pendingWorkflows')}">${this.getTrendIndicator(this.calculateTrend(Array.from(this.workflows.values()).filter(w => w.status === 'pending').length, 'pendingWorkflows'))}</span>
+                                <span class="trend-percentage">${this.calculateTrend(Array.from(this.workflows.values()).filter(w => w.status === 'pending').length, 'pendingWorkflows').percentage.toFixed(1)}%</span>
+                            </div>
+                            <div class="metric system-metric">
+                                <span class="metric-label">Workflow Success</span>
+                                <span class="metric-value" data-tooltip="Workflow success rate">${this.calculateWorkflowSuccessRate().toFixed(1)}%</span>
+                                <span class="trend-indicator ${this.getTrendColor(this.calculateTrend(this.calculateWorkflowSuccessRate(), 'workflowSuccess'), 'workflowSuccess')}">${this.getTrendIndicator(this.calculateTrend(this.calculateWorkflowSuccessRate(), 'workflowSuccess'))}</span>
+                                <span class="trend-percentage">${this.calculateTrend(this.calculateWorkflowSuccessRate(), 'workflowSuccess').percentage.toFixed(1)}%</span>
+                            </div>
+                            <div class="metric system-metric">
+                                <span class="metric-label">Avg Workflow Time</span>
+                                <span class="metric-value" data-tooltip="Average workflow execution time">${this.calculateAverageWorkflowTime().toFixed(1)}s</span>
+                                <span class="trend-indicator ${this.getTrendColor(this.calculateTrend(this.calculateAverageWorkflowTime(), 'avgWorkflowTime'), 'avgWorkflowTime')}">${this.getTrendIndicator(this.calculateTrend(this.calculateAverageWorkflowTime(), 'avgWorkflowTime'))}</span>
+                                <span class="trend-percentage">${this.calculateTrend(this.calculateAverageWorkflowTime(), 'avgWorkflowTime').percentage.toFixed(1)}%</span>
+                            </div>
+                            <div class="metric system-metric">
+                                <span class="metric-label">Server Uptime</span>
+                                <span class="metric-value" data-tooltip="Server uptime">${data.uptime ? this.formatUptime(data.uptime) : '0h'}</span>
+                                <span class="trend-indicator trend-stable">⏱️</span>
+                                <span class="metric-subtext">Continuous</span>
+                            </div>
+                            <div class="metric system-metric">
+                                <span class="metric-label">Server Version</span>
+                                <span class="metric-value" data-tooltip="Current server version">${data.version || '2.0.0'}</span>
+                                <span class="trend-indicator trend-stable">📦</span>
+                                <span class="metric-subtext">Latest</span>
+                            </div>
+                            <div class="metric system-metric">
+                                <span class="metric-label">Last Update</span>
+                                <span class="metric-value" data-tooltip="Last data update">${new Date().toLocaleTimeString()}</span>
+                                <span class="trend-indicator trend-stable">🔄</span>
+                                <span class="metric-subtext">Live</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            updateWorkflowStatus(workflow) {
+                this.workflows.set(workflow.workflowId, workflow);
+                this.renderWorkflows();
+            }
+
+            renderWorkflows() {
+                const container = document.getElementById('workflowsContainer');
+
+                if (this.workflows.size === 0) {
+                    container.innerHTML = '<div class="loading">No workflows active</div>';
+                    return;
+                }
+
+                const workflows = Array.from(this.workflows.values());
+                container.innerHTML = workflows.slice(0, 5).map(workflow => `
+                    <div class="workflow-item">
+                        <div class="workflow-title">${workflow.name || workflow.workflowId}</div>
+                        <div class="workflow-status">${workflow.status}</div>
+                    </div>
+                `).join('');
+            }
+
+            updateSystemHealth(data) {
+                const container = document.getElementById('systemContainer');
+
+                container.innerHTML = `
+                    <div class="metric">
+                        <span class="metric-label">Status</span>
+                        <span class="metric-value">Healthy</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Uptime</span>
+                        <span class="metric-value">${data.uptime ? Math.floor(data.uptime / 3600) + 'h ' + Math.floor((data.uptime % 3600) / 60) + 'm' : '--'}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Version</span>
+                        <span class="metric-value">${data.version || 'v2.0.0'}</span>
+                    </div>
+                `;
+            }
+
+            scheduleReconnect() {
+                if (this.reconnectAttempts < this.maxReconnectAttempts) {
+                    this.reconnectAttempts++;
+                    const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
+
+                    console.log(`🔄 Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts})`);
+                    setTimeout(() => this.connectWebSocket(), delay);
+                }
+            }
+
+            async loadData() {
+                // Load initial data
+                await this.loadHealth();
+                await this.loadMetrics();
+                await this.loadWorkflows();
+                await this.loadTools();
+                this.updateNotificationMetrics();
+            }
+
+            async loadHealth() {
+                try {
+                    const response = await this.safeFetch('http://localhost:8080/health', {}, 'load_health');
+                    const data = await response.json();
+                    this.updateSystemHealth(data);
+                } catch (error) {
+                    this.handleError(error, 'load_health', true);
+                    // Show fallback health status
+                    this.showFallbackHealth();
+                }
+            }
+
+            showFallbackHealth() {
+                const container = document.getElementById('systemContainer');
+                if (container) {
+                    container.innerHTML = `
+                        <div class="loading-fallback">
+                            <h3>⚠️ Connection Issues</h3>
+                            <p>Unable to connect to the server.</p>
+                            <p>Please check your connection and try again.</p>
+                            <button onclick="dashboard.loadHealth()">Retry Connection</button>
+                        </div>
+                    `;
+                }
+            }
+
+            async loadMetrics() {
+                try {
+                    const response = await fetch('http://localhost:8080/metrics');
+                    const data = await response.json();
+                    if (data.success) {
+                        this.updatePerformanceMetrics(data.data);
+                    }
+                } catch (error) {
+                    console.error('Failed to load metrics:', error);
+                }
+            }
+
+            async loadWorkflows() {
+                try {
+                    const response = await fetch('http://localhost:8080/workflows');
+                    const data = await response.json();
+                    if (data.success && data.workflows) {
+                        data.workflows.forEach(workflow => {
+                            this.workflows.set(workflow.workflowId, workflow);
+                        });
+                        this.renderWorkflows();
+                    }
+                } catch (error) {
+                    console.error('Failed to load workflows:', error);
+                }
+            }
+
+            async loadTools() {
+                try {
+                    const response = await fetch('http://localhost:8080/tools');
+                    const data = await response.json();
+                    if (data.success && data.tools) {
+                        this.renderTools(data.tools);
+                    }
+                } catch (error) {
+                    console.error('Failed to load tools:', error);
+                }
+            }
+
+            renderTools(tools) {
+                const container = document.getElementById('toolsContainer');
+
+                container.innerHTML = tools.map(tool => `
+                    <div class="tool-item">
+                        <div class="tool-name">${tool.name}</div>
+                        <div class="tool-description">${tool.description}</div>
+                    </div>
+                `).join('');
+            }
+
+            // Enhanced export functionality
+            exportData(format) {
+                let data, filename, content;
+
+                switch (format) {
+                    case 'json':
+                        data = this.getCompleteData();
+                        filename = 'dashboard-complete.json';
+                        content = JSON.stringify(data, null, 2);
+                        this.downloadFile(content, filename, 'application/json');
+                        break;
+                    case 'csv':
+                        data = this.getCompleteData();
+                        filename = 'dashboard-complete.csv';
+                        content = this.convertToCSV(data);
+                        this.downloadFile(content, filename, 'text/csv');
+                        break;
+                    case 'pdf':
+                        this.generatePDFReport();
+                        return;
+                    case 'workflows':
+                        data = {
+                            timestamp: new Date().toISOString(),
+                            total: this.workflows.size,
+                            workflows: Array.from(this.workflows.values())
+                        };
+                        filename = 'workflows.json';
+                        content = JSON.stringify(data, null, 2);
+                        this.downloadFile(content, filename, 'application/json');
+                        break;
+                    case 'metrics':
+                        data = {
+                            timestamp: new Date().toISOString(),
+                            performance: this.lastData.performance || {},
+                            system: this.lastData.system || {},
+                            metrics: this.metricHistory
+                        };
+                        filename = 'metrics.json';
+                        content = JSON.stringify(data, null, 2);
+                        this.downloadFile(content, filename, 'application/json');
+                        break;
+                    case 'notifications':
+                        data = {
+                            timestamp: new Date().toISOString(),
+                            notifications: this.metricHistory.notifications,
+                            alerts: this.metricHistory.alerts
+                        };
+                        filename = 'notifications.json';
+                        content = JSON.stringify(data, null, 2);
+                        this.downloadFile(content, filename, 'application/json');
+                        break;
+                    default:
+                        this.showNotification('Invalid export format', 'error');
+                        return;
+                }
+
+                this.showNotification(`${format.toUpperCase()} data exported successfully`, 'success');
+            }
+
+            getCompleteData() {
+                return {
+                    timestamp: new Date().toISOString(),
+                    dashboard: {
+                        version: '2.0.0',
+                        uptime: new Date().toISOString(),
+                        connection: document.getElementById('connectionText')?.textContent || 'Unknown'
+                    },
+                    workflows: Array.from(this.workflows.values()),
+                    performance: this.lastData.performance || {},
+                    system: this.lastData.system || {},
+                    metrics: this.metricHistory,
+                    notifications: this.metricHistory.notifications,
+                    alerts: this.metricHistory.alerts
+                };
+            }
+
+            generatePDFReport() {
+                // Create a comprehensive HTML report for PDF generation
+                const reportData = this.getCompleteData();
+                const htmlContent = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>TappMCP Dashboard Report</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; }
+                            .header { text-align: center; margin-bottom: 30px; }
+                            .section { margin-bottom: 25px; page-break-inside: avoid; }
+                            .metric { display: inline-block; margin: 5px 10px; padding: 10px; border: 1px solid #ddd; }
+                            table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+                            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                            th { background-color: #f2f2f2; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1>🚀 TappMCP Dashboard Report</h1>
+                            <p>Generated: ${new Date().toLocaleString()}</p>
+                        </div>
+
+                        <div class="section">
+                            <h2>System Overview</h2>
+                            <p>Connection Status: ${reportData.dashboard.connection}</p>
+                            <p>Active Workflows: ${reportData.workflows.length}</p>
+                            <p>Total Alerts: ${reportData.alerts.length}</p>
+                        </div>
+
+                        <div class="section">
+                            <h2>Performance Metrics</h2>
+                            <p>CPU Usage: ${reportData.performance.cpuUsage || 'N/A'}%</p>
+                            <p>Memory Usage: ${reportData.performance.memoryUsage ? Math.round(reportData.performance.memoryUsage.heapUsed / 1024 / 1024) : 'N/A'} MB</p>
+                            <p>Response Time: ${reportData.performance.responseTime || 'N/A'}ms</p>
+                        </div>
+
+                        <div class="section">
+                            <h2>Recent Alerts</h2>
+                            ${reportData.alerts.slice(-10).map(alert => `
+                                <div class="metric">
+                                    <strong>${alert.type.toUpperCase()}</strong>: ${alert.message}<br>
+                                    <small>${new Date(alert.timestamp).toLocaleString()}</small>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </body>
+                    </html>
+                `;
+
+                // Open in new window for printing/PDF generation
+                const newWindow = window.open('', '_blank');
+                newWindow.document.write(htmlContent);
+                newWindow.document.close();
+                newWindow.print();
+
+                this.showNotification('PDF report generated - check print dialog', 'success');
+            }
+
+            // Settings management
+            openSettings() {
+                const modal = document.getElementById('settingsModal');
+                modal.classList.add('show');
+            }
+
+            closeSettings() {
+                const modal = document.getElementById('settingsModal');
+                modal.classList.remove('show');
+            }
+
+            toggleDarkMode() {
+                const toggle = event.target;
+                toggle.classList.toggle('active');
+                this.showNotification('Dark mode toggle - feature coming soon', 'info');
+            }
+
+            toggleAutoRefreshSetting() {
+                const toggle = event.target;
+                toggle.classList.toggle('active');
+                this.toggleAutoRefresh();
+            }
+
+            toggleTrendIndicators() {
+                const toggle = event.target;
+                toggle.classList.toggle('active');
+                this.showNotification('Trend indicators toggle - feature coming soon', 'info');
+            }
+
+            toggleCriticalAlerts() {
+                const toggle = event.target;
+                toggle.classList.toggle('active');
+                this.showNotification('Critical alerts toggle - feature coming soon', 'info');
+            }
+
+            toggleWarningAlerts() {
+                const toggle = event.target;
+                toggle.classList.toggle('active');
+                this.showNotification('Warning alerts toggle - feature coming soon', 'info');
+            }
+
+            // Mobile-specific features
+            setupMobileFeatures() {
+                // Touch-friendly metric interactions
+                this.setupTouchInteractions();
+
+                // Mobile viewport handling
+                this.setupViewportHandling();
+
+                // Swipe gestures for navigation
+                this.setupSwipeGestures();
+
+                // Mobile-specific optimizations
+                this.optimizeForMobile();
+            }
+
+            setupTouchInteractions() {
+                // Add touch event listeners for metrics
+                document.addEventListener('touchstart', (event) => {
+                    const metric = event.target.closest('.metric');
+                    if (metric && metric.classList.contains('interactive-metric')) {
+                        metric.classList.add('touch-active');
+                    }
+                }, { passive: true });
+
+                document.addEventListener('touchend', (event) => {
+                    const metric = event.target.closest('.metric');
+                    if (metric && metric.classList.contains('interactive-metric')) {
+                        metric.classList.remove('touch-active');
+                        // Show metric details on mobile
+                        setTimeout(() => {
+                            this.showMetricDetail(metric, event);
+                        }, 100);
+                    }
+                }, { passive: true });
+
+                // Long press for additional options
+                let longPressTimer;
+                document.addEventListener('touchstart', (event) => {
+                    const metric = event.target.closest('.metric');
+                    if (metric && metric.classList.contains('interactive-metric')) {
+                        longPressTimer = setTimeout(() => {
+                            this.showMetricContextMenu(metric, event);
+                        }, 500);
+                    }
+                }, { passive: true });
+
+                document.addEventListener('touchend', () => {
+                    clearTimeout(longPressTimer);
+                }, { passive: true });
+
+                document.addEventListener('touchmove', () => {
+                    clearTimeout(longPressTimer);
+                }, { passive: true });
+            }
+
+            setupViewportHandling() {
+                // Handle viewport changes
+                const handleViewportChange = () => {
+                    const isMobile = window.innerWidth <= 768;
+                    document.body.classList.toggle('mobile-view', isMobile);
+
+                    // Adjust metric grid layout
+                    this.adjustMetricLayout();
+                };
+
+                window.addEventListener('resize', handleViewportChange);
+                window.addEventListener('orientationchange', () => {
+                    setTimeout(handleViewportChange, 100);
+                });
+
+                // Initial call
+                handleViewportChange();
+            }
+
+            setupSwipeGestures() {
+                let startX, startY, startTime;
+
+                document.addEventListener('touchstart', (event) => {
+                    const touch = event.touches[0];
+                    startX = touch.clientX;
+                    startY = touch.clientY;
+                    startTime = Date.now();
+                }, { passive: true });
+
+                document.addEventListener('touchend', (event) => {
+                    if (!startX || !startY) return;
+
+                    const touch = event.changedTouches[0];
+                    const endX = touch.clientX;
+                    const endY = touch.clientY;
+                    const endTime = Date.now();
+
+                    const diffX = startX - endX;
+                    const diffY = startY - endY;
+                    const diffTime = endTime - startTime;
+
+                    // Check if it's a swipe (not a scroll)
+                    if (diffTime < 300 && Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+                        if (diffX > 0) {
+                            // Swipe left - next page
+                            this.handleSwipeLeft();
+                        } else {
+                            // Swipe right - previous page
+                            this.handleSwipeRight();
+                        }
+                    }
+
+                    startX = startY = startTime = null;
+                }, { passive: true });
+            }
+
+            optimizeForMobile() {
+                // Reduce animations on mobile for better performance
+                const isMobile = window.innerWidth <= 768;
+                if (isMobile) {
+                    document.body.style.setProperty('--animation-duration', '0.2s');
+                    document.body.style.setProperty('--transition-duration', '0.2s');
+                }
+
+                // Optimize font loading
+                if ('fonts' in document) {
+                    document.fonts.ready.then(() => {
+                        document.body.classList.add('fonts-loaded');
+                    });
+                }
+
+                // Preload critical resources
+                this.preloadCriticalResources();
+            }
+
+            adjustMetricLayout() {
+                const isMobile = window.innerWidth <= 768;
+                const metricsGrids = document.querySelectorAll('.metrics-grid');
+
+                metricsGrids.forEach(grid => {
+                    if (isMobile) {
+                        grid.style.gridTemplateColumns = '1fr';
+                    } else {
+                        grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(180px, 1fr))';
+                    }
+                });
+            }
+
+            showMetricContextMenu(metricElement, event) {
+                const metricLabel = metricElement.querySelector('.metric-label').textContent;
+                const metricValue = metricElement.querySelector('.metric-value').textContent;
+
+                // Create context menu
+                const menu = document.createElement('div');
+                menu.className = 'mobile-context-menu';
+                menu.innerHTML = `
+                    <div class="context-menu-header">
+                        <h4>${metricLabel}</h4>
+                        <button class="context-menu-close" onclick="this.parentElement.parentElement.remove()">&times;</button>
+                    </div>
+                    <div class="context-menu-content">
+                        <p><strong>Value:</strong> ${metricValue}</p>
+                        <p><strong>Status:</strong> Active</p>
+                        <p><strong>Last Updated:</strong> ${new Date().toLocaleTimeString()}</p>
+                    </div>
+                    <div class="context-menu-actions">
+                        <button class="context-action" onclick="dashboard.exportMetric('${metricLabel}', '${metricValue}')">Export</button>
+                        <button class="context-action" onclick="dashboard.shareMetric('${metricLabel}', '${metricValue}')">Share</button>
+                    </div>
+                `;
+
+                document.body.appendChild(menu);
+
+                // Position menu
+                const rect = metricElement.getBoundingClientRect();
+                menu.style.left = `${rect.left}px`;
+                menu.style.top = `${rect.bottom + 10}px`;
+
+                // Remove menu after 5 seconds
+                setTimeout(() => {
+                    if (menu.parentElement) {
+                        menu.remove();
+                    }
+                }, 5000);
+            }
+
+            exportMetric(metricLabel, metricValue) {
+                const data = {
+                    metric: metricLabel,
+                    value: metricValue,
+                    timestamp: new Date().toISOString(),
+                    device: 'mobile'
+                };
+
+                this.downloadFile(`metric-${metricLabel.toLowerCase().replace(/\s+/g, '-')}.json`, JSON.stringify(data, null, 2));
+                this.showNotification(`Metric ${metricLabel} exported`, 'success');
+            }
+
+            shareMetric(metricLabel, metricValue) {
+                if (navigator.share) {
+                    navigator.share({
+                        title: `${metricLabel} - TappMCP Dashboard`,
+                        text: `${metricLabel}: ${metricValue}`,
+                        url: window.location.href
+                    }).catch(error => {
+                        console.log('Error sharing:', error);
+                        this.showNotification('Share not available', 'warning');
+                    });
+                } else {
+                    // Fallback: copy to clipboard
+                    const text = `${metricLabel}: ${metricValue}`;
+                    navigator.clipboard.writeText(text).then(() => {
+                        this.showNotification('Metric copied to clipboard', 'success');
+                    }).catch(() => {
+                        this.showNotification('Clipboard not available', 'warning');
+                    });
+                }
+            }
+
+            handleSwipeLeft() {
+                // Navigate to next page or section
+                this.showNotification('Swipe left detected - Next section', 'info');
+            }
+
+            handleSwipeRight() {
+                // Navigate to previous page or section
+                this.showNotification('Swipe right detected - Previous section', 'info');
+            }
+
+            preloadCriticalResources() {
+                // Preload important images or resources
+                const criticalImages = [
+                    // Add any critical image URLs here
+                ];
+
+                criticalImages.forEach(src => {
+                    const link = document.createElement('link');
+                    link.rel = 'preload';
+                    link.as = 'image';
+                    link.href = src;
+                    document.head.appendChild(link);
+                });
+            }
+
+            // Error handling and offline detection setup
+            setupErrorHandling() {
+                // Global error handler
+                window.addEventListener('error', (event) => {
+                    this.handleError(event.error, 'global_error', false);
+                });
+
+                // Unhandled promise rejection handler
+                window.addEventListener('unhandledrejection', (event) => {
+                    this.handleError(event.reason, 'unhandled_promise', true);
+                });
+
+                // Performance monitoring
+                if ('performance' in window) {
+                    this.setupPerformanceMonitoring();
+                }
+            }
+
+            setupOfflineDetection() {
+                const offlineIndicator = document.getElementById('offlineIndicator');
+
+                const updateOnlineStatus = () => {
+                    if (navigator.onLine) {
+                        offlineIndicator.classList.remove('show');
+                        this.showNotification('Connection restored', 'success');
+                    } else {
+                        offlineIndicator.classList.add('show');
+                        this.showNotification('Connection lost', 'warning');
+                    }
+                };
+
+                window.addEventListener('online', updateOnlineStatus);
+                window.addEventListener('offline', updateOnlineStatus);
+
+                // Initial check
+                updateOnlineStatus();
+            }
+
+            setupPerformanceMonitoring() {
+                // Monitor long tasks
+                if ('PerformanceObserver' in window) {
+                    try {
+                        const observer = new PerformanceObserver((list) => {
+                            for (const entry of list.getEntries()) {
+                                if (entry.duration > 50) { // Tasks longer than 50ms
+                                    console.warn('Long task detected:', entry.duration + 'ms');
+                                    this.handleError(
+                                        new Error(`Long task: ${entry.duration}ms`),
+                                        'performance_long_task',
+                                        false
+                                    );
+                                }
+                            }
+                        });
+                        observer.observe({ entryTypes: ['longtask'] });
+                    } catch (e) {
+                        console.warn('PerformanceObserver not supported:', e);
+                    }
+                }
+
+                // Monitor memory usage
+                if ('memory' in performance) {
+                    setInterval(() => {
+                        const memory = performance.memory;
+                        const usedRatio = memory.usedJSHeapSize / memory.totalJSHeapSize;
+
+                        if (usedRatio > 0.9) {
+                            this.handleError(
+                                new Error(`High memory usage: ${(usedRatio * 100).toFixed(1)}%`),
+                                'performance_memory',
+                                false
+                            );
+                        }
+                    }, 30000); // Check every 30 seconds
+                }
+            }
+
+            // Error handling and fallback system
+            handleError(error, context, retryable = true) {
+                const errorData = {
+                    message: error.message || 'Unknown error',
+                    context: context,
+                    timestamp: Date.now(),
+                    retryable: retryable,
+                    userAgent: navigator.userAgent,
+                    url: window.location.href
+                };
+
+                // Add to error log
+                this.errorHandler.errors.push(errorData);
+
+                // Keep only recent errors
+                if (this.errorHandler.errors.length > this.errorHandler.maxErrors) {
+                    this.errorHandler.errors.shift();
+                }
+
+                // Log to console
+                console.error(`❌ Error in ${context}:`, error);
+
+                // Show user-friendly error message
+                this.showErrorNotification(errorData);
+
+                // Attempt recovery if retryable
+                if (retryable && this.errorHandler.retryAttempts > 0) {
+                    this.attemptRecovery(errorData);
+                }
+
+                // Report to analytics (if available)
+                this.reportError(errorData);
+            }
+
+            showErrorNotification(errorData) {
+                const notification = document.createElement('div');
+                notification.className = 'error-notification';
+                notification.innerHTML = `
+                    <div class="error-header">
+                        <span class="error-icon">⚠️</span>
+                        <span class="error-title">System Error</span>
+                        <button class="error-dismiss" onclick="this.parentElement.parentElement.remove()">&times;</button>
+                    </div>
+                    <div class="error-content">
+                        <p class="error-message">${this.getUserFriendlyMessage(errorData)}</p>
+                        <p class="error-context">Context: ${errorData.context}</p>
+                        <p class="error-time">Time: ${new Date(errorData.timestamp).toLocaleTimeString()}</p>
+                    </div>
+                    <div class="error-actions">
+                        <button class="error-action" onclick="dashboard.retryOperation('${errorData.context}')">Retry</button>
+                        <button class="error-action" onclick="dashboard.showErrorDetails('${errorData.timestamp}')">Details</button>
+                        <button class="error-action" onclick="dashboard.reportErrorToSupport('${errorData.timestamp}')">Report</button>
+                    </div>
+                `;
+
+                document.body.appendChild(notification);
+
+                // Auto-dismiss after 10 seconds
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.remove();
+                    }
+                }, 10000);
+            }
+
+            getUserFriendlyMessage(errorData) {
+                const context = errorData.context.toLowerCase();
+
+                if (context.includes('websocket')) {
+                    return 'Connection to server lost. Attempting to reconnect...';
+                } else if (context.includes('fetch') || context.includes('api')) {
+                    return 'Unable to load data from server. Please check your connection.';
+                } else if (context.includes('render')) {
+                    return 'Display error occurred. Refreshing the view...';
+                } else if (context.includes('export')) {
+                    return 'Export failed. Please try again or use a different format.';
+                } else if (context.includes('mobile')) {
+                    return 'Mobile feature temporarily unavailable. Using desktop mode.';
+                } else {
+                    return 'An unexpected error occurred. The system will attempt to recover automatically.';
+                }
+            }
+
+            attemptRecovery(errorData) {
+                const context = errorData.context;
+
+                setTimeout(() => {
+                    try {
+                        if (context.includes('websocket')) {
+                            this.connectWebSocket();
+                        } else if (context.includes('fetch') || context.includes('api')) {
+                            this.loadData();
+                        } else if (context.includes('render')) {
+                            this.refreshAllData();
+                        } else if (context.includes('mobile')) {
+                            this.optimizeForMobile();
+                        }
+
+                        this.errorHandler.retryAttempts--;
+                        this.showNotification('Recovery attempt successful', 'success');
+                    } catch (recoveryError) {
+                        this.handleError(recoveryError, `recovery_${context}`, false);
+                    }
+                }, this.errorHandler.retryDelay);
+            }
+
+            retryOperation(context) {
+                this.errorHandler.retryAttempts = 3;
+                this.attemptRecovery({ context: context, timestamp: Date.now() });
+            }
+
+            showErrorDetails(timestamp) {
+                const error = this.errorHandler.errors.find(e => e.timestamp == timestamp);
+                if (!error) return;
+
+                const modal = document.createElement('div');
+                modal.className = 'error-details-modal';
+                modal.innerHTML = `
+                    <div class="error-modal-content">
+                        <div class="error-modal-header">
+                            <h3>Error Details</h3>
+                            <button class="error-modal-close" onclick="this.parentElement.parentElement.remove()">&times;</button>
+                        </div>
+                        <div class="error-modal-body">
+                            <div class="error-detail-item">
+                                <strong>Message:</strong> ${error.message}
+                            </div>
+                            <div class="error-detail-item">
+                                <strong>Context:</strong> ${error.context}
+                            </div>
+                            <div class="error-detail-item">
+                                <strong>Timestamp:</strong> ${new Date(error.timestamp).toLocaleString()}
+                            </div>
+                            <div class="error-detail-item">
+                                <strong>Retryable:</strong> ${error.retryable ? 'Yes' : 'No'}
+                            </div>
+                            <div class="error-detail-item">
+                                <strong>URL:</strong> ${error.url}
+                            </div>
+                            <div class="error-detail-item">
+                                <strong>User Agent:</strong> ${error.userAgent}
+                            </div>
+                        </div>
+                        <div class="error-modal-actions">
+                            <button class="error-modal-action" onclick="dashboard.copyErrorDetails('${timestamp}')">Copy Details</button>
+                            <button class="error-modal-action" onclick="dashboard.exportErrorLog()">Export Error Log</button>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(modal);
+            }
+
+            reportErrorToSupport(timestamp) {
+                const error = this.errorHandler.errors.find(e => e.timestamp == timestamp);
+                if (!error) return;
+
+                const reportData = {
+                    error: error,
+                    systemInfo: {
+                        userAgent: navigator.userAgent,
+                        url: window.location.href,
+                        timestamp: Date.now(),
+                        screen: {
+                            width: screen.width,
+                            height: screen.height,
+                            colorDepth: screen.colorDepth
+                        },
+                        performance: this.performanceMetrics
+                    }
+                };
+
+                // Copy to clipboard
+                const reportText = `TappMCP Error Report\n\n${JSON.stringify(reportData, null, 2)}`;
+                navigator.clipboard.writeText(reportText).then(() => {
+                    this.showNotification('Error report copied to clipboard', 'success');
+                }).catch(() => {
+                    this.showNotification('Unable to copy error report', 'warning');
+                });
+            }
+
+            copyErrorDetails(timestamp) {
+                const error = this.errorHandler.errors.find(e => e.timestamp == timestamp);
+                if (!error) return;
+
+                const details = `Error: ${error.message}\nContext: ${error.context}\nTime: ${new Date(error.timestamp).toLocaleString()}`;
+                navigator.clipboard.writeText(details).then(() => {
+                    this.showNotification('Error details copied to clipboard', 'success');
+                }).catch(() => {
+                    this.showNotification('Unable to copy error details', 'warning');
+                });
+            }
+
+            exportErrorLog() {
+                const errorLog = {
+                    timestamp: new Date().toISOString(),
+                    totalErrors: this.errorHandler.errors.length,
+                    errors: this.errorHandler.errors
+                };
+
+                this.downloadFile('error-log.json', JSON.stringify(errorLog, null, 2));
+                this.showNotification('Error log exported', 'success');
+            }
+
+            reportError(errorData) {
+                // Send to analytics service (if available)
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'exception', {
+                        description: errorData.message,
+                        fatal: false
+                    });
+                }
+
+                // Store in localStorage for offline analysis
+                try {
+                    const storedErrors = JSON.parse(localStorage.getItem('tappmcp_errors') || '[]');
+                    storedErrors.push(errorData);
+
+                    // Keep only last 100 errors
+                    if (storedErrors.length > 100) {
+                        storedErrors.splice(0, storedErrors.length - 100);
+                    }
+
+                    localStorage.setItem('tappmcp_errors', JSON.stringify(storedErrors));
+                } catch (e) {
+                    console.warn('Unable to store error in localStorage:', e);
+                }
+            }
+
+            // Enhanced error handling for existing functions
+            safeExecute(func, context, fallback = null) {
+                try {
+                    return func();
+                } catch (error) {
+                    this.handleError(error, context);
+                    return fallback;
+                }
+            }
+
+            async safeFetch(url, options = {}, context = 'fetch') {
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response;
+                } catch (error) {
+                    this.handleError(error, context, true);
+                    throw error;
+                }
+            }
+
+            // Performance optimization functions
+            debounce(func, delay, key) {
+                if (this.debounceTimers.has(key)) {
+                    clearTimeout(this.debounceTimers.get(key));
+                }
+
+                const timer = setTimeout(() => {
+                    func();
+                    this.debounceTimers.delete(key);
+                }, delay);
+
+                this.debounceTimers.set(key, timer);
+            }
+
+            getCachedData(key) {
+                const cached = this.cache.get(key);
+                if (cached && Date.now() - cached.timestamp < this.cacheTimeout) {
+                    return cached.data;
+                }
+                return null;
+            }
+
+            setCachedData(key, data) {
+                this.cache.set(key, {
+                    data: data,
+                    timestamp: Date.now()
+                });
+            }
+
+            clearExpiredCache() {
+                const now = Date.now();
+                for (const [key, value] of this.cache.entries()) {
+                    if (now - value.timestamp > this.cacheTimeout) {
+                        this.cache.delete(key);
+                    }
+                }
+            }
+
+            measurePerformance(func, name) {
+                const start = performance.now();
+                const result = func();
+                const end = performance.now();
+
+                const duration = end - start;
+                this.performanceMetrics.renderTime += duration;
+                this.performanceMetrics.updateCount++;
+                this.performanceMetrics.averageUpdateTime =
+                    this.performanceMetrics.renderTime / this.performanceMetrics.updateCount;
+
+                console.log(`⚡ Performance [${name}]: ${duration.toFixed(2)}ms`);
+                return result;
+            }
+
+            optimizeDOMUpdates() {
+                // Batch DOM updates to reduce reflows
+                const fragment = document.createDocumentFragment();
+
+                // Use requestAnimationFrame for smooth updates
+                requestAnimationFrame(() => {
+                    // Perform DOM updates here
+                });
+            }
+
+            lazyLoadData() {
+                // Only load data that's currently visible
+                const visibleElements = document.querySelectorAll('.card');
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            this.loadCardData(entry.target);
+                        }
+                    });
+                });
+
+                visibleElements.forEach(element => observer.observe(element));
+            }
+
+            loadCardData(cardElement) {
+                const cardId = cardElement.id;
+                const cachedData = this.getCachedData(cardId);
+
+                if (cachedData) {
+                    this.renderCardData(cardElement, cachedData);
+                    return;
+                }
+
+                // Load fresh data and cache it
+                this.fetchCardData(cardId).then(data => {
+                    this.setCachedData(cardId, data);
+                    this.renderCardData(cardElement, data);
+                });
+            }
+
+            async fetchCardData(cardId) {
+                // Simulate data fetching
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        resolve({ timestamp: Date.now(), data: 'mock data' });
+                    }, 100);
+                });
+            }
+
+            renderCardData(cardElement, data) {
+                // Render data to card element
+                console.log('Rendering card data:', data);
+            }
+
+            // Enhanced updatePerformanceMetrics with performance tracking
+            updatePerformanceMetrics(data) {
+                this.measurePerformance(() => {
+                    const container = document.getElementById('performanceContainer');
+
+                    // Store data for trend comparison
+                    this.lastData.performance = data;
+
+                    // Calculate trends for all metrics
+                    const cpuTrend = this.calculateTrend(data.cpuUsage || 0, 'cpu');
+                    const memoryTrend = this.calculateTrend(data.memoryUsage ? data.memoryUsage.heapUsed / 1024 / 1024 : 0, 'memory');
+                    const responseTimeTrend = this.calculateTrend(data.responseTime || 0, 'responseTime');
+                    const successRateTrend = this.calculateTrend(data.successRate ? data.successRate * 100 : 0, 'successRate');
+                    const errorRateTrend = this.calculateTrend(data.errorRate ? data.errorRate * 100 : 0, 'errorRate');
+
+                    // Check for alerts (debounced)
+                    this.debounce(() => {
+                        this.checkAlerts(data);
+                        this.checkAITokenAlerts(data);
+                        this.checkWorkflowAlerts();
+                    }, 1000, 'alerts');
+
+                    // Rest of the existing updatePerformanceMetrics code...
+                    this.renderPerformanceMetrics(container, data, cpuTrend, memoryTrend, responseTimeTrend, successRateTrend, errorRateTrend);
+                }, 'updatePerformanceMetrics');
+            }
+
+            renderPerformanceMetrics(container, data, cpuTrend, memoryTrend, responseTimeTrend, successRateTrend, errorRateTrend) {
+                // High Priority Metrics (Tier 1 - Critical System Health)
+                const memoryMB = data.memoryUsage ? Math.round(data.memoryUsage.heapUsed / 1024 / 1024) : 0;
+                const cpuPercent = data.cpuUsage ? data.cpuUsage.toFixed(1) : 0;
+                const responseTime = data.responseTime ? data.responseTime.toFixed(2) : 0;
+                const connections = data.activeConnections || 0;
+                const successRate = data.successRate ? (data.successRate * 100).toFixed(1) : 0;
+                const errorRate = data.errorRate ? (data.errorRate * 100).toFixed(2) : 0;
+
+                // Performance Metrics (Tier 2 - Performance)
+                const rps = data.requestsPerSecond || 0;
+                const bytesPerSec = data.bytesPerSecond ? Math.round(data.bytesPerSecond / 1024) : 0; // Convert to KB/s
+                const p95Response = data.p95Response ? data.p95Response.toFixed(1) : 0;
+                const p99Response = data.p99Response ? data.p99Response.toFixed(1) : 0;
+                const cacheHitRate = data.cacheHitRate ? (data.cacheHitRate * 100).toFixed(1) : 0;
+                const queueSize = data.queueSize || 0;
+
+                // AI/Token Metrics (Tier 3 - AI/Token)
+                const tokenCount = data.tokenCount || 0;
+                const totalTokens = data.totalTokensProcessed || 0;
+                const hourlyTokens = data.hourlyAverageTokens || 0;
+                const throughput = data.throughput || 0;
+                const latency = data.latency || 0;
+
+                container.innerHTML = `
+                    <!-- Tier 1: Critical System Health -->
+                    <div class="metrics-tier critical-tier">
+                        <h3 class="tier-title">🔴 Critical System Health</h3>
+                        <div class="metrics-grid">
+                            <div class="metric critical-metric interactive-metric">
+                                <span class="metric-label">Memory Usage</span>
+                                <span class="metric-value" data-tooltip="Heap memory currently in use">${memoryMB} MB</span>
+                                <span class="trend-indicator ${this.getTrendColor(memoryTrend, 'memory')}">${this.getTrendIndicator(memoryTrend)}</span>
+                                <span class="trend-percentage">${memoryTrend.percentage.toFixed(1)}%</span>
+                            </div>
+                            <div class="metric critical-metric interactive-metric">
+                                <span class="metric-label">CPU Usage</span>
+                                <span class="metric-value" data-tooltip="Current CPU utilization percentage">${cpuPercent}%</span>
+                                <span class="trend-indicator ${this.getTrendColor(cpuTrend, 'cpu')}">${this.getTrendIndicator(cpuTrend)}</span>
+                                <span class="trend-percentage">${cpuTrend.percentage.toFixed(1)}%</span>
+                            </div>
+                            <div class="metric critical-metric">
+                                <span class="metric-label">Response Time</span>
+                                <span class="metric-value" data-tooltip="Average response time in milliseconds">${responseTime}ms</span>
+                                <span class="trend-indicator ${this.getTrendColor(responseTimeTrend, 'responseTime')}">${this.getTrendIndicator(responseTimeTrend)}</span>
+                                <span class="trend-percentage">${responseTimeTrend.percentage.toFixed(1)}%</span>
+                            </div>
+                            <div class="metric critical-metric">
+                                <span class="metric-label">Active Connections</span>
+                                <span class="metric-value" data-tooltip="Number of active WebSocket connections">${connections}</span>
+                                <span class="trend-indicator trend-stable">🔗</span>
+                            </div>
+                            <div class="metric critical-metric">
+                                <span class="metric-label">Success Rate</span>
+                                <span class="metric-value" data-tooltip="Request success rate percentage">${successRate}%</span>
+                                <span class="trend-indicator ${this.getTrendColor(successRateTrend, 'successRate')}">${this.getTrendIndicator(successRateTrend)}</span>
+                                <span class="trend-percentage">${successRateTrend.percentage.toFixed(1)}%</span>
+                            </div>
+                            <div class="metric critical-metric">
+                                <span class="metric-label">Error Rate</span>
+                                <span class="metric-value" data-tooltip="Request error rate percentage">${errorRate}%</span>
+                                <span class="trend-indicator ${this.getTrendColor(errorRateTrend, 'errorRate')}">${this.getTrendIndicator(errorRateTrend)}</span>
+                                <span class="trend-percentage">${errorRateTrend.percentage.toFixed(1)}%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tier 2: Performance Metrics -->
+                    <div class="metrics-tier performance-tier">
+                        <h3 class="tier-title">⚡ Performance Metrics</h3>
+                        <div class="metrics-grid">
+                            <div class="metric performance-metric">
+                                <span class="metric-label">Requests/sec</span>
+                                <span class="metric-value" data-tooltip="Requests per second">${rps}</span>
+                                <span class="trend-indicator ${rps > 50 ? 'trend-up' : rps < 10 ? 'trend-down' : 'trend-stable'}">${rps > 50 ? '📈' : rps < 10 ? '📉' : '📊'}</span>
+                            </div>
+                            <div class="metric performance-metric">
+                                <span class="metric-label">Data Rate</span>
+                                <span class="metric-value" data-tooltip="Data transfer rate">${bytesPerSec} KB/s</span>
+                                <span class="trend-indicator trend-stable">📊</span>
+                            </div>
+                            <div class="metric performance-metric">
+                                <span class="metric-label">P95 Response</span>
+                                <span class="metric-value" data-tooltip="95th percentile response time">${p95Response}ms</span>
+                                <span class="trend-indicator ${p95Response > 500 ? 'trend-up' : p95Response < 100 ? 'trend-down' : 'trend-stable'}">${p95Response > 500 ? '📈' : p95Response < 100 ? '📉' : '📊'}</span>
+                            </div>
+                            <div class="metric performance-metric">
+                                <span class="metric-label">P99 Response</span>
+                                <span class="metric-value" data-tooltip="99th percentile response time">${p99Response}ms</span>
+                                <span class="trend-indicator ${p99Response > 1000 ? 'trend-up' : p99Response < 200 ? 'trend-down' : 'trend-stable'}">${p99Response > 1000 ? '📈' : p99Response < 200 ? '📉' : '📊'}</span>
+                            </div>
+                            <div class="metric performance-metric">
+                                <span class="metric-label">Cache Hit Rate</span>
+                                <span class="metric-value" data-tooltip="Cache hit rate percentage">${cacheHitRate}%</span>
+                                <span class="trend-indicator ${cacheHitRate > 80 ? 'trend-up' : cacheHitRate < 50 ? 'trend-down' : 'trend-stable'}">${cacheHitRate > 80 ? '📈' : cacheHitRate < 50 ? '📉' : '📊'}</span>
+                            </div>
+                            <div class="metric performance-metric">
+                                <span class="metric-label">Queue Size</span>
+                                <span class="metric-value" data-tooltip="Current queue size">${queueSize}</span>
+                                <span class="trend-indicator ${queueSize > 10 ? 'trend-up' : queueSize < 2 ? 'trend-down' : 'trend-stable'}">${queueSize > 10 ? '📈' : queueSize < 2 ? '📉' : '📊'}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tier 3: AI/Token Metrics -->
+                    <div class="metrics-tier ai-tier">
+                        <h3 class="tier-title">🤖 AI/Token Metrics</h3>
+                        <div class="metrics-grid">
+                            <div class="metric ai-metric">
+                                <span class="metric-label">Token Count</span>
+                                <span class="metric-value" data-tooltip="Current token usage">${data.tokenCount || 0}</span>
+                                <span class="trend-indicator ${this.getTrendColor(this.calculateTrend(data.tokenCount || 0, 'tokenCount'), 'tokenCount')}">${this.getTrendIndicator(this.calculateTrend(data.tokenCount || 0, 'tokenCount'))}</span>
+                                <span class="trend-percentage">${this.calculateTrend(data.tokenCount || 0, 'tokenCount').percentage.toFixed(1)}%</span>
+                            </div>
+                            <div class="metric ai-metric">
+                                <span class="metric-label">Total Tokens</span>
+                                <span class="metric-value" data-tooltip="Lifetime tokens processed">${this.formatNumber(data.totalTokensProcessed || 0)}</span>
+                                <span class="trend-indicator trend-stable">📊</span>
+                                <span class="metric-subtext">Since startup</span>
+                            </div>
+                            <div class="metric ai-metric">
+                                <span class="metric-label">Hourly Average</span>
+                                <span class="metric-value" data-tooltip="Tokens per hour">${data.hourlyAverageTokens || 0}</span>
+                                <span class="trend-indicator ${this.getTrendColor(this.calculateTrend(data.hourlyAverageTokens || 0, 'hourlyTokens'), 'hourlyTokens')}">${this.getTrendIndicator(this.calculateTrend(data.hourlyAverageTokens || 0, 'hourlyTokens'))}</span>
+                                <span class="trend-percentage">${this.calculateTrend(data.hourlyAverageTokens || 0, 'hourlyTokens').percentage.toFixed(1)}%</span>
+                            </div>
+                            <div class="metric ai-metric">
+                                <span class="metric-label">Throughput</span>
+                                <span class="metric-value" data-tooltip="Operations per second">${data.throughput || 0}</span>
+                                <span class="trend-indicator ${this.getTrendColor(this.calculateTrend(data.throughput || 0, 'throughput'), 'throughput')}">${this.getTrendIndicator(this.calculateTrend(data.throughput || 0, 'throughput'))}</span>
+                                <span class="trend-percentage">${this.calculateTrend(data.throughput || 0, 'throughput').percentage.toFixed(1)}%</span>
+                            </div>
+                            <div class="metric ai-metric">
+                                <span class="metric-label">Latency</span>
+                                <span class="metric-value" data-tooltip="Processing latency">${data.latency ? data.latency.toFixed(1) : 0}ms</span>
+                                <span class="trend-indicator ${this.getTrendColor(this.calculateTrend(data.latency || 0, 'latency'), 'latency')}">${this.getTrendIndicator(this.calculateTrend(data.latency || 0, 'latency'))}</span>
+                                <span class="trend-percentage">${this.calculateTrend(data.latency || 0, 'latency').percentage.toFixed(1)}%</span>
+                            </div>
+                            <div class="metric ai-metric">
+                                <span class="metric-label">Efficiency</span>
+                                <span class="metric-value" data-tooltip="Token processing efficiency">${this.calculateEfficiency(data).toFixed(1)}%</span>
+                                <span class="trend-indicator ${this.getTrendColor(this.calculateTrend(this.calculateEfficiency(data), 'efficiency'), 'efficiency')}">${this.getTrendIndicator(this.calculateTrend(this.calculateEfficiency(data), 'efficiency'))}</span>
+                                <span class="trend-percentage">${this.calculateTrend(this.calculateEfficiency(data), 'efficiency').percentage.toFixed(1)}%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tier 4: System & Workflow Metrics -->
+                    <div class="metrics-tier system-tier">
+                        <h3 class="tier-title">⚙️ System & Workflow Metrics</h3>
+                        <div class="metrics-grid">
+                            <div class="metric system-metric">
+                                <span class="metric-label">Active Workflows</span>
+                                <span class="metric-value" data-tooltip="Currently running workflows">${this.workflows.size}</span>
+                                <span class="trend-indicator ${this.getTrendColor(this.calculateTrend(this.workflows.size, 'activeWorkflows'), 'activeWorkflows')}">${this.getTrendIndicator(this.calculateTrend(this.workflows.size, 'activeWorkflows'))}</span>
+                                <span class="trend-percentage">${this.calculateTrend(this.workflows.size, 'activeWorkflows').percentage.toFixed(1)}%</span>
+                            </div>
+                            <div class="metric system-metric">
+                                <span class="metric-label">Pending Workflows</span>
+                                <span class="metric-value" data-tooltip="Queued workflows">${Array.from(this.workflows.values()).filter(w => w.status === 'pending').length}</span>
+                                <span class="trend-indicator ${this.getTrendColor(this.calculateTrend(Array.from(this.workflows.values()).filter(w => w.status === 'pending').length, 'pendingWorkflows'), 'pendingWorkflows')}">${this.getTrendIndicator(this.calculateTrend(Array.from(this.workflows.values()).filter(w => w.status === 'pending').length, 'pendingWorkflows'))}</span>
+                                <span class="trend-percentage">${this.calculateTrend(Array.from(this.workflows.values()).filter(w => w.status === 'pending').length, 'pendingWorkflows').percentage.toFixed(1)}%</span>
+                            </div>
+                            <div class="metric system-metric">
+                                <span class="metric-label">Workflow Success</span>
+                                <span class="metric-value" data-tooltip="Workflow success rate">${this.calculateWorkflowSuccessRate().toFixed(1)}%</span>
+                                <span class="trend-indicator ${this.getTrendColor(this.calculateTrend(this.calculateWorkflowSuccessRate(), 'workflowSuccess'), 'workflowSuccess')}">${this.getTrendIndicator(this.calculateTrend(this.calculateWorkflowSuccessRate(), 'workflowSuccess'))}</span>
+                                <span class="trend-percentage">${this.calculateTrend(this.calculateWorkflowSuccessRate(), 'workflowSuccess').percentage.toFixed(1)}%</span>
+                            </div>
+                            <div class="metric system-metric">
+                                <span class="metric-label">Avg Workflow Time</span>
+                                <span class="metric-value" data-tooltip="Average workflow execution time">${this.calculateAverageWorkflowTime().toFixed(1)}s</span>
+                                <span class="trend-indicator ${this.getTrendColor(this.calculateTrend(this.calculateAverageWorkflowTime(), 'avgWorkflowTime'), 'avgWorkflowTime')}">${this.getTrendIndicator(this.calculateTrend(this.calculateAverageWorkflowTime(), 'avgWorkflowTime'))}</span>
+                                <span class="trend-percentage">${this.calculateTrend(this.calculateAverageWorkflowTime(), 'avgWorkflowTime').percentage.toFixed(1)}%</span>
+                            </div>
+                            <div class="metric system-metric">
+                                <span class="metric-label">Server Uptime</span>
+                                <span class="metric-value" data-tooltip="Server uptime">${data.uptime ? this.formatUptime(data.uptime) : '0h'}</span>
+                                <span class="trend-indicator trend-stable">⏱️</span>
+                                <span class="metric-subtext">Continuous</span>
+                            </div>
+                            <div class="metric system-metric">
+                                <span class="metric-label">Server Version</span>
+                                <span class="metric-value" data-tooltip="Current server version">${data.version || '2.0.0'}</span>
+                                <span class="trend-indicator trend-stable">📦</span>
+                                <span class="metric-subtext">Latest</span>
+                            </div>
+                            <div class="metric system-metric">
+                                <span class="metric-label">Last Update</span>
+                                <span class="metric-value" data-tooltip="Last data update">${new Date().toLocaleTimeString()}</span>
+                                <span class="trend-indicator trend-stable">🔄</span>
+                                <span class="metric-subtext">Live</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            convertToCSV(data) {
+                const headers = ['Metric', 'Value', 'Timestamp'];
+                const rows = [
+                    ['Server Version', data.server.version, data.timestamp],
+                    ['Server Uptime', data.server.uptime, data.timestamp],
+                    ['Connection Status', data.server.connection, data.timestamp],
+                    ['Active Workflows', data.workflows.length, data.timestamp]
+                ];
+
+                return [headers, ...rows].map(row => row.join(',')).join('\n');
+            }
+
+            downloadFile(content, filename, mimeType) {
+                const blob = new Blob([content], { type: mimeType });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+
+            // Auto-refresh functionality
+            startAutoRefresh() {
+                if (this.autoRefreshEnabled) {
+                    this.autoRefreshInterval = setInterval(() => {
+                        this.loadData();
+                    }, 30000); // Refresh every 30 seconds
+                }
+            }
+
+            toggleAutoRefresh() {
+                this.autoRefreshEnabled = !this.autoRefreshEnabled;
+                const status = document.getElementById('autoRefreshStatus');
+                status.textContent = this.autoRefreshEnabled ? 'ON' : 'OFF';
+
+                if (this.autoRefreshEnabled) {
+                    this.startAutoRefresh();
+                } else {
+                    clearInterval(this.autoRefreshInterval);
+                }
+            }
+
+            // Keyboard shortcuts
+            setupKeyboardShortcuts() {
+                document.addEventListener('keydown', (event) => {
+                    if (event.ctrlKey || event.metaKey) {
+                        switch (event.key) {
+                            case 'e':
+                                event.preventDefault();
+                                this.exportData('json');
+                                break;
+                            case 'r':
+                                event.preventDefault();
+                                this.refreshAllData();
+                                break;
+                            case 'a':
+                                event.preventDefault();
+                                this.toggleAutoRefresh();
+                                break;
+                        }
+                    }
+                });
+            }
+
+            // Interactive features setup
+            setupInteractiveFeatures() {
+                // Workflow control buttons
+                document.getElementById('pauseWorkflows')?.addEventListener('click', () => {
+                    this.pauseAllWorkflows();
+                });
+
+                document.getElementById('resumeWorkflows')?.addEventListener('click', () => {
+                    this.resumeAllWorkflows();
+                });
+
+                document.getElementById('clearCompleted')?.addEventListener('click', () => {
+                    this.clearCompletedWorkflows();
+                });
+
+                document.getElementById('exportWorkflows')?.addEventListener('click', () => {
+                    this.exportWorkflows();
+                });
+
+                // Enhanced export functionality
+                document.querySelectorAll('.export-option').forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        const format = e.target.dataset.format;
+                        this.exportData(format);
+                    });
+                });
+
+                // Settings button
+                document.getElementById('dashboardSettings')?.addEventListener('click', () => {
+                    this.openSettings();
+                });
+
+                // Metric hover details
+                this.setupMetricHoverDetails();
+
+                // Mobile-specific features
+                this.setupMobileFeatures();
+
+                // Error handling and offline detection
+                this.setupErrorHandling();
+                this.setupOfflineDetection();
+            }
+
+            // Workflow control functions
+            pauseAllWorkflows() {
+                console.log('⏸️ Pausing all workflows...');
+                Array.from(this.workflows.values()).forEach(workflow => {
+                    if (workflow.status === 'running') {
+                        workflow.status = 'paused';
+                        this.updateWorkflowStatus(workflow);
+                    }
+                });
+                this.showNotification('All workflows paused', 'info');
+            }
+
+            resumeAllWorkflows() {
+                console.log('▶️ Resuming all workflows...');
+                Array.from(this.workflows.values()).forEach(workflow => {
+                    if (workflow.status === 'paused') {
+                        workflow.status = 'running';
+                        this.updateWorkflowStatus(workflow);
+                    }
+                });
+                this.showNotification('All workflows resumed', 'info');
+            }
+
+            clearCompletedWorkflows() {
+                console.log('🗑️ Clearing completed workflows...');
+                const completedIds = Array.from(this.workflows.entries())
+                    .filter(([id, workflow]) => workflow.status === 'completed')
+                    .map(([id]) => id);
+
+                completedIds.forEach(id => this.workflows.delete(id));
+                this.renderWorkflows();
+                this.showNotification(`Cleared ${completedIds.length} completed workflows`, 'info');
+            }
+
+            exportWorkflows() {
+                console.log('📤 Exporting workflows...');
+                const workflowData = {
+                    timestamp: new Date().toISOString(),
+                    total: this.workflows.size,
+                    workflows: Array.from(this.workflows.values())
+                };
+
+                this.downloadFile('workflows.json', JSON.stringify(workflowData, null, 2));
+                this.showNotification('Workflows exported', 'info');
+            }
+
+            // Metric hover details
+            setupMetricHoverDetails() {
+                document.addEventListener('mouseover', (event) => {
+                    const metric = event.target.closest('.metric');
+                    if (metric && metric.classList.contains('interactive-metric')) {
+                        this.showMetricDetail(metric, event);
+                    }
+                });
+
+                document.addEventListener('mouseout', (event) => {
+                    const metric = event.target.closest('.metric');
+                    if (metric && metric.classList.contains('interactive-metric')) {
+                        this.hideMetricDetail();
+                    }
+                });
+            }
+
+            showMetricDetail(metricElement, event) {
+                const metricLabel = metricElement.querySelector('.metric-label').textContent;
+                const metricValue = metricElement.querySelector('.metric-value').textContent;
+
+                // Create detail popup
+                const detail = document.createElement('div');
+                detail.className = 'metric-detail show';
+                detail.innerHTML = `
+                    <div class="detail-header">${metricLabel}</div>
+                    <div class="detail-content">
+                        Current Value: <span class="detail-stat-value">${metricValue}</span><br>
+                        Status: <span class="detail-stat-value">Active</span><br>
+                        Last Updated: <span class="detail-stat-value">${new Date().toLocaleTimeString()}</span>
+                    </div>
+                    <div class="detail-stats">
+                        <div class="detail-stat">Trend: <span class="detail-stat-value">Stable</span></div>
+                        <div class="detail-stat">Health: <span class="detail-stat-value">Good</span></div>
+                    </div>
+                `;
+
+                document.body.appendChild(detail);
+
+                // Position the detail
+                const rect = metricElement.getBoundingClientRect();
+                detail.style.left = `${rect.right + 10}px`;
+                detail.style.top = `${rect.top}px`;
+            }
+
+            hideMetricDetail() {
+                const existingDetail = document.querySelector('.metric-detail');
+                if (existingDetail) {
+                    existingDetail.remove();
+                }
+            }
+
+            // Notification system
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `notification notification-${type}`;
+                notification.innerHTML = `
+                    <span class="notification-icon">${type === 'success' ? '✅' : type === 'warning' ? '⚠️' : type === 'error' ? '❌' : 'ℹ️'}</span>
+                    <span class="notification-message">${message}</span>
+                `;
+
+                // Add to page
+                document.body.appendChild(notification);
+
+                // Animate in
+                setTimeout(() => notification.classList.add('show'), 100);
+
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            }
+
+            refreshAllData() {
+                console.log('🔄 Refreshing all data...');
+                this.loadData();
+            }
+
+            // Advanced trend calculation and alerting
+            calculateTrend(currentValue, metricName, threshold = 5) {
+                if (!this.metricHistory.trends[metricName]) {
+                    this.metricHistory.trends[metricName] = [];
+                }
+
+                const history = this.metricHistory.trends[metricName];
+                history.push({
+                    value: currentValue,
+                    timestamp: Date.now()
+                });
+
+                // Keep only last 10 data points
+                if (history.length > 10) {
+                    history.shift();
+                }
+
+                if (history.length < 2) {
+                    return { direction: 'stable', change: 0, percentage: 0 };
+                }
+
+                const recent = history.slice(-3);
+                const older = history.slice(-6, -3);
+
+                const recentAvg = recent.reduce((sum, item) => sum + item.value, 0) / recent.length;
+                const olderAvg = older.length > 0 ? older.reduce((sum, item) => sum + item.value, 0) / older.length : recentAvg;
+
+                const change = recentAvg - olderAvg;
+                const percentage = olderAvg > 0 ? (change / olderAvg) * 100 : 0;
+
+                let direction = 'stable';
+                if (Math.abs(percentage) > threshold) {
+                    direction = percentage > 0 ? 'up' : 'down';
+                }
+
+                return { direction, change, percentage: Math.abs(percentage) };
+            }
+
+            getTrendIndicator(trend) {
+                const indicators = {
+                    up: '📈',
+                    down: '📉',
+                    stable: '📊'
+                };
+                return indicators[trend.direction] || '📊';
+            }
+
+            getTrendColor(trend, metricName) {
+                const thresholds = this.trendThresholds[metricName];
+                if (!thresholds) return 'trend-stable';
+
+                const isCritical = trend.percentage > 20;
+                const isWarning = trend.percentage > 10;
+
+                if (isCritical) return 'trend-critical';
+                if (isWarning) return 'trend-warning';
+                return 'trend-stable';
+            }
+
+            checkAlerts(data) {
+                const alerts = [];
+                const now = Date.now();
+
+                // CPU Alert
+                if (data.cpuUsage > this.trendThresholds.cpu.critical) {
+                    alerts.push({
+                        type: 'critical',
+                        metric: 'CPU',
+                        message: `CPU usage critical: ${data.cpuUsage.toFixed(1)}%`,
+                        timestamp: now
+                    });
+                } else if (data.cpuUsage > this.trendThresholds.cpu.warning) {
+                    alerts.push({
+                        type: 'warning',
+                        metric: 'CPU',
+                        message: `CPU usage high: ${data.cpuUsage.toFixed(1)}%`,
+                        timestamp: now
+                    });
+                }
+
+                // Memory Alert
+                const memoryPercent = data.memoryUsage ? (data.memoryUsage.heapUsed / data.memoryUsage.heapTotal) * 100 : 0;
+                if (memoryPercent > this.trendThresholds.memory.critical) {
+                    alerts.push({
+                        type: 'critical',
+                        metric: 'Memory',
+                        message: `Memory usage critical: ${memoryPercent.toFixed(1)}%`,
+                        timestamp: now
+                    });
+                }
+
+                // Response Time Alert
+                if (data.responseTime > this.trendThresholds.responseTime.critical) {
+                    alerts.push({
+                        type: 'critical',
+                        metric: 'Response Time',
+                        message: `Response time critical: ${data.responseTime.toFixed(1)}ms`,
+                        timestamp: now
+                    });
+                }
+
+                // Error Rate Alert
+                const errorRate = data.errorRate ? data.errorRate * 100 : 0;
+                if (errorRate > this.trendThresholds.errorRate.critical) {
+                    alerts.push({
+                        type: 'critical',
+                        metric: 'Error Rate',
+                        message: `Error rate critical: ${errorRate.toFixed(2)}%`,
+                        timestamp: now
+                    });
+                }
+
+                // Store alerts
+                this.metricHistory.alerts = alerts;
+                this.updateAlertsDisplay();
+                this.updateNotificationMetrics();
+            }
+
+            updateAlertsDisplay() {
+                const alertContainer = document.getElementById('alertsContainer');
+                if (!alertContainer) return;
+
+                const alerts = this.metricHistory.alerts;
+                if (alerts.length === 0) {
+                    alertContainer.innerHTML = '<div class="no-alerts">✅ All systems normal</div>';
+                    return;
+                }
+
+                const alertHtml = alerts.map(alert => `
+                    <div class="alert alert-${alert.type}">
+                        <span class="alert-icon">${alert.type === 'critical' ? '🔴' : '🟡'}</span>
+                        <span class="alert-metric">${alert.metric}</span>
+                        <span class="alert-message">${alert.message}</span>
+                        <span class="alert-time">${new Date(alert.timestamp).toLocaleTimeString()}</span>
+                    </div>
+                `).join('');
+
+                alertContainer.innerHTML = alertHtml;
+            }
+
+            // AI/Token metrics helper functions
+            formatNumber(num) {
+                if (num >= 1000000) {
+                    return (num / 1000000).toFixed(1) + 'M';
+                } else if (num >= 1000) {
+                    return (num / 1000).toFixed(1) + 'K';
+                }
+                return num.toString();
+            }
+
+            calculateEfficiency(data) {
+                const throughput = data.throughput || 0;
+                const latency = data.latency || 1;
+                const tokenCount = data.tokenCount || 1;
+
+                // Calculate efficiency as throughput per token with latency consideration
+                const baseEfficiency = (throughput / tokenCount) * 100;
+                const latencyFactor = Math.max(0, 100 - (latency / 10)); // Penalize high latency
+
+                return Math.min(100, Math.max(0, (baseEfficiency + latencyFactor) / 2));
+            }
+
+            // Enhanced AI/Token alerting
+            checkAITokenAlerts(data) {
+                const alerts = [];
+                const now = Date.now();
+
+                // Token Count Alert
+                if (data.tokenCount > 15000) {
+                    alerts.push({
+                        type: 'warning',
+                        metric: 'AI/Token',
+                        message: `High token usage: ${this.formatNumber(data.tokenCount)}`,
+                        timestamp: now
+                    });
+                }
+
+                // Throughput Alert
+                if (data.throughput < 5) {
+                    alerts.push({
+                        type: 'warning',
+                        metric: 'AI/Token',
+                        message: `Low throughput: ${data.throughput} ops/sec`,
+                        timestamp: now
+                    });
+                }
+
+                // Latency Alert
+                if (data.latency > 100) {
+                    alerts.push({
+                        type: 'warning',
+                        metric: 'AI/Token',
+                        message: `High latency: ${data.latency.toFixed(1)}ms`,
+                        timestamp: now
+                    });
+                }
+
+                // Efficiency Alert
+                const efficiency = this.calculateEfficiency(data);
+                if (efficiency < 70) {
+                    alerts.push({
+                        type: 'warning',
+                        metric: 'AI/Token',
+                        message: `Low efficiency: ${efficiency.toFixed(1)}%`,
+                        timestamp: now
+                    });
+                }
+
+                // Add AI/Token alerts to existing alerts
+                if (alerts.length > 0) {
+                    this.metricHistory.alerts = [...this.metricHistory.alerts, ...alerts];
+                    this.updateAlertsDisplay();
+                    this.updateNotificationMetrics();
+                }
+            }
+
+            // Workflow metrics helper functions
+            calculateWorkflowSuccessRate() {
+                if (this.workflows.size === 0) return 100;
+
+                const completedWorkflows = Array.from(this.workflows.values()).filter(w => w.status === 'completed');
+                const failedWorkflows = Array.from(this.workflows.values()).filter(w => w.status === 'failed');
+                const totalProcessed = completedWorkflows.length + failedWorkflows.length;
+
+                if (totalProcessed === 0) return 100;
+                return (completedWorkflows.length / totalProcessed) * 100;
+            }
+
+            calculateAverageWorkflowTime() {
+                if (this.workflows.size === 0) return 0;
+
+                const completedWorkflows = Array.from(this.workflows.values()).filter(w => w.status === 'completed' && w.duration);
+
+                if (completedWorkflows.length === 0) return 0;
+
+                const totalTime = completedWorkflows.reduce((sum, workflow) => {
+                    const duration = workflow.duration || 0;
+                    return sum + duration;
+                }, 0);
+
+                return totalTime / completedWorkflows.length;
+            }
+
+            formatUptime(seconds) {
+                const hours = Math.floor(seconds / 3600);
+                const minutes = Math.floor((seconds % 3600) / 60);
+                const secs = Math.floor(seconds % 60);
+
+                if (hours > 24) {
+                    const days = Math.floor(hours / 24);
+                    const remainingHours = hours % 24;
+                    return `${days}d ${remainingHours}h`;
+                } else if (hours > 0) {
+                    return `${hours}h ${minutes}m`;
+                } else {
+                    return `${minutes}m ${secs}s`;
+                }
+            }
+
+            // Enhanced workflow alerting
+            checkWorkflowAlerts() {
+                const alerts = [];
+                const now = Date.now();
+
+                // High pending workflows alert
+                const pendingCount = Array.from(this.workflows.values()).filter(w => w.status === 'pending').length;
+                if (pendingCount > 10) {
+                    alerts.push({
+                        type: 'warning',
+                        metric: 'Workflow',
+                        message: `High pending workflows: ${pendingCount}`,
+                        timestamp: now
+                    });
+                }
+
+                // Low success rate alert
+                const successRate = this.calculateWorkflowSuccessRate();
+                if (successRate < 80) {
+                    alerts.push({
+                        type: 'warning',
+                        metric: 'Workflow',
+                        message: `Low success rate: ${successRate.toFixed(1)}%`,
+                        timestamp: now
+                    });
+                }
+
+                // High average execution time alert
+                const avgTime = this.calculateAverageWorkflowTime();
+                if (avgTime > 300) { // 5 minutes
+                    alerts.push({
+                        type: 'warning',
+                        metric: 'Workflow',
+                        message: `Slow workflows: ${avgTime.toFixed(1)}s avg`,
+                        timestamp: now
+                    });
+                }
+
+                // Add workflow alerts to existing alerts
+                if (alerts.length > 0) {
+                    this.metricHistory.alerts = [...this.metricHistory.alerts, ...alerts];
+                    this.updateAlertsDisplay();
+                    this.updateNotificationMetrics();
+                }
+            }
+
+            // Notification metrics functionality
+            updateNotificationMetrics() {
+                const container = document.getElementById('notificationContainer');
+                if (!container) return;
+
+                // Calculate notification metrics from alerts
+                const alerts = this.metricHistory.alerts;
+                const now = Date.now();
+
+                // Update notification statistics
+                this.metricHistory.notifications = {
+                    total: alerts.length,
+                    unread: alerts.filter(alert => now - alert.timestamp < 300000).length, // Last 5 minutes
+                    critical: alerts.filter(alert => alert.type === 'critical').length,
+                    warning: alerts.filter(alert => alert.type === 'warning').length,
+                    info: alerts.filter(alert => alert.type === 'info').length,
+                    recent: alerts.slice(-5).reverse() // Last 5 alerts
+                };
+
+                const notifications = this.metricHistory.notifications;
+
+                container.innerHTML = `
+                    <div class="notification-metrics">
+                        <div class="notification-stats">
+                            <div class="notification-stat">
+                                <span class="stat-icon">🔔</span>
+                                <span class="stat-label">Total</span>
+                                <span class="stat-value">${notifications.total}</span>
+                            </div>
+                            <div class="notification-stat">
+                                <span class="stat-icon">🔴</span>
+                                <span class="stat-label">Critical</span>
+                                <span class="stat-value">${notifications.critical}</span>
+                            </div>
+                            <div class="notification-stat">
+                                <span class="stat-icon">🟡</span>
+                                <span class="stat-label">Warning</span>
+                                <span class="stat-value">${notifications.warning}</span>
+                            </div>
+                            <div class="notification-stat">
+                                <span class="stat-icon">📩</span>
+                                <span class="stat-label">Unread</span>
+                                <span class="stat-value">${notifications.unread}</span>
+                            </div>
+                        </div>
+
+                        <div class="recent-notifications">
+                            <h4>Recent Notifications</h4>
+                            ${notifications.recent.length > 0 ?
+                                notifications.recent.map(notification => `
+                                    <div class="notification-item notification-${notification.type}">
+                                        <span class="notification-icon">${notification.type === 'critical' ? '🔴' : notification.type === 'warning' ? '🟡' : 'ℹ️'}</span>
+                                        <span class="notification-message">${notification.message}</span>
+                                        <span class="notification-time">${new Date(notification.timestamp).toLocaleTimeString()}</span>
+                                    </div>
+                                `).join('') :
+                                '<div class="no-notifications">✅ No recent notifications</div>'
+                            }
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Starting Working Dashboard...');
+            window.dashboard = new WorkingDashboard();
+        });
+    </script>
+</body>
+</html>

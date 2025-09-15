@@ -51,7 +51,12 @@ export interface QualityReport {
 }
 
 export interface QualityIssue {
-  type: 'template_response' | 'low_contextual_relevance' | 'poor_domain_expertise' | 'low_originality' | 'poor_source_quality';
+  type:
+    | 'template_response'
+    | 'low_contextual_relevance'
+    | 'poor_domain_expertise'
+    | 'low_originality'
+    | 'poor_source_quality';
   severity: 'high' | 'medium' | 'low';
   frequency: number;
   description: string;
@@ -106,7 +111,7 @@ export class ResponseQualityMetrics {
       excellent: 90,
       good: 70,
       average: 50,
-      poor: 30
+      poor: 30,
     };
   }
 
@@ -132,12 +137,12 @@ export class ResponseQualityMetrics {
         isTemplate: templateResult.isTemplate,
         confidence: templateResult.confidence,
         templateType: templateResult.templateType,
-        detectedPatterns: templateResult.detectedPatterns
+        detectedPatterns: templateResult.detectedPatterns,
       },
       improvementSuggestions: templateResult.improvementSuggestions,
       domain: response.domain || 'unknown',
       responseLength: response.content.length,
-      processingTime: Date.now() - response.timestamp
+      processingTime: Date.now() - response.timestamp,
     };
 
     this.metrics.set(metrics.responseId, metrics);
@@ -172,7 +177,7 @@ export class ResponseQualityMetrics {
       recommendations,
       domainBreakdown,
       sourceQualityBreakdown,
-      templateDetectionStats
+      templateDetectionStats,
     };
   }
 
@@ -191,11 +196,11 @@ export class ResponseQualityMetrics {
     const periods = [
       { name: 'Last 24 hours', hours: 24 },
       { name: 'Last 7 days', hours: 24 * 7 },
-      { name: 'Last 30 days', hours: 24 * 30 }
+      { name: 'Last 30 days', hours: 24 * 30 },
     ];
 
     for (const period of periods) {
-      const cutoffTime = Date.now() - (period.hours * 60 * 60 * 1000);
+      const cutoffTime = Date.now() - period.hours * 60 * 60 * 1000;
       const periodMetrics = allMetrics.filter(m => m.timestamp >= cutoffTime);
 
       if (periodMetrics.length >= 5) {
@@ -230,9 +235,9 @@ export class ResponseQualityMetrics {
         suggestedActions: [
           'Review and update response templates',
           'Add more contextual awareness to responses',
-          'Implement better context matching algorithms'
+          'Implement better context matching algorithms',
         ],
-        confidence: 0.9
+        confidence: 0.9,
       });
     }
 
@@ -248,9 +253,9 @@ export class ResponseQualityMetrics {
         suggestedActions: [
           'Enhance domain-specific knowledge base',
           'Improve context-to-domain mapping',
-          'Add more domain-specific examples'
+          'Add more domain-specific examples',
         ],
-        confidence: 0.8
+        confidence: 0.8,
       });
     }
 
@@ -264,7 +269,7 @@ export class ResponseQualityMetrics {
         impact: 'medium',
         actionable: false,
         suggestedActions: ['Continue current practices'],
-        confidence: 0.7
+        confidence: 0.7,
       });
     }
 
@@ -280,9 +285,9 @@ export class ResponseQualityMetrics {
         suggestedActions: [
           'Review source validation processes',
           'Improve Context7 integration quality',
-          'Add source credibility scoring'
+          'Add source credibility scoring',
         ],
-        confidence: 0.8
+        confidence: 0.8,
       });
     }
 
@@ -318,7 +323,7 @@ export class ResponseQualityMetrics {
       averageScore: this.calculateAverageScore(allMetrics),
       templateRate: this.calculateTemplateRate(allMetrics),
       topDomains: this.getTopDomains(allMetrics),
-      qualityDistribution: this.calculateScoreDistribution(allMetrics)
+      qualityDistribution: this.calculateScoreDistribution(allMetrics),
     };
   }
 
@@ -339,7 +344,7 @@ export class ResponseQualityMetrics {
    * Clear old metrics (for memory management)
    */
   clearOldMetrics(olderThanDays: number = 30): void {
-    const cutoffTime = Date.now() - (olderThanDays * 24 * 60 * 60 * 1000);
+    const cutoffTime = Date.now() - olderThanDays * 24 * 60 * 60 * 1000;
     const keysToDelete: string[] = [];
 
     for (const [key, metrics] of this.metrics) {
@@ -361,8 +366,9 @@ export class ResponseQualityMetrics {
     const startTime = timeRange.start.getTime();
     const endTime = timeRange.end.getTime();
 
-    return Array.from(this.metrics.values())
-      .filter(m => m.timestamp >= startTime && m.timestamp <= endTime);
+    return Array.from(this.metrics.values()).filter(
+      m => m.timestamp >= startTime && m.timestamp <= endTime
+    );
   }
 
   private calculateAverageScore(metrics: QualityMetrics[]): number {
@@ -394,7 +400,7 @@ export class ResponseQualityMetrics {
       good: 0,
       average: 0,
       poor: 0,
-      very_poor: 0
+      very_poor: 0,
     };
 
     for (const metric of metrics) {
@@ -426,7 +432,7 @@ export class ResponseQualityMetrics {
         frequency: templateCount,
         description: `${templateCount} template responses detected`,
         impact: 'Reduces user experience quality',
-        suggestedFix: 'Implement better contextual response generation'
+        suggestedFix: 'Implement better contextual response generation',
       });
     }
 
@@ -439,7 +445,7 @@ export class ResponseQualityMetrics {
         frequency: lowRelevanceCount,
         description: `${lowRelevanceCount} responses with low contextual relevance`,
         impact: 'Responses not aligned with user context',
-        suggestedFix: 'Improve context understanding and matching'
+        suggestedFix: 'Improve context understanding and matching',
       });
     }
 
@@ -459,7 +465,9 @@ export class ResponseQualityMetrics {
 
     const avgScore = this.calculateAverageScore(metrics);
     if (avgScore < 70) {
-      recommendations.push('Overall quality improvement needed - review response generation processes');
+      recommendations.push(
+        'Overall quality improvement needed - review response generation processes'
+      );
     }
 
     return recommendations;
@@ -480,7 +488,7 @@ export class ResponseQualityMetrics {
     for (const [domain, domainMetrics] of domainMap) {
       breakdown.set(domain, {
         ...domainMetrics[0],
-        overallScore: this.calculateAverageScore(domainMetrics)
+        overallScore: this.calculateAverageScore(domainMetrics),
       });
     }
 
@@ -530,13 +538,13 @@ export class ResponseQualityMetrics {
       qualityImpact: {
         templateResponses: {
           averageScore: this.calculateAverageScore(templateMetrics),
-          count: templateMetrics.length
+          count: templateMetrics.length,
         },
         realIntelligence: {
           averageScore: this.calculateAverageScore(realIntelligenceMetrics),
-          count: realIntelligenceMetrics.length
-        }
-      }
+          count: realIntelligenceMetrics.length,
+        },
+      },
     };
   }
 
@@ -562,11 +570,14 @@ export class ResponseQualityMetrics {
       averageScore,
       trend,
       changePercentage,
-      keyInsights: this.generatePeriodInsights(sortedMetrics, trend)
+      keyInsights: this.generatePeriodInsights(sortedMetrics, trend),
     };
   }
 
-  private generatePeriodInsights(metrics: QualityMetrics[], trend: 'up' | 'down' | 'stable'): string[] {
+  private generatePeriodInsights(
+    metrics: QualityMetrics[],
+    trend: 'up' | 'down' | 'stable'
+  ): string[] {
     const insights: string[] = [];
 
     if (trend === 'up') {
@@ -587,8 +598,7 @@ export class ResponseQualityMetrics {
 
   private getRecentMetrics(timeRangeMs: number): QualityMetrics[] {
     const cutoffTime = Date.now() - timeRangeMs;
-    return Array.from(this.metrics.values())
-      .filter(m => m.timestamp >= cutoffTime);
+    return Array.from(this.metrics.values()).filter(m => m.timestamp >= cutoffTime);
   }
 
   private calculateTemplateRate(metrics: QualityMetrics[]): number {
@@ -597,7 +607,9 @@ export class ResponseQualityMetrics {
     return templateCount / metrics.length;
   }
 
-  private getTopDomains(metrics: QualityMetrics[]): Array<{ domain: string; count: number; averageScore: number }> {
+  private getTopDomains(
+    metrics: QualityMetrics[]
+  ): Array<{ domain: string; count: number; averageScore: number }> {
     const domainMap = new Map<string, QualityMetrics[]>();
 
     for (const metric of metrics) {
@@ -612,7 +624,7 @@ export class ResponseQualityMetrics {
       .map(([domain, domainMetrics]) => ({
         domain,
         count: domainMetrics.length,
-        averageScore: this.calculateAverageScore(domainMetrics)
+        averageScore: this.calculateAverageScore(domainMetrics),
       }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 10);
@@ -628,9 +640,9 @@ export class ResponseQualityMetrics {
 
     const headers = Object.keys(metrics[0]).join(',');
     const rows = metrics.map(metric =>
-      Object.values(metric).map(value =>
-        typeof value === 'object' ? JSON.stringify(value) : value
-      ).join(',')
+      Object.values(metric)
+        .map(value => (typeof value === 'object' ? JSON.stringify(value) : value))
+        .join(',')
     );
 
     return [headers, ...rows].join('\n');
@@ -642,7 +654,7 @@ export class ResponseQualityMetrics {
 
   private getDefaultTimeRange(): { start: Date; end: Date } {
     const end = new Date();
-    const start = new Date(end.getTime() - (30 * 24 * 60 * 60 * 1000)); // 30 days ago
+    const start = new Date(end.getTime() - 30 * 24 * 60 * 60 * 1000); // 30 days ago
     return { start, end };
   }
 
@@ -664,9 +676,9 @@ export class ResponseQualityMetrics {
         mostCommonPatterns: [],
         qualityImpact: {
           templateResponses: { averageScore: 0, count: 0 },
-          realIntelligence: { averageScore: 0, count: 0 }
-        }
-      }
+          realIntelligence: { averageScore: 0, count: 0 },
+        },
+      },
     };
   }
 }

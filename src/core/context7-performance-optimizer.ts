@@ -133,7 +133,10 @@ export class Context7PerformanceOptimizer extends EventEmitter {
   /**
    * Optimized documentation request with caching and batching
    */
-  async getDocumentation(topic: string, priority: 'high' | 'medium' | 'low' = 'medium'): Promise<any> {
+  async getDocumentation(
+    topic: string,
+    priority: 'high' | 'medium' | 'low' = 'medium'
+  ): Promise<any> {
     const cacheKey = `doc:${topic}`;
 
     // Check cache first
@@ -155,7 +158,11 @@ export class Context7PerformanceOptimizer extends EventEmitter {
   /**
    * Optimized code examples request with caching and batching
    */
-  async getCodeExamples(topic: string, role: string = 'developer', priority: 'high' | 'medium' | 'low' = 'medium'): Promise<any> {
+  async getCodeExamples(
+    topic: string,
+    role: string = 'developer',
+    priority: 'high' | 'medium' | 'low' = 'medium'
+  ): Promise<any> {
     const cacheKey = `code:${topic}:${role}`;
 
     // Check cache first
@@ -177,7 +184,11 @@ export class Context7PerformanceOptimizer extends EventEmitter {
   /**
    * Optimized best practices request with caching and batching
    */
-  async getBestPractices(topic: string, role: string = 'developer', priority: 'high' | 'medium' | 'low' = 'medium'): Promise<any> {
+  async getBestPractices(
+    topic: string,
+    role: string = 'developer',
+    priority: 'high' | 'medium' | 'low' = 'medium'
+  ): Promise<any> {
     const cacheKey = `practices:${topic}:${role}`;
 
     // Check cache first
@@ -199,7 +210,11 @@ export class Context7PerformanceOptimizer extends EventEmitter {
   /**
    * Optimized troubleshooting request with caching and batching
    */
-  async getTroubleshooting(topic: string, role: string = 'developer', priority: 'high' | 'medium' | 'low' = 'medium'): Promise<any> {
+  async getTroubleshooting(
+    topic: string,
+    role: string = 'developer',
+    priority: 'high' | 'medium' | 'low' = 'medium'
+  ): Promise<any> {
     const cacheKey = `troubleshooting:${topic}:${role}`;
 
     // Check cache first
@@ -354,7 +369,6 @@ export class Context7PerformanceOptimizer extends EventEmitter {
 
       // Process batch
       await this.processBatch(batch);
-
     } finally {
       this.isProcessing = false;
     }
@@ -385,7 +399,6 @@ export class Context7PerformanceOptimizer extends EventEmitter {
       this.updateBatchEfficiency(successRate);
 
       this.emit('batch-completed', batch);
-
     } catch (error) {
       batch.status = 'failed';
       batch.totalTime = Date.now() - startTime;
@@ -424,7 +437,7 @@ export class Context7PerformanceOptimizer extends EventEmitter {
     batch: RequestBatch
   ): Promise<void> {
     // Process requests in parallel within the group
-    const promises = requests.map(async (req) => {
+    const promises = requests.map(async req => {
       try {
         let result: any;
 
@@ -448,7 +461,6 @@ export class Context7PerformanceOptimizer extends EventEmitter {
         // Cache the result
         const cacheKey = this.generateCacheKey(type, req.topic, req.role);
         this.cacheResult(cacheKey, result);
-
       } catch (error) {
         batch.errors.set(req.id, error as Error);
       }
@@ -515,8 +527,7 @@ export class Context7PerformanceOptimizer extends EventEmitter {
    * Update batch efficiency
    */
   private updateBatchEfficiency(successRate: number): void {
-    this.metrics.batchEfficiency =
-      (this.metrics.batchEfficiency + successRate) / 2;
+    this.metrics.batchEfficiency = (this.metrics.batchEfficiency + successRate) / 2;
   }
 
   /**
@@ -525,24 +536,39 @@ export class Context7PerformanceOptimizer extends EventEmitter {
   private checkPerformanceAlerts(responseTime: number): void {
     // Slow response alert
     if (responseTime > this.config.responseTimeThreshold) {
-      this.createAlert('slow-response', 'high',
+      this.createAlert(
+        'slow-response',
+        'high',
         `Slow response time: ${responseTime}ms`,
-        'responseTime', responseTime, this.config.responseTimeThreshold);
+        'responseTime',
+        responseTime,
+        this.config.responseTimeThreshold
+      );
     }
 
     // High error rate alert
     const errorRate = this.metrics.failedRequests / this.metrics.totalRequests;
     if (errorRate > this.config.errorRateThreshold) {
-      this.createAlert('high-error-rate', 'critical',
+      this.createAlert(
+        'high-error-rate',
+        'critical',
         `High error rate: ${(errorRate * 100).toFixed(1)}%`,
-        'errorRate', errorRate, this.config.errorRateThreshold);
+        'errorRate',
+        errorRate,
+        this.config.errorRateThreshold
+      );
     }
 
     // Low cache hit rate alert
     if (this.metrics.cacheHitRate < this.config.cacheHitRateThreshold) {
-      this.createAlert('low-cache-hit', 'medium',
+      this.createAlert(
+        'low-cache-hit',
+        'medium',
         `Low cache hit rate: ${(this.metrics.cacheHitRate * 100).toFixed(1)}%`,
-        'cacheHitRate', this.metrics.cacheHitRate, this.config.cacheHitRateThreshold);
+        'cacheHitRate',
+        this.metrics.cacheHitRate,
+        this.config.cacheHitRateThreshold
+      );
     }
   }
 

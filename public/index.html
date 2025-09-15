@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚀 TappMCP Command Center</title>
+    <title>🚀 TappMCP Command Center - Enhanced</title>
     <style>
         * {
             margin: 0;
@@ -267,6 +267,198 @@
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
+        /* Enhanced Loading States */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: var(--secondary-text);
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(0, 255, 136, 0.3);
+            border-top: 3px solid var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 1rem;
+            color: var(--secondary-text);
+        }
+
+        .loading-progress {
+            width: 200px;
+            height: 4px;
+            background: rgba(0, 255, 136, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .loading-progress-bar {
+            height: 100%;
+            background: var(--gradient-4);
+            border-radius: 2px;
+            animation: progress 2s ease-in-out infinite;
+        }
+
+        @keyframes progress {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+
+        /* Enhanced Error States */
+        .error {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: var(--error-color);
+            font-size: 1.1rem;
+            flex-direction: column;
+            gap: 16px;
+            text-align: center;
+        }
+
+        .error-icon {
+            font-size: 3rem;
+            opacity: 0.7;
+        }
+
+        .error-message {
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .error-details {
+            font-size: 0.9rem;
+            color: var(--secondary-text);
+            margin-bottom: 15px;
+        }
+
+        .retry-button {
+            background: var(--error-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .retry-button:hover {
+            background: #ff6666;
+            transform: translateY(-2px);
+        }
+
+        /* Data Refresh Indicators */
+        .refresh-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: var(--accent-bg);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            font-size: 0.8rem;
+            color: var(--secondary-text);
+        }
+
+        .refresh-indicator.refreshing {
+            color: var(--accent-color);
+        }
+
+        .refresh-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            border-top: 2px solid var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .last-updated {
+            font-size: 0.7rem;
+            color: var(--secondary-text);
+        }
+
+        /* Keyboard Shortcuts */
+        .shortcuts-help {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--secondary-bg);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 0.8rem;
+            color: var(--secondary-text);
+            z-index: 1000;
+            max-width: 200px;
+            display: none;
+        }
+
+        .shortcuts-help.show {
+            display: block;
+        }
+
+        .shortcut-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .shortcut-key {
+            background: var(--accent-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.7rem;
+        }
+
+        /* Fallback Visualizations */
+        .fallback-chart {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+            flex-direction: column;
+            gap: 20px;
+            color: var(--secondary-text);
+        }
+
+        .fallback-icon {
+            font-size: 4rem;
+            opacity: 0.5;
+        }
+
+        .fallback-message {
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .fallback-suggestion {
+            font-size: 0.9rem;
+            color: var(--accent-color);
+            text-align: center;
+        }
+
         .metric {
             display: flex;
             justify-content: space-between;
@@ -316,772 +508,153 @@
             text-shadow: 0 0 10px var(--error-color);
         }
 
-        .workflow-item {
-            background: var(--accent-bg);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-            border-left: 4px solid var(--accent-color);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .workflow-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--gradient-3);
-            transition: all 0.3s ease;
-        }
-
-        .workflow-item.completed {
-            border-left-color: var(--success-color);
-        }
-
-        .workflow-item.completed::before {
-            background: var(--gradient-4);
-        }
-
-        .workflow-item.failed {
-            border-left-color: var(--error-color);
-        }
-
-        .workflow-item.failed::before {
-            background: var(--gradient-2);
-        }
-
-        .workflow-item.running {
-            border-left-color: var(--warning-color);
-        }
-
-        .workflow-item.running::before {
-            background: var(--gradient-5);
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        .workflow-item:hover {
-            transform: translateX(8px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-        }
-
-        .workflow-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .workflow-id {
-            font-weight: 600;
-            color: #2d3748;
-        }
-
-        .workflow-status {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            text-transform: uppercase;
-        }
-
-        .workflow-status.running {
-            background: #fef5e7;
-            color: #c05621;
-        }
-
-        .workflow-status.completed {
-            background: #f0fff4;
-            color: #2f855a;
-        }
-
-        .workflow-status.failed {
-            background: #fed7d7;
-            color: #c53030;
-        }
-
-        .workflow-progress {
-            width: 100%;
-            height: 4px;
-            background: #e2e8f0;
-            border-radius: 2px;
-            overflow: hidden;
-            margin: 8px 0;
-        }
-
-        .workflow-progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #4299e1, #63b3ed);
-            transition: width 0.3s ease;
-        }
-
-        .notification {
-            background: #f7fafc;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 12px;
-            border-left: 4px solid #4299e1;
-        }
-
-        .notification.critical {
-            border-left-color: #f56565;
-            background: #fed7d7;
-        }
-
-        .notification.warning {
-            border-left-color: #ed8936;
-            background: #fef5e7;
-        }
-
-        .notification-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .notification-title {
-            font-weight: 600;
-            color: #2d3748;
-        }
-
-        .notification-time {
-            font-size: 0.8rem;
-            color: #718096;
-        }
-
-        .notification-message {
-            color: #4a5568;
-            font-size: 0.9rem;
-        }
-
-        .loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
-            color: #718096;
-        }
-
-        .spinner {
-            width: 20px;
-            height: 20px;
-            border: 2px solid #e2e8f0;
-            border-top: 2px solid #4299e1;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 8px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .error {
-            background: #fed7d7;
-            color: #c53030;
-            padding: 16px;
-            border-radius: 8px;
-            margin: 16px 0;
-        }
-
         .hidden {
             display: none;
         }
 
-        .tool-item {
+        /* Dashboard Overview Styles */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .dashboard-item {
             background: var(--accent-bg);
             border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-            border-left: 4px solid var(--accent-color);
+            padding: 24px;
+            border: 1px solid rgba(0, 255, 136, 0.2);
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-            cursor: pointer;
         }
 
-        .tool-item::before {
+        .dashboard-item::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             width: 4px;
             height: 100%;
-            background: var(--gradient-1);
+            background: var(--gradient-4);
             transition: all 0.3s ease;
         }
 
-        .tool-item:hover {
-            background: rgba(0, 255, 136, 0.1);
-            transform: translateX(8px) scale(1.02);
-            box-shadow: 0 8px 25px rgba(0, 255, 136, 0.2);
+        .dashboard-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+            border-color: var(--accent-color);
         }
 
-        .tool-item:hover::before {
-            background: var(--gradient-4);
+        .dashboard-item:hover::before {
+            background: var(--gradient-2);
             box-shadow: 0 0 20px var(--accent-color);
         }
 
-        .tool-name {
-            font-weight: 700;
+        .dashboard-icon {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .dashboard-info h3 {
             color: var(--primary-text);
-            font-size: 1.1rem;
+            font-size: 1.2rem;
+            font-weight: 700;
             margin-bottom: 8px;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
 
-        .tool-description {
+        .dashboard-info p {
             color: var(--secondary-text);
             font-size: 0.95rem;
-            margin-bottom: 12px;
             line-height: 1.5;
+            margin-bottom: 16px;
         }
 
-        .tool-schema {
-            background: var(--primary-bg);
-            border-radius: 8px;
-            padding: 12px;
-            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
-            font-size: 0.85rem;
-            color: var(--accent-color);
-            overflow-x: auto;
-            border: 1px solid rgba(0, 255, 136, 0.2);
-            position: relative;
-        }
-
-        .tool-schema::before {
-            content: '⚙️';
-            position: absolute;
-            top: -8px;
-            right: 8px;
-            background: var(--primary-bg);
-            padding: 0 8px;
-            font-size: 0.8rem;
-        }
-
-        .tool-required {
-            color: var(--error-color);
-            font-weight: 600;
-            text-shadow: 0 0 5px var(--error-color);
-        }
-
-        .tool-optional {
-            color: var(--secondary-text);
-            font-weight: 400;
-        }
-
-        .workflow-controls {
-            display: flex;
-            justify-content: space-between;
+        .dashboard-link {
+            display: inline-flex;
             align-items: center;
-            margin-bottom: 20px;
-            padding: 16px;
-            background: var(--accent-bg);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-        }
-
-        .btn-primary {
+            padding: 10px 20px;
             background: var(--gradient-4);
             color: var(--primary-bg);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        .btn-primary:hover {
+        .dashboard-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .dashboard-link:hover::before {
+            left: 100%;
+        }
+
+        .dashboard-link:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
         }
 
-        .btn-secondary {
-            background: var(--accent-bg);
-            color: var(--primary-text);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .workflow-stats {
-            display: flex;
-            gap: 16px;
-        }
-
-        .stat-item {
-            color: var(--secondary-text);
-            font-size: 0.9rem;
-        }
-
-        .stat-item strong {
-            color: var(--primary-text);
-        }
-
-        .workflow-item {
-            background: var(--accent-bg);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-            border-left: 4px solid var(--accent-color);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .workflow-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--gradient-3);
-            transition: all 0.3s ease;
-        }
-
-        .workflow-item.completed {
-            border-left-color: var(--success-color);
-        }
-
-        .workflow-item.completed::before {
-            background: var(--gradient-4);
-        }
-
-        .workflow-item.failed {
-            border-left-color: var(--error-color);
-        }
-
-        .workflow-item.failed::before {
+        .dashboard-link.active {
             background: var(--gradient-2);
-        }
-
-        .workflow-item.running {
-            border-left-color: var(--warning-color);
-        }
-
-        .workflow-item.running::before {
-            background: var(--gradient-5);
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        .workflow-item.paused {
-            border-left-color: #6c757d;
-        }
-
-        .workflow-item.paused::before {
-            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
-        }
-
-        .workflow-item:hover {
-            transform: translateX(8px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-        }
-
-        .workflow-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .workflow-title {
-            font-weight: 700;
             color: var(--primary-text);
-            font-size: 1.1rem;
-            margin-bottom: 4px;
         }
 
-        .workflow-description {
-            color: var(--secondary-text);
-            font-size: 0.9rem;
-            margin-bottom: 8px;
-        }
-
-        .workflow-status {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .workflow-status.running {
-            background: #fef5e7;
-            color: #c05621;
-        }
-
-        .workflow-status.completed {
-            background: #f0fff4;
-            color: #2f855a;
-        }
-
-        .workflow-status.failed {
-            background: #fed7d7;
-            color: #c53030;
-        }
-
-        .workflow-status.pending {
-            background: #e2e8f0;
-            color: #4a5568;
-        }
-
-        .workflow-status.paused {
-            background: #f7fafc;
-            color: #6c757d;
-        }
-
-        .workflow-status.cancelled {
-            background: #fed7d7;
-            color: #c53030;
-        }
-
-        .workflow-progress {
-            width: 100%;
-            height: 6px;
-            background: #e2e8f0;
-            border-radius: 3px;
-            overflow: hidden;
-            margin: 12px 0;
-        }
-
-        .workflow-progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #4299e1, #63b3ed);
-            transition: width 0.3s ease;
-            border-radius: 3px;
-        }
-
-        .workflow-phase {
-            font-size: 0.9rem;
-            color: #718096;
-            margin-bottom: 8px;
-        }
-
-        .workflow-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-        }
-
-        .workflow-actions .btn {
-            padding: 4px 8px;
-            font-size: 0.8rem;
-        }
-
-        .workflow-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 8px;
-            font-size: 0.8rem;
-            color: var(--secondary-text);
-        }
-
-        .workflow-duration {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .workflow-error {
-            background: #fed7d7;
-            color: #c53030;
-            padding: 8px 12px;
-            border-radius: 6px;
-            margin-top: 8px;
-            font-size: 0.9rem;
-        }
-
-        .insights-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-
-        .insight-item {
-            background: var(--accent-bg);
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .insight-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-        }
-
-        .insight-label {
-            font-size: 0.9rem;
-            color: var(--secondary-text);
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        .insight-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-text);
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-        }
-
-        .trend-indicators {
-            display: flex;
-            justify-content: space-between;
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
             gap: 20px;
-            padding: 16px;
-            background: var(--accent-bg);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
+            }
 
-        .trend-item {
-            display: flex;
-            align-items: center;
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .nav-links {
+                flex-direction: column;
             gap: 8px;
-        }
+            }
 
-        .trend-label {
-            font-size: 0.9rem;
-            color: var(--secondary-text);
-            font-weight: 500;
-        }
-
-        .trend-value {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--primary-text);
-        }
-
-        .notification-controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin-bottom: 24px;
-        }
-
-        .notification-channels h3,
-        .notification-preferences h3,
-        .notification-history h3 {
-            margin: 0 0 16px 0;
-            color: var(--primary-text);
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
-        .channel-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            .status-bar {
+                flex-direction: column;
             gap: 12px;
-        }
+            }
 
-        .channel-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: var(--accent-bg);
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .channel-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .channel-icon {
-            font-size: 1.5rem;
-            width: 32px;
-            text-align: center;
-        }
-
-        .channel-info {
-            flex: 1;
-        }
-
-        .channel-name {
-            font-weight: 600;
-            color: var(--primary-text);
-            font-size: 0.9rem;
-            margin-bottom: 4px;
-        }
-
-        .channel-status {
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-
-        .preference-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 12px;
-        }
-
-        .preference-item {
-            display: flex;
-            align-items: center;
-        }
-
-        .preference-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            color: var(--primary-text);
-            font-weight: 500;
-        }
-
-        .preference-label input[type="checkbox"] {
-            display: none;
-        }
-
-        .checkmark {
-            width: 18px;
-            height: 18px;
-            border: 2px solid var(--accent-color);
-            border-radius: 4px;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .preference-label input[type="checkbox"]:checked + .checkmark {
-            background: var(--gradient-4);
-            border-color: var(--gradient-4);
-        }
-
-        .preference-label input[type="checkbox"]:checked + .checkmark::after {
-            content: '✓';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: var(--primary-bg);
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .notification-history {
-            margin-top: 24px;
-        }
-
-        .notification-history-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .notification-history-header h3 {
-            margin: 0;
-        }
-
-        .notification-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 16px;
-            background: var(--accent-bg);
-            border-radius: 12px;
-            margin-bottom: 12px;
-            border-left: 4px solid var(--accent-color);
-            transition: all 0.3s ease;
-        }
-
-        .notification-item:hover {
-            transform: translateX(4px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .notification-item.critical {
-            border-left-color: var(--error-color);
-        }
-
-        .notification-item.warning {
-            border-left-color: var(--warning-color);
-        }
-
-        .notification-item.success {
-            border-left-color: var(--success-color);
-        }
-
-        .notification-item.info {
-            border-left-color: var(--accent-color);
-        }
-
-        .notification-icon {
-            font-size: 1.2rem;
-            margin-top: 2px;
-        }
-
-        .notification-content {
-            flex: 1;
-        }
-
-        .notification-title {
-            font-weight: 600;
-            color: var(--primary-text);
-            margin-bottom: 4px;
-            font-size: 0.95rem;
-        }
-
-        .notification-message {
-            color: var(--secondary-text);
-            font-size: 0.9rem;
-            line-height: 1.4;
-            margin-bottom: 8px;
-        }
-
-        .notification-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.8rem;
-            color: var(--secondary-text);
-        }
-
-        .notification-channel {
-            background: var(--primary-bg);
-            color: var(--primary-text);
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-
-        .notification-time {
-            font-size: 0.8rem;
+            .dashboard-item {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="dashboard">
         <div class="header">
-            <h1>🚀 TappMCP Command Center</h1>
+            <h1>🚀 TappMCP Command Center - Enhanced</h1>
             <p>Advanced AI-powered development assistant with real-time monitoring and intelligent workflow orchestration</p>
 
             <!-- Navigation Links -->
             <div class="nav-links">
-                <a href="index.html" class="nav-link active">📊 Main Dashboard</a>
-                <a href="d3-visualizations.html" class="nav-link">📈 D3.js Visualizations</a>
+            <a href="index.html" class="nav-link active">📊 Main Dashboard</a>
+            <a href="d3-visualizations.html" class="nav-link">📈 D3.js Visualizations</a>
             </div>
 
             <div class="status-bar">
@@ -1104,139 +677,116 @@
             </div>
         </div>
 
+        <!-- Keyboard Shortcuts Help -->
+        <div class="shortcuts-help" id="shortcutsHelp">
+            <h4>⌨️ Keyboard Shortcuts</h4>
+            <div class="shortcut-item">
+                <span>Refresh Data</span>
+                <span class="shortcut-key">F5</span>
+                </div>
+            <div class="shortcut-item">
+                <span>Toggle Help</span>
+                <span class="shortcut-key">?</span>
+                </div>
+            <div class="shortcut-item">
+                <span>Export Data</span>
+                <span class="shortcut-key">Ctrl+E</span>
+                </div>
+            <div class="shortcut-item">
+                <span>Reset Filters</span>
+                <span class="shortcut-key">Ctrl+R</span>
+                </div>
+                </div>
+
+        <!-- Dashboard Overview Section -->
+        <div class="card" style="margin-bottom: 32px;">
+            <h2>🎯 Dashboard Overview</h2>
+            <div class="dashboard-grid">
+                <div class="dashboard-item">
+                    <div class="dashboard-icon">📊</div>
+                    <div class="dashboard-info">
+                        <h3>Enhanced Main Dashboard</h3>
+                        <p>Advanced monitoring with error handling, loading states, and real-time updates</p>
+                        <a href="index-enhanced.html" class="dashboard-link active">View Enhanced Dashboard</a>
+                </div>
+                </div>
+                <div class="dashboard-item">
+                    <div class="dashboard-icon">📈</div>
+                    <div class="dashboard-info">
+                        <h3>Enhanced D3.js Visualizations</h3>
+                        <p>Interactive data visualizations with force-directed graphs and performance charts</p>
+                        <a href="d3-visualizations-enhanced.html" class="dashboard-link">View D3.js Enhanced</a>
+                </div>
+                </div>
+                <div class="dashboard-item">
+                    <div class="dashboard-icon">📋</div>
+                    <div class="dashboard-info">
+                        <h3>Original Main Dashboard</h3>
+                        <p>Classic dashboard interface for comparison and legacy support</p>
+                        <a href="index.html" class="dashboard-link">View Original Dashboard</a>
+            </div>
+                </div>
+                <div class="dashboard-item">
+                    <div class="dashboard-icon">📊</div>
+                    <div class="dashboard-info">
+                        <h3>Original D3.js Visualizations</h3>
+                        <p>Basic D3.js charts and graphs for data visualization</p>
+                        <a href="d3-visualizations.html" class="dashboard-link">View D3.js Original</a>
+                </div>
+                </div>
+                <div class="dashboard-item">
+                    <div class="dashboard-icon">🔌</div>
+                    <div class="dashboard-info">
+                        <h3>WebSocket Test</h3>
+                        <p>Test WebSocket connections and real-time communication</p>
+                        <a href="test-websocket.html" class="dashboard-link">Test WebSocket</a>
+                </div>
+                </div>
+                </div>
+            </div>
+
         <div class="grid">
             <!-- System Status Card -->
             <div class="card">
                 <h2>🧠 Neural Network Status</h2>
-                <div class="metric">
-                    <span class="metric-label">Memory Usage</span>
-                    <span class="metric-value" id="memoryUsage">--</span>
+                <div class="refresh-indicator" id="systemRefreshIndicator">
+                    <span class="refresh-spinner" style="display: none;"></span>
+                    <span class="refresh-text">Last updated: <span class="last-updated" id="systemLastUpdate">Never</span></span>
                 </div>
-                <div class="metric">
-                    <span class="metric-label">CPU Usage</span>
-                    <span class="metric-value" id="cpuUsage">--</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Response Time</span>
-                    <span class="metric-value" id="responseTime">--</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Active Connections</span>
-                    <span class="metric-value" id="activeConnections">--</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Cache Hit Rate</span>
-                    <span class="metric-value" id="cacheHitRate">--</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Token Count (Current)</span>
-                    <span class="metric-value" id="tokenCount">--</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Total Tokens Processed</span>
-                    <span class="metric-value" id="totalTokensProcessed">--</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Hourly Average (tokens/min)</span>
-                    <span class="metric-value" id="hourlyAverageTokens">--</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Queue Size</span>
-                    <span class="metric-value" id="queueSize">--</span>
+                <div id="systemStatusContainer">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">Loading system status...</div>
+                    </div>
                 </div>
             </div>
 
             <!-- Performance Metrics Card -->
             <div class="card">
                 <h2>⚡ Turbo Performance</h2>
-                <div class="metric">
-                    <span class="metric-label">Requests/sec</span>
-                    <span class="metric-value" id="requestsPerSecond">--</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Bytes/sec</span>
-                    <span class="metric-value" id="bytesPerSecond">--</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Error Rate</span>
-                    <span class="metric-value" id="errorRate">--</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">P95 Response</span>
-                    <span class="metric-value" id="p95Response">--</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">P99 Response</span>
-                    <span class="metric-value" id="p99Response">--</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Throughput</span>
-                    <span class="metric-value" id="throughput">--</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Latency</span>
-                    <span class="metric-value" id="latency">--</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Success Rate</span>
-                    <span class="metric-value" id="successRate">--</span>
-                </div>
-            </div>
+                <div class="refresh-indicator" id="performanceRefreshIndicator">
+                    <span class="refresh-spinner" style="display: none;"></span>
+                    <span class="refresh-text">Last updated: <span class="last-updated" id="performanceLastUpdate">Never</span></span>
+                    </div>
+                <div id="performanceContainer">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">Loading performance data...</div>
+                    </div>
+                    </div>
+                    </div>
 
             <!-- System Workflows Monitor -->
             <div class="card">
                 <h2>📊 System Workflow Monitor</h2>
-                <div class="workflow-stats" id="workflowStats">
-                    <span class="stat-item">Total: <strong id="totalWorkflows">0</strong></span>
-                    <span class="stat-item">Active: <strong id="activeWorkflows">0</strong></span>
-                    <span class="stat-item">Completed: <strong id="completedWorkflows">0</strong></span>
-                    <span class="stat-item">Success Rate: <strong id="successRate">0%</strong></span>
-                </div>
+                <div class="refresh-indicator" id="workflowRefreshIndicator">
+                    <span class="refresh-spinner" style="display: none;"></span>
+                    <span class="refresh-text">Last updated: <span class="last-updated" id="workflowLastUpdate">Never</span></span>
+                    </div>
                 <div id="workflowsContainer">
                     <div class="loading">
-                        <div class="spinner"></div>
-                        <span>Monitoring system workflows...</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- System Insights & Analytics -->
-            <div class="card">
-                <h2>🔍 System Insights & Analytics</h2>
-                <div class="insights-grid">
-                    <div class="insight-item">
-                        <div class="insight-label">System Uptime</div>
-                        <div class="insight-value" id="systemUptime">--</div>
-                    </div>
-                    <div class="insight-item">
-                        <div class="insight-label">Memory Usage</div>
-                        <div class="insight-value" id="memoryUsage">--</div>
-                    </div>
-                    <div class="insight-item">
-                        <div class="insight-label">CPU Load</div>
-                        <div class="insight-value" id="cpuLoad">--</div>
-                    </div>
-                    <div class="insight-item">
-                        <div class="insight-label">Response Time</div>
-                        <div class="insight-value" id="avgResponseTime">--</div>
-                    </div>
-                    <div class="insight-item">
-                        <div class="insight-label">Error Rate</div>
-                        <div class="insight-value" id="errorRate">--</div>
-                    </div>
-                    <div class="insight-item">
-                        <div class="insight-label">Throughput</div>
-                        <div class="insight-value" id="throughput">--</div>
-                    </div>
-                </div>
-                <div class="trend-indicators">
-                    <div class="trend-item">
-                        <span class="trend-label">Performance Trend:</span>
-                        <span class="trend-value" id="performanceTrend">📈 Improving</span>
-                    </div>
-                    <div class="trend-item">
-                        <span class="trend-label">System Health:</span>
-                        <span class="trend-value" id="systemHealthTrend">🟢 Healthy</span>
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">Monitoring system workflows...</div>
                     </div>
                 </div>
             </div>
@@ -1244,95 +794,14 @@
             <!-- Available Tools Card -->
             <div class="card">
                 <h2>🛠️ AI Tool Arsenal</h2>
+                <div class="refresh-indicator" id="toolsRefreshIndicator">
+                    <span class="refresh-spinner" style="display: none;"></span>
+                    <span class="refresh-text">Last updated: <span class="last-updated" id="toolsLastUpdate">Never</span></span>
+                </div>
                 <div id="toolsContainer">
                     <div class="loading">
-                        <div class="spinner"></div>
-                        <span>Loading AI tools...</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Notification Management -->
-            <div class="card">
-                <h2>🔔 Notification Center</h2>
-                <div class="notification-controls">
-                    <div class="notification-channels">
-                        <h3>📡 Notification Channels</h3>
-                        <div class="channel-grid">
-                            <div class="channel-item">
-                                <div class="channel-icon">🌐</div>
-                                <div class="channel-info">
-                                    <div class="channel-name">Real-time (WebSocket)</div>
-                                    <div class="channel-status" id="websocketStatus">🟢 Active</div>
-                                </div>
-                            </div>
-                            <div class="channel-item">
-                                <div class="channel-icon">📧</div>
-                                <div class="channel-info">
-                                    <div class="channel-name">Email Notifications</div>
-                                    <div class="channel-status" id="emailStatus">🔴 Not Configured</div>
-                                </div>
-                            </div>
-                            <div class="channel-item">
-                                <div class="channel-icon">📱</div>
-                                <div class="channel-info">
-                                    <div class="channel-name">Push Notifications</div>
-                                    <div class="channel-status" id="pushStatus">🔴 Not Configured</div>
-                                </div>
-                            </div>
-                            <div class="channel-item">
-                                <div class="channel-icon">💬</div>
-                                <div class="channel-info">
-                                    <div class="channel-name">In-App Messages</div>
-                                    <div class="channel-status" id="inappStatus">🟢 Active</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="notification-preferences">
-                        <h3>⚙️ Notification Preferences</h3>
-                        <div class="preference-grid">
-                            <div class="preference-item">
-                                <label class="preference-label">
-                                    <input type="checkbox" id="criticalAlerts" checked>
-                                    <span class="checkmark"></span>
-                                    Critical Alerts
-                                </label>
-                            </div>
-                            <div class="preference-item">
-                                <label class="preference-label">
-                                    <input type="checkbox" id="performanceAlerts" checked>
-                                    <span class="checkmark"></span>
-                                    Performance Alerts
-                                </label>
-                            </div>
-                            <div class="preference-item">
-                                <label class="preference-label">
-                                    <input type="checkbox" id="workflowAlerts" checked>
-                                    <span class="checkmark"></span>
-                                    Workflow Alerts
-                                </label>
-                            </div>
-                            <div class="preference-item">
-                                <label class="preference-label">
-                                    <input type="checkbox" id="securityAlerts" checked>
-                                    <span class="checkmark"></span>
-                                    Security Alerts
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="notification-history">
-                    <div class="notification-history-header">
-                        <h3>📋 Recent Notifications</h3>
-                        <button id="testNotificationBtn" class="btn btn-secondary">🧪 Test Notification</button>
-                    </div>
-                    <div id="notificationsContainer">
-                        <div class="loading">
-                            <div class="spinner"></div>
-                            <span>Loading notifications...</span>
-                        </div>
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">Loading AI tools...</div>
                     </div>
                 </div>
             </div>
@@ -1340,15 +809,16 @@
     </div>
 
     <script>
-        class TappMCPDashboard {
+        class EnhancedTappMCPDashboard {
             constructor() {
                 this.ws = null;
                 this.reconnectAttempts = 0;
                 this.maxReconnectAttempts = 5;
                 this.reconnectDelay = 1000;
                 this.workflows = new Map();
-                this.notifications = [];
                 this.lastUpdate = new Date();
+                this.dataCache = new Map();
+                this.errorStates = new Map();
 
                 this.init();
             }
@@ -1356,22 +826,25 @@
             init() {
                 this.connectWebSocket();
                 this.startHealthCheck();
-                this.loadTools();
+                this.loadSystemStatus();
+                this.loadPerformanceData();
                 this.loadWorkflows();
-                this.loadNotificationStatus();
-                this.loadNotificationHistory();
-                this.setupNotificationPreferences();
+                this.loadTools();
+                this.setupKeyboardShortcuts();
                 this.updateLastUpdateTime();
             }
 
+            // Enhanced WebSocket Connection with Error Handling
             connectWebSocket() {
+                console.log('Attempting to connect to WebSocket...');
                 try {
-                    this.ws = new WebSocket('ws://localhost:3000');
+                    this.ws = new WebSocket('ws://localhost:8080');
 
                     this.ws.onopen = () => {
-                        console.log('WebSocket connected');
+                        console.log('✅ WebSocket connected successfully!');
                         this.updateConnectionStatus(true);
                         this.reconnectAttempts = 0;
+                        this.clearError('websocket');
                     };
 
                     this.ws.onmessage = (event) => {
@@ -1380,166 +853,245 @@
                             this.handleMessage(data);
                         } catch (error) {
                             console.error('Error parsing WebSocket message:', error);
+                            this.setError('websocket', 'Invalid message format received');
                         }
                     };
 
-                    this.ws.onclose = () => {
-                        console.log('WebSocket disconnected');
+                    this.ws.onclose = (event) => {
+                        console.log('❌ WebSocket disconnected. Code:', event.code, 'Reason:', event.reason);
                         this.updateConnectionStatus(false);
+                        this.setError('websocket', 'Connection lost');
                         this.scheduleReconnect();
                     };
 
                     this.ws.onerror = (error) => {
-                        console.error('WebSocket error:', error);
+                        console.error('❌ WebSocket error:', error);
                         this.updateConnectionStatus(false);
+                        this.setError('websocket', 'Connection error occurred');
                     };
 
                 } catch (error) {
                     console.error('Failed to connect to WebSocket:', error);
                     this.updateConnectionStatus(false);
+                    this.setError('websocket', 'Failed to establish connection');
                     this.scheduleReconnect();
                 }
             }
 
+            // Enhanced Message Handling with Validation
             handleMessage(data) {
                 this.lastUpdate = new Date();
                 this.updateLastUpdateTime();
+
+                try {
+                    // Validate message structure
+                    if (!data || typeof data !== 'object') {
+                        throw new Error('Invalid message structure');
+                    }
 
                 switch (data.type) {
                     case 'performance_metrics':
                         this.updatePerformanceMetrics(data);
                         this.updateSystemInsights(data);
+                            this.clearError('performance');
                         break;
                     case 'workflow_status_update':
                         this.updateWorkflowStatus(data);
+                            this.clearError('workflow');
                         break;
                     case 'system_health':
                         this.updateSystemHealth(data);
-                        break;
-                    case 'notification':
-                        this.addNotification(data);
+                            this.clearError('system');
                         break;
                     default:
                         console.log('Unknown message type:', data.type);
                 }
+                } catch (error) {
+                    console.error('Error handling message:', error);
+                    this.setError('message', 'Error processing message: ' + error.message);
+                }
             }
 
-            updatePerformanceMetrics(data) {
-                const metrics = data.data || data;
-
-                // Update system status
-                if (metrics.memoryUsage) {
-                    const memoryMB = Math.round(metrics.memoryUsage.heapUsed / 1024 / 1024);
-                    document.getElementById('memoryUsage').textContent = `${memoryMB} MB`;
+            // Enhanced Data Validation
+            validateApiResponse(data, expectedFields = []) {
+                if (!data || typeof data !== 'object') {
+                    throw new Error('Invalid response format');
                 }
 
-                if (metrics.responseTime) {
-                    document.getElementById('responseTime').textContent = `${metrics.responseTime.toFixed(2)}ms`;
+                for (const field of expectedFields) {
+                    if (!(field in data)) {
+                        throw new Error(`Missing required field: ${field}`);
+                    }
                 }
 
-                if (metrics.cacheHitRate) {
-                    document.getElementById('cacheHitRate').textContent = `${(metrics.cacheHitRate * 100).toFixed(1)}%`;
-                }
+                return true;
+            }
 
-                if (metrics.activeConnections) {
-                    document.getElementById('activeConnections').textContent = metrics.activeConnections;
-                }
+            // Enhanced Error Management
+            setError(component, message) {
+                this.errorStates.set(component, {
+                    message: message,
+                    timestamp: new Date()
+                });
+                this.renderError(component, message);
+            }
 
-                if (metrics.errorRate) {
-                    document.getElementById('errorRate').textContent = `${(metrics.errorRate * 100).toFixed(2)}%`;
-                }
+            clearError(component) {
+                this.errorStates.delete(component);
+                this.clearErrorDisplay(component);
+            }
 
-                // Update token metrics
-                if (metrics.tokenCount !== undefined) {
-                    document.getElementById('tokenCount').textContent = metrics.tokenCount.toLocaleString();
+            renderError(component, message) {
+                const container = document.getElementById(component + 'Container');
+                if (container) {
+                    container.innerHTML = `
+                        <div class="error">
+                            <div class="error-icon">⚠️</div>
+                            <div class="error-message">Failed to load ${component}</div>
+                            <div class="error-details">${message}</div>
+                            <button class="retry-button" onclick="dashboard.retryComponent('${component}')">
+                                Retry
+                            </button>
+                        </div>
+                    `;
                 }
+            }
 
-                if (metrics.totalTokensProcessed !== undefined) {
-                    document.getElementById('totalTokensProcessed').textContent = metrics.totalTokensProcessed.toLocaleString();
+            clearErrorDisplay(component) {
+                const container = document.getElementById(component + 'Container');
+                if (container && container.querySelector('.error')) {
+                    // Restore loading state
+                    container.innerHTML = `
+                        <div class="loading">
+                            <div class="loading-spinner"></div>
+                            <div class="loading-text">Loading ${component}...</div>
+                        </div>
+                    `;
                 }
+            }
 
-                if (metrics.hourlyAverageTokens !== undefined) {
-                    document.getElementById('hourlyAverageTokens').textContent = metrics.hourlyAverageTokens.toLocaleString();
+            retryComponent(component) {
+                this.clearError(component);
+                switch (component) {
+                    case 'system':
+                        this.loadSystemStatus();
+                        break;
+                    case 'performance':
+                        this.loadPerformanceData();
+                        break;
+                    case 'workflow':
+                        this.loadWorkflows();
+                        break;
+                    case 'tools':
+                        this.loadTools();
+                        break;
                 }
+            }
 
-                if (metrics.queueSize !== undefined) {
-                    document.getElementById('queueSize').textContent = metrics.queueSize;
-                }
+            // Enhanced Loading States
+            showLoading(component, message = 'Loading...', progress = null) {
+                const container = document.getElementById(component + 'Container');
+                if (container) {
+                    let progressHtml = '';
+                    if (progress !== null) {
+                        progressHtml = `
+                            <div class="loading-progress">
+                                <div class="loading-progress-bar" style="width: ${progress}%"></div>
+                            </div>
+                        `;
+                    }
 
-                if (metrics.throughput !== undefined) {
-                    document.getElementById('throughput').textContent = `${metrics.throughput} ops/s`;
+                    container.innerHTML = `
+                        <div class="loading">
+                            <div class="loading-spinner"></div>
+                            <div class="loading-text">${message}</div>
+                            ${progressHtml}
+                        </div>
+                    `;
                 }
+            }
 
-                if (metrics.latency !== undefined) {
-                    document.getElementById('latency').textContent = `${metrics.latency.toFixed(2)}ms`;
-                }
+            // Enhanced Performance Metrics with Fallback
+            async updatePerformanceMetrics(data) {
+                try {
+                    // Handle both direct data and wrapped response
+                    const metrics = data.data || data;
 
-                if (metrics.successRate !== undefined) {
-                    const successRate = document.getElementById('successRate');
-                    successRate.textContent = `${(metrics.successRate * 100).toFixed(1)}%`;
-                    successRate.className = `metric-value ${metrics.successRate > 0.95 ? 'success' : metrics.successRate > 0.8 ? 'warning' : 'error'}`;
-                }
+                    // Validate metrics data
+                    this.validateApiResponse(metrics, ['memoryUsage', 'responseTime']);
+
+                    // Update system status
+                    this.updateMetric('memoryUsage', metrics.memoryUsage ?
+                        `${Math.round(metrics.memoryUsage.heapUsed / 1024 / 1024)} MB` : '--');
+
+                    this.updateMetric('responseTime', metrics.responseTime ?
+                        `${metrics.responseTime.toFixed(2)}ms` : '--');
+
+                    this.updateMetric('cacheHitRate', metrics.cacheHitRate ?
+                        `${(metrics.cacheHitRate * 100).toFixed(1)}%` : '--');
+
+                    this.updateMetric('activeConnections', metrics.activeConnections || '--');
+
+                    this.updateMetric('errorRate', metrics.errorRate ?
+                        `${(metrics.errorRate * 100).toFixed(2)}%` : '--');
 
                 // Update performance metrics
-                if (metrics.requestsPerSecond !== undefined) {
-                    document.getElementById('requestsPerSecond').textContent = `${metrics.requestsPerSecond}/s`;
-                }
+                    this.updateMetric('requestsPerSecond', metrics.requestsPerSecond ?
+                        `${metrics.requestsPerSecond}/s` : '--');
 
-                if (metrics.bytesPerSecond !== undefined) {
-                    const bytesMB = Math.round(metrics.bytesPerSecond / 1024 / 1024);
-                    document.getElementById('bytesPerSecond').textContent = `${bytesMB} MB/s`;
-                }
+                    this.updateMetric('bytesPerSecond', metrics.bytesPerSecond ?
+                        `${Math.round(metrics.bytesPerSecond / 1024 / 1024)} MB/s` : '--');
 
-                if (metrics.p95Response !== undefined) {
-                    document.getElementById('p95Response').textContent = `${metrics.p95Response}ms`;
-                }
+                    this.updateMetric('p95Response', metrics.p95Response ?
+                        `${metrics.p95Response}ms` : '--');
 
-                if (metrics.p99Response !== undefined) {
-                    document.getElementById('p99Response').textContent = `${metrics.p99Response}ms`;
-                }
+                    this.updateMetric('p99Response', metrics.p99Response ?
+                        `${metrics.p99Response}ms` : '--');
 
-                if (metrics.cpuUsage !== undefined) {
-                    document.getElementById('cpuUsage').textContent = `${metrics.cpuUsage}%`;
+                    this.updateMetric('cpuUsage', metrics.cpuUsage ?
+                        `${metrics.cpuUsage}%` : '--');
+
+                    this.updateRefreshIndicator('performance');
+                    this.clearError('performance');
+
+                } catch (error) {
+                    console.error('Error updating performance metrics:', error);
+                    this.setError('performance', 'Failed to update performance data: ' + error.message);
                 }
             }
 
+            updateMetric(id, value) {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = value;
+                }
+            }
+
+            // Enhanced Workflow Status with Fallback
             updateWorkflowStatus(data) {
+                try {
                 const workflow = data.data || data;
                 this.workflows.set(workflow.workflowId, workflow);
                 this.renderWorkflows();
-            }
-
-            updateSystemHealth(data) {
-                const health = data.data || data;
-
-                if (health.uptime) {
-                    const uptimeHours = Math.floor(health.uptime / 3600);
-                    const uptimeMinutes = Math.floor((health.uptime % 3600) / 60);
-                    document.getElementById('serverUptime').textContent = `${uptimeHours}h ${uptimeMinutes}m`;
+                    this.updateRefreshIndicator('workflow');
+                    this.clearError('workflow');
+                } catch (error) {
+                    console.error('Error updating workflow status:', error);
+                    this.setError('workflow', 'Failed to update workflow data: ' + error.message);
                 }
-
-                if (health.version) {
-                    document.getElementById('serverVersion').textContent = `v${health.version}`;
-                }
-            }
-
-            addNotification(data) {
-                const notification = data.data || data;
-                this.notifications.unshift(notification);
-
-                // Keep only last 10 notifications
-                if (this.notifications.length > 10) {
-                    this.notifications = this.notifications.slice(0, 10);
-                }
-
-                this.renderNotifications();
             }
 
             renderWorkflows() {
                 const container = document.getElementById('workflowsContainer');
 
                 if (this.workflows.size === 0) {
-                    container.innerHTML = '<div class="loading">No system workflows detected</div>';
+                    container.innerHTML = `
+                        <div class="fallback-chart">
+                            <div class="fallback-icon">📊</div>
+                            <div class="fallback-message">No system workflows detected</div>
+                            <div class="fallback-suggestion">Workflows will appear here when active</div>
+                        </div>
+                    `;
                     return;
                 }
 
@@ -1579,94 +1131,127 @@
                 }).join('');
             }
 
+            // Enhanced System Health with Fallback
+            updateSystemHealth(data) {
+                try {
+                    const health = data.data || data;
 
-            renderNotifications() {
-                const container = document.getElementById('notificationsContainer');
+                    if (health.uptime) {
+                        const uptimeHours = Math.floor(health.uptime / 3600);
+                        const uptimeMinutes = Math.floor((health.uptime % 3600) / 60);
+                        document.getElementById('serverUptime').textContent = `${uptimeHours}h ${uptimeMinutes}m`;
+                    }
 
-                if (this.notifications.length === 0) {
-                    container.innerHTML = '<div class="loading">No notifications</div>';
-                    return;
-                }
+                    if (health.version) {
+                        document.getElementById('serverVersion').textContent = `v${health.version}`;
+                    }
 
-                container.innerHTML = this.notifications.map(notification => {
-                    const icon = this.getNotificationIcon(notification.type || 'info');
-                    const channel = notification.channel || 'websocket';
-                    const time = new Date(notification.timestamp || Date.now()).toLocaleTimeString();
+                    this.updateRefreshIndicator('system');
+                    this.clearError('system');
 
-                    return `
-                        <div class="notification-item ${notification.priority || 'info'}">
-                            <div class="notification-icon">${icon}</div>
-                            <div class="notification-content">
-                                <div class="notification-title">${notification.title || 'Notification'}</div>
-                                <div class="notification-message">${notification.message || 'No message'}</div>
-                                <div class="notification-meta">
-                                    <span class="notification-channel">${channel.toUpperCase()}</span>
-                                    <span class="notification-time">${time}</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            }
-
-            getNotificationIcon(type) {
-                const icons = {
-                    'info': 'ℹ️',
-                    'warning': '⚠️',
-                    'error': '❌',
-                    'success': '✅',
-                    'critical': '🚨',
-                    'performance': '📊',
-                    'workflow': '🎭',
-                    'security': '🔒',
-                    'update': '🔄'
-                };
-                return icons[type] || 'ℹ️';
-            }
-
-            updateConnectionStatus(connected) {
-                const statusDot = document.getElementById('connectionStatus');
-                const statusText = document.getElementById('connectionText');
-
-                if (connected) {
-                    statusDot.classList.remove('disconnected');
-                    statusText.textContent = 'Connected';
-                } else {
-                    statusDot.classList.add('disconnected');
-                    statusText.textContent = 'Disconnected';
+                } catch (error) {
+                    console.error('Error updating system health:', error);
+                    this.setError('system', 'Failed to update system health: ' + error.message);
                 }
             }
 
-            updateLastUpdateTime() {
-                // This would update a last updated timestamp if we had one
+            // Enhanced Data Loading with Error Handling
+            async loadSystemStatus() {
+                this.showLoading('system', 'Loading system status...');
+
+                try {
+                    const response = await fetch('http://localhost:8080/health');
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+                    this.validateApiResponse(data, ['uptime', 'version']);
+
+                    this.updateSystemHealth({ data });
+                    this.renderSystemStatus(data);
+                    this.clearError('system');
+
+                } catch (error) {
+                    console.error('Failed to load system status:', error);
+                    this.setError('system', 'Failed to load system status: ' + error.message);
+                }
             }
 
-            scheduleReconnect() {
-                if (this.reconnectAttempts < this.maxReconnectAttempts) {
-                    this.reconnectAttempts++;
-                    const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
+            async loadPerformanceData() {
+                this.showLoading('performance', 'Loading performance data...');
 
-                    console.log(`Scheduling reconnect attempt ${this.reconnectAttempts} in ${delay}ms`);
+                try {
+                    const response = await fetch('http://localhost:8080/metrics');
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
 
-                    setTimeout(() => {
-                        this.connectWebSocket();
-                    }, delay);
+                    const responseData = await response.json();
+                    this.validateApiResponse(responseData, ['success']);
+
+                    if (responseData.success) {
+                        this.updatePerformanceMetrics(responseData.data);
+                        this.clearError('performance');
+                    } else {
+                        throw new Error(responseData.message || 'Failed to load performance data');
+                    }
+
+                } catch (error) {
+                    console.error('Failed to load performance data:', error);
+                    this.setError('performance', 'Failed to load performance data: ' + error.message);
+                }
+            }
+
+            async loadWorkflows() {
+                this.showLoading('workflow', 'Loading workflows...');
+
+                try {
+                    const response = await fetch('http://localhost:8080/workflows');
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+                    this.validateApiResponse(data, ['success']);
+
+                    if (data.success) {
+                        this.workflows = new Map(data.workflows.map(w => [w.workflowId, w]));
+                        this.renderWorkflows();
+                        this.updateWorkflowStats(data.stats);
+                        this.clearError('workflow');
+                    } else {
+                        throw new Error(data.message || 'Failed to load workflows');
+                    }
+
+                } catch (error) {
+                    console.error('Failed to load workflows:', error);
+                    this.setError('workflow', 'Failed to load workflows: ' + error.message);
                 }
             }
 
             async loadTools() {
+                this.showLoading('tools', 'Loading AI tools...');
+
                 try {
-                    const response = await fetch('http://localhost:3000/tools');
+                    const response = await fetch('http://localhost:8080/tools');
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+
                     const data = await response.json();
+                    this.validateApiResponse(data, ['success']);
 
                     if (data.success && data.tools) {
                         this.renderTools(data.tools);
+                        this.clearError('tools');
                     } else {
-                        this.renderToolsError('Failed to load tools');
+                        throw new Error(data.message || 'Failed to load tools');
                     }
+
                 } catch (error) {
                     console.error('Failed to load tools:', error);
-                    this.renderToolsError('Error loading tools: ' + error.message);
+                    this.setError('tools', 'Failed to load tools: ' + error.message);
                 }
             }
 
@@ -1674,7 +1259,13 @@
                 const container = document.getElementById('toolsContainer');
 
                 if (!tools || tools.length === 0) {
-                    container.innerHTML = '<div class="loading">No tools available</div>';
+                    container.innerHTML = `
+                        <div class="fallback-chart">
+                            <div class="fallback-icon">🛠️</div>
+                            <div class="fallback-message">No tools available</div>
+                            <div class="fallback-suggestion">Tools will appear here when loaded</div>
+                        </div>
+                    `;
                     return;
                 }
 
@@ -1700,224 +1291,184 @@
                 }).join('');
             }
 
-            renderToolsError(message) {
-                const container = document.getElementById('toolsContainer');
-                container.innerHTML = `<div class="error">${message}</div>`;
+            renderSystemStatus(data) {
+                const container = document.getElementById('systemStatusContainer');
+
+                container.innerHTML = `
+                    <div class="metric">
+                        <span class="metric-label">Memory Usage</span>
+                        <span class="metric-value" id="memoryUsage">--</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">CPU Usage</span>
+                        <span class="metric-value" id="cpuUsage">--</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Response Time</span>
+                        <span class="metric-value" id="responseTime">--</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Active Connections</span>
+                        <span class="metric-value" id="activeConnections">--</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Cache Hit Rate</span>
+                        <span class="metric-value" id="cacheHitRate">--</span>
+                    </div>
+                `;
+            }
+
+            updateWorkflowStats(stats) {
+                // Update workflow statistics if elements exist
+                const totalEl = document.getElementById('totalWorkflows');
+                const activeEl = document.getElementById('activeWorkflows');
+                const completedEl = document.getElementById('completedWorkflows');
+                const successRateEl = document.getElementById('successRate');
+
+                if (totalEl) totalEl.textContent = stats.total || 0;
+                if (activeEl) activeEl.textContent = stats.active || 0;
+                if (completedEl) completedEl.textContent = stats.completed || 0;
+                if (successRateEl) successRateEl.textContent = `${Math.round(stats.successRate || 0)}%`;
+            }
+
+            // Enhanced Refresh Indicators
+            updateRefreshIndicator(component) {
+                const indicator = document.getElementById(component + 'RefreshIndicator');
+                const lastUpdate = document.getElementById(component + 'LastUpdate');
+
+                if (indicator) {
+                    indicator.classList.add('refreshing');
+                    const spinner = indicator.querySelector('.refresh-spinner');
+                    if (spinner) spinner.style.display = 'inline-block';
+                }
+
+                if (lastUpdate) {
+                    lastUpdate.textContent = new Date().toLocaleTimeString();
+                }
+
+                // Remove refreshing state after 2 seconds
+                setTimeout(() => {
+                    if (indicator) {
+                        indicator.classList.remove('refreshing');
+                        const spinner = indicator.querySelector('.refresh-spinner');
+                        if (spinner) spinner.style.display = 'none';
+                    }
+                }, 2000);
+            }
+
+            updateConnectionStatus(connected) {
+                const statusDot = document.getElementById('connectionStatus');
+                const statusText = document.getElementById('connectionText');
+
+                if (connected) {
+                    statusDot.classList.remove('disconnected');
+                    statusText.textContent = 'Connected';
+                } else {
+                    statusDot.classList.add('disconnected');
+                    statusText.textContent = 'Disconnected';
+                }
+            }
+
+            updateLastUpdateTime() {
+                // Update last update time for all components
+                const now = new Date().toLocaleTimeString();
+                document.querySelectorAll('.last-updated').forEach(el => {
+                    if (el.textContent === 'Never') {
+                        el.textContent = now;
+                    }
+                });
+            }
+
+            scheduleReconnect() {
+                if (this.reconnectAttempts < this.maxReconnectAttempts) {
+                    this.reconnectAttempts++;
+                    const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
+
+                    console.log(`Scheduling reconnect attempt ${this.reconnectAttempts} in ${delay}ms`);
+
+                    setTimeout(() => {
+                        this.connectWebSocket();
+                    }, delay);
+                }
             }
 
             startHealthCheck() {
                 // Check server health every 30 seconds
                 setInterval(async () => {
                     try {
-                        const response = await fetch('http://localhost:3000/health');
+                        const response = await fetch('http://localhost:8080/health');
                         const health = await response.json();
                         this.updateSystemHealth({ data: health });
                     } catch (error) {
                         console.error('Health check failed:', error);
+                        this.setError('system', 'Health check failed: ' + error.message);
                     }
                 }, 30000);
             }
 
-
-            async loadWorkflows() {
-                try {
-                    const response = await fetch('http://localhost:3000/workflows');
-                    const data = await response.json();
-                    if (data.success) {
-                        this.workflows = new Map(data.workflows.map(w => [w.workflowId, w]));
-                        this.renderWorkflows();
-                        this.updateWorkflowStats(data.stats);
+            // Enhanced Keyboard Shortcuts
+            setupKeyboardShortcuts() {
+                const handleKeyPress = (event) => {
+                    if (event.key === '?' || event.key === 'F1') {
+                        event.preventDefault();
+                        const help = document.getElementById('shortcutsHelp');
+                        help.classList.toggle('show');
+                    } else if (event.key === 'F5') {
+                        event.preventDefault();
+                        this.refreshAllData();
+                    } else if (event.ctrlKey && event.key === 'e') {
+                        event.preventDefault();
+                        this.exportData();
+                    } else if (event.ctrlKey && event.key === 'r') {
+                        event.preventDefault();
+                        this.resetFilters();
                     }
-                } catch (error) {
-                    console.error('Failed to load workflows:', error);
-                }
-            }
-
-            updateWorkflowStats(stats) {
-                document.getElementById('totalWorkflows').textContent = stats.total || 0;
-                document.getElementById('activeWorkflows').textContent = stats.active || 0;
-                document.getElementById('completedWorkflows').textContent = stats.completed || 0;
-                document.getElementById('successRate').textContent = `${Math.round(stats.successRate || 0)}%`;
-            }
-
-            updateSystemInsights(metrics) {
-                // Update system uptime
-                const uptime = metrics.uptime || 0;
-                const uptimeText = uptime > 3600 ?
-                    `${Math.floor(uptime / 3600)}h ${Math.floor((uptime % 3600) / 60)}m` :
-                    `${Math.floor(uptime / 60)}m ${Math.floor(uptime % 60)}s`;
-                document.getElementById('systemUptime').textContent = uptimeText;
-
-                // Update memory usage
-                const memoryMB = Math.round((metrics.memoryUsage?.heapUsed || 0) / 1024 / 1024);
-                document.getElementById('memoryUsage').textContent = `${memoryMB} MB`;
-
-                // Update CPU load
-                const cpuPercent = Math.round((metrics.cpuUsage || 0) * 100);
-                document.getElementById('cpuLoad').textContent = `${cpuPercent}%`;
-
-                // Update response time
-                const avgResponseTime = metrics.latency || 0;
-                document.getElementById('avgResponseTime').textContent = `${Math.round(avgResponseTime)}ms`;
-
-                // Update error rate
-                const errorRate = (1 - (metrics.successRate || 0.95)) * 100;
-                document.getElementById('errorRate').textContent = `${errorRate.toFixed(2)}%`;
-
-                // Update throughput
-                const throughput = metrics.throughput || 0;
-                document.getElementById('throughput').textContent = `${throughput} ops/s`;
-
-                // Update trend indicators
-                this.updateTrendIndicators(metrics);
-            }
-
-            updateTrendIndicators(metrics) {
-                // Performance trend based on latency and throughput
-                const latency = metrics.latency || 0;
-                const throughput = metrics.throughput || 0;
-                const cpuUsage = metrics.cpuUsage || 0;
-
-                let performanceTrend = '📈 Improving';
-                if (latency > 100 || throughput < 20) {
-                    performanceTrend = '📉 Declining';
-                } else if (latency > 50 || throughput < 40) {
-                    performanceTrend = '➡️ Stable';
-                }
-
-                // System health based on multiple factors
-                let systemHealth = '🟢 Healthy';
-                if (cpuUsage > 0.8 || latency > 200 || (1 - (metrics.successRate || 0.95)) > 0.1) {
-                    systemHealth = '🔴 Critical';
-                } else if (cpuUsage > 0.6 || latency > 100 || (1 - (metrics.successRate || 0.95)) > 0.05) {
-                    systemHealth = '🟡 Warning';
-                }
-
-                document.getElementById('performanceTrend').textContent = performanceTrend;
-                document.getElementById('systemHealthTrend').textContent = systemHealth;
-            }
-
-            // Notification management methods
-            async loadNotificationStatus() {
-                try {
-                    const response = await fetch('http://localhost:3000/notifications/status');
-                    const data = await response.json();
-                    if (data.success) {
-                        this.updateNotificationChannels(data.channels);
-                    }
-                } catch (error) {
-                    console.error('Failed to load notification status:', error);
-                }
-            }
-
-            async loadNotificationHistory() {
-                try {
-                    const response = await fetch('http://localhost:3000/notifications/history?limit=20');
-                    const data = await response.json();
-                    if (data.success) {
-                        this.notifications = data.notifications;
-                        this.renderNotifications();
-                    }
-                } catch (error) {
-                    console.error('Failed to load notification history:', error);
-                }
-            }
-
-            updateNotificationChannels(channels) {
-                // Update WebSocket status
-                const wsStatus = channels.websocket;
-                document.getElementById('websocketStatus').textContent =
-                    wsStatus.available ? `🟢 ${wsStatus.status}` : '🔴 Not Available';
-
-                // Update Email status
-                const emailStatus = channels.email;
-                document.getElementById('emailStatus').textContent =
-                    emailStatus.available ? `🟢 ${emailStatus.status}` : '🔴 Not Configured';
-
-                // Update Push status
-                const pushStatus = channels.push;
-                document.getElementById('pushStatus').textContent =
-                    pushStatus.available ? `🟢 ${pushStatus.status}` : '🔴 Not Configured';
-
-                // Update In-App status (always active)
-                document.getElementById('inappStatus').textContent = '🟢 Active';
-            }
-
-            setupNotificationPreferences() {
-                // Load saved preferences from localStorage
-                const savedPrefs = localStorage.getItem('notificationPreferences');
-                if (savedPrefs) {
-                    const prefs = JSON.parse(savedPrefs);
-                    Object.keys(prefs).forEach(key => {
-                        const checkbox = document.getElementById(key);
-                        if (checkbox) {
-                            checkbox.checked = prefs[key];
-                        }
-                    });
-                }
-
-                // Add event listeners for preference changes
-                ['criticalAlerts', 'performanceAlerts', 'workflowAlerts', 'securityAlerts'].forEach(id => {
-                    const checkbox = document.getElementById(id);
-                    if (checkbox) {
-                        checkbox.addEventListener('change', (e) => {
-                            this.saveNotificationPreferences();
-                        });
-                    }
-                });
-
-                // Add test notification button listener
-                const testBtn = document.getElementById('testNotificationBtn');
-                if (testBtn) {
-                    testBtn.addEventListener('click', () => {
-                        this.sendTestNotification();
-                    });
-                }
-            }
-
-            saveNotificationPreferences() {
-                const prefs = {
-                    criticalAlerts: document.getElementById('criticalAlerts').checked,
-                    performanceAlerts: document.getElementById('performanceAlerts').checked,
-                    workflowAlerts: document.getElementById('workflowAlerts').checked,
-                    securityAlerts: document.getElementById('securityAlerts').checked
                 };
 
-                localStorage.setItem('notificationPreferences', JSON.stringify(prefs));
-                console.log('Notification preferences saved:', prefs);
+                document.addEventListener('keydown', handleKeyPress);
             }
 
-            async sendTestNotification() {
-                try {
-                    const response = await fetch('http://localhost:3000/notifications/send', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            type: 'info',
-                            priority: 'medium',
-                            title: 'Test Notification',
-                            message: 'This is a test notification from the TappMCP dashboard',
-                            userId: 'dashboard-user'
-                        })
-                    });
+            refreshAllData() {
+                console.log('Refreshing all data...');
+                this.loadSystemStatus();
+                this.loadPerformanceData();
+                this.loadWorkflows();
+                this.loadTools();
+            }
 
-                    const result = await response.json();
-                    if (result.success) {
-                        console.log('Test notification sent successfully');
-                    } else {
-                        console.error('Failed to send test notification:', result.message);
-                    }
-                } catch (error) {
-                    console.error('Error sending test notification:', error);
-                }
+            exportData() {
+                console.log('Exporting data...');
+                const data = {
+                    timestamp: new Date().toISOString(),
+                    workflows: Array.from(this.workflows.values()),
+                    errors: Object.fromEntries(this.errorStates)
+                };
+
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `tappmcp-data-${Date.now()}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+
+            resetFilters() {
+                console.log('Resetting filters...');
+                // Reset any active filters
+                this.refreshAllData();
             }
         }
 
         // Initialize dashboard when page loads
         document.addEventListener('DOMContentLoaded', () => {
-            window.dashboard = new TappMCPDashboard();
+            console.log('🚀 Dashboard initializing...');
+            try {
+                window.dashboard = new EnhancedTappMCPDashboard();
+                console.log('✅ Dashboard initialized successfully');
+            } catch (error) {
+                console.error('❌ Dashboard initialization failed:', error);
+            }
         });
     </script>
 </body>

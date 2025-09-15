@@ -48,8 +48,8 @@ export class WebSocketChannel {
         data: {
           ...notification,
           channel: 'websocket',
-          timestamp: Date.now()
-        }
+          timestamp: Date.now(),
+        },
       };
 
       const messageStr = JSON.stringify(message);

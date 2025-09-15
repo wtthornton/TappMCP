@@ -16,7 +16,7 @@ import {
   ConnectionInfo,
   ClientSubscription,
   WEBSOCKET_EVENTS,
-  WebSocketEventType
+  WebSocketEventType,
 } from './types.js';
 
 /**
@@ -42,7 +42,7 @@ export class WebSocketServer extends EventEmitter {
     super();
     this.wss = new WSWebSocketServer({
       port: this.port,
-      perMessageDeflate: false // Disable compression for better performance
+      perMessageDeflate: false, // Disable compression for better performance
     });
 
     this.setupEventHandlers();
@@ -84,7 +84,7 @@ export class WebSocketServer extends EventEmitter {
     }
 
     // Close all connections
-    this.connections.forEach((ws) => {
+    this.connections.forEach(ws => {
       ws.close(1000, 'Server shutting down');
     });
 
@@ -112,7 +112,7 @@ export class WebSocketServer extends EventEmitter {
       type: eventType,
       data,
       timestamp: Date.now(),
-      id: this.generateMessageId()
+      id: this.generateMessageId(),
     };
 
     this.connections.forEach((ws, clientId) => {
@@ -146,7 +146,7 @@ export class WebSocketServer extends EventEmitter {
       type: eventType,
       data,
       timestamp: Date.now(),
-      id: this.generateMessageId()
+      id: this.generateMessageId(),
     };
 
     return this.sendToWebSocket(ws, message);
@@ -186,7 +186,7 @@ export class WebSocketServer extends EventEmitter {
   }
 
   private setupEventHandlers(): void {
-    this.wss.on('error', (error) => {
+    this.wss.on('error', error => {
       this.emit('server:error', error);
       console.error('WebSocket server error:', error);
     });
@@ -206,7 +206,7 @@ export class WebSocketServer extends EventEmitter {
       lastActivity: Date.now(),
       subscriptions: [],
       userAgent,
-      ipAddress
+      ipAddress,
     };
     this.connectionInfo.set(clientId, connectionInfo);
 
@@ -218,7 +218,7 @@ export class WebSocketServer extends EventEmitter {
       type: WEBSOCKET_EVENTS.CONNECT,
       data: { clientId, serverTime: Date.now() },
       timestamp: Date.now(),
-      id: this.generateMessageId()
+      id: this.generateMessageId(),
     });
 
     // Handle incoming messages
@@ -278,14 +278,14 @@ export class WebSocketServer extends EventEmitter {
           clientId,
           eventTypes: ['*'], // Subscribe to all events
           filters: {},
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
         this.connectionInfo.set(clientId, connectionInfo);
 
         this.sendToClient(clientId, WEBSOCKET_EVENTS.AUTHENTICATED, {
           success: true,
           userId,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
       }
     } else {
@@ -300,7 +300,7 @@ export class WebSocketServer extends EventEmitter {
       clientId,
       eventTypes: eventTypes || ['*'],
       filters: filters || {},
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     this.subscriptions.set(clientId, subscription);
@@ -314,7 +314,7 @@ export class WebSocketServer extends EventEmitter {
     this.sendToClient(clientId, WEBSOCKET_EVENTS.SUBSCRIBED, {
       eventTypes,
       filters,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -330,7 +330,7 @@ export class WebSocketServer extends EventEmitter {
     }
 
     this.sendToClient(clientId, WEBSOCKET_EVENTS.UNSUBSCRIBED, {
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -348,7 +348,11 @@ export class WebSocketServer extends EventEmitter {
     console.error(`Connection error for ${clientId}:`, error);
   }
 
-  private shouldSendToClient(clientId: string, eventType: WebSocketEventType, filters?: Record<string, any>): boolean {
+  private shouldSendToClient(
+    clientId: string,
+    eventType: WebSocketEventType,
+    filters?: Record<string, any>
+  ): boolean {
     const subscription = this.subscriptions.get(clientId);
     if (!subscription) {
       return false;
@@ -392,7 +396,7 @@ export class WebSocketServer extends EventEmitter {
         type: 'error',
         data: { message },
         timestamp: Date.now(),
-        id: this.generateMessageId()
+        id: this.generateMessageId(),
       });
     }
   }

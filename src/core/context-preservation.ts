@@ -170,8 +170,10 @@ export class ContextPreservationSystem extends EventEmitter {
     const requiredFields = ['projectName', 'description', 'requirements'];
     requiredFields.forEach(field => {
       totalChecks++;
-      if (context[field as keyof BusinessContext] &&
-          context[field as keyof BusinessContext] !== '') {
+      if (
+        context[field as keyof BusinessContext] &&
+        context[field as keyof BusinessContext] !== ''
+      ) {
         score++;
       }
     });
@@ -220,9 +222,11 @@ export class ContextPreservationSystem extends EventEmitter {
     // Check for logical progression in requirements
     if (fromContext.requirements && toContext.requirements) {
       totalChecks++;
-      if (Array.isArray(fromContext.requirements) &&
-          Array.isArray(toContext.requirements) &&
-          toContext.requirements.length >= fromContext.requirements.length) {
+      if (
+        Array.isArray(fromContext.requirements) &&
+        Array.isArray(toContext.requirements) &&
+        toContext.requirements.length >= fromContext.requirements.length
+      ) {
         score++;
       }
     }
@@ -326,12 +330,13 @@ export class ContextPreservationSystem extends EventEmitter {
 
     const allAccuracies = [
       ...this.contextHistory.map(s => s.accuracy),
-      ...this.contextTransitions.map(t => t.accuracy)
+      ...this.contextTransitions.map(t => t.accuracy),
     ];
 
-    const averageAccuracy = allAccuracies.length > 0
-      ? allAccuracies.reduce((sum, acc) => sum + acc, 0) / allAccuracies.length
-      : 1.0;
+    const averageAccuracy =
+      allAccuracies.length > 0
+        ? allAccuracies.reduce((sum, acc) => sum + acc, 0) / allAccuracies.length
+        : 1.0;
 
     const accuracyWarnings = this.contextTransitions.filter(
       t => t.accuracy < this.accuracyThreshold

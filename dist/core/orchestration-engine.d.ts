@@ -6,10 +6,11 @@
  * and business context management for complete SDLC orchestration.
  */
 import { type BusinessContext, type RoleTransition } from './business-context-broker.js';
-import { type QualityMetrics, type QualityAlert } from './quality-monitor.js';
+import { type QualityMetrics } from './quality-monitor.js';
 import { type ContextSnapshot, type ContextTransition } from './context-preservation.js';
-import { type PerformanceMetrics } from './context7-performance-optimizer.js';
+import { type PerformanceMetrics, type PerformanceAlert as Context7PerformanceAlert } from './context7-performance-optimizer.js';
 import { MetricsBroadcaster } from '../websocket/MetricsBroadcaster.js';
+import { EventEmitter } from 'events';
 /**
  * Represents a complete workflow with phases, tasks, and business context
  *
@@ -757,12 +758,13 @@ export interface OptimizedWorkflow {
  * @since 2.0.0
  * @author TappMCP Team
  */
-export declare class OrchestrationEngine {
+export declare class OrchestrationEngine extends EventEmitter {
     /** Business context broker for managing role transitions and business requirements */
     private contextBroker;
     /** Context7 broker for accessing external intelligence and documentation */
     private context7Broker;
     /** Project analysis tools for real analysis integration */
+    private projectPath;
     private projectScanner;
     private securityScanner;
     private staticAnalyzer;
@@ -841,7 +843,7 @@ export declare class OrchestrationEngine {
      *
      * @since 2.0.0
      */
-    constructor();
+    constructor(projectPath?: string);
     /**
      * Sets the metrics broadcaster for real-time workflow updates
      *
@@ -1216,7 +1218,7 @@ export declare class OrchestrationEngine {
     /**
      * Get Context7 performance alerts
      */
-    getContext7PerformanceAlerts(): PerformanceAlert[];
+    getContext7PerformanceAlerts(): Context7PerformanceAlert[];
     /**
      * Get Context7 optimization recommendations
      */
@@ -1494,6 +1496,17 @@ export declare class OrchestrationEngine {
     private hasMonitoring;
     private getExpectedIntelligenceLevel;
     private getFallbackQualityGateResult;
+    /**
+     * Real-time quality monitoring
+     */
+    /**
+     * Start real-time quality monitoring for a workflow
+     */
+    startQualityMonitoring(workflowId: string, context: BusinessContext): void;
+    /**
+     * Stop quality monitoring for a workflow
+     */
+    stopQualityMonitoring(workflowId: string): void;
     /**
      * Perform a quality check for monitoring
      */

@@ -14,7 +14,7 @@ import {
   PerformanceMetrics,
   NotificationMessage,
   WorkflowGraphUpdate,
-  WEBSOCKET_EVENTS
+  WEBSOCKET_EVENTS,
 } from '../websocket/types.js';
 
 // WebSocket type declaration for browser compatibility
@@ -82,7 +82,7 @@ export class WebSocketClient {
           resolve();
         };
 
-        this.ws.onmessage = (event) => {
+        this.ws.onmessage = event => {
           try {
             const message: WebSocketMessage = JSON.parse(event.data);
             this.handleMessage(message);
@@ -92,7 +92,7 @@ export class WebSocketClient {
           }
         };
 
-        this.ws.onclose = (event) => {
+        this.ws.onclose = event => {
           console.log('WebSocket disconnected:', event.code, event.reason);
           this.isConnecting = false;
           this.stopHeartbeat();
@@ -104,13 +104,12 @@ export class WebSocketClient {
           }
         };
 
-        this.ws.onerror = (error) => {
+        this.ws.onerror = error => {
           console.error('WebSocket error:', error);
           this.isConnecting = false;
           this.emit('error', { type: 'connection_error', error });
           reject(error);
         };
-
       } catch (error) {
         this.isConnecting = false;
         reject(error);
@@ -156,7 +155,7 @@ export class WebSocketClient {
       type,
       data,
       timestamp: Date.now(),
-      id: this.generateMessageId()
+      id: this.generateMessageId(),
     };
 
     this.ws.send(JSON.stringify(message));
@@ -266,7 +265,7 @@ export class WebSocketClient {
       connected: this.ws?.readyState === WebSocket.OPEN,
       connecting: this.isConnecting,
       reconnectAttempts: this.reconnectAttempts,
-      url: this.url
+      url: this.url,
     };
   }
 

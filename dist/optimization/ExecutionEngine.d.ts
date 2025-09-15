@@ -132,6 +132,11 @@ export declare const ExecutionPlanSchema: z.ZodObject<{
     description: string;
     id: string;
     dependencies: Record<string, string[]>;
+    constraints: {
+        maxExecutionTime?: number | undefined;
+        maxCost?: number | undefined;
+        requiredReliability?: number | undefined;
+    };
     optimization: {
         enableParallel: boolean;
         enableCaching: boolean;
@@ -143,11 +148,6 @@ export declare const ExecutionPlanSchema: z.ZodObject<{
             backoffMs: number;
         };
     };
-    constraints: {
-        maxExecutionTime?: number | undefined;
-        maxCost?: number | undefined;
-        requiredReliability?: number | undefined;
-    };
     metadata: Record<string, any>;
     steps: any[];
 }, {
@@ -156,6 +156,11 @@ export declare const ExecutionPlanSchema: z.ZodObject<{
     id: string;
     steps: any[];
     dependencies?: Record<string, string[]> | undefined;
+    constraints?: {
+        maxExecutionTime?: number | undefined;
+        maxCost?: number | undefined;
+        requiredReliability?: number | undefined;
+    } | undefined;
     optimization?: {
         enableParallel?: boolean | undefined;
         enableCaching?: boolean | undefined;
@@ -166,11 +171,6 @@ export declare const ExecutionPlanSchema: z.ZodObject<{
             maxRetries?: number | undefined;
             backoffMs?: number | undefined;
         } | undefined;
-    } | undefined;
-    constraints?: {
-        maxExecutionTime?: number | undefined;
-        maxCost?: number | undefined;
-        requiredReliability?: number | undefined;
     } | undefined;
     metadata?: Record<string, any> | undefined;
 }>;

@@ -67,16 +67,11 @@ export interface QualityTrend {
 
 export interface QualityAlert {
   id: string;
-  type: 'degradation' | 'critical-issue' | 'threshold-exceeded' | 'improvement';
-  severity: 'critical' | 'high' | 'medium' | 'low';
-  title: string;
-  description: string;
-  metric: string;
-  currentValue: number;
-  threshold: number;
-  trend: 'improving' | 'stable' | 'degrading';
-  timestamp: string;
-  acknowledged: boolean;
+  type: 'degradation' | 'critical' | 'warning';
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  message: string;
+  details: Record<string, any>;
+  timestamp: number;
   resolved: boolean;
 }
 
@@ -240,7 +235,7 @@ export class QualityMonitor extends EventEmitter {
     // Security score calculation
     if (securityScan) {
       const { critical, high, moderate, low } = securityScan.summary;
-      securityScore = Math.max(0, 100 - (critical * 20) - (high * 10) - (moderate * 5) - (low * 1));
+      securityScore = Math.max(0, 100 - critical * 20 - high * 10 - moderate * 5 - low * 1);
 
       // Add security issues
       securityScan.vulnerabilities.forEach(vuln => {
@@ -297,11 +292,11 @@ export class QualityMonitor extends EventEmitter {
 
     // Calculate overall score (weighted average)
     overallScore = Math.round(
-      (securityScore * 0.25) +
-      (codeQualityScore * 0.25) +
-      (maintainabilityScore * 0.20) +
-      (testCoverageScore * 0.15) +
-      (performanceScore * 0.15)
+      securityScore * 0.25 +
+        codeQualityScore * 0.25 +
+        maintainabilityScore * 0.2 +
+        testCoverageScore * 0.15 +
+        performanceScore * 0.15
     );
 
     // Determine trend
@@ -483,7 +478,9 @@ export class QualityMonitor extends EventEmitter {
   /**
    * Create quality alert
    */
-  private async createAlert(alertData: Omit<QualityAlert, 'id' | 'timestamp' | 'acknowledged' | 'resolved'>): Promise<void> {
+  private async createAlert(
+    alertData: Omit<QualityAlert, 'id' | 'timestamp' | 'acknowledged' | 'resolved'>
+  ): Promise<void> {
     const alert: QualityAlert = {
       id: `alert-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       timestamp: new Date().toISOString(),
@@ -557,8 +554,9 @@ export class QualityMonitor extends EventEmitter {
    * Get quality trend history
    */
   getTrendHistory(limit: number = 100): QualityTrend[] {
-    const trends = Array.from(this.trendHistory.values())
-      .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+    const trends = Array.from(this.trendHistory.values()).sort(
+      (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+    );
 
     return trends.slice(-limit);
   }

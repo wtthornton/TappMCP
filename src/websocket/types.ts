@@ -133,4 +133,4 @@ export const WEBSOCKET_EVENTS = {
   UNSUBSCRIBED: 'unsubscribed',
 } as const;
 
-export type WebSocketEventType = typeof WEBSOCKET_EVENTS[keyof typeof WEBSOCKET_EVENTS];
+export type WebSocketEventType = (typeof WEBSOCKET_EVENTS)[keyof typeof WEBSOCKET_EVENTS];

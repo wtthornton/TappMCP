@@ -74,18 +74,18 @@ export class PushChannel {
           url: '/dashboard',
           notificationId: notification.id,
           type: notification.type,
-          priority: notification.priority
+          priority: notification.priority,
         },
         actions: [
           {
             action: 'view',
-            title: 'View Dashboard'
+            title: 'View Dashboard',
           },
           {
             action: 'dismiss',
-            title: 'Dismiss'
-          }
-        ]
+            title: 'Dismiss',
+          },
+        ],
       });
 
       const result = await webpush.sendNotification(subscription, payload);

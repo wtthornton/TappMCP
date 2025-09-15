@@ -168,7 +168,16 @@ export class FileResource extends MCPResource {
    */
   private async readFile(path: string, config: FileResourceConfig): Promise<FileResourceResponse> {
     try {
-      const data = await fs.readFile(path, { encoding: config.encoding as 'utf8' | 'utf-8' | 'ascii' | 'base64' | 'hex' | 'latin1' | 'binary' });
+      const data = await fs.readFile(path, {
+        encoding: config.encoding as
+          | 'utf8'
+          | 'utf-8'
+          | 'ascii'
+          | 'base64'
+          | 'hex'
+          | 'latin1'
+          | 'binary',
+      });
       const stats = await fs.stat(path);
 
       return {
@@ -185,7 +194,16 @@ export class FileResource extends MCPResource {
     } catch (error) {
       if ((error as any).code === 'ENOENT' && config.createIfNotExists) {
         // Create empty file if it doesn't exist and createIfNotExists is true
-        await fs.writeFile(path, '', { encoding: config.encoding as 'utf8' | 'utf-8' | 'ascii' | 'base64' | 'hex' | 'latin1' | 'binary' });
+        await fs.writeFile(path, '', {
+          encoding: config.encoding as
+            | 'utf8'
+            | 'utf-8'
+            | 'ascii'
+            | 'base64'
+            | 'hex'
+            | 'latin1'
+            | 'binary',
+        });
         return {
           success: true,
           data: '',
@@ -216,7 +234,16 @@ export class FileResource extends MCPResource {
 
     // Write file
     const data = config.data || '';
-    await fs.writeFile(path, data, { encoding: config.encoding as 'utf8' | 'utf-8' | 'ascii' | 'base64' | 'hex' | 'latin1' | 'binary' });
+    await fs.writeFile(path, data, {
+      encoding: config.encoding as
+        | 'utf8'
+        | 'utf-8'
+        | 'ascii'
+        | 'base64'
+        | 'hex'
+        | 'latin1'
+        | 'binary',
+    });
 
     // Set permissions if specified
     if (config.permissions) {
@@ -250,7 +277,16 @@ export class FileResource extends MCPResource {
 
     // Append to file
     const data = config.data || '';
-    await fs.appendFile(path, data, { encoding: config.encoding as 'utf8' | 'utf-8' | 'ascii' | 'base64' | 'hex' | 'latin1' | 'binary' });
+    await fs.appendFile(path, data, {
+      encoding: config.encoding as
+        | 'utf8'
+        | 'utf-8'
+        | 'ascii'
+        | 'base64'
+        | 'hex'
+        | 'latin1'
+        | 'binary',
+    });
 
     const stats = await fs.stat(path);
 

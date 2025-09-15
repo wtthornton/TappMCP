@@ -164,7 +164,11 @@ export class Context7HttpClient {
   private async handleRetry(error: AxiosError): Promise<any> {
     const config = error.config as any;
 
-    if (!config || !config.retryCount) {
+    if (!config) {
+      return Promise.reject(error);
+    }
+
+    if (!config.retryCount) {
       config.retryCount = 0;
     }
 

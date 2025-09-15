@@ -41,7 +41,7 @@ export class EmailChannel {
     }
 
     try {
-      this.transporter = nodemailer.createTransporter({
+      this.transporter = nodemailer.createTransport({
         host: this.config.smtp.host,
         port: this.config.smtp.port,
         secure: this.config.smtp.secure,
@@ -92,7 +92,9 @@ export class EmailChannel {
   }
 
   private getTemplate(type: string): string {
-    return this.config.templates[type] || this.config.templates['default'] || this.getDefaultTemplate();
+    return (
+      this.config.templates[type] || this.config.templates['default'] || this.getDefaultTemplate()
+    );
   }
 
   private renderTemplate(template: string, notification: NotificationMessage): string {

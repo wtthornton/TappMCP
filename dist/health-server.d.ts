@@ -10,5 +10,5 @@ declare let workflowEvents: WorkflowEvents | null;
 declare let performanceEvents: PerformanceEvents | null;
 declare let metricsBroadcaster: MetricsBroadcaster | null;
 declare let orchestrationEngine: OrchestrationEngine | null;
-export { healthServer, wsServer, workflowEvents, performanceEvents, metricsBroadcaster, orchestrationEngine };
+export { healthServer, wsServer, workflowEvents, performanceEvents, metricsBroadcaster, orchestrationEngine, };
 //# sourceMappingURL=health-server.d.ts.map

@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 TappMCP D3.js Visualizations - Working</title>
+    <script src="https://unpkg.com/d3@7/dist/d3.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary-bg: #0a0a0a;
+            --secondary-bg: #1a1a1a;
+            --accent-bg: #2a2a2a;
+            --primary-text: #ffffff;
+            --secondary-text: #b0b0b0;
+            --accent-color: #00ff88;
+            --error-color: #ff4444;
+            --warning-color: #ffaa00;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--primary-bg);
+            color: var(--primary-text);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--secondary-bg);
+            padding: 20px;
+            border-bottom: 1px solid var(--accent-bg);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--accent-color), #4facfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .nav-link {
+            padding: 8px 16px;
+            background: var(--accent-bg);
+            color: var(--primary-text);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: var(--accent-color);
+            color: var(--primary-bg);
+        }
+
+        .nav-link.active {
+            background: var(--accent-color);
+            color: var(--primary-bg);
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--accent-bg);
+            border-radius: 8px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            box-shadow: 0 0 10px var(--accent-color);
+        }
+
+        .status-dot.disconnected {
+            background: var(--error-color);
+            box-shadow: 0 0 10px var(--error-color);
+        }
+
+        .visualization-section {
+            margin: 20px;
+            padding: 20px;
+            background: var(--secondary-bg);
+            border-radius: 12px;
+            border: 1px solid var(--accent-bg);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+            color: var(--accent-color);
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            border: 1px solid var(--accent-bg);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .chart-controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            background: var(--accent-color);
+            color: var(--primary-bg);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #00cc6a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .loading {
+            text-align: center;
+            color: var(--secondary-text);
+            padding: 40px;
+        }
+
+        .error {
+            text-align: center;
+            color: var(--error-color);
+            padding: 40px;
+        }
+
+        .node {
+            cursor: pointer;
+        }
+
+        .node circle {
+            fill: var(--accent-color);
+            stroke: var(--primary-bg);
+            stroke-width: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .node circle:hover {
+            fill: #00cc6a;
+            stroke: var(--primary-text);
+            stroke-width: 3px;
+            transform: scale(1.2);
+        }
+
+        .node text {
+            fill: var(--primary-text);
+            font-size: 12px;
+            text-anchor: middle;
+        }
+
+        .link {
+            fill: none;
+            stroke: var(--secondary-text);
+            stroke-width: 2px;
+            stroke-opacity: 0.6;
+        }
+
+        .bar {
+            fill: var(--accent-color);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .bar:hover {
+            fill: #00cc6a;
+            stroke: var(--primary-text);
+            stroke-width: 2px;
+            transform: scale(1.05);
+            transform-origin: bottom;
+        }
+
+        .axis {
+            color: var(--secondary-text);
+        }
+
+        .axis text {
+            fill: var(--secondary-text);
+        }
+
+        .axis path,
+        .axis line {
+            stroke: var(--secondary-text);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 TappMCP D3.js Visualizations</h1>
+        <p>Interactive data visualizations with real-time updates</p>
+
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">📊 Main Dashboard</a>
+            <a href="d3-visualizations.html" class="nav-link active">📈 D3.js Visualizations</a>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot" id="connectionStatus"></div>
+                <span id="connectionText">Connecting...</span>
+            </div>
+            <div class="status-item">
+                <span>Last updated: <strong id="lastUpdate">Never</strong></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Workflow Graph -->
+    <div class="visualization-section">
+        <h2 class="section-title">🔗 Interactive Workflow Graph</h2>
+        <div class="chart-controls">
+            <button class="btn" onclick="workflowChart.restart()">🔄 Restart</button>
+            <button class="btn" onclick="workflowChart.addRandomNode()">➕ Add Node</button>
+        </div>
+        <div class="chart-container" id="workflow-graph"></div>
+    </div>
+
+    <!-- Performance Chart -->
+    <div class="visualization-section">
+        <h2 class="section-title">📊 Performance Metrics</h2>
+        <div class="chart-controls">
+            <button class="btn" onclick="performanceChart.updateData()">🔄 Update</button>
+            <button class="btn" onclick="performanceChart.toggleMetric()">📈 Toggle View</button>
+        </div>
+        <div class="chart-container" id="performance-chart"></div>
+    </div>
+
+    <script>
+        class WorkingD3Dashboard {
+            constructor() {
+                this.ws = null;
+                this.reconnectAttempts = 0;
+                this.maxReconnectAttempts = 5;
+                this.reconnectDelay = 1000;
+
+                console.log('🚀 Initializing D3 Dashboard...');
+                this.init();
+            }
+
+            init() {
+                this.connectWebSocket();
+                this.initializeCharts();
+            }
+
+            connectWebSocket() {
+                console.log('🔌 Connecting to WebSocket...');
+
+                try {
+                    this.ws = new WebSocket('ws://localhost:8080');
+
+                    this.ws.onopen = () => {
+                        console.log('✅ WebSocket connected!');
+                        this.updateConnectionStatus(true);
+                        this.reconnectAttempts = 0;
+                    };
+
+                    this.ws.onmessage = (event) => {
+                        try {
+                            const data = JSON.parse(event.data);
+                            this.handleMessage(data);
+                        } catch (error) {
+                            console.error('❌ Message parse error:', error);
+                        }
+                    };
+
+                    this.ws.onclose = (event) => {
+                        console.log('❌ WebSocket disconnected. Code:', event.code);
+                        this.updateConnectionStatus(false);
+                        this.scheduleReconnect();
+                    };
+
+                    this.ws.onerror = (error) => {
+                        console.error('❌ WebSocket error:', error);
+                        this.updateConnectionStatus(false);
+                    };
+
+                } catch (error) {
+                    console.error('❌ WebSocket connection failed:', error);
+                    this.updateConnectionStatus(false);
+                    this.scheduleReconnect();
+                }
+            }
+
+            handleMessage(data) {
+                document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+
+                switch (data.type) {
+                    case 'performance_metrics':
+                        if (window.performanceChart) {
+                            window.performanceChart.updateWithData(data.data);
+                        }
+                        break;
+                    case 'workflow_status_update':
+                        if (window.workflowChart) {
+                            window.workflowChart.updateWithData(data.data);
+                        }
+                        break;
+                }
+            }
+
+            updateConnectionStatus(connected) {
+                const statusDot = document.getElementById('connectionStatus');
+                const statusText = document.getElementById('connectionText');
+
+                if (connected) {
+                    statusDot.classList.remove('disconnected');
+                    statusText.textContent = 'Connected';
+                } else {
+                    statusDot.classList.add('disconnected');
+                    statusText.textContent = 'Disconnected';
+                }
+            }
+
+            scheduleReconnect() {
+                if (this.reconnectAttempts < this.maxReconnectAttempts) {
+                    this.reconnectAttempts++;
+                    const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
+
+                    console.log(`🔄 Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts})`);
+                    setTimeout(() => this.connectWebSocket(), delay);
+                }
+            }
+
+            initializeCharts() {
+                // Initialize workflow chart
+                window.workflowChart = new WorkflowChart('#workflow-graph');
+                window.performanceChart = new PerformanceChart('#performance-chart');
+            }
+        }
+
+        class WorkflowChart {
+            constructor(selector) {
+                this.container = d3.select(selector);
+                this.width = 800;
+                this.height = 400;
+
+                this.svg = this.container.append('svg')
+                    .attr('width', this.width)
+                    .attr('height', this.height);
+
+                this.nodes = [
+                    { id: 'start', name: 'Start', x: 100, y: 200 },
+                    { id: 'process', name: 'Process', x: 300, y: 200 },
+                    { id: 'analyze', name: 'Analyze', x: 500, y: 200 },
+                    { id: 'end', name: 'End', x: 700, y: 200 }
+                ];
+
+                this.links = [
+                    { source: 'start', target: 'process' },
+                    { source: 'process', target: 'analyze' },
+                    { source: 'analyze', target: 'end' }
+                ];
+
+                this.render();
+            }
+
+            render() {
+                // Clear previous render
+                this.svg.selectAll('*').remove();
+
+                // Draw links
+                const link = this.svg.selectAll('.link')
+                    .data(this.links)
+                    .enter()
+                    .append('line')
+                    .attr('class', 'link')
+                    .attr('x1', d => this.nodes.find(n => n.id === d.source).x)
+                    .attr('y1', d => this.nodes.find(n => n.id === d.source).y)
+                    .attr('x2', d => this.nodes.find(n => n.id === d.target).x)
+                    .attr('y2', d => this.nodes.find(n => n.id === d.target).y);
+
+                // Draw nodes
+                const node = this.svg.selectAll('.node')
+                    .data(this.nodes)
+                    .enter()
+                    .append('g')
+                    .attr('class', 'node')
+                    .attr('transform', d => `translate(${d.x},${d.y})`);
+
+                node.append('circle')
+                    .attr('r', 30)
+                    .on('click', (event, d) => {
+                        console.log('Clicked node:', d.name);
+                    });
+
+                node.append('text')
+                    .text(d => d.name)
+                    .attr('dy', 5);
+            }
+
+            restart() {
+                console.log('🔄 Restarting workflow chart...');
+                this.render();
+            }
+
+            addRandomNode() {
+                const newNode = {
+                    id: `node_${Date.now()}`,
+                    name: `Node ${this.nodes.length}`,
+                    x: Math.random() * (this.width - 100) + 50,
+                    y: Math.random() * (this.height - 100) + 50
+                };
+
+                this.nodes.push(newNode);
+                this.render();
+            }
+
+            updateWithData(data) {
+                // Update nodes based on workflow data
+                console.log('📊 Updating workflow chart with data:', data.name);
+            }
+        }
+
+        class PerformanceChart {
+            constructor(selector) {
+                this.container = d3.select(selector);
+                this.width = 800;
+                this.height = 400;
+                this.margin = { top: 20, right: 30, bottom: 40, left: 50 };
+
+                this.svg = this.container.append('svg')
+                    .attr('width', this.width)
+                    .attr('height', this.height);
+
+                this.data = [
+                    { name: 'CPU', value: 45 },
+                    { name: 'Memory', value: 67 },
+                    { name: 'Network', value: 23 },
+                    { name: 'Disk', value: 89 },
+                    { name: 'Response', value: 34 }
+                ];
+
+                this.render();
+            }
+
+            render() {
+                // Clear previous render
+                this.svg.selectAll('*').remove();
+
+                const x = d3.scaleBand()
+                    .domain(this.data.map(d => d.name))
+                    .range([this.margin.left, this.width - this.margin.right])
+                    .padding(0.1);
+
+                const y = d3.scaleLinear()
+                    .domain([0, d3.max(this.data, d => d.value)])
+                    .range([this.height - this.margin.bottom, this.margin.top]);
+
+                // Draw bars
+                this.svg.selectAll('.bar')
+                    .data(this.data)
+                    .enter()
+                    .append('rect')
+                    .attr('class', 'bar')
+                    .attr('x', d => x(d.name))
+                    .attr('y', d => y(d.value))
+                    .attr('width', x.bandwidth())
+                    .attr('height', d => y(0) - y(d.value));
+
+                // Draw axes
+                this.svg.append('g')
+                    .attr('class', 'axis')
+                    .attr('transform', `translate(0,${this.height - this.margin.bottom})`)
+                    .call(d3.axisBottom(x));
+
+                this.svg.append('g')
+                    .attr('class', 'axis')
+                    .attr('transform', `translate(${this.margin.left},0)`)
+                    .call(d3.axisLeft(y));
+            }
+
+            updateData() {
+                console.log('🔄 Updating performance chart...');
+                this.data.forEach(d => {
+                    d.value = Math.random() * 100;
+                });
+                this.render();
+            }
+
+            toggleMetric() {
+                console.log('📈 Toggling metric view...');
+                // Add different metric view here
+            }
+
+            updateWithData(data) {
+                console.log('📊 Updating performance chart with real data');
+                if (data.cpuUsage !== undefined) {
+                    this.data[0].value = data.cpuUsage;
+                }
+                if (data.memoryUsage && data.memoryUsage.heapUsed) {
+                    this.data[1].value = (data.memoryUsage.heapUsed / data.memoryUsage.heapTotal) * 100;
+                }
+                if (data.responseTime !== undefined) {
+                    this.data[4].value = Math.min(data.responseTime / 10, 100); // Scale response time
+                }
+                this.render();
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Starting D3 Dashboard...');
+            window.d3Dashboard = new WorkingD3Dashboard();
+        });
+    </script>
+</body>
+</html>

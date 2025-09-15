@@ -96,7 +96,7 @@ export class RealTimeDataManager extends EventEmitter {
         errorRate: 0,
         activeConnections: 0,
         uptime: 0,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       },
       valueMetrics: {
         totalTokensUsed: 0,
@@ -107,7 +107,7 @@ export class RealTimeDataManager extends EventEmitter {
         averageQualityScore: 0,
         context7CacheHitRate: 0,
         workflowEfficiency: 0,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       },
       notifications: [],
       systemHealth: {
@@ -116,10 +116,10 @@ export class RealTimeDataManager extends EventEmitter {
           mcp: 'down',
           context7: 'down',
           websocket: 'down',
-          database: 'down'
+          database: 'down',
         },
-        lastUpdate: Date.now()
-      }
+        lastUpdate: Date.now(),
+      },
     };
   }
 
@@ -136,7 +136,7 @@ export class RealTimeDataManager extends EventEmitter {
           resolve();
         };
 
-        this.ws.onmessage = (event) => {
+        this.ws.onmessage = event => {
           try {
             const message = JSON.parse(event.data);
             this.handleMessage(message);
@@ -145,19 +145,18 @@ export class RealTimeDataManager extends EventEmitter {
           }
         };
 
-        this.ws.onclose = (event) => {
+        this.ws.onclose = event => {
           console.log('WebSocket disconnected:', event.code, event.reason);
           this.isConnected = false;
           this.emit('disconnected');
           this.handleReconnect();
         };
 
-        this.ws.onerror = (error) => {
+        this.ws.onerror = error => {
           console.error('WebSocket error:', error);
           this.emit('error', error);
           reject(error);
         };
-
       } catch (error) {
         reject(error);
       }
@@ -205,7 +204,10 @@ export class RealTimeDataManager extends EventEmitter {
     const existingIndex = this.data.workflows.findIndex(w => w.id === workflowData.id);
 
     if (existingIndex >= 0) {
-      this.data.workflows[existingIndex] = { ...this.data.workflows[existingIndex], ...workflowData };
+      this.data.workflows[existingIndex] = {
+        ...this.data.workflows[existingIndex],
+        ...workflowData,
+      };
     } else {
       this.data.workflows.push(workflowData);
     }
@@ -254,7 +256,9 @@ export class RealTimeDataManager extends EventEmitter {
       this.reconnectAttempts++;
       const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
 
-      console.log(`Attempting to reconnect in ${delay}ms (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
+      console.log(
+        `Attempting to reconnect in ${delay}ms (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})`
+      );
 
       setTimeout(() => {
         this.connect().catch(error => {
@@ -288,7 +292,7 @@ export class RealTimeDataManager extends EventEmitter {
       errorRate: Math.random() * 0.02,
       activeConnections: Math.floor(Math.random() * 10) + 1,
       uptime: now - (Date.now() - 3600000), // 1 hour uptime
-      timestamp: now
+      timestamp: now,
     });
 
     // Update value metrics
@@ -301,7 +305,7 @@ export class RealTimeDataManager extends EventEmitter {
       averageQualityScore: 75 + Math.random() * 20,
       context7CacheHitRate: 60 + Math.random() * 30,
       workflowEfficiency: 70 + Math.random() * 25,
-      timestamp: now
+      timestamp: now,
     });
 
     // Update workflows occasionally
@@ -325,8 +329,8 @@ export class RealTimeDataManager extends EventEmitter {
           qualityScore: 70 + Math.random() * 25,
           efficiency: 65 + Math.random() * 30,
           costSavings: 0.5 + Math.random() * 2.0,
-          timeSaved: 300 + Math.random() * 600
-        }
+          timeSaved: 300 + Math.random() * 600,
+        },
       });
     }
   }
@@ -382,7 +386,7 @@ export class RealTimeDataManager extends EventEmitter {
     return {
       connected: this.isConnected,
       reconnectAttempts: this.reconnectAttempts,
-      maxReconnectAttempts: this.maxReconnectAttempts
+      maxReconnectAttempts: this.maxReconnectAttempts,
     };
   }
 }

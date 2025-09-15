@@ -46,7 +46,7 @@ export interface NotificationPreference {
   enabled: boolean;
   quietHours?: {
     start: string; // HH:MM format
-    end: string;   // HH:MM format
+    end: string; // HH:MM format
     timezone: string;
   };
 }
@@ -229,7 +229,7 @@ export const DEFAULT_NOTIFICATION_CONFIG: NotificationServiceConfig = {
   enableQuietHours: true,
   enableBatching: true,
   enableFiltering: true,
-  enableLearning: true
+  enableLearning: true,
 };
 
 /**
@@ -240,7 +240,7 @@ export const PRIORITY_WEIGHTS: Record<NotificationPriority, number> = {
   high: 80,
   medium: 60,
   low: 40,
-  info: 20
+  info: 20,
 };
 
 /**
@@ -253,7 +253,7 @@ export const NOTIFICATION_TYPE_ICONS: Record<NotificationType, string> = {
   user_action: 'user',
   reminder: 'clock',
   update: 'info',
-  security: 'shield'
+  security: 'shield',
 };
 
 /**
@@ -263,6 +263,5 @@ export const CHANNEL_DISPLAY_NAMES: Record<NotificationChannel, string> = {
   websocket: 'Real-time',
   email: 'Email',
   push: 'Push Notification',
-  in_app: 'In-App'
+  in_app: 'In-App',
 };
-

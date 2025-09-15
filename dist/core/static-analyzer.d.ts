@@ -14,6 +14,13 @@ export interface StaticAnalysisResult {
         maintainability: number;
         duplication: number;
     };
+    complexity: number;
+    maintainability: number;
+    testCoverage: number;
+    codeSmells: number;
+    qualityScore: number;
+    recommendations: string[];
+    analysisTimestamp: number;
 }
 export interface StaticIssue {
     id: string;
@@ -29,9 +36,21 @@ export declare class StaticAnalyzer {
     private projectPath;
     constructor(projectPath: string);
     /**
+     * Analyze code quality (alias for runStaticAnalysis)
+     */
+    analyzeCode(): Promise<StaticAnalysisResult>;
+    /**
      * Run comprehensive static analysis using multiple tools
      */
     runStaticAnalysis(): Promise<StaticAnalysisResult>;
+    /**
+     * Calculate quality score based on metrics and summary
+     */
+    private calculateQualityScore;
+    /**
+     * Generate recommendations based on issues and metrics
+     */
+    private generateRecommendations;
     /**
      * Run ESLint analysis
      */

@@ -92,7 +92,7 @@ export class ResponseRelevanceScorer {
       intentMatching,
       domainRelevance,
       temporalRelevance,
-      userSatisfaction
+      userSatisfaction,
     });
 
     // Calculate confidence based on data availability
@@ -102,7 +102,7 @@ export class ResponseRelevanceScorer {
       intentMatching,
       domainRelevance,
       temporalRelevance,
-      userSatisfaction
+      userSatisfaction,
     });
 
     return {
@@ -113,7 +113,7 @@ export class ResponseRelevanceScorer {
       domainRelevance,
       temporalRelevance,
       userSatisfaction,
-      confidence
+      confidence,
     };
   }
 
@@ -147,11 +147,11 @@ export class ResponseRelevanceScorer {
     const periods = [
       { name: 'Last 24 hours', hours: 24 },
       { name: 'Last 7 days', hours: 24 * 7 },
-      { name: 'Last 30 days', hours: 24 * 30 }
+      { name: 'Last 30 days', hours: 24 * 30 },
     ];
 
     for (const period of periods) {
-      const cutoffTime = Date.now() - (period.hours * 60 * 60 * 1000);
+      const cutoffTime = Date.now() - period.hours * 60 * 60 * 1000;
       const periodMetrics = filteredMetrics.filter(m => m.timestamp >= cutoffTime);
 
       if (periodMetrics.length >= 5) {
@@ -175,7 +175,9 @@ export class ResponseRelevanceScorer {
     }
 
     // Analyze contextual alignment trends
-    const avgContextualAlignment = this.calculateAverage(recentMetrics.map(m => m.relevanceScore.contextualAlignment));
+    const avgContextualAlignment = this.calculateAverage(
+      recentMetrics.map(m => m.relevanceScore.contextualAlignment)
+    );
     if (avgContextualAlignment < 0.6) {
       insights.push({
         type: 'decline',
@@ -186,14 +188,16 @@ export class ResponseRelevanceScorer {
         suggestedActions: [
           'Improve context understanding algorithms',
           'Enhance user context extraction',
-          'Add better context-response matching'
+          'Add better context-response matching',
         ],
-        confidence: 0.9
+        confidence: 0.9,
       });
     }
 
     // Analyze semantic similarity patterns
-    const avgSemanticSimilarity = this.calculateAverage(recentMetrics.map(m => m.relevanceScore.semanticSimilarity));
+    const avgSemanticSimilarity = this.calculateAverage(
+      recentMetrics.map(m => m.relevanceScore.semanticSimilarity)
+    );
     if (avgSemanticSimilarity < 0.5) {
       insights.push({
         type: 'pattern',
@@ -204,14 +208,16 @@ export class ResponseRelevanceScorer {
         suggestedActions: [
           'Enhance semantic analysis algorithms',
           'Improve natural language understanding',
-          'Add better semantic matching techniques'
+          'Add better semantic matching techniques',
         ],
-        confidence: 0.8
+        confidence: 0.8,
       });
     }
 
     // Analyze intent matching performance
-    const avgIntentMatching = this.calculateAverage(recentMetrics.map(m => m.relevanceScore.intentMatching));
+    const avgIntentMatching = this.calculateAverage(
+      recentMetrics.map(m => m.relevanceScore.intentMatching)
+    );
     if (avgIntentMatching < 0.7) {
       insights.push({
         type: 'improvement',
@@ -222,9 +228,9 @@ export class ResponseRelevanceScorer {
         suggestedActions: [
           'Improve intent classification models',
           'Add more training data for intent recognition',
-          'Enhance intent-response mapping'
+          'Enhance intent-response mapping',
         ],
-        confidence: 0.8
+        confidence: 0.8,
       });
     }
 
@@ -241,10 +247,10 @@ export class ResponseRelevanceScorer {
           suggestedActions: [
             `Enhance ${domain}-specific knowledge base`,
             `Improve domain-specific response generation`,
-            `Add more ${domain} examples and patterns`
+            `Add more ${domain} examples and patterns`,
           ],
           confidence: 0.7,
-          affectedDomains: [domain]
+          affectedDomains: [domain],
         });
       }
     }
@@ -311,14 +317,19 @@ export class ResponseRelevanceScorer {
     feedbackRate: number;
   } {
     const allMetrics = Array.from(this.relevanceMetrics.values());
-    const totalFeedback = Array.from(this.feedbackHistory.values()).reduce((sum, feedbacks) => sum + feedbacks.length, 0);
+    const totalFeedback = Array.from(this.feedbackHistory.values()).reduce(
+      (sum, feedbacks) => sum + feedbacks.length,
+      0
+    );
 
     return {
       totalResponses: allMetrics.length,
-      averageRelevance: this.calculateAverage(allMetrics.map(m => m.relevanceScore.overallRelevance)),
+      averageRelevance: this.calculateAverage(
+        allMetrics.map(m => m.relevanceScore.overallRelevance)
+      ),
       relevanceDistribution: this.calculateRelevanceDistribution(allMetrics),
       topDomains: this.getTopDomainsByRelevance(allMetrics),
-      feedbackRate: allMetrics.length > 0 ? totalFeedback / allMetrics.length : 0
+      feedbackRate: allMetrics.length > 0 ? totalFeedback / allMetrics.length : 0,
     };
   }
 
@@ -333,7 +344,11 @@ export class ResponseRelevanceScorer {
     const overlap = this.calculateConceptOverlap(responseConcepts, contextConcepts);
 
     // Weight by concept importance
-    const weightedAlignment = this.calculateWeightedAlignment(responseConcepts, contextConcepts, overlap);
+    const weightedAlignment = this.calculateWeightedAlignment(
+      responseConcepts,
+      contextConcepts,
+      overlap
+    );
 
     return Math.min(1, weightedAlignment);
   }
@@ -358,11 +373,11 @@ export class ResponseRelevanceScorer {
   private calculateOverallRelevance(scores: Partial<RelevanceScore>): number {
     const weights = {
       contextualAlignment: 0.25,
-      semanticSimilarity: 0.20,
-      intentMatching: 0.20,
+      semanticSimilarity: 0.2,
+      intentMatching: 0.2,
       domainRelevance: 0.15,
-      temporalRelevance: 0.10,
-      userSatisfaction: 0.10
+      temporalRelevance: 0.1,
+      userSatisfaction: 0.1,
     };
 
     let weightedSum = 0;
@@ -397,7 +412,8 @@ export class ResponseRelevanceScorer {
 
   private extractConcepts(text: string): string[] {
     // Simple concept extraction - in a real implementation, this would use NLP
-    const words = text.toLowerCase()
+    const words = text
+      .toLowerCase()
       .replace(/[^\w\s]/g, ' ')
       .split(/\s+/)
       .filter(word => word.length > 3)
@@ -415,7 +431,11 @@ export class ResponseRelevanceScorer {
     return intersection.size / union.size; // Jaccard similarity
   }
 
-  private calculateWeightedAlignment(concepts1: string[], concepts2: string[], overlap: number): number {
+  private calculateWeightedAlignment(
+    concepts1: string[],
+    concepts2: string[],
+    overlap: number
+  ): number {
     // Weight by concept frequency and importance
     const conceptWeights = new Map<string, number>();
 
@@ -425,12 +445,20 @@ export class ResponseRelevanceScorer {
     });
 
     // Apply weights to overlap calculation
-    const weightedOverlap = this.calculateWeightedConceptOverlap(concepts1, concepts2, conceptWeights);
+    const weightedOverlap = this.calculateWeightedConceptOverlap(
+      concepts1,
+      concepts2,
+      conceptWeights
+    );
 
     return Math.max(overlap, weightedOverlap);
   }
 
-  private calculateWeightedConceptOverlap(concepts1: string[], concepts2: string[], weights: Map<string, number>): number {
+  private calculateWeightedConceptOverlap(
+    concepts1: string[],
+    concepts2: string[],
+    weights: Map<string, number>
+  ): number {
     const set1 = new Set(concepts1);
     const set2 = new Set(concepts2);
 
@@ -478,16 +506,18 @@ export class ResponseRelevanceScorer {
       this.improvementModels.set(domain, {
         totalFeedback: 0,
         positiveFeedback: 0,
-        averageScore: 0
+        averageScore: 0,
       });
     }
 
     const model = this.improvementModels.get(domain)!;
     model.totalFeedback++;
-    if (feedback.score > 3) { // Assuming 1-5 scale
+    if (feedback.score > 3) {
+      // Assuming 1-5 scale
       model.positiveFeedback++;
     }
-    model.averageScore = (model.averageScore * (model.totalFeedback - 1) + feedback.score) / model.totalFeedback;
+    model.averageScore =
+      (model.averageScore * (model.totalFeedback - 1) + feedback.score) / model.totalFeedback;
   }
 
   private getFilteredMetrics(timeRange?: { start: Date; end: Date }): RelevanceMetrics[] {
@@ -498,19 +528,24 @@ export class ResponseRelevanceScorer {
     const startTime = timeRange.start.getTime();
     const endTime = timeRange.end.getTime();
 
-    return Array.from(this.relevanceMetrics.values())
-      .filter(m => m.timestamp >= startTime && m.timestamp <= endTime);
+    return Array.from(this.relevanceMetrics.values()).filter(
+      m => m.timestamp >= startTime && m.timestamp <= endTime
+    );
   }
 
   private calculatePeriodTrend(metrics: RelevanceMetrics[], periodName: string): RelevanceTrend {
     const sortedMetrics = metrics.sort((a, b) => a.timestamp - b.timestamp);
-    const averageRelevance = this.calculateAverage(sortedMetrics.map(m => m.relevanceScore.overallRelevance));
+    const averageRelevance = this.calculateAverage(
+      sortedMetrics.map(m => m.relevanceScore.overallRelevance)
+    );
 
     // Calculate trend direction
     const firstQuarter = sortedMetrics.slice(0, Math.floor(sortedMetrics.length / 4));
     const lastQuarter = sortedMetrics.slice(-Math.floor(sortedMetrics.length / 4));
 
-    const firstAvg = this.calculateAverage(firstQuarter.map(m => m.relevanceScore.overallRelevance));
+    const firstAvg = this.calculateAverage(
+      firstQuarter.map(m => m.relevanceScore.overallRelevance)
+    );
     const lastAvg = this.calculateAverage(lastQuarter.map(m => m.relevanceScore.overallRelevance));
 
     const changePercentage = firstAvg > 0 ? ((lastAvg - firstAvg) / firstAvg) * 100 : 0;
@@ -525,7 +560,7 @@ export class ResponseRelevanceScorer {
       trend,
       changePercentage,
       topImprovements: this.getTopImprovements(sortedMetrics),
-      topDeclines: this.getTopDeclines(sortedMetrics)
+      topDeclines: this.getTopDeclines(sortedMetrics),
     };
   }
 
@@ -541,8 +576,7 @@ export class ResponseRelevanceScorer {
 
   private getRecentMetrics(timeRangeMs: number): RelevanceMetrics[] {
     const cutoffTime = Date.now() - timeRangeMs;
-    return Array.from(this.relevanceMetrics.values())
-      .filter(m => m.timestamp >= cutoffTime);
+    return Array.from(this.relevanceMetrics.values()).filter(m => m.timestamp >= cutoffTime);
   }
 
   private analyzeDomainRelevance(metrics: RelevanceMetrics[]): Map<string, number> {
@@ -585,10 +619,10 @@ export class ResponseRelevanceScorer {
   private calculateRelevanceDistribution(metrics: RelevanceMetrics[]): { [key: string]: number } {
     const distribution = {
       excellent: 0, // 90-100
-      good: 0,      // 70-89
-      average: 0,   // 50-69
-      poor: 0,      // 30-49
-      very_poor: 0  // 0-29
+      good: 0, // 70-89
+      average: 0, // 50-69
+      poor: 0, // 30-49
+      very_poor: 0, // 0-29
     };
 
     for (const metric of metrics) {
@@ -603,12 +637,14 @@ export class ResponseRelevanceScorer {
     return distribution;
   }
 
-  private getTopDomainsByRelevance(metrics: RelevanceMetrics[]): Array<{ domain: string; averageRelevance: number; count: number }> {
+  private getTopDomainsByRelevance(
+    metrics: RelevanceMetrics[]
+  ): Array<{ domain: string; averageRelevance: number; count: number }> {
     // This would analyze domains in a real implementation
     return [
       { domain: 'frontend', averageRelevance: 75.5, count: 25 },
       { domain: 'backend', averageRelevance: 82.3, count: 18 },
-      { domain: 'database', averageRelevance: 68.9, count: 12 }
+      { domain: 'database', averageRelevance: 68.9, count: 12 },
     ];
   }
 
@@ -617,9 +653,9 @@ export class ResponseRelevanceScorer {
 
     const headers = Object.keys(metrics[0]).join(',');
     const rows = metrics.map(metric =>
-      Object.values(metric).map(value =>
-        typeof value === 'object' ? JSON.stringify(value) : value
-      ).join(',')
+      Object.values(metric)
+        .map(value => (typeof value === 'object' ? JSON.stringify(value) : value))
+        .join(',')
     );
 
     return [headers, ...rows].join('\n');
@@ -627,7 +663,20 @@ export class ResponseRelevanceScorer {
 
   private isStopWord(word: string): boolean {
     const stopWords = new Set([
-      'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by'
+      'the',
+      'a',
+      'an',
+      'and',
+      'or',
+      'but',
+      'in',
+      'on',
+      'at',
+      'to',
+      'for',
+      'of',
+      'with',
+      'by',
     ]);
     return stopWords.has(word);
   }
@@ -663,7 +712,7 @@ class DomainAnalyzer {
     const domainKeywords = {
       frontend: ['react', 'vue', 'angular', 'javascript', 'css', 'html'],
       backend: ['api', 'server', 'database', 'node', 'python', 'java'],
-      database: ['sql', 'mongodb', 'postgresql', 'mysql', 'query', 'schema']
+      database: ['sql', 'mongodb', 'postgresql', 'mysql', 'query', 'schema'],
     };
 
     const keywords = domainKeywords[response.domain as keyof typeof domainKeywords] || [];

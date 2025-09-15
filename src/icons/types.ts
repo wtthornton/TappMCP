@@ -33,22 +33,12 @@ export type WorkflowStatus =
 /**
  * Performance status types
  */
-export type PerformanceStatus =
-  | 'excellent'
-  | 'good'
-  | 'warning'
-  | 'critical'
-  | 'unknown';
+export type PerformanceStatus = 'excellent' | 'good' | 'warning' | 'critical' | 'unknown';
 
 /**
  * Notification priority levels
  */
-export type NotificationPriority =
-  | 'critical'
-  | 'high'
-  | 'medium'
-  | 'low'
-  | 'info';
+export type NotificationPriority = 'critical' | 'high' | 'medium' | 'low' | 'info';
 
 /**
  * Icon configuration interface
@@ -87,10 +77,10 @@ export interface IconProps {
 export const COLOR_MAPPING: Record<IconColor, string> = {
   success: '#10B981', // Green
   warning: '#F59E0B', // Yellow
-  error: '#EF4444',   // Red
-  info: '#3B82F6',    // Blue
+  error: '#EF4444', // Red
+  info: '#3B82F6', // Blue
   neutral: '#6B7280', // Gray
-  loading: '#8B5CF6'  // Purple
+  loading: '#8B5CF6', // Purple
 };
 
 /**
@@ -101,6 +91,5 @@ export const SIZE_MAPPING: Record<IconSize, string> = {
   sm: '16px',
   md: '20px',
   lg: '24px',
-  xl: '32px'
+  xl: '32px',
 };
-

@@ -20,9 +20,19 @@ import { handleError, getErrorMessage } from '../utils/errors.js';
 import { ProjectScanner, type ProjectAnalysis } from './project-scanner.js';
 import { SecurityScanner, type SecurityScanResult } from './security-scanner.js';
 import { StaticAnalyzer, type StaticAnalysisResult } from './static-analyzer.js';
-import { QualityMonitor, type QualityMetrics, type QualityAlert } from './quality-monitor.js';
-import { ContextPreservationSystem, type ContextSnapshot, type ContextTransition } from './context-preservation.js';
-import { Context7PerformanceOptimizer, type PerformanceMetrics, type PerformanceAlert as Context7PerformanceAlert } from './context7-performance-optimizer.js';
+import { QualityMonitor, type QualityMetrics } from './quality-monitor.js';
+
+// QualityAlert type is defined later in the file
+import {
+  ContextPreservationSystem,
+  type ContextSnapshot,
+  type ContextTransition,
+} from './context-preservation.js';
+import {
+  Context7PerformanceOptimizer,
+  type PerformanceMetrics,
+  type PerformanceAlert as Context7PerformanceAlert,
+} from './context7-performance-optimizer.js';
 import { dynamicImportManager } from './dynamic-imports.js';
 import { globalPerformanceMonitor } from '../monitoring/performance-monitor.js';
 import { MetricsBroadcaster } from '../websocket/MetricsBroadcaster.js';
@@ -1253,7 +1263,7 @@ export class OrchestrationEngine extends EventEmitter {
           progress: 0,
           currentPhase: 'Initializing workflow',
           startTime: Date.now(),
-          metadata: { message: 'Workflow execution started' }
+          metadata: { message: 'Workflow execution started' },
         });
       }
 
@@ -1296,14 +1306,14 @@ export class OrchestrationEngine extends EventEmitter {
 
         // Broadcast phase start
         if (this.metricsBroadcaster) {
-            this.metricsBroadcaster.updateWorkflowStatus(workflowId, {
-              workflowId,
-              status: 'running',
-              progress,
-              currentPhase: `Executing ${phase.name}`,
-              startTime: Date.now(),
-              metadata: { message: `Starting ${phase.name} phase (${i + 1}/${totalPhases})` }
-            });
+          this.metricsBroadcaster.updateWorkflowStatus(workflowId, {
+            workflowId,
+            status: 'running',
+            progress,
+            currentPhase: `Executing ${phase.name}`,
+            startTime: Date.now(),
+            metadata: { message: `Starting ${phase.name} phase (${i + 1}/${totalPhases})` },
+          });
         }
 
         // Execute phase tasks
@@ -1327,8 +1337,11 @@ export class OrchestrationEngine extends EventEmitter {
               progress: 100,
               currentPhase: `Workflow failed during ${phase.name} phase`,
               startTime: Date.now(),
-              error: phaseResult.issues?.[0]?.message || 'Unknown error',
-              metadata: { failedPhase: phase.name, error: phaseResult.issues?.[0] }
+              error:
+                typeof phaseResult.issues?.[0] === 'string'
+                  ? phaseResult.issues[0]
+                  : 'Unknown error',
+              metadata: { failedPhase: phase.name, error: phaseResult.issues?.[0] },
             });
           }
           break;
@@ -1344,7 +1357,7 @@ export class OrchestrationEngine extends EventEmitter {
             status: 'running',
             progress: Math.round(((i + 1) / totalPhases) * 100),
             currentPhase: `Completed ${phase.name} phase`,
-            startTime: Date.now()
+            startTime: Date.now(),
           });
         }
       }
@@ -1362,8 +1375,9 @@ export class OrchestrationEngine extends EventEmitter {
       result.iconData = {
         status: result.success ? 'completed' : 'failed',
         progress: 100,
-        currentPhase: result.phases.length > 0 ? result.phases[result.phases.length - 1].phase : 'Unknown',
-        systemHealth: this.determineSystemHealth(result.technicalMetrics)
+        currentPhase:
+          result.phases.length > 0 ? result.phases[result.phases.length - 1].phase : 'Unknown',
+        systemHealth: this.determineSystemHealth(result.technicalMetrics),
       };
 
       // Update workflow status
@@ -1378,7 +1392,7 @@ export class OrchestrationEngine extends EventEmitter {
           progress: 100,
           currentPhase: 'Workflow completed',
           startTime: Date.now(),
-          metadata: { executionTime, businessValue: result.businessValue }
+          metadata: { executionTime, businessValue: result.businessValue },
         });
         this.metricsBroadcaster.broadcastWorkflowEvent({
           workflowId,
@@ -1386,9 +1400,9 @@ export class OrchestrationEngine extends EventEmitter {
           data: {
             executionTime: Date.now() - startTime,
             phasesCompleted: result.phases.length,
-            businessScore: result.businessValue.businessScore
+            businessScore: result.businessValue.businessScore,
           },
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
       }
 
@@ -1413,13 +1427,13 @@ export class OrchestrationEngine extends EventEmitter {
           progress: 0,
           currentPhase: 'Workflow failed',
           startTime: Date.now(),
-          metadata: { executionTime, businessValue: 0 }
+          metadata: { executionTime, businessValue: 0 },
         });
         this.metricsBroadcaster.broadcastWorkflowEvent({
           workflowId,
           eventType: 'workflow-failed',
           data: { error: mcpError.message, executionTime },
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
       }
 
@@ -1524,7 +1538,7 @@ export class OrchestrationEngine extends EventEmitter {
     return {
       fromRole,
       toRole,
-      timestamp: new Date().toISOString(),
+      timestamp: Date.now().toString(),
       context,
       preservedData: {
         previousRole: fromRole,
@@ -1587,7 +1601,7 @@ export class OrchestrationEngine extends EventEmitter {
         const transition = this.roleOrchestrator?.validateRoleTransition?.({
           fromRole: currentRole,
           toRole: nextRole,
-          timestamp: new Date().toISOString(),
+          timestamp: Date.now().toString(),
           context: workflow.businessContext,
           preservedData: {},
           transitionId: `validation_${i}`,
@@ -3323,8 +3337,6 @@ ${
     };
   }
 
-
-
   /**
    * Get current quality metrics
    */
@@ -3374,17 +3386,17 @@ ${
     this.contextPreservation.startContextMonitoring();
 
     // Set up event listeners
-    this.contextPreservation.on('context-accuracy-warning', (data) => {
+    this.contextPreservation.on('context-accuracy-warning', data => {
       console.warn(`Context accuracy warning: ${data.accuracy}% (threshold: ${data.threshold}%)`);
       this.emit('context-accuracy-warning', data);
     });
 
-    this.contextPreservation.on('context-validation-failed', (data) => {
+    this.contextPreservation.on('context-validation-failed', data => {
       console.error('Context validation failed:', data.validation.issues);
       this.emit('context-validation-failed', data);
     });
 
-    this.contextPreservation.on('context-accuracy-degradation', (data) => {
+    this.contextPreservation.on('context-accuracy-degradation', data => {
       console.warn(`Context accuracy degraded by ${data.accuracyChange}%`);
       this.emit('context-accuracy-degradation', data);
     });
@@ -3413,7 +3425,12 @@ ${
     oldContext: BusinessContext,
     newContext: BusinessContext
   ): ContextTransition {
-    return this.contextPreservation.trackContextTransition(fromPhase, toPhase, oldContext, newContext);
+    return this.contextPreservation.trackContextTransition(
+      fromPhase,
+      toPhase,
+      oldContext,
+      newContext
+    );
   }
 
   /**
@@ -3541,7 +3558,11 @@ ${
 
     for (const topic of topics) {
       try {
-        const troubleshooting = await this.context7Optimizer.getTroubleshooting(topic, role, 'medium');
+        const troubleshooting = await this.context7Optimizer.getTroubleshooting(
+          topic,
+          role,
+          'medium'
+        );
         if (troubleshooting && troubleshooting.length > 0) {
           results.push(...troubleshooting);
         }
@@ -3830,7 +3851,7 @@ ${
         fileStructure: this.inferFileStructureFromAnalysis(projectAnalysis),
         complexity: this.calculateProjectComplexityFromAnalysis(projectAnalysis),
         technologies: projectAnalysis.detectedTechStack,
-        qualityIssues: projectAnalysis.qualityIssues,
+        // qualityIssues: projectAnalysis.qualityIssues, // Removed - not in ProjectStructure interface
         improvementOpportunities: projectAnalysis.improvementOpportunities,
         analysisDepth: projectAnalysis.analysisDepth,
         analysisTimestamp: projectAnalysis.analysisTimestamp,
@@ -3861,18 +3882,12 @@ ${
       const securityScanResult: SecurityScanResult = await this.securityScanner.runSecurityScan();
 
       return {
-        vulnerabilities: securityScanResult.vulnerabilities.map(vuln => ({
-          id: vuln.id,
-          severity: vuln.severity,
-          description: vuln.description,
-          package: vuln.package,
-          version: vuln.version,
-          cve: vuln.cve,
-          fix: vuln.fix,
-        })),
+        vulnerabilities: securityScanResult.vulnerabilities.map(
+          vuln => `${vuln.severity}: ${vuln.description} (${vuln.package}@${vuln.version})`
+        ),
         securityScore: this.calculateSecurityScoreFromScan(securityScanResult),
         recommendations: this.generateSecurityRecommendationsFromScan(securityScanResult),
-        compliance: this.checkComplianceFromScan(securityScanResult),
+        compliance: [this.checkComplianceFromScan(securityScanResult)],
         scanTime: securityScanResult.scanTime,
         status: securityScanResult.status,
         summary: securityScanResult.summary,
@@ -3904,7 +3919,7 @@ ${
         complexity: staticAnalysisResult.complexity,
         maintainability: staticAnalysisResult.maintainability,
         testCoverage: staticAnalysisResult.testCoverage,
-        codeSmells: staticAnalysisResult.codeSmells,
+        codeSmells: [staticAnalysisResult.codeSmells.toString()],
         qualityScore: staticAnalysisResult.qualityScore,
         issues: staticAnalysisResult.issues,
         metrics: staticAnalysisResult.metrics,
@@ -3938,16 +3953,19 @@ ${
   }> {
     try {
       // Run all analysis tools in parallel for efficiency
-      const [projectStructure, securityAnalysis, codeQuality, dependencies] = await Promise.allSettled([
-        this.analyzeProjectStructure(context),
-        this.performSecurityAnalysis(context),
-        this.analyzeCodeQuality(context),
-        this.analyzeDependencies(context),
-      ]);
+      const [projectStructure, securityAnalysis, codeQuality, dependencies] =
+        await Promise.allSettled([
+          this.analyzeProjectStructure(context),
+          this.performSecurityAnalysis(context),
+          this.analyzeCodeQuality(context),
+          this.analyzeDependencies(context),
+        ]);
 
       return {
-        projectStructure: projectStructure.status === 'fulfilled' ? projectStructure.value : undefined,
-        securityAnalysis: securityAnalysis.status === 'fulfilled' ? securityAnalysis.value : undefined,
+        projectStructure:
+          projectStructure.status === 'fulfilled' ? projectStructure.value : undefined,
+        securityAnalysis:
+          securityAnalysis.status === 'fulfilled' ? securityAnalysis.value : undefined,
         codeQuality: codeQuality.status === 'fulfilled' ? codeQuality.value : undefined,
         dependencies: dependencies.status === 'fulfilled' ? dependencies.value : undefined,
       };
@@ -3981,9 +3999,13 @@ ${
   private detectArchitectureFromAnalysis(projectAnalysis: ProjectAnalysis): string {
     const fileStructure = projectAnalysis.projectStructure;
     const hasSrc = fileStructure.folders.includes('src');
-    const hasComponents = fileStructure.folders.includes('components') || fileStructure.folders.includes('src/components');
-    const hasPages = fileStructure.folders.includes('pages') || fileStructure.folders.includes('src/pages');
-    const hasApi = fileStructure.folders.includes('api') || fileStructure.folders.includes('src/api');
+    const hasComponents =
+      fileStructure.folders.includes('components') ||
+      fileStructure.folders.includes('src/components');
+    const hasPages =
+      fileStructure.folders.includes('pages') || fileStructure.folders.includes('src/pages');
+    const hasApi =
+      fileStructure.folders.includes('api') || fileStructure.folders.includes('src/api');
 
     if (hasComponents && hasPages) return 'spa';
     if (hasApi && hasSrc) return 'api';
@@ -4004,7 +4026,10 @@ ${
     const devDepCount = Object.keys(projectAnalysis.projectMetadata.devDependencies || {}).length;
 
     // Simple complexity calculation based on project size
-    const complexity = Math.min((fileCount * 0.1) + (folderCount * 0.2) + (depCount * 0.3) + (devDepCount * 0.1), 10);
+    const complexity = Math.min(
+      fileCount * 0.1 + folderCount * 0.2 + depCount * 0.3 + devDepCount * 0.1,
+      10
+    );
     return Math.round(complexity * 10) / 10;
   }
 
@@ -4015,11 +4040,13 @@ ${
     if (total === 0) return 100;
 
     // Weighted scoring: critical = -20, high = -10, moderate = -5, low = -1
-    const score = 100 - (critical * 20) - (high * 10) - (moderate * 5) - (low * 1);
+    const score = 100 - critical * 20 - high * 10 - moderate * 5 - low * 1;
     return Math.max(0, Math.min(100, score));
   }
 
-  private generateSecurityRecommendationsFromScan(securityScanResult: SecurityScanResult): string[] {
+  private generateSecurityRecommendationsFromScan(
+    securityScanResult: SecurityScanResult
+  ): string[] {
     const recommendations: string[] = [];
     const { critical, high, moderate, low } = securityScanResult.summary;
 
@@ -4158,7 +4185,9 @@ ${
         (v: any) => v.severity === 'critical'
       ).length;
       if (criticalVulns > 0) {
-        recommendations.push(`Address ${criticalVulns} critical security vulnerabilities immediately`);
+        recommendations.push(
+          `Address ${criticalVulns} critical security vulnerabilities immediately`
+        );
       }
     }
 
@@ -4205,7 +4234,9 @@ ${
     }> = [];
 
     // Critical security issues
-    if (analysisResults.securityAnalysis?.vulnerabilities?.some((v: any) => v.severity === 'critical')) {
+    if (
+      analysisResults.securityAnalysis?.vulnerabilities?.some((v: any) => v.severity === 'critical')
+    ) {
       actions.push({
         action: 'Fix critical security vulnerabilities',
         priority: 'critical',
@@ -4293,25 +4324,25 @@ ${
 
     // General pitfalls
     pitfalls.push('Avoid hardcoded values and secrets');
-    pitfalls.push('Don\'t skip error handling');
+    pitfalls.push("Don't skip error handling");
     pitfalls.push('Avoid over-engineering solutions');
 
     // Role-specific pitfalls
     switch (role) {
       case 'developer':
-        pitfalls.push('Don\'t skip writing tests');
+        pitfalls.push("Don't skip writing tests");
         pitfalls.push('Avoid premature optimization');
-        pitfalls.push('Don\'t ignore code reviews');
+        pitfalls.push("Don't ignore code reviews");
         break;
       case 'product-strategist':
-        pitfalls.push('Don\'t ignore user feedback');
+        pitfalls.push("Don't ignore user feedback");
         pitfalls.push('Avoid scope creep');
-        pitfalls.push('Don\'t skip market research');
+        pitfalls.push("Don't skip market research");
         break;
       case 'qa-engineer':
-        pitfalls.push('Don\'t rely only on manual testing');
+        pitfalls.push("Don't rely only on manual testing");
         pitfalls.push('Avoid testing only happy paths');
-        pitfalls.push('Don\'t skip security testing');
+        pitfalls.push("Don't skip security testing");
         break;
     }
 
@@ -5301,7 +5332,7 @@ ${
         threshold: this.getQualityThreshold(phase),
         checks: qualityChecks,
         recommendations: this.generateQualityRecommendations(qualityChecks, qualityScore),
-        timestamp: new Date().toISOString(),
+        timestamp: Date.now(),
       };
 
       if (!passed) {
@@ -5768,7 +5799,7 @@ ${
         },
       ],
       recommendations: ['Fix system error and retry quality gate validation'],
-      timestamp: new Date().toISOString(),
+      timestamp: Date.now().toString(),
     };
   }
 
@@ -5931,7 +5962,7 @@ ${
             state.qualityHistory[state.qualityHistory.length - 2].categoryScores
           ),
         },
-        timestamp: new Date().toISOString(),
+        timestamp: Date.now(),
       };
 
       state.alerts.push(alert);
@@ -5955,7 +5986,7 @@ ${
           issues: criticalIssues,
           overallScore: assessment.overallScore,
         },
-        timestamp: new Date().toISOString(),
+        timestamp: Date.now(),
       };
 
       const state = this.qualityMonitoringState.get(workflowId);
@@ -6835,7 +6866,7 @@ ${
       // Create initial context history entry
       const initialEntry: ContextHistoryEntry = {
         id: `ctx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        timestamp: new Date().toISOString(),
+        timestamp: Date.now(),
         phase: initialContext.phase,
         context: { ...initialContext },
         accuracy: 1.0,
@@ -6911,7 +6942,7 @@ ${
       // Create new context history entry
       const entry: ContextHistoryEntry = {
         id: `ctx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        timestamp: new Date().toISOString(),
+        timestamp: Date.now(),
         phase: newContext.phase,
         context: newContext,
         accuracy: await this.calculateContextAccuracy(newContext),
@@ -7538,7 +7569,7 @@ ${
           missingElements: ['Context not found for one or both phases'],
           conflictingElements: [],
           recommendations: ['Ensure context is properly preserved between phases'],
-          timestamp: new Date().toISOString(),
+          timestamp: Date.now().toString(),
         };
       }
 
@@ -7588,7 +7619,7 @@ ${
         missingElements,
         conflictingElements,
         recommendations,
-        timestamp: new Date().toISOString(),
+        timestamp: Date.now(),
       };
     } catch (error) {
       console.error('Failed to check context continuity:', error);
@@ -7870,7 +7901,7 @@ ${
         templateType: templateType || 'generic',
         detectedPatterns,
         suggestions,
-        timestamp: new Date().toISOString(),
+        timestamp: Date.now(),
       };
     } catch (error) {
       console.error('Failed to detect template response:', error);
@@ -10495,7 +10526,9 @@ ${
    *
    * @since 2.0.0
    */
-  private determineSystemHealth(metrics: OrchestrationMetrics): 'healthy' | 'degraded' | 'unhealthy' | 'maintenance' {
+  private determineSystemHealth(
+    metrics: OrchestrationMetrics
+  ): 'healthy' | 'degraded' | 'unhealthy' | 'maintenance' {
     // Check performance score
     if (metrics.performanceScore < 0.5) {
       return 'unhealthy';

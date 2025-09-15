@@ -68,7 +68,7 @@ export class TemplateDetectionEngine {
       contextualRelevance: 0,
       improvementSuggestions: [],
       detectedPatterns: [],
-      qualityScore: 0
+      qualityScore: 0,
     };
 
     // 1. Check for template patterns
@@ -127,7 +127,7 @@ export class TemplateDetectionEngine {
       originality: this.measureOriginality(response),
       specificity: this.assessSpecificity(response),
       confidence: 1 - templateResult.confidence,
-      sourceQuality: this.evaluateSourceQuality(response.source)
+      sourceQuality: this.evaluateSourceQuality(response.source),
     };
   }
 
@@ -194,7 +194,7 @@ export class TemplateDetectionEngine {
     const sharedWords = contentWords.filter(word => contextWords.includes(word));
     const wordRelevance = sharedWords.length / Math.max(contentWords.length, contextWords.length);
 
-    return Math.min(1, (relevanceScore / Math.max(totalChecks, 1)) + wordRelevance * 0.5);
+    return Math.min(1, relevanceScore / Math.max(totalChecks, 1) + wordRelevance * 0.5);
   }
 
   /**
@@ -209,7 +209,7 @@ export class TemplateDetectionEngine {
       /<.*?>/g, // <placeholder>
       /TODO|FIXME|HACK|NOTE:/gi,
       /your_.*?here/gi,
-      /replace_with_.*/gi
+      /replace_with_.*/gi,
     ];
 
     const matches: string[] = [];
@@ -227,7 +227,10 @@ export class TemplateDetectionEngine {
   /**
    * Calculate overall quality score
    */
-  private calculateQualityScore(response: AIResponse, templateResult: TemplateDetectionResult): number {
+  private calculateQualityScore(
+    response: AIResponse,
+    templateResult: TemplateDetectionResult
+  ): number {
     let score = 100;
 
     // Penalize template detection
@@ -256,7 +259,10 @@ export class TemplateDetectionEngine {
   /**
    * Calculate overall intelligence score
    */
-  private calculateOverallScore(response: AIResponse, templateResult: TemplateDetectionResult): number {
+  private calculateOverallScore(
+    response: AIResponse,
+    templateResult: TemplateDetectionResult
+  ): number {
     const contextualScore = templateResult.contextualRelevance * 25;
     const domainScore = this.evaluateDomainKnowledge(response) * 25;
     const originalityScore = this.measureOriginality(response) * 25;
@@ -274,9 +280,7 @@ export class TemplateDetectionEngine {
     const domainTerms = this.domainSpecificTerms.get(response.domain) || [];
     const content = response.content.toLowerCase();
 
-    const matchingTerms = domainTerms.filter(term =>
-      content.includes(term.toLowerCase())
-    );
+    const matchingTerms = domainTerms.filter(term => content.includes(term.toLowerCase()));
 
     return Math.min(1, matchingTerms.length / Math.max(domainTerms.length, 1));
   }
@@ -298,14 +302,12 @@ export class TemplateDetectionEngine {
       /^let me help you/i,
       /^i can assist you/i,
       /^to answer your question/i,
-      /^based on your request/i
+      /^based on your request/i,
     ];
 
-    const genericMatches = genericStructures.filter(pattern =>
-      pattern.test(content)
-    ).length;
+    const genericMatches = genericStructures.filter(pattern => pattern.test(content)).length;
 
-    const structureScore = Math.max(0, 1 - (genericMatches / genericStructures.length));
+    const structureScore = Math.max(0, 1 - genericMatches / genericStructures.length);
 
     return (uniquenessRatio + structureScore) / 2;
   }
@@ -323,7 +325,7 @@ export class TemplateDetectionEngine {
       /\b[A-Z][a-z]+ [A-Z][a-z]+\b/g, // Proper names
       /\bhttps?:\/\/\S+/g, // URLs
       /\b\w+\.\w+/g, // File extensions, domains
-      /\b[A-Z]{2,}\b/g // Acronyms
+      /\b[A-Z]{2,}\b/g, // Acronyms
     ];
 
     let specificityCount = 0;
@@ -363,23 +365,34 @@ export class TemplateDetectionEngine {
   /**
    * Generate improvement suggestions
    */
-  private generateImprovementSuggestions(result: TemplateDetectionResult, response: AIResponse): string[] {
+  private generateImprovementSuggestions(
+    result: TemplateDetectionResult,
+    response: AIResponse
+  ): string[] {
     const suggestions: string[] = [];
 
     if (result.isTemplate) {
-      suggestions.push("Response appears to be template-based. Consider adding specific contextual details.");
+      suggestions.push(
+        'Response appears to be template-based. Consider adding specific contextual details.'
+      );
     }
 
     if (result.contextualRelevance < 0.5) {
-      suggestions.push("Response lacks contextual relevance. Include more context-specific information.");
+      suggestions.push(
+        'Response lacks contextual relevance. Include more context-specific information.'
+      );
     }
 
     if (result.detectedPatterns.length > 0) {
-      suggestions.push(`Detected template patterns: ${result.detectedPatterns.join(', ')}. Replace with specific content.`);
+      suggestions.push(
+        `Detected template patterns: ${result.detectedPatterns.join(', ')}. Replace with specific content.`
+      );
     }
 
     if (result.qualityScore < 50) {
-      suggestions.push("Overall quality is low. Consider rewriting with more specific and relevant information.");
+      suggestions.push(
+        'Overall quality is low. Consider rewriting with more specific and relevant information.'
+      );
     }
 
     if (response.domain && this.evaluateDomainKnowledge(response) < 0.3) {
@@ -406,9 +419,45 @@ export class TemplateDetectionEngine {
    */
   private isStopWord(word: string): boolean {
     const stopWords = new Set([
-      'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by',
-      'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did',
-      'will', 'would', 'could', 'should', 'may', 'might', 'must', 'can', 'this', 'that', 'these', 'those'
+      'the',
+      'a',
+      'an',
+      'and',
+      'or',
+      'but',
+      'in',
+      'on',
+      'at',
+      'to',
+      'for',
+      'of',
+      'with',
+      'by',
+      'is',
+      'are',
+      'was',
+      'were',
+      'be',
+      'been',
+      'being',
+      'have',
+      'has',
+      'had',
+      'do',
+      'does',
+      'did',
+      'will',
+      'would',
+      'could',
+      'should',
+      'may',
+      'might',
+      'must',
+      'can',
+      'this',
+      'that',
+      'these',
+      'those',
     ]);
     return stopWords.has(word);
   }
@@ -424,7 +473,7 @@ export class TemplateDetectionEngine {
       ['placeholder_response', /^(here's|here is) (a|an|the) (example|sample|template)/i],
       ['generic_explanation', /^(to answer your question|based on your request)/i],
       ['copy_paste_pattern', /^(simply|just|all you need to do is)/i],
-      ['template_structure', /^(step 1|step 2|first|second|third)/i]
+      ['template_structure', /^(step 1|step 2|first|second|third)/i],
     ]);
   }
 
@@ -445,9 +494,9 @@ export class TemplateDetectionEngine {
       'is there anything else',
       'do you need anything else',
       'let me know if you need more help',
-      'i\'m here to help',
+      "i'm here to help",
       'happy to answer any questions',
-      'hope this clarifies things'
+      'hope this clarifies things',
     ];
   }
 
@@ -456,9 +505,20 @@ export class TemplateDetectionEngine {
    */
   private initializeContextualKeywords(): void {
     this.contextualKeywords = [
-      'specific', 'particular', 'exact', 'precise', 'detailed', 'comprehensive',
-      'based on', 'according to', 'in your case', 'for your situation',
-      'considering', 'given that', 'taking into account', 'with regards to'
+      'specific',
+      'particular',
+      'exact',
+      'precise',
+      'detailed',
+      'comprehensive',
+      'based on',
+      'according to',
+      'in your case',
+      'for your situation',
+      'considering',
+      'given that',
+      'taking into account',
+      'with regards to',
     ];
   }
 
@@ -467,12 +527,98 @@ export class TemplateDetectionEngine {
    */
   private initializeDomainTerms(): void {
     this.domainSpecificTerms = new Map([
-      ['frontend', ['react', 'vue', 'angular', 'javascript', 'typescript', 'css', 'html', 'dom', 'component', 'props', 'state', 'hook']],
-      ['backend', ['api', 'database', 'server', 'endpoint', 'middleware', 'authentication', 'authorization', 'controller', 'model', 'service']],
-      ['database', ['sql', 'nosql', 'mongodb', 'postgresql', 'mysql', 'index', 'query', 'schema', 'table', 'relationship', 'migration']],
-      ['devops', ['docker', 'kubernetes', 'ci/cd', 'pipeline', 'deployment', 'infrastructure', 'monitoring', 'logging', 'scaling', 'security']],
-      ['mobile', ['ios', 'android', 'react native', 'flutter', 'swift', 'kotlin', 'app store', 'play store', 'native', 'hybrid']],
-      ['ai', ['machine learning', 'neural network', 'algorithm', 'model', 'training', 'prediction', 'classification', 'nlp', 'computer vision']]
+      [
+        'frontend',
+        [
+          'react',
+          'vue',
+          'angular',
+          'javascript',
+          'typescript',
+          'css',
+          'html',
+          'dom',
+          'component',
+          'props',
+          'state',
+          'hook',
+        ],
+      ],
+      [
+        'backend',
+        [
+          'api',
+          'database',
+          'server',
+          'endpoint',
+          'middleware',
+          'authentication',
+          'authorization',
+          'controller',
+          'model',
+          'service',
+        ],
+      ],
+      [
+        'database',
+        [
+          'sql',
+          'nosql',
+          'mongodb',
+          'postgresql',
+          'mysql',
+          'index',
+          'query',
+          'schema',
+          'table',
+          'relationship',
+          'migration',
+        ],
+      ],
+      [
+        'devops',
+        [
+          'docker',
+          'kubernetes',
+          'ci/cd',
+          'pipeline',
+          'deployment',
+          'infrastructure',
+          'monitoring',
+          'logging',
+          'scaling',
+          'security',
+        ],
+      ],
+      [
+        'mobile',
+        [
+          'ios',
+          'android',
+          'react native',
+          'flutter',
+          'swift',
+          'kotlin',
+          'app store',
+          'play store',
+          'native',
+          'hybrid',
+        ],
+      ],
+      [
+        'ai',
+        [
+          'machine learning',
+          'neural network',
+          'algorithm',
+          'model',
+          'training',
+          'prediction',
+          'classification',
+          'nlp',
+          'computer vision',
+        ],
+      ],
     ]);
   }
 
@@ -484,7 +630,7 @@ export class TemplateDetectionEngine {
     return {
       totalDetections: 0,
       templateCount: 0,
-      qualityAverage: 0
+      qualityAverage: 0,
     };
   }
 

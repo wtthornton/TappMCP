@@ -31,7 +31,8 @@ export class Context7Broker {
         // Check for HTTP-only mode from environment
         const useHttpOnly = process.env.CONTEXT7_USE_HTTP_ONLY === 'true' ||
             process.env.NODE_ENV === 'production' ||
-            config.useHttpOnly === true;
+            config.useHttpOnly === true ||
+            true; // Force HTTP-only mode to bypass MCP issues
         this.config = {
             apiUrl: config.apiUrl ?? DEFAULT_MCP_URL,
             apiKey: config.apiKey ?? process.env.CONTEXT7_API_KEY ?? DEFAULT_API_KEY,

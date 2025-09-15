@@ -104,26 +104,28 @@ if (process.env.NODE_ENV !== 'test' &&
                 metricsBroadcaster.start(); // Start metrics broadcasting
             }
             // Set up performance metrics broadcasting
-            globalPerformanceMonitor.on('metric-recorded', (metric) => {
+            globalPerformanceMonitor.on('metric-recorded', metric => {
                 if (performanceEvents) {
                     performanceEvents.broadcastMetrics({
                         memoryUsage: {
                             rss: process.memoryUsage().rss / (1024 * 1024),
                             heapUsed: process.memoryUsage().heapUsed / (1024 * 1024),
                             heapTotal: process.memoryUsage().heapTotal / (1024 * 1024),
-                            external: process.memoryUsage().external / (1024 * 1024)
+                            external: process.memoryUsage().external / (1024 * 1024),
                         },
                         responseTime: metric.category === 'timing' ? metric.value : 0,
                         cacheHitRate: metric.name.includes('hit-rate') ? metric.value : 0,
                         errorRate: metric.category === 'system' ? 0 : 0,
-                        activeConnections: wsServer?.getConnectionCount() || 0
+                        activeConnections: wsServer?.getConnectionCount() || 0,
                     });
                 }
             });
             // Set up performance alerts
-            globalPerformanceMonitor.on('alert-triggered', (alert) => {
+            globalPerformanceMonitor.on('alert-triggered', alert => {
                 if (performanceEvents) {
-                    performanceEvents.broadcastPerformanceAlert(alert.metric, alert.severity, alert.message, { responseTime: alert.threshold });
+                    performanceEvents.broadcastPerformanceAlert(alert.metric, alert.severity, alert.message, {
+                        responseTime: alert.threshold,
+                    });
                 }
             });
             console.log(`WebSocket server started on port ${WS_PORT}`);
@@ -158,5 +160,5 @@ process.on('SIGINT', () => {
         process.exit(0);
     });
 });
-export { healthServer, wsServer, workflowEvents, performanceEvents, metricsBroadcaster, orchestrationEngine };
+export { healthServer, wsServer, workflowEvents, performanceEvents, metricsBroadcaster, orchestrationEngine, };
 //# sourceMappingURL=health-server.js.map
