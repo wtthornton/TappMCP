@@ -1,176 +1,149 @@
-# TappMCP - AI Assistant Enhancement Platform
+# TappMCP - AI-Powered Development Assistant
 
-AI-powered MCP server designed to **enhance AI assistants** with real analysis capabilities, Context7 intelligence, comprehensive workflow orchestration, and **real-time monitoring dashboard**.
+**TappMCP** is an advanced AI-powered development assistant built on the Model Context Protocol (MCP) that provides intelligent code analysis, generation, and workflow orchestration through natural language commands.
 
-## ✨ VibeTapp Intelligence System
+## 🎯 Core Features
 
-TappMCP features **VibeTapp intelligence integration** designed to make AI assistants smarter:
-- ✅ **Natural Language Interface** - Enhanced smart_vibe tool with rich responses
-- ✅ **Context7 Intelligence Integration** - Real API calls for up-to-date documentation
-- ✅ **Visual Progress Indicators** - Rich formatting with progress bars and metrics
-- ✅ **Tool Chain Orchestration** - Intelligent coordination of multiple tools
-- ✅ **Quality Analysis** - Confidence scores and quality recommendations
-- ✅ **Intelligent Fallback** - Works with or without Context7 integration
-- ✅ **30-day Persistent Cache** - 95% API cost reduction with smart caching
+### **VibeTapp Intelligence System**
+- **Natural Language Interface**: Interact with development tools using conversational commands
+- **Smart Code Analysis**: Advanced code quality analysis with actionable insights
+- **Workflow Orchestration**: Intelligent task planning and execution coordination
+- **Context-Aware Responses**: Rich, formatted responses with visual indicators and metrics
+- **Real-time Quality Monitoring**: Continuous code quality assessment and improvement suggestions
 
-**Purpose**: The VibeTapp system enhances AI assistants (like Claude, Cursor AI) to provide better code suggestions, workflow orchestration, and intelligent responses.
+### **Context7 Integration**
+- **API Intelligence**: Enhanced responses with real API calls and documentation
+- **Best Practices**: Access to industry-standard coding patterns and practices
+- **Dynamic Toggle**: Enable/disable Context7 integration from the dashboard
+- **Optimized Caching**: Advanced caching with deduplication and circuit breaker protection
+
+### **Smart Tools Suite**
+- `smart_vibe` - Main natural language interface for development tasks
+- `smart_begin` - Project initialization and setup
+- `smart_plan` - Intelligent task planning and breakdown
+- `smart_write` - Code generation with quality analysis
+- `smart_finish` - Code completion and validation
+- `smart_orchestrate` - Workflow coordination and management
+- `smart_converse` - Interactive development conversations
 
 ## 🚀 Quick Start
 
-### 🌐 Production Dashboard
-Access the live monitoring dashboard at: **http://localhost:8080**
+### **Prerequisites**
+- Node.js 18+
+- Docker (for production deployment)
+- Cursor IDE (for MCP integration)
 
-**Main Dashboard Features:**
-- 📊 **Real-time Performance Metrics** - Memory, CPU, response times
-- 🔄 **Active Workflow Monitoring** - Live workflow status with progress bars
-- 🔔 **Notification Center** - Real-time alerts and system notifications
-- ⚡ **WebSocket Integration** - Live data updates without page refresh
-- 📱 **Responsive Design** - Works on desktop and mobile
-- 🔗 **Context7 Integration** - Real-time Context7 API metrics and monitoring
+### **Local Development**
 
-**🎯 D3.js Visualizations Dashboard:**
-Access advanced visualizations at: **http://localhost:8080/d3-enhanced-modular.html**
-
-- 🕸️ **Interactive Workflow Graph** - Force-directed graph with zoom, pan, drag-and-drop
-- 📈 **Performance Monitoring Charts** - Multi-metric CPU, memory, response time charts
-- 💰 **Value Dashboard** - Token tracking, cost savings, quality metrics
-- ⏰ **Timeline View** - Gantt-style workflow event timeline
-- 🔍 **Interactive Filtering** - Time range, status, phase, and layout filters
-- 📤 **Export Functionality** - CSV export for all visualizations
-- 🎨 **Real-time Updates** - Live data streaming via WebSocket
-
-### Context7 Setup (Optional)
-Context7 integration works automatically with fallback. For full functionality:
 ```bash
-# Ensure Node.js and NPX are available
-node --version
-npx --version
+# Clone the repository
+git clone https://github.com/your-org/TappMCP.git
+cd TappMCP
 
-# Context7 will auto-connect when available
-# Fallback data provided when Context7 unavailable
+# Install dependencies
+npm install
+
+# Build the project
+npm run build
+
+# Start the server
+npm start
 ```
 
-### Production Deployment (Docker)
+### **Docker Deployment (Recommended)**
+
 ```bash
-# Deploy with VibeTapp integration and real-time dashboard
+# Build and deploy with Docker
 docker-compose up --build -d
 
-# Access dashboard
+# Access the dashboard
 open http://localhost:8080
-
-# Health verification
-curl http://localhost:8080/health
-curl http://localhost:8080/tools
-
-# Verify production deployment
-docker ps
-docker logs tappmcp-smart-mcp-1
 ```
 
-**✅ Current Configuration:**
-- **Container Name**: `tappmcp-smart-mcp-1`
-- **Server**: TypeScript compiled server (`dist/server.js`) with full VibeTapp integration
-- **Ports**: 8080 (HTTP), 8081 (Health)
-- **Features**: All 7 MCP tools with enhanced smart_vibe functionality
+## 🔧 Configuration
 
-## 🎯 VibeTapp Intelligence System
+### **Environment Variables**
 
-TappMCP features the **VibeTapp intelligence system** that provides enhanced responses with visual indicators and rich formatting.
+Create a `.env` file or set these environment variables:
 
-### VibeTapp Response Format
-When smart_vibe is active, responses include:
-```
-🎯 Vibe Coder → TappMCP
-────────────────────────────────────────
-┌─────────────────────────────────────┐
-│ ✅ Perfect! I've created your solution. │
-└─────────────────────────────────────┘
-
-🔧 Tool Chain:
-   ✍️
-   Tools used:
-    ✅ ✍️ smart_write (645ms)
-   Progress: [████████████████████] 100% (1/1)
-
-📊 Metrics:
-   ⚡ Processing time: 645ms
-   🎯 Confidence: 85%
-   ⭐ Quality score: 8/10
-   🔧 Tools used: smart_write
-
-✅ Status: Complete
-```
-
-### Smart Vibe Commands
-- `smart_vibe "status"` - Show full status dashboard
-- `smart_vibe "your request"` - Use enhanced VibeTapp mode
-- All MCP tools now include VibeTapp intelligence and visual indicators
-
-### Visual Indicators
-- 🎯 **Smart Vibe** - Enhanced natural language interface with quality analysis
-- 🔍 **Smart Begin** - Project initialization with comprehensive setup
-- ✍️ **Smart Write** - Code generation with best practices
-- 📋 **Smart Plan** - Technical planning with architecture insights
-- 🎭 **Smart Orchestrate** - Full SDLC automation with workflow management
-- ✅ **Smart Finish** - Project completion with quality validation
-- 💬 **Smart Converse** - Advanced conversation with context awareness
-
-### Auto Smart Vibe Mode
-Configure `.cursorrules` to always use smart_vibe:
 ```bash
-# TappMCP Project Rules - Always Use Smart Vibe
-- ALWAYS_USE_SMART_VIBE: true
-- DEFAULT_RESPONSE_MODE: enhanced
-- PREFERRED_TOOL: smart_vibe
+# Context7 Integration (Optional)
+CONTEXT7_API_KEY=your_context7_api_key_here
+CONTEXT7_ENABLED=true
+CONTEXT7_USE_HTTP_ONLY=true
+
+# Server Configuration
+NODE_ENV=production
+PORT=3000
+HEALTH_PORT=3001
 ```
 
-### Cursor MCP Integration
+### **Context7 Setup (Optional)**
 
-**Option 1: Local Development**
+1. Get your API key from [Context7](https://context7.com)
+2. Add it to your environment variables
+3. Use the dashboard toggle to enable/disable as needed
+
+## 📊 Dashboard Access
+
+The TappMCP dashboard provides real-time monitoring and control:
+
+- **Main Dashboard**: `http://localhost:8080`
+- **Health Check**: `http://localhost:8080/health`
+- **Context7 Toggle**: Available in the dashboard header
+- **Real-time Metrics**: Live system performance and usage statistics
+
+## 🎮 Usage
+
+### **In Cursor IDE**
+
+1. **Configure MCP Server** (see Cursor Setup below)
+2. **Use Natural Language Commands**:
+   ```
+   smart_vibe "create a React component with TypeScript"
+   smart_plan "break down this feature into tasks"
+   smart_write "implement user authentication"
+   ```
+
+### **Via Dashboard**
+
+1. **Access Dashboard**: Navigate to `http://localhost:8080`
+2. **Toggle Context7**: Use the toggle switch in the header
+3. **Monitor Performance**: View real-time metrics and system health
+4. **Manage Tools**: Test API connections and view tool status
+
+## 🛠️ Cursor IDE Setup
+
+### **Method 1: Quick Setup**
+
+Copy the provided settings to Cursor:
+
+```bash
+# Windows
+copy cursor-settings.json "%APPDATA%\Cursor\User\settings.json"
+
+# Restart Cursor after copying
+```
+
+### **Method 2: Manual Configuration**
+
+1. Open Cursor Settings (Ctrl+,)
+2. Go to Extensions → MCP
+3. Add this configuration:
+
 ```json
 {
-  "mcpServers": {
-    "smart-mcp": {
+  "mcp.servers": {
+    "tappmcp": {
       "command": "node",
-      "args": ["dist/server.js"],
-      "cwd": "/path/to/TappMCP",
+      "args": ["dist/mcp-docker-server.js", "--stdio"],
+      "cwd": "C:\\cursor\\TappMCP",
       "env": {
         "NODE_ENV": "production",
-        "HEALTH_PORT": "3001"
-      }
-    }
-  }
-}
-```
-
-**Option 2: NPM Package**
-```json
-{
-  "mcpServers": {
-    "smart-mcp": {
-      "command": "npx",
-      "args": ["smart-mcp"],
-      "env": {
-        "NODE_ENV": "production"
-      }
-    }
-  }
-}
-```
-
-**Option 3: Docker Container**
-
-**For Docker Compose deployment:**
-```json
-{
-  "mcp.servers": {
-    "tappmcp": {
-      "command": "docker",
-      "args": ["exec", "-i", "tappmcp-smart-mcp-1", "node", "dist/server.js"],
-      "env": {
-        "NODE_ENV": "production"
+        "CONTEXT7_ENABLED": "true"
       },
-      "stdio": true
+      "stdio": true,
+      "description": "TappMCP - AI-powered development assistant"
     }
   },
   "mcp.enabled": true,
@@ -178,185 +151,142 @@ Configure `.cursorrules` to always use smart_vibe:
 }
 ```
 
-**For manual Docker run:**
-```json
-{
-  "mcp.servers": {
-    "tappmcp": {
-      "command": "docker",
-      "args": ["exec", "-i", "smart-mcp-prod", "node", "dist/server.js"],
-      "env": {
-        "NODE_ENV": "production"
-      },
-      "stdio": true
-    }
-  },
-  "mcp.enabled": true,
-  "mcp.defaultServer": "tappmcp"
-}
+### **Verification**
+
+After setup, test in a new Cursor agent:
 ```
-
-**⚠️ Always verify container name with `docker ps` before configuring Cursor!**
-
-### Quick Container Name Reference
-| Deployment Method | Container Name | Use in Cursor Config |
-|------------------|----------------|---------------------|
-| `docker-compose up` | `tappmcp-smart-mcp-1` | `tappmcp-smart-mcp-1` |
-| `docker run --name smart-mcp-prod` | `smart-mcp-prod` | `smart-mcp-prod` |
-
-**Need help?** See [Cursor MCP Troubleshooting Guide](docs/CURSOR_MCP_TROUBLESHOOTING.md)
-
-## 🎵 Vibe Coder Experience
-
-### In Cursor (MCP Integration)
-```typescript
-// Natural language commands in Cursor
-smart_vibe "make me a todo app with React and TypeScript"
-smart_vibe "check my code quality" { role: "qa-engineer" }
-smart_vibe "improve this function" { quality: "enterprise" }
-smart_vibe "ship my app" { role: "operations-engineer" }
+smart_vibe "create a hello world React component"
 ```
-
-### CLI (Terminal)
-```bash
-# Install vibe CLI globally
-npm install -g @tappmcp/vibe-coder
-
-# Use vibe commands in terminal
-vibe "make me a todo app"
-vibe check
-vibe ship
-```
-
-## 📦 NPM Package
-
-```bash
-npm install smart-mcp
-```
-
-## 🛠️ Core Tools
-
-### smart_begin
-Initialize projects with real vulnerability detection, complexity analysis, and project scanning.
-
-### smart_write
-Generate code with Context7 intelligence, Advanced Context7 Cache, and real-time validation.
-
-### smart_finish
-Complete projects with genuine quality gates and test coverage analysis.
-
-### smart_orchestrate
-Full SDLC automation with 4-phase workflow (Analysis → Context7 → Generation → Validation).
-
-### smart_plan
-Generate technical implementation plans with Context7 insights.
-
-### smart_vibe 🎵
-Natural language interface for Cursor - full vibe coder experience with context management, role switching, and rich responses.
-
-## 🎯 Key Features
-
-### 🚀 Core Platform
-- **30-Day Persistent Cache**: 95% API cost reduction with intelligent caching
-- **Advanced Context7 Cache**: Enterprise-grade caching with compression, analytics, and monitoring
-- **Unified Code Intelligence**: Multi-category intelligence engines (Frontend, Backend, DevOps, Mobile)
-- **Real Analysis**: SecurityScanner, StaticAnalyzer, ProjectScanner integration
-- **Context7 Intelligence**: Project-aware dynamic insights with quality metrics
-- **Schema-locked I/O**: All tools use JSON Schema validation
-- **Quality Gates**: ≥85% test coverage, complexity ≤10
-- **Security First**: Real vulnerability detection and prevention
-- **Performance**: <100ms response time, <2s analysis
-- **Docker Ready**: Production containerization with health checks
-
-### 🌐 Real-Time Monitoring (NEW!)
-- **Live Dashboard**: Beautiful, responsive web interface at http://localhost:8080
-- **Performance Metrics**: Real-time memory, CPU, response time monitoring
-- **Workflow Tracking**: Live workflow status with progress bars and phase information
-- **System Health**: Uptime, version, active connections, error rates
-- **WebSocket Integration**: Real-time data streaming without page refresh
-- **Notification Center**: Live alerts and system notifications
-- **Auto-Reconnection**: Handles connection drops gracefully
-- **Mobile Responsive**: Works perfectly on desktop and mobile devices
-
-### 🎨 Visual Status System
-- **Contextual Status Icons**: Comprehensive icon library for all status types
-- **Color-Coded Indicators**: Success (Green), Warning (Yellow), Error (Red), Info (Blue)
-- **Workflow Status Icons**: Pending, Running, Completed, Failed, Cancelled, Paused, Queued
-- **Performance Status Icons**: Excellent, Good, Warning, Critical, Unknown
-- **Notification Priority Icons**: Critical, High, Medium, Low, Info
-- **System Status Icons**: Server, Database, Network, Loading
-- **Animation Support**: Pulse, spin, bounce animations for dynamic states
-
-### 🔔 Smart Notifications (NEW!)
-- **Multi-Channel Delivery**: WebSocket, Email, Push, In-App notifications
-- **Priority Levels**: Critical, High, Medium, Low, Info with proper weighting
-- **Template System**: Reusable notification templates with variable substitution
-- **User Preferences**: Configurable notification preferences and quiet hours
-- **Analytics Support**: Delivery rates, read rates, engagement tracking
-- **Intelligent Filtering**: ML-powered notification filtering and prioritization
-
-## 📊 Quality Standards
-
-- Test coverage ≥85% on changed files
-- ESLint complexity ≤10
-- TypeScript strict mode
-- Zero critical vulnerabilities
-- All tests must pass before commits
-
-## 🔧 Development Commands
-
-```bash
-# Quality checks
-npm run qa:all          # Run all quality checks
-npm run qa:eslint       # ESLint check
-npm run qa:typescript   # TypeScript check
-npm run qa:tests        # Tests with coverage
-
-# Security scanning
-npm run security:scan   # Gitleaks detect
-npm run security:osv    # OSV vulnerability scanner
-npm run security:semgrep # OWASP scanning
-
-# Formatting
-npm run lint            # ESLint fix
-npm run format          # Prettier fix
-npm run type-check      # TypeScript check
-```
-
-## 📚 Documentation
-
-- `CLAUDE.md` - AI assistant guidance and standards
-- `.cursorrules` - Role configuration and switching
-- `docs/API.md` - Complete API reference with all tools
-- `docs/DEVELOPMENT.md` - Development guide
-- `docs/DEPLOYMENT.md` - Deployment instructions
-- `docs/CURSOR_MCP_TROUBLESHOOTING.md` - **Cursor MCP connection troubleshooting**
-- `PRODUCTION_DEPLOYMENT.md` - Production deployment guide with Docker
-- `cursor-mcp-config.json` - Cursor MCP configuration examples
-- `archived-tasks/` - Completed implementation task archives
 
 ## 🏗️ Architecture
 
+### **Core Components**
+- **MCP Server**: TypeScript-based server implementing Model Context Protocol
+- **VibeTapp System**: Natural language processing and response generation
+- **Context7 Broker**: API integration with caching and error handling
+- **Dashboard**: Real-time monitoring and control interface
+- **Tool Chain**: Modular development tools for various tasks
+
+### **Project Structure**
 ```
-src/
-├── server.ts           # MCP server implementation
-├── tools/              # Tool implementations (smart_*)
-├── core/               # Core utilities and analyzers
-├── brokers/            # Context and memory brokers
-├── workflows/          # SDLC workflow orchestration
-└── types/              # TypeScript definitions
+├── src/                    # TypeScript source code
+│   ├── tools/             # Smart tool implementations
+│   ├── brokers/           # External API integrations
+│   ├── core/              # Core business logic
+│   └── mcp-docker-server.ts # Hybrid server implementation
+├── dist/                  # Compiled JavaScript
+├── dashboard-v2/          # Modern dashboard application
+├── docs/                  # Essential documentation
+├── archive/               # Historical reference material
+└── docker-compose.yml     # Production deployment
+```
+
+## 📈 Performance & Monitoring
+
+### **Health Endpoints**
+- `GET /health` - Basic health status
+- `GET /api/context7/toggle` - Context7 integration control
+- `POST /api/context7/toggle` - Toggle Context7 on/off
+
+### **Metrics**
+- Real-time response times
+- Context7 API usage and costs
+- Cache hit rates and performance
+- Error rates and system health
+
+## 🔒 Security
+
+- **Environment Variables**: Secure API key management
+- **Circuit Breaker**: Protection against API abuse
+- **Request Deduplication**: Prevents redundant API calls
+- **Input Validation**: Comprehensive input sanitization
+- **Error Handling**: Secure error responses without sensitive data
+
+## 🧪 Development
+
+### **Available Scripts**
+
+```bash
+# Development
+npm run dev              # Start development server
+npm run build            # Build TypeScript
+npm run start            # Start production server
+
+# Testing
+npm test                 # Run test suite
+npm run test:watch       # Watch mode testing
+npm run test:coverage    # Coverage reports
+
+# Code Quality
+npm run lint             # ESLint checking
+npm run format           # Prettier formatting
+npm run type-check       # TypeScript validation
+
+# Docker
+npm run docker:build     # Build Docker image
+npm run docker:dev       # Start with Docker Compose
+```
+
+### **Contributing**
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes with tests
+4. Ensure all quality checks pass
+5. Submit a pull request
+
+## 📚 Documentation
+
+- **User Guide**: `docs/USER_GUIDE.md`
+- **API Documentation**: `docs/API_DOCUMENTATION.md`
+- **Deployment Guide**: `docs/DEPLOYMENT_GUIDE.md`
+- **Troubleshooting**: `TROUBLESHOOTING.md`
+
+## 🐛 Troubleshooting
+
+### **Common Issues**
+
+1. **Tools not showing in Cursor**
+   - Verify MCP server is running
+   - Check Cursor settings configuration
+   - Restart Cursor completely
+
+2. **Context7 API errors**
+   - Verify API key is correct
+   - Check network connectivity
+   - Use dashboard toggle to disable if needed
+
+3. **Dashboard not accessible**
+   - Ensure Docker container is running
+   - Check port 8080 is not blocked
+   - Verify `docker-compose up` completed successfully
+
+### **Debug Mode**
+
+```bash
+# Run with debug logging
+NODE_ENV=development npm start
+
+# Check container logs
+docker logs tappmcp-smart-mcp-1
+
+# Test health endpoint
+curl http://localhost:8080/health
 ```
 
 ## 📄 License
 
-MIT
+MIT License - see LICENSE file for details.
 
-## 🤝 Contributing
+## 🙏 Acknowledgments
 
-1. Run `npm run early-check` before any work
-2. Follow TDD approach - write tests first
-3. Ensure all quality gates pass
-4. Use TypeScript strict mode with explicit typing
-5. Maintain ≥85% test coverage on changes
+- **Model Context Protocol**: For the MCP specification
+- **Context7**: For enhanced API intelligence
+- **Cursor IDE**: For MCP integration support
+- **Community**: For feedback and contributions
 
-For detailed implementation guidance, see `CLAUDE.md`.
+---
+
+**Ready to supercharge your development workflow?** 🚀
+
+Start with `smart_vibe "help me understand this codebase"` in Cursor!

@@ -27,13 +27,15 @@ To make `smart_vibe` work in new Cursor agents, follow these steps:
      "mcp.servers": {
        "tappmcp": {
          "command": "node",
-         "args": ["tappmcp-http-server.js"],
+         "args": ["dist/mcp-docker-server.js", "--stdio"],
          "cwd": "C:\\cursor\\TappMCP",
          "env": {
-           "NODE_ENV": "production"
+           "NODE_ENV": "production",
+           "CONTEXT7_ENABLED": "true",
+           "CONTEXT7_API_KEY": "your_context7_api_key_here"
          },
          "stdio": true,
-         "description": "TappMCP Smart Vibe - AI-powered development assistant (Direct Node.js)"
+         "description": "TappMCP - AI-powered development assistant with Context7 integration"
        }
      },
      "mcp.enabled": true,
@@ -46,8 +48,8 @@ To make `smart_vibe` work in new Cursor agents, follow these steps:
 Run this PowerShell command to automatically set up Cursor:
 
 ```powershell
-# Ensure Node.js server is running
-node tappmcp-http-server.js
+# Build the project first
+npm run build
 
 # Copy settings to Cursor
 $settingsPath = "$env:APPDATA\Cursor\User\settings.json"
@@ -56,7 +58,8 @@ $settingsContent | Out-File -FilePath $settingsPath -Encoding UTF8
 
 Write-Host "✅ Cursor MCP configuration updated!"
 Write-Host "🔄 Please restart Cursor to activate smart_vibe"
-Write-Host "🌐 Dashboard available at: http://localhost:3000"
+Write-Host "🌐 Dashboard available at: http://localhost:8080"
+Write-Host "📊 Use docker-compose up --build -d for full deployment"
 ```
 
 ## 🔍 Verification
@@ -71,12 +74,12 @@ After setup, test that `smart_vibe` works:
 
 ### **If smart_vibe doesn't work:**
 
-1. **Check Node.js server is running:**
+1. **Check Docker container is running:**
    ```bash
-   # Check if port 3000 is listening
-   netstat -an | findstr :3000
+   # Check if container is running
+   docker ps | findstr tappmcp-smart-mcp-1
    # Or test the dashboard
-   curl http://localhost:3000
+   curl http://localhost:8080/health
    ```
 
 2. **Check Cursor settings:**
@@ -88,17 +91,17 @@ After setup, test that `smart_vibe` works:
 
 4. **Verify server path:**
    ```bash
-   # Ensure tappmcp-http-server.js exists
-   dir tappmcp-http-server.js
-   # Should show the file in C:\cursor\TappMCP\
+   # Ensure dist/mcp-docker-server.js exists
+   dir dist\mcp-docker-server.js
+   # Should show the file in C:\cursor\TappMCP\dist\
    ```
 
 ## 📋 Required Files
 
 - `cursor-settings.json` - Cursor MCP configuration
-- `tappmcp-http-server.js` - Main server file
-- `docker-compose.yml` - Docker setup (optional, for production)
-- Running Node.js server on port 3000
+- `dist/mcp-docker-server.js` - Main server file (after build)
+- `docker-compose.yml` - Docker setup (recommended for production)
+- Running Docker container on port 8080
 
 ## ✅ Success Indicators
 
@@ -110,4 +113,4 @@ When properly configured, you should see:
 
 ---
 
-**Note:** The key is that Cursor needs to know how to connect to your MCP server. The Docker container must be running, and Cursor must be configured to use it.
+**Note:** The key is that Cursor needs to know how to connect to your MCP server. Either build and run locally with `npm run build` or use Docker with `docker-compose up --build -d`. Cursor must be configured to use the correct server path.

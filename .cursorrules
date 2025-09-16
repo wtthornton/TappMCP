@@ -1,12 +1,13 @@
-# TappMCP Project Rules - Always Use Smart Vibe
+# TappMCP Project Rules - AI-Powered Development Assistant
 
 ## Core Preferences
 - ALWAYS_USE_SMART_VIBE: true
 - DEFAULT_RESPONSE_MODE: enhanced
 - PREFERRED_TOOL: smart_vibe
+- PROJECT_TYPE: MCP Server with Context7 Integration
 
 ## Response Format
-- Use 🎯 emoji for all responses
+- Use 🎯 emoji for VibeTapp responses
 - Include structured sections with quality analysis
 - Provide detailed project insights and next steps
 - Add learning tips and best practices
@@ -26,10 +27,25 @@
 - Add relevant emojis and visual cues
 
 ## Project Context
-- This is a TappMCP project with D3.js visualizations
-- PRODUCTION-ONLY MODE: Use Docker containers exclusively
-- Dashboard runs on port 8080 (production)
+- This is TappMCP - AI-powered development assistant
+- Built on Model Context Protocol (MCP)
+- Features VibeTapp intelligence system with Context7 integration
+- Dashboard-v2 with real-time monitoring and Context7 toggle
+- Hybrid MCP server supports both stdio and HTTP modes
+- Docker-first deployment with production optimization
+
+## Architecture Focus
+- MCP protocol compliance and best practices
+- Context7 API integration with caching and circuit breakers
+- TypeScript-based server with comprehensive error handling
+- Real-time dashboard with D3.js visualizations
+- Smart tools: smart_vibe, smart_plan, smart_write, etc.
+- Production-ready with health monitoring and metrics
+
+## Development Guidelines
 - Focus on code quality, architecture, and best practices
 - Provide comprehensive analysis and recommendations
 - Include project structure insights
 - Offer detailed implementation guidance
+- Emphasize MCP server patterns and Context7 optimization
+- Consider both local development and Docker deployment scenarios
