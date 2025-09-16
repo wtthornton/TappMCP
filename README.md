@@ -11,6 +11,7 @@
 - **Workflow Orchestration**: Intelligent task planning and execution coordination
 - **Context-Aware Responses**: Rich, formatted responses with visual indicators and metrics
 - **Real-time Quality Monitoring**: Continuous code quality assessment and improvement suggestions
+- **Developer-Focused**: Built specifically for developers, by developers
 
 #### **Automatic Verbosity Detection**
 TappMCP automatically detects the desired response detail level from your natural language input:
