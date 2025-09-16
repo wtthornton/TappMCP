@@ -10,6 +10,7 @@
 
 import { WebSocketServer } from './WebSocketServer.js';
 import { PerformanceMetrics, WorkflowStatusUpdate } from './types.js';
+import * as os from 'os';
 
 /**
  * Performance metrics data structure
@@ -301,7 +302,7 @@ export class MetricsBroadcaster {
       },
       cpu: {
         usage: (cpuUsage.user + cpuUsage.system) / 1000000, // Convert to seconds
-        loadAverage: process.platform === 'win32' ? [0, 0, 0] : require('os').loadavg(),
+        loadAverage: process.platform === 'win32' ? [0, 0, 0] : os.loadavg(),
       },
       responseTime: {
         average: this.calculateAverageResponseTime(),

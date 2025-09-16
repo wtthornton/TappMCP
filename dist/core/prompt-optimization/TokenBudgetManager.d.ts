@@ -17,15 +17,15 @@ export declare const CostConfigSchema: z.ZodObject<{
     costPerOutputToken: z.ZodDefault<z.ZodNumber>;
     currency: z.ZodDefault<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    model: string;
-    costPerInputToken: number;
-    costPerOutputToken: number;
-    currency: string;
+    model?: string;
+    costPerInputToken?: number;
+    costPerOutputToken?: number;
+    currency?: string;
 }, {
-    model?: string | undefined;
-    costPerInputToken?: number | undefined;
-    costPerOutputToken?: number | undefined;
-    currency?: string | undefined;
+    model?: string;
+    costPerInputToken?: number;
+    costPerOutputToken?: number;
+    currency?: string;
 }>;
 export type CostConfig = z.infer<typeof CostConfigSchema>;
 /**
@@ -40,30 +40,30 @@ export declare const BudgetConfigSchema: z.ZodObject<{
         warning: z.ZodDefault<z.ZodNumber>;
         critical: z.ZodDefault<z.ZodNumber>;
     }, "strip", z.ZodTypeAny, {
-        critical: number;
-        warning: number;
+        critical?: number;
+        warning?: number;
     }, {
-        critical?: number | undefined;
-        warning?: number | undefined;
+        critical?: number;
+        warning?: number;
     }>>;
 }, "strip", z.ZodTypeAny, {
-    dailyBudget: number;
-    monthlyBudget: number;
-    maxTokensPerRequest: number;
-    reservePercentage: number;
-    alertThresholds: {
-        critical: number;
-        warning: number;
+    dailyBudget?: number;
+    monthlyBudget?: number;
+    maxTokensPerRequest?: number;
+    reservePercentage?: number;
+    alertThresholds?: {
+        critical?: number;
+        warning?: number;
     };
 }, {
-    dailyBudget?: number | undefined;
-    monthlyBudget?: number | undefined;
-    maxTokensPerRequest?: number | undefined;
-    reservePercentage?: number | undefined;
+    dailyBudget?: number;
+    monthlyBudget?: number;
+    maxTokensPerRequest?: number;
+    reservePercentage?: number;
     alertThresholds?: {
-        critical?: number | undefined;
-        warning?: number | undefined;
-    } | undefined;
+        critical?: number;
+        warning?: number;
+    };
 }>;
 export type BudgetConfig = z.infer<typeof BudgetConfigSchema>;
 /**

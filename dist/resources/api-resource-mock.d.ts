@@ -16,11 +16,11 @@ export declare const ApiResourceSchema: z.ZodObject<{
         requests: z.ZodNumber;
         window: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
-        window: number;
-        requests: number;
+        window?: number;
+        requests?: number;
     }, {
-        window: number;
-        requests: number;
+        window?: number;
+        requests?: number;
     }>>;
     auth: z.ZodOptional<z.ZodObject<{
         type: z.ZodEnum<["bearer", "basic", "api-key", "oauth2"]>;
@@ -30,62 +30,62 @@ export declare const ApiResourceSchema: z.ZodObject<{
         apiKey: z.ZodOptional<z.ZodString>;
         apiKeyHeader: z.ZodDefault<z.ZodString>;
     }, "strip", z.ZodTypeAny, {
-        type: "basic" | "bearer" | "api-key" | "oauth2";
-        apiKeyHeader: string;
-        token?: string | undefined;
-        apiKey?: string | undefined;
-        password?: string | undefined;
-        username?: string | undefined;
+        token?: string;
+        type?: "basic" | "bearer" | "api-key" | "oauth2";
+        apiKey?: string;
+        password?: string;
+        username?: string;
+        apiKeyHeader?: string;
     }, {
-        type: "basic" | "bearer" | "api-key" | "oauth2";
-        token?: string | undefined;
-        apiKey?: string | undefined;
-        password?: string | undefined;
-        username?: string | undefined;
-        apiKeyHeader?: string | undefined;
+        token?: string;
+        type?: "basic" | "bearer" | "api-key" | "oauth2";
+        apiKey?: string;
+        password?: string;
+        username?: string;
+        apiKeyHeader?: string;
     }>>;
 }, "strip", z.ZodTypeAny, {
-    url: string;
-    method: "GET" | "DELETE" | "POST" | "PUT" | "PATCH";
-    timeout: number;
-    retries: number;
-    retryDelay: number;
-    headers?: Record<string, string> | undefined;
-    params?: Record<string, string> | undefined;
+    headers?: Record<string, string>;
+    url?: string;
+    method?: "GET" | "DELETE" | "POST" | "PUT" | "PATCH";
+    params?: Record<string, string>;
+    timeout?: number;
     auth?: {
-        type: "basic" | "bearer" | "api-key" | "oauth2";
-        apiKeyHeader: string;
-        token?: string | undefined;
-        apiKey?: string | undefined;
-        password?: string | undefined;
-        username?: string | undefined;
-    } | undefined;
+        token?: string;
+        type?: "basic" | "bearer" | "api-key" | "oauth2";
+        apiKey?: string;
+        password?: string;
+        username?: string;
+        apiKeyHeader?: string;
+    };
     body?: any;
     rateLimit?: {
-        window: number;
-        requests: number;
-    } | undefined;
+        window?: number;
+        requests?: number;
+    };
+    retries?: number;
+    retryDelay?: number;
 }, {
-    url: string;
-    method: "GET" | "DELETE" | "POST" | "PUT" | "PATCH";
-    headers?: Record<string, string> | undefined;
-    params?: Record<string, string> | undefined;
-    timeout?: number | undefined;
+    headers?: Record<string, string>;
+    url?: string;
+    method?: "GET" | "DELETE" | "POST" | "PUT" | "PATCH";
+    params?: Record<string, string>;
+    timeout?: number;
     auth?: {
-        type: "basic" | "bearer" | "api-key" | "oauth2";
-        token?: string | undefined;
-        apiKey?: string | undefined;
-        password?: string | undefined;
-        username?: string | undefined;
-        apiKeyHeader?: string | undefined;
-    } | undefined;
+        token?: string;
+        type?: "basic" | "bearer" | "api-key" | "oauth2";
+        apiKey?: string;
+        password?: string;
+        username?: string;
+        apiKeyHeader?: string;
+    };
     body?: any;
     rateLimit?: {
-        window: number;
-        requests: number;
-    } | undefined;
-    retries?: number | undefined;
-    retryDelay?: number | undefined;
+        window?: number;
+        requests?: number;
+    };
+    retries?: number;
+    retryDelay?: number;
 }>;
 export type ApiResourceConfig = z.infer<typeof ApiResourceSchema>;
 /**
@@ -105,42 +105,42 @@ export declare const ApiResourceResponseSchema: z.ZodObject<{
         resetTime: z.ZodNumber;
         limit: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
-        limit: number;
-        remaining: number;
-        resetTime: number;
+        limit?: number;
+        remaining?: number;
+        resetTime?: number;
     }, {
-        limit: number;
-        remaining: number;
-        resetTime: number;
+        limit?: number;
+        remaining?: number;
+        resetTime?: number;
     }>>;
 }, "strip", z.ZodTypeAny, {
-    success: boolean;
-    error?: string | undefined;
+    error?: string;
+    success?: boolean;
     data?: any;
-    headers?: Record<string, string> | undefined;
-    status?: number | undefined;
-    executionTime?: number | undefined;
-    statusText?: string | undefined;
-    retryCount?: number | undefined;
+    headers?: Record<string, string>;
+    status?: number;
+    executionTime?: number;
+    statusText?: string;
+    retryCount?: number;
     rateLimitInfo?: {
-        limit: number;
-        remaining: number;
-        resetTime: number;
-    } | undefined;
+        limit?: number;
+        remaining?: number;
+        resetTime?: number;
+    };
 }, {
-    success: boolean;
-    error?: string | undefined;
+    error?: string;
+    success?: boolean;
     data?: any;
-    headers?: Record<string, string> | undefined;
-    status?: number | undefined;
-    executionTime?: number | undefined;
-    statusText?: string | undefined;
-    retryCount?: number | undefined;
+    headers?: Record<string, string>;
+    status?: number;
+    executionTime?: number;
+    statusText?: string;
+    retryCount?: number;
     rateLimitInfo?: {
-        limit: number;
-        remaining: number;
-        resetTime: number;
-    } | undefined;
+        limit?: number;
+        remaining?: number;
+        resetTime?: number;
+    };
 }>;
 export type ApiResourceResponse = z.infer<typeof ApiResourceResponseSchema>;
 /**

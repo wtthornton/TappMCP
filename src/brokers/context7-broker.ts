@@ -15,6 +15,8 @@ import { Context7MCPClient, Context7MCPConfig } from './context7-mcp-client.js';
 import { LRUCache } from 'lru-cache';
 import { writeFile, readFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
+import { createHash } from 'crypto';
+import { CircuitBreaker } from '../intelligence/ErrorHandling.js';
 
 export interface Documentation {
   id: string;
@@ -92,6 +94,9 @@ export class Context7Broker {
   private mcpClient: Context7MCPClient;
   private isAvailable = false;
   private cache: LRUCache<string, { data: any; timestamp: number; expiry: number }>;
+  private libraryIdCache: LRUCache<string, { libraryId: string; timestamp: number; expiry: number }>;
+  private circuitBreaker: CircuitBreaker;
+  private pendingRequests: Map<string, Promise<any>> = new Map();
   private cacheFile = './cache/context7-cache.json';
 
   constructor(config: Partial<Context7BrokerConfig> = {}) {
@@ -159,17 +164,40 @@ export class Context7Broker {
       allowStale: false, // Don't return stale entries
     });
 
+    // Initialize library ID cache (7-day expiry for library mappings)
+    this.libraryIdCache = new LRUCache<string, { libraryId: string; timestamp: number; expiry: number }>({
+      max: 500, // Max 500 library ID mappings
+      ttl: 7 * 24 * 60 * 60 * 1000, // 7 days TTL
+      updateAgeOnGet: true,
+      allowStale: false,
+    });
+
+    // Initialize circuit breaker for Context7 API calls
+    this.circuitBreaker = new CircuitBreaker('Context7Broker', {
+      failureThreshold: 3, // Open after 3 failures
+      recoveryTimeout: 30000, // 30 seconds recovery time
+      monitoringPeriod: 10000, // 10 seconds monitoring
+    });
+
     // Load cache on startup
     this.loadCache();
 
+    // Check if Context7 is enabled
+    const isEnabled = process.env.CONTEXT7_ENABLED !== 'false';
+
     // Check if Context7 MCP tools are available (async)
-    this.checkMCPAvailability()
-      .then(available => {
-        this.isAvailable = available;
-      })
-      .catch(() => {
-        this.isAvailable = false;
-      });
+    if (isEnabled) {
+      this.checkMCPAvailability()
+        .then(available => {
+          this.isAvailable = available;
+        })
+        .catch(() => {
+          this.isAvailable = false;
+        });
+    } else {
+      console.log('Context7 disabled via CONTEXT7_ENABLED=false');
+      this.isAvailable = false;
+    }
   }
 
   /**
@@ -177,6 +205,12 @@ export class Context7Broker {
    */
   private async checkMCPAvailability(): Promise<boolean> {
     try {
+      // Check if Context7 is disabled
+      if (process.env.CONTEXT7_ENABLED === 'false') {
+        console.log('Context7 disabled via CONTEXT7_ENABLED=false');
+        return false;
+      }
+
       // If HTTP-only mode is enabled, skip MCP and go straight to HTTP
       if (this.config.useHttpOnly) {
         console.log('Context7 HTTP-only mode enabled, using HTTP client');
@@ -384,14 +418,70 @@ export class Context7Broker {
   }
 
   /**
-   * Resolve library ID using Context7 search API
+   * Generate stable ID based on content hash
+   */
+  private generateStableId(type: string, content: string, url?: string): string {
+    const hash = createHash('md5');
+    hash.update(`${type}:${content}:${url || ''}`);
+    return `${type}-${hash.digest('hex').substring(0, 8)}`;
+  }
+
+  /**
+   * Execute request with deduplication to prevent multiple identical requests
+   */
+  private async executeWithDeduplication<T>(requestKey: string, operation: () => Promise<T>): Promise<T> {
+    // Check if there's already a pending request for this key
+    const existingRequest = this.pendingRequests.get(requestKey);
+    if (existingRequest) {
+      console.log(`Deduplicating request for key: ${requestKey}`);
+      return existingRequest;
+    }
+
+    // Create new request and store it
+    const requestPromise = operation().finally(() => {
+      // Clean up the pending request when done
+      this.pendingRequests.delete(requestKey);
+    });
+
+    this.pendingRequests.set(requestKey, requestPromise);
+    return requestPromise;
+  }
+
+  /**
+   * Resolve library ID using Context7 search API with caching
    */
   private async resolveLibraryId(topic: string): Promise<string | null> {
+    const cacheKey = `libid:${topic.toLowerCase()}`;
+
     try {
+      // Check cache first
+      const cachedData = this.libraryIdCache.get(cacheKey);
+      if (cachedData) {
+        console.log(`Using cached library ID for topic: ${topic}`);
+        return cachedData.libraryId;
+      }
+
+      // Check fallback mapping first
+      const fallbackId = this.mapTopicToLibraryId(topic);
+      if (fallbackId) {
+        // Cache the fallback mapping
+        this.libraryIdCache.set(cacheKey, {
+          libraryId: fallbackId,
+          timestamp: Date.now(),
+          expiry: Date.now() + (7 * 24 * 60 * 60 * 1000), // 7 days
+        });
+        console.log(`Using fallback library ID for topic: ${topic} -> ${fallbackId}`);
+        return fallbackId;
+      }
+
       // If HTTP-only mode is enabled, skip MCP and go straight to HTTP
       if (this.config.useHttpOnly) {
-        const response = await this.httpClient.get('/search', {
-          query: topic,
+        const response = await this.executeWithDeduplication(`search:${topic}`, async () => {
+          return this.circuitBreaker.execute(async () => {
+            return this.httpClient.get('/search', {
+              query: topic,
+            });
+          });
         });
 
         if (!response.success || !response.data?.results || response.data.results.length === 0) {
@@ -401,20 +491,41 @@ export class Context7Broker {
 
         // Return the first result's ID (most relevant)
         const firstResult = response.data.results[0];
-        return firstResult.id || null;
+        const libraryId = firstResult.id || null;
+
+        // Cache the result
+        if (libraryId) {
+          this.libraryIdCache.set(cacheKey, {
+            libraryId,
+            timestamp: Date.now(),
+            expiry: Date.now() + (7 * 24 * 60 * 60 * 1000), // 7 days
+          });
+        }
+
+        return libraryId;
       }
 
       // Try MCP client first
       if (this.mcpClient.isClientConnected()) {
         const libraryId = await this.mcpClient.resolveLibraryId(topic);
         if (libraryId) {
+          // Cache the result
+          this.libraryIdCache.set(cacheKey, {
+            libraryId,
+            timestamp: Date.now(),
+            expiry: Date.now() + (7 * 24 * 60 * 60 * 1000), // 7 days
+          });
           return libraryId;
         }
       }
 
       // Fallback to HTTP client using search API
-      const response = await this.httpClient.get('/search', {
-        query: topic,
+      const response = await this.executeWithDeduplication(`search:${topic}`, async () => {
+        return this.circuitBreaker.execute(async () => {
+          return this.httpClient.get('/search', {
+            query: topic,
+          });
+        });
       });
 
       if (!response.success || !response.data?.results || response.data.results.length === 0) {
@@ -424,7 +535,18 @@ export class Context7Broker {
 
       // Return the first result's ID (most relevant)
       const firstResult = response.data.results[0];
-      return firstResult.id || null;
+      const libraryId = firstResult.id || null;
+
+      // Cache the result
+      if (libraryId) {
+        this.libraryIdCache.set(cacheKey, {
+          libraryId,
+          timestamp: Date.now(),
+          expiry: Date.now() + (7 * 24 * 60 * 60 * 1000), // 7 days
+        });
+      }
+
+      return libraryId;
     } catch (error) {
       console.warn(`Error resolving library ID for ${topic}:`, error);
       return null;
@@ -438,44 +560,38 @@ export class Context7Broker {
     try {
       // If HTTP-only mode is enabled, skip MCP and go straight to HTTP
       if (this.config.useHttpOnly) {
-        // Convert libraryId from "/owner/repo" to "owner/repo"
-        const cleanLibraryId = libraryId.startsWith('/') ? libraryId.slice(1) : libraryId;
+        // Use the working search endpoint instead of non-existent library endpoint
+        const searchQuery = `${libraryId} ${topic}`;
 
-        const response = await this.httpClient.get(`/${cleanLibraryId}`, {
-          type: 'json',
-          topic: topic,
-          tokens: 4000,
+        const response = await this.executeWithDeduplication(`docs:${libraryId}:${topic}`, async () => {
+          return this.circuitBreaker.execute(async () => {
+            return this.httpClient.get('/search', {
+              query: searchQuery,
+            });
+          });
         });
 
         if (!response.success || !response.data) {
           throw new Error(response.error || 'Failed to fetch library documentation');
         }
 
-        // Transform Context7 API response to our format
-        const snippets = response.data.snippets || [];
-        const qaItems = response.data.qaItems || [];
+        // Transform Context7 search API response to our format
+        const results = response.data.results || [];
 
-        // Combine snippets and QA items
-        const docs = [
-          ...snippets.map((snippet: any) => ({
-            id: snippet.id || `snippet-${Date.now()}`,
-            title: snippet.title || `${topic} Code Example`,
-            content: snippet.content || snippet.code || '',
-            url: snippet.url || snippet.link,
+        // Transform search results into documentation format
+        const docs = results.map((result: any) => {
+          const content = result.description || '';
+          const title = result.title || `${topic} Documentation`;
+          return {
+            id: result.id || this.generateStableId('doc', content, result.id),
+            title,
+            content,
+            url: `https://context7.com/library/${result.id}`,
             version: version ?? 'latest',
-            lastUpdated: snippet.lastUpdated ? new Date(snippet.lastUpdated) : new Date(),
-            relevanceScore: snippet.relevanceScore || snippet.score || 0.8,
-          })),
-          ...qaItems.map((qa: any) => ({
-            id: qa.id || `qa-${Date.now()}`,
-            title: qa.question || `${topic} Q&A`,
-            content: qa.answer || qa.content || '',
-            url: qa.url || qa.link,
-            version: version ?? 'latest',
-            lastUpdated: qa.lastUpdated ? new Date(qa.lastUpdated) : new Date(),
-            relevanceScore: qa.relevanceScore || qa.score || 0.7,
-          })),
-        ];
+            lastUpdated: result.lastUpdateDate ? new Date(result.lastUpdateDate) : new Date(),
+            relevanceScore: result.trustScore ? result.trustScore / 10 : 0.8, // Convert trust score to 0-1 scale
+          };
+        });
 
         return docs;
       }
@@ -492,10 +608,14 @@ export class Context7Broker {
       // Convert libraryId from "/owner/repo" to "owner/repo"
       const cleanLibraryId = libraryId.startsWith('/') ? libraryId.slice(1) : libraryId;
 
-      const response = await this.httpClient.get(`/${cleanLibraryId}`, {
-        type: 'json',
-        topic: topic,
-        tokens: 4000,
+      const response = await this.executeWithDeduplication(`docs:${cleanLibraryId}:${topic}`, async () => {
+        return this.circuitBreaker.execute(async () => {
+          return this.httpClient.get(`/${cleanLibraryId}`, {
+            type: 'json',
+            topic: topic,
+            tokens: 4000,
+          });
+        });
       });
 
       if (!response.success || !response.data) {
@@ -508,26 +628,35 @@ export class Context7Broker {
 
       // Combine snippets and QA items
       const docs = [
-        ...snippets.map((snippet: any) => ({
-          id: snippet.codeId || `snippet-${Date.now()}`,
-          title: snippet.codeTitle || 'Code Example',
-          content: snippet.codeDescription || '',
-          code: snippet.codeList?.[0]?.code || '',
-          language: snippet.codeLanguage || 'javascript',
-          url: snippet.codeId,
-          version: version ?? 'latest',
-          lastUpdated: new Date(),
-          relevanceScore: snippet.relevance || 0.8,
-        })),
-        ...qaItems.map((qa: any, index: number) => ({
-          id: `qa-${index}-${Date.now()}`,
-          title: qa.question || 'Q&A Item',
-          content: qa.answer || '',
-          url: qa.url,
-          version: version ?? 'latest',
-          lastUpdated: new Date(),
-          relevanceScore: 0.7,
-        })),
+        ...snippets.map((snippet: any) => {
+          const content = snippet.codeDescription || '';
+          const code = snippet.codeList?.[0]?.code || '';
+          const url = snippet.codeId;
+          return {
+            id: snippet.codeId || this.generateStableId('snippet', `${content}:${code}`, url),
+            title: snippet.codeTitle || 'Code Example',
+            content,
+            code,
+            language: snippet.codeLanguage || 'javascript',
+            url,
+            version: version ?? 'latest',
+            lastUpdated: new Date(),
+            relevanceScore: snippet.relevance || 0.8,
+          };
+        }),
+        ...qaItems.map((qa: any) => {
+          const content = qa.answer || '';
+          const url = qa.url;
+          return {
+            id: this.generateStableId('qa', content, url),
+            title: qa.question || 'Q&A Item',
+            content,
+            url,
+            version: version ?? 'latest',
+            lastUpdated: new Date(),
+            relevanceScore: 0.7,
+          };
+        }),
       ];
 
       return docs;

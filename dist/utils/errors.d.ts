@@ -5,8 +5,8 @@
  */
 export declare class MCPError extends Error {
     code: string;
-    context?: Record<string, unknown> | undefined;
-    constructor(message: string, code: string, context?: Record<string, unknown> | undefined);
+    context?: Record<string, unknown>;
+    constructor(message: string, code: string, context?: Record<string, unknown>);
 }
 export declare class ValidationError extends MCPError {
     constructor(message: string, context?: Record<string, unknown>);

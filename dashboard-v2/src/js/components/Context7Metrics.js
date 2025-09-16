@@ -28,6 +28,14 @@ export class Context7Metrics {
         this.testAPI();
       });
     }
+
+    // Context7 toggle switch
+    const toggle = this.container.querySelector('#context7Toggle');
+    if (toggle) {
+      toggle.addEventListener('change', (e) => {
+        this.toggleContext7(e.target.checked);
+      });
+    }
   }
 
   update(data) {
@@ -48,6 +56,16 @@ export class Context7Metrics {
     const metricsContainer = this.container.querySelector('#context7Metrics');
     if (metricsContainer) {
       metricsContainer.innerHTML = `
+        <div class="context7-controls">
+          <div class="context7-toggle-container">
+            <label class="toggle-switch">
+              <input type="checkbox" id="context7Toggle" ${this.isContext7Enabled() ? 'checked' : ''}>
+              <span class="slider"></span>
+            </label>
+            <span class="toggle-label">Enable Context7</span>
+          </div>
+          <button id="context7Test" class="btn btn-secondary">Test API</button>
+        </div>
         <div class="loading">
           <div class="loading-spinner"></div>
           <div class="loading-text">Loading Context7 metrics...</div>
@@ -67,6 +85,16 @@ export class Context7Metrics {
     const knowledgeQuality = context7.knowledgeQuality || {};
 
     metricsContainer.innerHTML = `
+      <div class="context7-controls">
+        <div class="context7-toggle-container">
+          <label class="toggle-switch">
+            <input type="checkbox" id="context7Toggle" ${this.isContext7Enabled() ? 'checked' : ''}>
+            <span class="slider"></span>
+          </label>
+          <span class="toggle-label">Enable Context7</span>
+        </div>
+        <button id="context7Test" class="btn btn-secondary">Test API</button>
+      </div>
       <div class="context7-metric">
         <div class="context7-metric-label">Total Requests</div>
         <div class="context7-metric-value">${apiUsage.totalRequests || 0}</div>
@@ -154,6 +182,47 @@ export class Context7Metrics {
         messageDiv.parentNode.removeChild(messageDiv);
       }
     }, 3000);
+  }
+
+  async toggleContext7(enabled) {
+    try {
+      const response = await fetch('/api/context7/toggle', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ enabled })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to toggle Context7: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      this.showMessage(
+        `Context7 ${enabled ? 'enabled' : 'disabled'} successfully!`,
+        'success'
+      );
+
+      // Update the toggle state
+      localStorage.setItem('context7Enabled', enabled.toString());
+
+    } catch (error) {
+      console.error('Failed to toggle Context7:', error);
+      this.showMessage(`Failed to toggle Context7: ${error.message}`, 'error');
+
+      // Revert toggle state on error
+      const toggle = this.container.querySelector('#context7Toggle');
+      if (toggle) {
+        toggle.checked = !enabled;
+      }
+    }
+  }
+
+  isContext7Enabled() {
+    // Check localStorage first, then default to true
+    const stored = localStorage.getItem('context7Enabled');
+    return stored !== null ? stored === 'true' : true;
   }
 
   cleanup() {

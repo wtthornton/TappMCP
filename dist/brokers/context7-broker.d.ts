@@ -79,6 +79,9 @@ export declare class Context7Broker {
     private mcpClient;
     private isAvailable;
     private cache;
+    private libraryIdCache;
+    private circuitBreaker;
+    private pendingRequests;
     private cacheFile;
     constructor(config?: Partial<Context7BrokerConfig>);
     /**
@@ -110,7 +113,15 @@ export declare class Context7Broker {
      */
     private fetchRealDocumentation;
     /**
-     * Resolve library ID using Context7 search API
+     * Generate stable ID based on content hash
+     */
+    private generateStableId;
+    /**
+     * Execute request with deduplication to prevent multiple identical requests
+     */
+    private executeWithDeduplication;
+    /**
+     * Resolve library ID using Context7 search API with caching
      */
     private resolveLibraryId;
     /**

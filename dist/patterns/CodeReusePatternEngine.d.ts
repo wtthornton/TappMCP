@@ -13,17 +13,17 @@ declare const DetectionConfigSchema: z.ZodObject<{
     minSimilarity: z.ZodDefault<z.ZodNumber>;
     excludePatterns: z.ZodDefault<z.ZodArray<z.ZodString, "many">>;
 }, "strip", z.ZodTypeAny, {
-    minPatternSize: number;
-    maxPatternSize: number;
-    minOccurrences: number;
-    minSimilarity: number;
-    excludePatterns: string[];
+    minPatternSize?: number;
+    maxPatternSize?: number;
+    minOccurrences?: number;
+    minSimilarity?: number;
+    excludePatterns?: string[];
 }, {
-    minPatternSize?: number | undefined;
-    maxPatternSize?: number | undefined;
-    minOccurrences?: number | undefined;
-    minSimilarity?: number | undefined;
-    excludePatterns?: string[] | undefined;
+    minPatternSize?: number;
+    maxPatternSize?: number;
+    minOccurrences?: number;
+    minSimilarity?: number;
+    excludePatterns?: string[];
 }>;
 declare const CodePatternSchema: z.ZodObject<{
     id: z.ZodString;
@@ -38,13 +38,13 @@ declare const CodePatternSchema: z.ZodObject<{
         type: z.ZodString;
         description: z.ZodOptional<z.ZodString>;
     }, "strip", z.ZodTypeAny, {
-        type: string;
-        name: string;
-        description?: string | undefined;
+        type?: string;
+        name?: string;
+        description?: string;
     }, {
-        type: string;
-        name: string;
-        description?: string | undefined;
+        type?: string;
+        name?: string;
+        description?: string;
     }>, "many">;
     dependencies: z.ZodArray<z.ZodString, "many">;
     examples: z.ZodArray<z.ZodString, "many">;
@@ -54,58 +54,58 @@ declare const CodePatternSchema: z.ZodObject<{
         reuseOpportunities: z.ZodNumber;
         potentialSavings: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
-        tokensPerUse: number;
-        avgComplexity: number;
-        reuseOpportunities: number;
-        potentialSavings: number;
+        tokensPerUse?: number;
+        avgComplexity?: number;
+        reuseOpportunities?: number;
+        potentialSavings?: number;
     }, {
-        tokensPerUse: number;
-        avgComplexity: number;
-        reuseOpportunities: number;
-        potentialSavings: number;
+        tokensPerUse?: number;
+        avgComplexity?: number;
+        reuseOpportunities?: number;
+        potentialSavings?: number;
     }>;
 }, "strip", z.ZodTypeAny, {
-    name: string;
-    description: string;
-    id: string;
-    dependencies: string[];
-    pattern: string;
-    metrics: {
-        tokensPerUse: number;
-        avgComplexity: number;
-        reuseOpportunities: number;
-        potentialSavings: number;
+    name?: string;
+    description?: string;
+    id?: string;
+    dependencies?: string[];
+    pattern?: string;
+    metrics?: {
+        tokensPerUse?: number;
+        avgComplexity?: number;
+        reuseOpportunities?: number;
+        potentialSavings?: number;
     };
-    complexity: "low" | "medium" | "high";
-    category: "function" | "type" | "testing" | "async" | "class" | "module" | "error-handling" | "utility" | "control-flow";
-    examples: string[];
-    variables: {
-        type: string;
-        name: string;
-        description?: string | undefined;
+    complexity?: "low" | "medium" | "high";
+    category?: "function" | "type" | "testing" | "async" | "class" | "module" | "error-handling" | "utility" | "control-flow";
+    examples?: string[];
+    variables?: {
+        type?: string;
+        name?: string;
+        description?: string;
     }[];
-    abstractPattern: string;
+    abstractPattern?: string;
 }, {
-    name: string;
-    description: string;
-    id: string;
-    dependencies: string[];
-    pattern: string;
-    metrics: {
-        tokensPerUse: number;
-        avgComplexity: number;
-        reuseOpportunities: number;
-        potentialSavings: number;
+    name?: string;
+    description?: string;
+    id?: string;
+    dependencies?: string[];
+    pattern?: string;
+    metrics?: {
+        tokensPerUse?: number;
+        avgComplexity?: number;
+        reuseOpportunities?: number;
+        potentialSavings?: number;
     };
-    complexity: "low" | "medium" | "high";
-    category: "function" | "type" | "testing" | "async" | "class" | "module" | "error-handling" | "utility" | "control-flow";
-    examples: string[];
-    variables: {
-        type: string;
-        name: string;
-        description?: string | undefined;
+    complexity?: "low" | "medium" | "high";
+    category?: "function" | "type" | "testing" | "async" | "class" | "module" | "error-handling" | "utility" | "control-flow";
+    examples?: string[];
+    variables?: {
+        type?: string;
+        name?: string;
+        description?: string;
     }[];
-    abstractPattern: string;
+    abstractPattern?: string;
 }>;
 declare const PatternSuggestionSchema: z.ZodObject<{
     id: z.ZodString;
@@ -117,36 +117,36 @@ declare const PatternSuggestionSchema: z.ZodObject<{
     rationale: z.ZodString;
     context: z.ZodRecord<z.ZodString, z.ZodUnknown>;
 }, "strip", z.ZodTypeAny, {
-    code: string;
-    id: string;
-    context: Record<string, unknown>;
-    confidence: number;
-    patternId: string;
-    similarity: number;
-    suggestedReplacement: string;
-    rationale: string;
+    code?: string;
+    id?: string;
+    context?: Record<string, unknown>;
+    confidence?: number;
+    patternId?: string;
+    similarity?: number;
+    suggestedReplacement?: string;
+    rationale?: string;
 }, {
-    code: string;
-    id: string;
-    context: Record<string, unknown>;
-    confidence: number;
-    patternId: string;
-    similarity: number;
-    suggestedReplacement: string;
-    rationale: string;
+    code?: string;
+    id?: string;
+    context?: Record<string, unknown>;
+    confidence?: number;
+    patternId?: string;
+    similarity?: number;
+    suggestedReplacement?: string;
+    rationale?: string;
 }>;
 declare const SimilarityResultSchema: z.ZodObject<{
     similarity: z.ZodNumber;
     commonLines: z.ZodNumber;
     totalLines: z.ZodNumber;
 }, "strip", z.ZodTypeAny, {
-    totalLines: number;
-    similarity: number;
-    commonLines: number;
+    totalLines?: number;
+    similarity?: number;
+    commonLines?: number;
 }, {
-    totalLines: number;
-    similarity: number;
-    commonLines: number;
+    totalLines?: number;
+    similarity?: number;
+    commonLines?: number;
 }>;
 export type DetectionConfig = z.infer<typeof DetectionConfigSchema>;
 export type CodePattern = z.infer<typeof CodePatternSchema>;

@@ -27,54 +27,54 @@ export declare const ErrorPatternSchema: z.ZodObject<{
         effectiveness: z.ZodNumber;
         autoApplicable: z.ZodDefault<z.ZodBoolean>;
     }, "strip", z.ZodTypeAny, {
-        description: string;
-        strategy: string;
-        effectiveness: number;
-        autoApplicable: boolean;
+        description?: string;
+        strategy?: string;
+        effectiveness?: number;
+        autoApplicable?: boolean;
     }, {
-        description: string;
-        strategy: string;
-        effectiveness: number;
-        autoApplicable?: boolean | undefined;
+        description?: string;
+        strategy?: string;
+        effectiveness?: number;
+        autoApplicable?: boolean;
     }>, "many">;
     contextPatterns: z.ZodDefault<z.ZodArray<z.ZodString, "many">>;
     associatedErrors: z.ZodDefault<z.ZodArray<z.ZodString, "many">>;
 }, "strip", z.ZodTypeAny, {
-    severity: "low" | "medium" | "high" | "critical";
-    name: string;
-    description: string;
-    id: string;
-    pattern: string;
-    confidence: number;
-    category: "memory" | "data" | "dependency" | "timeout" | "validation" | "authentication" | "network" | "configuration" | "logic";
-    historicalOccurrences: number;
-    preventionStrategies: {
-        description: string;
-        strategy: string;
-        effectiveness: number;
-        autoApplicable: boolean;
+    severity?: "low" | "medium" | "high" | "critical";
+    name?: string;
+    description?: string;
+    id?: string;
+    pattern?: string;
+    confidence?: number;
+    category?: "memory" | "data" | "dependency" | "timeout" | "validation" | "network" | "authentication" | "configuration" | "logic";
+    historicalOccurrences?: number;
+    lastSeen?: Date;
+    preventionStrategies?: {
+        description?: string;
+        strategy?: string;
+        effectiveness?: number;
+        autoApplicable?: boolean;
     }[];
-    contextPatterns: string[];
-    associatedErrors: string[];
-    lastSeen?: Date | undefined;
+    contextPatterns?: string[];
+    associatedErrors?: string[];
 }, {
-    severity: "low" | "medium" | "high" | "critical";
-    name: string;
-    description: string;
-    id: string;
-    pattern: string;
-    confidence: number;
-    category: "memory" | "data" | "dependency" | "timeout" | "validation" | "authentication" | "network" | "configuration" | "logic";
-    preventionStrategies: {
-        description: string;
-        strategy: string;
-        effectiveness: number;
-        autoApplicable?: boolean | undefined;
+    severity?: "low" | "medium" | "high" | "critical";
+    name?: string;
+    description?: string;
+    id?: string;
+    pattern?: string;
+    confidence?: number;
+    category?: "memory" | "data" | "dependency" | "timeout" | "validation" | "network" | "authentication" | "configuration" | "logic";
+    historicalOccurrences?: number;
+    lastSeen?: Date;
+    preventionStrategies?: {
+        description?: string;
+        strategy?: string;
+        effectiveness?: number;
+        autoApplicable?: boolean;
     }[];
-    historicalOccurrences?: number | undefined;
-    lastSeen?: Date | undefined;
-    contextPatterns?: string[] | undefined;
-    associatedErrors?: string[] | undefined;
+    contextPatterns?: string[];
+    associatedErrors?: string[];
 }>;
 export type ErrorPattern = z.infer<typeof ErrorPatternSchema>;
 /**
@@ -118,19 +118,19 @@ export declare const PreventionConfigSchema: z.ZodObject<{
     enableLearning: z.ZodDefault<z.ZodBoolean>;
     priorityFilters: z.ZodDefault<z.ZodArray<z.ZodString, "many">>;
 }, "strip", z.ZodTypeAny, {
-    riskThreshold: number;
-    enableAutoFix: boolean;
-    maxPredictionsPerAnalysis: number;
-    contextWindowSize: number;
-    enableLearning: boolean;
-    priorityFilters: string[];
+    riskThreshold?: number;
+    enableAutoFix?: boolean;
+    maxPredictionsPerAnalysis?: number;
+    contextWindowSize?: number;
+    enableLearning?: boolean;
+    priorityFilters?: string[];
 }, {
-    riskThreshold?: number | undefined;
-    enableAutoFix?: boolean | undefined;
-    maxPredictionsPerAnalysis?: number | undefined;
-    contextWindowSize?: number | undefined;
-    enableLearning?: boolean | undefined;
-    priorityFilters?: string[] | undefined;
+    riskThreshold?: number;
+    enableAutoFix?: boolean;
+    maxPredictionsPerAnalysis?: number;
+    contextWindowSize?: number;
+    enableLearning?: boolean;
+    priorityFilters?: string[];
 }>;
 export type PreventionConfig = z.infer<typeof PreventionConfigSchema>;
 /**

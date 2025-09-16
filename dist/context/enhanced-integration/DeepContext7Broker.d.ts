@@ -30,30 +30,30 @@ export declare const ContextEntrySchema: z.ZodObject<{
         projectId: z.ZodOptional<z.ZodString>;
         workflowStage: z.ZodOptional<z.ZodString>;
     }, "strip", z.ZodTypeAny, {
-        projectId?: string | undefined;
-        qualityScore?: number | undefined;
-        tokenCount?: number | undefined;
-        userLevel?: string | undefined;
-        workflowStage?: string | undefined;
+        projectId?: string;
+        qualityScore?: number;
+        tokenCount?: number;
+        userLevel?: string;
+        workflowStage?: string;
     }, {
-        projectId?: string | undefined;
-        qualityScore?: number | undefined;
-        tokenCount?: number | undefined;
-        userLevel?: string | undefined;
-        workflowStage?: string | undefined;
+        projectId?: string;
+        qualityScore?: number;
+        tokenCount?: number;
+        userLevel?: string;
+        workflowStage?: string;
     }>>;
     relationships: z.ZodOptional<z.ZodArray<z.ZodObject<{
         type: z.ZodEnum<["follows", "references", "contradicts", "enhances"]>;
         targetContextId: z.ZodString;
         strength: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
-        type: "follows" | "references" | "contradicts" | "enhances";
-        targetContextId: string;
-        strength: number;
+        type?: "follows" | "references" | "contradicts" | "enhances";
+        targetContextId?: string;
+        strength?: number;
     }, {
-        type: "follows" | "references" | "contradicts" | "enhances";
-        targetContextId: string;
-        strength: number;
+        type?: "follows" | "references" | "contradicts" | "enhances";
+        targetContextId?: string;
+        strength?: number;
     }>, "many">>;
     persistenceLevel: z.ZodDefault<z.ZodEnum<["session", "project", "user", "global"]>>;
     compressionInfo: z.ZodOptional<z.ZodObject<{
@@ -61,66 +61,66 @@ export declare const ContextEntrySchema: z.ZodObject<{
         compressedLength: z.ZodNumber;
         compressionRatio: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
-        originalLength: number;
-        compressedLength: number;
-        compressionRatio: number;
+        originalLength?: number;
+        compressedLength?: number;
+        compressionRatio?: number;
     }, {
-        originalLength: number;
-        compressedLength: number;
-        compressionRatio: number;
+        originalLength?: number;
+        compressedLength?: number;
+        compressionRatio?: number;
     }>>;
 }, "strip", z.ZodTypeAny, {
-    timestamp: Date;
-    content: string;
-    id: string;
-    toolName: string;
-    sessionId: string;
-    contextType: "user_query" | "system_response" | "tool_output" | "error_context" | "workflow_state";
-    relevanceScore: number;
-    persistenceLevel: "user" | "session" | "global" | "project";
+    timestamp?: Date;
+    content?: string;
+    id?: string;
     relationships?: {
-        type: "follows" | "references" | "contradicts" | "enhances";
-        targetContextId: string;
-        strength: number;
-    }[] | undefined;
+        type?: "follows" | "references" | "contradicts" | "enhances";
+        targetContextId?: string;
+        strength?: number;
+    }[];
     metadata?: {
-        projectId?: string | undefined;
-        qualityScore?: number | undefined;
-        tokenCount?: number | undefined;
-        userLevel?: string | undefined;
-        workflowStage?: string | undefined;
-    } | undefined;
+        projectId?: string;
+        qualityScore?: number;
+        tokenCount?: number;
+        userLevel?: string;
+        workflowStage?: string;
+    };
+    toolName?: string;
+    sessionId?: string;
+    contextType?: "user_query" | "system_response" | "tool_output" | "error_context" | "workflow_state";
+    relevanceScore?: number;
+    persistenceLevel?: "user" | "session" | "global" | "project";
     compressionInfo?: {
-        originalLength: number;
-        compressedLength: number;
-        compressionRatio: number;
-    } | undefined;
+        originalLength?: number;
+        compressedLength?: number;
+        compressionRatio?: number;
+    };
 }, {
-    timestamp: Date;
-    content: string;
-    id: string;
-    toolName: string;
-    sessionId: string;
-    contextType: "user_query" | "system_response" | "tool_output" | "error_context" | "workflow_state";
-    relevanceScore: number;
+    timestamp?: Date;
+    content?: string;
+    id?: string;
     relationships?: {
-        type: "follows" | "references" | "contradicts" | "enhances";
-        targetContextId: string;
-        strength: number;
-    }[] | undefined;
+        type?: "follows" | "references" | "contradicts" | "enhances";
+        targetContextId?: string;
+        strength?: number;
+    }[];
     metadata?: {
-        projectId?: string | undefined;
-        qualityScore?: number | undefined;
-        tokenCount?: number | undefined;
-        userLevel?: string | undefined;
-        workflowStage?: string | undefined;
-    } | undefined;
-    persistenceLevel?: "user" | "session" | "global" | "project" | undefined;
+        projectId?: string;
+        qualityScore?: number;
+        tokenCount?: number;
+        userLevel?: string;
+        workflowStage?: string;
+    };
+    toolName?: string;
+    sessionId?: string;
+    contextType?: "user_query" | "system_response" | "tool_output" | "error_context" | "workflow_state";
+    relevanceScore?: number;
+    persistenceLevel?: "user" | "session" | "global" | "project";
     compressionInfo?: {
-        originalLength: number;
-        compressedLength: number;
-        compressionRatio: number;
-    } | undefined;
+        originalLength?: number;
+        compressedLength?: number;
+        compressionRatio?: number;
+    };
 }>;
 export type ContextEntry = z.infer<typeof ContextEntrySchema>;
 /**

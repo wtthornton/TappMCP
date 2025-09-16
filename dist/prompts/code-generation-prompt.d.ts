@@ -15,27 +15,27 @@ export declare const CodeGenerationPromptSchema: z.ZodObject<{
     includeComments: z.ZodOptional<z.ZodBoolean>;
     includeDocumentation: z.ZodOptional<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
-    task: string;
-    language: string;
-    requirements?: string[] | undefined;
-    complexity?: "medium" | "complex" | "simple" | undefined;
-    context?: string | undefined;
-    framework?: string | undefined;
-    style?: "functional" | "object-oriented" | "procedural" | undefined;
-    includeTests?: boolean | undefined;
-    includeComments?: boolean | undefined;
-    includeDocumentation?: boolean | undefined;
+    complexity?: "medium" | "complex" | "simple";
+    requirements?: string[];
+    context?: string;
+    task?: string;
+    language?: string;
+    framework?: string;
+    style?: "functional" | "object-oriented" | "procedural";
+    includeTests?: boolean;
+    includeComments?: boolean;
+    includeDocumentation?: boolean;
 }, {
-    task: string;
-    language: string;
-    requirements?: string[] | undefined;
-    complexity?: "medium" | "complex" | "simple" | undefined;
-    context?: string | undefined;
-    framework?: string | undefined;
-    style?: "functional" | "object-oriented" | "procedural" | undefined;
-    includeTests?: boolean | undefined;
-    includeComments?: boolean | undefined;
-    includeDocumentation?: boolean | undefined;
+    complexity?: "medium" | "complex" | "simple";
+    requirements?: string[];
+    context?: string;
+    task?: string;
+    language?: string;
+    framework?: string;
+    style?: "functional" | "object-oriented" | "procedural";
+    includeTests?: boolean;
+    includeComments?: boolean;
+    includeDocumentation?: boolean;
 }>;
 export type CodeGenerationPromptInput = z.infer<typeof CodeGenerationPromptSchema>;
 /**

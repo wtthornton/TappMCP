@@ -14,11 +14,13 @@ services:
       - HEALTH_PORT=3001
       - CONTEXT7_API_KEY=ctx7sk-45825e15-2f53-459e-8688-8c14b0604d02
       - CONTEXT7_USE_HTTP_ONLY=true
+      - CONTEXT7_ENABLED=false
+      - SKIP_HEALTH_SERVER=true
     volumes:
       - smart-mcp-data:/app/data
       - smart-mcp-logs:/app/logs
     user: "1001:1001"
-    command: ["node", "dist/server.js"]
+    command: ["node", "dist/mcp-docker-server.js"]
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"]

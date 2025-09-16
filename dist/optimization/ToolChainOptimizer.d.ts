@@ -22,21 +22,21 @@ export declare const OptimizerConfigSchema: z.ZodObject<{
     parallelizationThreshold: z.ZodDefault<z.ZodNumber>;
     costOptimizationEnabled: z.ZodDefault<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
-    maxRetries: number;
-    cacheEnabled: boolean;
-    learningEnabled: boolean;
-    maxConcurrentSteps: number;
-    timeoutMs: number;
-    parallelizationThreshold: number;
-    costOptimizationEnabled: boolean;
+    maxRetries?: number;
+    learningEnabled?: boolean;
+    cacheEnabled?: boolean;
+    maxConcurrentSteps?: number;
+    timeoutMs?: number;
+    parallelizationThreshold?: number;
+    costOptimizationEnabled?: boolean;
 }, {
-    maxRetries?: number | undefined;
-    cacheEnabled?: boolean | undefined;
-    learningEnabled?: boolean | undefined;
-    maxConcurrentSteps?: number | undefined;
-    timeoutMs?: number | undefined;
-    parallelizationThreshold?: number | undefined;
-    costOptimizationEnabled?: boolean | undefined;
+    maxRetries?: number;
+    learningEnabled?: boolean;
+    cacheEnabled?: boolean;
+    maxConcurrentSteps?: number;
+    timeoutMs?: number;
+    parallelizationThreshold?: number;
+    costOptimizationEnabled?: boolean;
 }>;
 export type OptimizerConfig = z.infer<typeof OptimizerConfigSchema>;
 /**

@@ -12,17 +12,17 @@ declare const SmartThoughtProcessInputSchema: z.ZodObject<{
     includeMetrics: z.ZodDefault<z.ZodOptional<z.ZodBoolean>>;
     includeRecommendations: z.ZodDefault<z.ZodOptional<z.ZodBoolean>>;
 }, "strip", z.ZodTypeAny, {
-    projectId: string;
-    includeDetails: boolean;
-    includeMetrics: boolean;
-    includeRecommendations: boolean;
-    codeId?: string | undefined;
+    projectId?: string;
+    codeId?: string;
+    includeDetails?: boolean;
+    includeMetrics?: boolean;
+    includeRecommendations?: boolean;
 }, {
-    projectId: string;
-    codeId?: string | undefined;
-    includeDetails?: boolean | undefined;
-    includeMetrics?: boolean | undefined;
-    includeRecommendations?: boolean | undefined;
+    projectId?: string;
+    codeId?: string;
+    includeDetails?: boolean;
+    includeMetrics?: boolean;
+    includeRecommendations?: boolean;
 }>;
 type SmartThoughtProcessInput = z.infer<typeof SmartThoughtProcessInputSchema>;
 interface ThoughtProcess {

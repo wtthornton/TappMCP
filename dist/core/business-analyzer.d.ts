@@ -7,17 +7,17 @@ export declare const BusinessRequirementsSchema: z.ZodObject<{
     constraints: z.ZodArray<z.ZodString, "many">;
     riskFactors: z.ZodArray<z.ZodString, "many">;
 }, "strip", z.ZodTypeAny, {
-    constraints: string[];
-    primaryGoals: string[];
-    targetUsers: string[];
-    successCriteria: string[];
-    riskFactors: string[];
+    constraints?: string[];
+    primaryGoals?: string[];
+    targetUsers?: string[];
+    successCriteria?: string[];
+    riskFactors?: string[];
 }, {
-    constraints: string[];
-    primaryGoals: string[];
-    targetUsers: string[];
-    successCriteria: string[];
-    riskFactors: string[];
+    constraints?: string[];
+    primaryGoals?: string[];
+    targetUsers?: string[];
+    successCriteria?: string[];
+    riskFactors?: string[];
 }>;
 export declare const StakeholderSchema: z.ZodObject<{
     name: z.ZodString;
@@ -26,17 +26,17 @@ export declare const StakeholderSchema: z.ZodObject<{
     interest: z.ZodEnum<["high", "medium", "low"]>;
     requirements: z.ZodArray<z.ZodString, "many">;
 }, "strip", z.ZodTypeAny, {
-    role: string;
-    requirements: string[];
-    name: string;
-    influence: "low" | "medium" | "high";
-    interest: "low" | "medium" | "high";
+    role?: string;
+    name?: string;
+    requirements?: string[];
+    influence?: "low" | "medium" | "high";
+    interest?: "low" | "medium" | "high";
 }, {
-    role: string;
-    requirements: string[];
-    name: string;
-    influence: "low" | "medium" | "high";
-    interest: "low" | "medium" | "high";
+    role?: string;
+    name?: string;
+    requirements?: string[];
+    influence?: "low" | "medium" | "high";
+    interest?: "low" | "medium" | "high";
 }>;
 export declare const ComplexityAssessmentSchema: z.ZodObject<{
     technical: z.ZodEnum<["low", "medium", "high", "very-high"]>;
@@ -45,17 +45,17 @@ export declare const ComplexityAssessmentSchema: z.ZodObject<{
     overall: z.ZodEnum<["low", "medium", "high", "very-high"]>;
     factors: z.ZodArray<z.ZodString, "many">;
 }, "strip", z.ZodTypeAny, {
-    overall: "low" | "medium" | "high" | "very-high";
-    technical: "low" | "medium" | "high" | "very-high";
-    business: "low" | "medium" | "high" | "very-high";
-    integration: "low" | "medium" | "high" | "very-high";
-    factors: string[];
+    overall?: "low" | "medium" | "high" | "very-high";
+    technical?: "low" | "medium" | "high" | "very-high";
+    business?: "low" | "medium" | "high" | "very-high";
+    integration?: "low" | "medium" | "high" | "very-high";
+    factors?: string[];
 }, {
-    overall: "low" | "medium" | "high" | "very-high";
-    technical: "low" | "medium" | "high" | "very-high";
-    business: "low" | "medium" | "high" | "very-high";
-    integration: "low" | "medium" | "high" | "very-high";
-    factors: string[];
+    overall?: "low" | "medium" | "high" | "very-high";
+    technical?: "low" | "medium" | "high" | "very-high";
+    business?: "low" | "medium" | "high" | "very-high";
+    integration?: "low" | "medium" | "high" | "very-high";
+    factors?: string[];
 }>;
 export declare const RiskSchema: z.ZodObject<{
     id: z.ZodString;
@@ -67,23 +67,23 @@ export declare const RiskSchema: z.ZodObject<{
     severity: z.ZodEnum<["low", "medium", "high", "critical"]>;
     mitigation: z.ZodArray<z.ZodString, "many">;
 }, "strip", z.ZodTypeAny, {
-    severity: "low" | "medium" | "high" | "critical";
-    name: string;
-    description: string;
-    id: string;
-    category: "resource" | "quality" | "technical" | "business" | "timeline";
-    impact: "low" | "medium" | "high";
-    probability: "low" | "medium" | "high";
-    mitigation: string[];
+    severity?: "low" | "medium" | "high" | "critical";
+    name?: string;
+    description?: string;
+    id?: string;
+    category?: "resource" | "quality" | "technical" | "business" | "timeline";
+    impact?: "low" | "medium" | "high";
+    probability?: "low" | "medium" | "high";
+    mitigation?: string[];
 }, {
-    severity: "low" | "medium" | "high" | "critical";
-    name: string;
-    description: string;
-    id: string;
-    category: "resource" | "quality" | "technical" | "business" | "timeline";
-    impact: "low" | "medium" | "high";
-    probability: "low" | "medium" | "high";
-    mitigation: string[];
+    severity?: "low" | "medium" | "high" | "critical";
+    name?: string;
+    description?: string;
+    id?: string;
+    category?: "resource" | "quality" | "technical" | "business" | "timeline";
+    impact?: "low" | "medium" | "high";
+    probability?: "low" | "medium" | "high";
+    mitigation?: string[];
 }>;
 export declare const UserStorySchema: z.ZodObject<{
     id: z.ZodString;
@@ -96,25 +96,25 @@ export declare const UserStorySchema: z.ZodObject<{
     priority: z.ZodEnum<["low", "medium", "high", "critical"]>;
     estimatedEffort: z.ZodNumber;
 }, "strip", z.ZodTypeAny, {
-    priority: "low" | "medium" | "high" | "critical";
-    description: string;
-    id: string;
-    title: string;
-    asA: string;
-    iWant: string;
-    soThat: string;
-    acceptanceCriteria: string[];
-    estimatedEffort: number;
+    priority?: "low" | "medium" | "high" | "critical";
+    description?: string;
+    id?: string;
+    title?: string;
+    asA?: string;
+    iWant?: string;
+    soThat?: string;
+    acceptanceCriteria?: string[];
+    estimatedEffort?: number;
 }, {
-    priority: "low" | "medium" | "high" | "critical";
-    description: string;
-    id: string;
-    title: string;
-    asA: string;
-    iWant: string;
-    soThat: string;
-    acceptanceCriteria: string[];
-    estimatedEffort: number;
+    priority?: "low" | "medium" | "high" | "critical";
+    description?: string;
+    id?: string;
+    title?: string;
+    asA?: string;
+    iWant?: string;
+    soThat?: string;
+    acceptanceCriteria?: string[];
+    estimatedEffort?: number;
 }>;
 export type BusinessRequirements = z.infer<typeof BusinessRequirementsSchema>;
 export type Stakeholder = z.infer<typeof StakeholderSchema>;
