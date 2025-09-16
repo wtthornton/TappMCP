@@ -515,20 +515,20 @@ export class QualityValidator {
     let fileCount = 0;
 
     generatedCode.files.forEach(file => {
-      if (file.type === 'test' || file.type === 'documentation') return;
+      if (file.type === 'test' || file.type === 'documentation') {return;}
 
       fileCount++;
       let fileScore = 85; // Base score
 
       // Check for best practices
-      if (this.hasTypeDefinitions(file.content)) fileScore += 5;
-      if (this.hasErrorHandling(file.content)) fileScore += 5;
-      if (this.hasInputValidation(file.content)) fileScore += 3;
-      if (this.hasGoodNamingConventions(file.content)) fileScore += 2;
+      if (this.hasTypeDefinitions(file.content)) {fileScore += 5;}
+      if (this.hasErrorHandling(file.content)) {fileScore += 5;}
+      if (this.hasInputValidation(file.content)) {fileScore += 3;}
+      if (this.hasGoodNamingConventions(file.content)) {fileScore += 2;}
 
       // Deduct for anti-patterns
-      if (this.hasCodeSmells(file.content)) fileScore -= 10;
-      if (this.hasPerformanceAntiPatterns(file.content)) fileScore -= 5;
+      if (this.hasCodeSmells(file.content)) {fileScore -= 10;}
+      if (this.hasPerformanceAntiPatterns(file.content)) {fileScore -= 5;}
 
       totalScore += Math.max(0, Math.min(100, fileScore));
     });
@@ -552,11 +552,11 @@ export class QualityValidator {
     let score = 80; // Base score
 
     generatedCode.files.forEach(file => {
-      if (this.containsHardcodedSecrets(file.content)) score -= 30;
-      if (this.hasSQLInjectionRisk(file.content)) score -= 25;
-      if (this.hasXSSRisk(file.content)) score -= 15;
-      if (this.hasInputValidation(file.content)) score += 10;
-      if (this.hasErrorHandling(file.content)) score += 5;
+      if (this.containsHardcodedSecrets(file.content)) {score -= 30;}
+      if (this.hasSQLInjectionRisk(file.content)) {score -= 25;}
+      if (this.hasXSSRisk(file.content)) {score -= 15;}
+      if (this.hasInputValidation(file.content)) {score += 10;}
+      if (this.hasErrorHandling(file.content)) {score += 5;}
     });
 
     // Adjust for security level requirements
@@ -571,10 +571,10 @@ export class QualityValidator {
     let score = 75; // Base score
 
     generatedCode.files.forEach(file => {
-      if (this.hasPerformanceAntiPatterns(file.content)) score -= 15;
-      if (this.hasInefficientLoops(file.content)) score -= 10;
-      if (this.hasAsyncPatterns(file.content)) score += 10;
-      if (this.hasCachingPatterns(file.content)) score += 5;
+      if (this.hasPerformanceAntiPatterns(file.content)) {score -= 15;}
+      if (this.hasInefficientLoops(file.content)) {score -= 10;}
+      if (this.hasAsyncPatterns(file.content)) {score += 10;}
+      if (this.hasCachingPatterns(file.content)) {score += 5;}
     });
 
     return Math.max(0, Math.min(100, score));
@@ -588,7 +588,7 @@ export class QualityValidator {
     let fileCount = 0;
 
     generatedCode.files.forEach(file => {
-      if (file.type === 'test' || file.type === 'documentation') return;
+      if (file.type === 'test' || file.type === 'documentation') {return;}
 
       fileCount++;
       let fileScore = 75;
@@ -600,9 +600,9 @@ export class QualityValidator {
         fileScore -= (complexity - requirements.complexity) * 5;
       }
 
-      if (this.hasGoodNamingConventions(file.content)) fileScore += 5;
-      if (this.hasModularStructure(file.content)) fileScore += 5;
-      if (this.hasLongFunctions(file.content)) fileScore -= 10;
+      if (this.hasGoodNamingConventions(file.content)) {fileScore += 5;}
+      if (this.hasModularStructure(file.content)) {fileScore += 5;}
+      if (this.hasLongFunctions(file.content)) {fileScore -= 10;}
 
       totalScore += Math.max(0, Math.min(100, fileScore));
     });
@@ -617,11 +617,11 @@ export class QualityValidator {
     const codeFiles = generatedCode.files.filter(file => file.type !== 'documentation');
 
     // Check for documentation files
-    if (docFiles.length > 0) score += 20;
+    if (docFiles.length > 0) {score += 20;}
 
     // Check inline documentation
     codeFiles.forEach(file => {
-      if (this.hasInlineDocumentation(file.content)) score += 5;
+      if (this.hasInlineDocumentation(file.content)) {score += 5;}
     });
 
     return Math.max(0, Math.min(100, score));
@@ -708,7 +708,7 @@ export class QualityValidator {
     let complexity = 1; // Base complexity
     complexityIndicators.forEach(pattern => {
       const matches = content.match(pattern);
-      if (matches) complexity += matches.length;
+      if (matches) {complexity += matches.length;}
     });
 
     return complexity;
@@ -752,8 +752,8 @@ export class QualityValidator {
   }
 
   private estimateTestCoverage(testFiles: any[], codeFiles: any[]): number {
-    if (testFiles.length === 0) return 0;
-    if (codeFiles.length === 0) return 100;
+    if (testFiles.length === 0) {return 0;}
+    if (codeFiles.length === 0) {return 100;}
 
     // Simple heuristic: count test cases vs functions
     let totalFunctions = 0;

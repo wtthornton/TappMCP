@@ -477,7 +477,7 @@ describe('SmartBegin - REAL TESTS (Expose Template Theater)', () => {
       for (const role of roles) {
         const input = {
           projectName: `${role}-project`,
-          role: role,
+          role,
         };
 
         const result = (await handleSmartBegin(input)) as SmartBeginResponse;

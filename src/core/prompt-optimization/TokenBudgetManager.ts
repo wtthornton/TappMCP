@@ -363,9 +363,9 @@ export class TokenBudgetManager {
   private getRecommendedAction(type: 'warning' | 'critical', period: 'daily' | 'monthly'): string {
     if (type === 'critical') {
       return `Immediate action required: Consider pausing non-essential operations for remainder of ${period} period`;
-    } else {
-      return `Monitor usage closely and consider optimizing prompts to reduce token consumption`;
     }
+      return `Monitor usage closely and consider optimizing prompts to reduce token consumption`;
+
   }
 
   /**
@@ -464,7 +464,7 @@ export class TokenBudgetManager {
     const totalHours =
       period === 'daily' ? 24 : 24 * new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
 
-    if (elapsedHours === 0) return 0;
+    if (elapsedHours === 0) {return 0;}
 
     const requestsPerHour = usage.requestCount / elapsedHours;
     const remainingHours = totalHours - elapsedHours;

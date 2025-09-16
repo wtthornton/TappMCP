@@ -280,8 +280,8 @@ export class TechnicalPlanner {
       const taskIds = phase.tasks.map(t => t.id);
       const milestones = [`Complete ${phase.name} phase`];
 
-      if (index === 0) milestones.unshift('Project kickoff');
-      if (index === phases.length - 1) milestones.push('Project completion');
+      if (index === 0) {milestones.unshift('Project kickoff');}
+      if (index === phases.length - 1) {milestones.push('Project completion');}
 
       timelinePhases.push({
         id: `phase-${index + 1}`,

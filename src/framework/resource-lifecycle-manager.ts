@@ -171,7 +171,7 @@ export class ResourceLifecycleManager {
 
     for (const [name, resource] of this.resources) {
       const metrics = this.metrics.get(name);
-      if (!metrics) continue;
+      if (!metrics) {continue;}
 
       // Check if resource needs cleanup
       const idleTime = now.getTime() - metrics.lastUsed.getTime();
@@ -238,7 +238,7 @@ export class ResourceLifecycleManager {
     for (const [name, resource] of this.resources) {
       try {
         const metrics = this.metrics.get(name);
-        if (!metrics) continue;
+        if (!metrics) {continue;}
 
         // Update basic metrics
         metrics.lastUsed = new Date();
@@ -410,7 +410,7 @@ export class ResourceLifecycleManager {
    */
   updateOperationMetrics(resourceName: string, executionTime: number, success: boolean): void {
     const metrics = this.metrics.get(resourceName);
-    if (!metrics) return;
+    if (!metrics) {return;}
 
     metrics.totalOperations++;
     metrics.lastUsed = new Date();

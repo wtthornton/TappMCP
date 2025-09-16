@@ -6,10 +6,41 @@
 
 ### **VibeTapp Intelligence System**
 - **Natural Language Interface**: Interact with development tools using conversational commands
+- **Automatic Verbosity Detection**: Intelligently detects response detail level from natural language
 - **Smart Code Analysis**: Advanced code quality analysis with actionable insights
 - **Workflow Orchestration**: Intelligent task planning and execution coordination
 - **Context-Aware Responses**: Rich, formatted responses with visual indicators and metrics
 - **Real-time Quality Monitoring**: Continuous code quality assessment and improvement suggestions
+
+#### **Automatic Verbosity Detection**
+TappMCP automatically detects the desired response detail level from your natural language input:
+
+**Minimal Verbosity** (brief, quick, summary, overview, status, check, fast, simple, basic, just, only, minimal, concise, rapid, swift, hurry, asap, urgent, immediate)
+```bash
+smart_vibe "just show me the status"          # → Minimal response
+smart_vibe "quick summary please"             # → Minimal response
+smart_vibe "brief overview"                   # → Minimal response
+```
+
+**Detailed Verbosity** (detailed, comprehensive, thorough, complete, explain, describe, how, why, understand, learn, teach, deep, extensive, full, everything, all, entire, elaborate, in-depth, step-by-step, walkthrough, tutorial)
+```bash
+smart_vibe "explain how this works"           # → Detailed response
+smart_vibe "describe the architecture"        # → Detailed response
+smart_vibe "show me detailed analysis"        # → Detailed response
+```
+
+**Standard Verbosity** (create, make, build, generate, write, develop, implement, add, new, setup, configure, install, run, start)
+```bash
+smart_vibe "create a todo app"                # → Standard response
+smart_vibe "build something"                  # → Standard response
+smart_vibe "help me with this"                # → Standard response
+```
+
+**Intent-Based Detection**: When no explicit verbosity keywords are detected, the system uses intent-based defaults:
+- **Status/Health checks** → Minimal verbosity
+- **Quality analysis** → Detailed verbosity
+- **Explanations** → Detailed verbosity
+- **Project creation** → Standard verbosity
 
 ### **Context7 Integration**
 - **API Intelligence**: Enhanced responses with real API calls and documentation
@@ -83,6 +114,52 @@ HEALTH_PORT=3001
 1. Get your API key from [Context7](https://context7.com)
 2. Add it to your environment variables
 3. Use the dashboard toggle to enable/disable as needed
+
+## 🎯 Automatic Verbosity Detection
+
+TappMCP now automatically detects the appropriate verbosity level from your natural language commands, making interactions more intuitive and natural.
+
+### **How It Works**
+
+The system analyzes your commands for verbosity indicators and intent types to determine the most appropriate response detail level:
+
+- **Minimal**: Quick, essential information only
+- **Standard**: Balanced detail level (default)
+- **Detailed**: Comprehensive explanations and context
+
+### **Examples**
+
+```typescript
+// Automatic verbosity detection examples
+smart_vibe("explain this code in detail")     // → Detailed verbosity
+smart_vibe("quick status check")             // → Minimal verbosity
+smart_vibe("create a todo app")              // → Standard verbosity
+smart_vibe("what does this function do")     // → Detailed verbosity (intent-based)
+smart_vibe("brief explanation of this")      // → Minimal verbosity (overrides intent)
+```
+
+### **Detection Methods**
+
+1. **Keyword Detection**: Detects verbosity keywords in your commands
+   - Minimal: "brief", "quick", "short", "summary", "status"
+   - Detailed: "explain", "detailed", "comprehensive", "thorough"
+
+2. **Intent-Based Rules**: Uses intent type to suggest verbosity
+   - Explanation intents → Detailed
+   - Status intents → Minimal
+   - Quality intents → Detailed
+   - Planning intents → Detailed
+
+3. **Priority System**: Input keywords override intent-based defaults
+
+### **Override Behavior**
+
+You can still explicitly set verbosity if needed:
+
+```typescript
+smart_vibe("explain code", { verbosity: "minimal" })  // Override to minimal
+smart_vibe("quick check", { verbosity: "detailed" })  // Override to detailed
+```
 
 ## 📊 Dashboard Access
 

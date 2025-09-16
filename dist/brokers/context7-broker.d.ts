@@ -83,6 +83,10 @@ export declare class Context7Broker {
     private circuitBreaker;
     private pendingRequests;
     private cacheFile;
+    private healthMonitor;
+    private cacheMetrics;
+    private healthCheckInterval;
+    private healthCheckFrequency;
     constructor(config?: Partial<Context7BrokerConfig>);
     /**
      * Check if Context7 MCP tools are available
@@ -92,6 +96,67 @@ export declare class Context7Broker {
      * Get cached data if available and not expired
      */
     private getCachedData;
+    /**
+     * Record cache hit
+     */
+    private recordCacheHit;
+    /**
+     * Record cache miss
+     */
+    private recordCacheMiss;
+    /**
+     * Get cache metrics
+     */
+    getCacheMetrics(): {
+        hits: number;
+        misses: number;
+        hitRate: number;
+        averageResponseTime: number;
+        totalRequests: number;
+        deduplicatedRequests: number;
+        cacheTTLHours: number;
+        cacheSize: number;
+    };
+    /**
+     * Reset cache metrics
+     */
+    resetCacheMetrics(): void;
+    /**
+     * Get cache health status
+     */
+    getCacheHealth(): any;
+    /**
+     * Log cache health report
+     */
+    logCacheHealth(): void;
+    /**
+     * Check if cache health is good
+     */
+    isCacheHealthy(): boolean;
+    /**
+     * Get health status with emoji
+     */
+    getHealthStatusEmoji(): string;
+    /**
+     * Check health periodically based on request count
+     */
+    private checkHealthPeriodically;
+    /**
+     * Set health check frequency
+     */
+    setHealthCheckFrequency(frequency: number): void;
+    /**
+     * Force health check
+     */
+    forceHealthCheck(): void;
+    /**
+     * Deduplicate requests to prevent parallel identical API calls
+     */
+    private deduplicateRequest;
+    /**
+     * Execute request with timeout and cleanup
+     */
+    private executeRequest;
     /**
      * Cache data with expiry
      */
@@ -187,10 +252,6 @@ export declare class Context7Broker {
         hitRate: string;
         memoryUsage: string;
     };
-    /**
-     * Check if cache is healthy
-     */
-    isCacheHealthy(): boolean;
     /**
      * Clear cache
      */

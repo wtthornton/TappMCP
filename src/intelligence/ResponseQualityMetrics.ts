@@ -335,9 +335,9 @@ export class ResponseQualityMetrics {
 
     if (format === 'json') {
       return JSON.stringify(allMetrics, null, 2);
-    } else {
-      return this.convertToCSV(allMetrics);
     }
+      return this.convertToCSV(allMetrics);
+
   }
 
   /**
@@ -372,12 +372,12 @@ export class ResponseQualityMetrics {
   }
 
   private calculateAverageScore(metrics: QualityMetrics[]): number {
-    if (metrics.length === 0) return 0;
+    if (metrics.length === 0) {return 0;}
     return metrics.reduce((sum, m) => sum + m.overallScore, 0) / metrics.length;
   }
 
   private calculateQualityTrend(metrics: QualityMetrics[]): 'improving' | 'declining' | 'stable' {
-    if (metrics.length < 10) return 'stable';
+    if (metrics.length < 10) {return 'stable';}
 
     const sortedMetrics = metrics.sort((a, b) => a.timestamp - b.timestamp);
     const firstHalf = sortedMetrics.slice(0, Math.floor(sortedMetrics.length / 2));
@@ -389,8 +389,8 @@ export class ResponseQualityMetrics {
     const difference = secondHalfAvg - firstHalfAvg;
     const threshold = 5; // 5 point difference threshold
 
-    if (difference > threshold) return 'improving';
-    if (difference < -threshold) return 'declining';
+    if (difference > threshold) {return 'improving';}
+    if (difference < -threshold) {return 'declining';}
     return 'stable';
   }
 
@@ -568,8 +568,8 @@ export class ResponseQualityMetrics {
     const changePercentage = firstAvg > 0 ? ((lastAvg - firstAvg) / firstAvg) * 100 : 0;
 
     let trend: 'up' | 'down' | 'stable' = 'stable';
-    if (changePercentage > 5) trend = 'up';
-    else if (changePercentage < -5) trend = 'down';
+    if (changePercentage > 5) {trend = 'up';}
+    else if (changePercentage < -5) {trend = 'down';}
 
     return {
       period: periodName,
@@ -608,7 +608,7 @@ export class ResponseQualityMetrics {
   }
 
   private calculateTemplateRate(metrics: QualityMetrics[]): number {
-    if (metrics.length === 0) return 0;
+    if (metrics.length === 0) {return 0;}
     const templateCount = metrics.filter(m => m.templateDetection.isTemplate).length;
     return templateCount / metrics.length;
   }
@@ -637,12 +637,12 @@ export class ResponseQualityMetrics {
   }
 
   private calculateAverage(values: number[]): number {
-    if (values.length === 0) return 0;
+    if (values.length === 0) {return 0;}
     return values.reduce((sum, val) => sum + val, 0) / values.length;
   }
 
   private convertToCSV(metrics: QualityMetrics[]): string {
-    if (metrics.length === 0) return '';
+    if (metrics.length === 0) {return '';}
 
     const headers = Object.keys(metrics[0]).join(',');
     const rows = metrics.map(metric =>

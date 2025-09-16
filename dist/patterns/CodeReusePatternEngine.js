@@ -401,8 +401,9 @@ async function resolve{{ERROR_TYPE}}Errors(): Promise<void> {
         return createHash('md5').update(content).digest('hex');
     }
     createAbstractPattern(segments) {
-        if (segments.length === 0)
+        if (segments.length === 0) {
             return '';
+        }
         const firstSegment = segments[0].code;
         let abstractPattern = firstSegment.join('\n');
         // Replace variable names with placeholders
@@ -423,8 +424,9 @@ async function resolve{{ERROR_TYPE}}Errors(): Promise<void> {
         return abstractPattern;
     }
     calculatePatternConfidence(segments, _pattern) {
-        if (segments.length < 2)
+        if (segments.length < 2) {
             return 0;
+        }
         let totalSimilarity = 0;
         let comparisons = 0;
         for (let i = 0; i < segments.length; i++) {
@@ -471,17 +473,17 @@ async function resolve{{ERROR_TYPE}}Errors(): Promise<void> {
             content.includes('require')) {
             return 'module';
         }
-        else {
-            return 'utility';
-        }
+        return 'utility';
     }
     assessComplexity(pattern) {
         const lines = pattern.split('\n').filter(line => line.trim().length > 0);
         const lineCount = lines.length;
-        if (lineCount <= 3)
+        if (lineCount <= 3) {
             return 'low';
-        if (lineCount <= 10)
+        }
+        if (lineCount <= 10) {
             return 'medium';
+        }
         return 'high';
     }
     extractVariables(abstractPattern) {
@@ -521,8 +523,9 @@ async function resolve{{ERROR_TYPE}}Errors(): Promise<void> {
         return Math.ceil(pattern.length / 4);
     }
     calculateAverageComplexity(segments) {
-        if (segments.length === 0)
+        if (segments.length === 0) {
             return 0;
+        }
         let totalComplexity = 0;
         for (const segment of segments) {
             totalComplexity += segment.code.length;
@@ -549,9 +552,7 @@ async function resolve{{ERROR_TYPE}}Errors(): Promise<void> {
             const match = firstLine.match(/class\s+(\w+)/);
             return match ? match[1] : `${category}_pattern`;
         }
-        else {
-            return `${category}_pattern_${Date.now()}`;
-        }
+        return `${category}_pattern_${Date.now()}`;
     }
     generatePatternDescription(pattern, category) {
         const lines = pattern.split('\n').filter(line => line.trim().length > 0);

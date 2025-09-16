@@ -262,7 +262,7 @@ class CustomCodeAnalysisTool extends MCPTool<
           for (const l of remainingLines) {
             functionLength++;
             braceCount += (l.match(/{/g) || []).length - (l.match(/}/g) || []).length;
-            if (braceCount <= 0 && functionLength > 1) break;
+            if (braceCount <= 0 && functionLength > 1) {break;}
           }
 
           if (functionLength > 50) {

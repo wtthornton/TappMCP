@@ -301,9 +301,9 @@ export class ResponseRelevanceScorer {
 
     if (format === 'json') {
       return JSON.stringify(allMetrics, null, 2);
-    } else {
-      return this.convertToCSV(allMetrics);
     }
+      return this.convertToCSV(allMetrics);
+
   }
 
   /**
@@ -363,10 +363,10 @@ export class ResponseRelevanceScorer {
     const ageInHours = (now - responseTime) / (1000 * 60 * 60);
 
     // Relevance decreases with age, but not linearly
-    if (ageInHours < 1) return 1.0;
-    if (ageInHours < 24) return 0.9;
-    if (ageInHours < 168) return 0.7; // 1 week
-    if (ageInHours < 720) return 0.5; // 1 month
+    if (ageInHours < 1) {return 1.0;}
+    if (ageInHours < 24) {return 0.9;}
+    if (ageInHours < 168) {return 0.7;} // 1 week
+    if (ageInHours < 720) {return 0.5;} // 1 month
     return 0.3;
   }
 
@@ -396,9 +396,9 @@ export class ResponseRelevanceScorer {
     let confidence = 0.5; // Base confidence
 
     // Increase confidence based on data availability
-    if (response.domain) confidence += 0.1;
-    if (response.userId) confidence += 0.1;
-    if (response.sessionId) confidence += 0.1;
+    if (response.domain) {confidence += 0.1;}
+    if (response.userId) {confidence += 0.1;}
+    if (response.sessionId) {confidence += 0.1;}
 
     // Increase confidence based on score consistency
     const scoreValues = Object.values(scores).filter(v => typeof v === 'number') as number[];
@@ -551,8 +551,8 @@ export class ResponseRelevanceScorer {
     const changePercentage = firstAvg > 0 ? ((lastAvg - firstAvg) / firstAvg) * 100 : 0;
 
     let trend: 'improving' | 'declining' | 'stable' = 'stable';
-    if (changePercentage > 5) trend = 'improving';
-    else if (changePercentage < -5) trend = 'declining';
+    if (changePercentage > 5) {trend = 'improving';}
+    else if (changePercentage < -5) {trend = 'declining';}
 
     return {
       period: periodName,
@@ -605,12 +605,12 @@ export class ResponseRelevanceScorer {
   }
 
   private calculateAverage(values: number[]): number {
-    if (values.length === 0) return 0;
+    if (values.length === 0) {return 0;}
     return values.reduce((sum, val) => sum + val, 0) / values.length;
   }
 
   private calculateVariance(values: number[]): number {
-    if (values.length === 0) return 0;
+    if (values.length === 0) {return 0;}
     const mean = this.calculateAverage(values);
     const squaredDiffs = values.map(val => Math.pow(val - mean, 2));
     return this.calculateAverage(squaredDiffs);
@@ -627,11 +627,11 @@ export class ResponseRelevanceScorer {
 
     for (const metric of metrics) {
       const score = metric.relevanceScore.overallRelevance;
-      if (score >= 90) distribution.excellent++;
-      else if (score >= 70) distribution.good++;
-      else if (score >= 50) distribution.average++;
-      else if (score >= 30) distribution.poor++;
-      else distribution.very_poor++;
+      if (score >= 90) {distribution.excellent++;}
+      else if (score >= 70) {distribution.good++;}
+      else if (score >= 50) {distribution.average++;}
+      else if (score >= 30) {distribution.poor++;}
+      else {distribution.very_poor++;}
     }
 
     return distribution;
@@ -649,7 +649,7 @@ export class ResponseRelevanceScorer {
   }
 
   private convertToCSV(metrics: RelevanceMetrics[]): string {
-    if (metrics.length === 0) return '';
+    if (metrics.length === 0) {return '';}
 
     const headers = Object.keys(metrics[0]).join(',');
     const rows = metrics.map(metric =>
@@ -707,7 +707,7 @@ class IntentMatcher {
 class DomainAnalyzer {
   analyzeDomainRelevance(response: AIResponse): number {
     // Simplified domain relevance analysis
-    if (!response.domain) return 0.5;
+    if (!response.domain) {return 0.5;}
 
     const domainKeywords = {
       frontend: ['react', 'vue', 'angular', 'javascript', 'css', 'html'],

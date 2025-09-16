@@ -408,7 +408,7 @@ export class PerformanceMonitor extends EventEmitter {
 
     for (const metric of recentMetrics) {
       const threshold = this.thresholds.get(metric.name);
-      if (!threshold) continue;
+      if (!threshold) {continue;}
 
       const alertId = `${metric.name}-${Math.floor(metric.timestamp / 60000)}`;
 
@@ -426,7 +426,7 @@ export class PerformanceMonitor extends EventEmitter {
     threshold: number,
     severity: PerformanceAlert['severity']
   ): void {
-    if (this.alerts.has(alertId)) return;
+    if (this.alerts.has(alertId)) {return;}
 
     const alert: PerformanceAlert = {
       id: alertId,

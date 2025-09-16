@@ -117,8 +117,9 @@ export class ResourceLifecycleManager {
         const cleanupPromises = [];
         for (const [name, resource] of this.resources) {
             const metrics = this.metrics.get(name);
-            if (!metrics)
+            if (!metrics) {
                 continue;
+            }
             // Check if resource needs cleanup
             const idleTime = now.getTime() - metrics.lastUsed.getTime();
             const needsCleanup = idleTime > this.cleanupConfig.maxIdleTime ||
@@ -176,8 +177,9 @@ export class ResourceLifecycleManager {
         for (const [name, resource] of this.resources) {
             try {
                 const metrics = this.metrics.get(name);
-                if (!metrics)
+                if (!metrics) {
                     continue;
+                }
                 // Update basic metrics
                 metrics.lastUsed = new Date();
                 // Get memory usage (simplified - in real implementation, use process.memoryUsage())
@@ -315,8 +317,9 @@ export class ResourceLifecycleManager {
      */
     updateOperationMetrics(resourceName, executionTime, success) {
         const metrics = this.metrics.get(resourceName);
-        if (!metrics)
+        if (!metrics) {
             return;
+        }
         metrics.totalOperations++;
         metrics.lastUsed = new Date();
         if (!success) {

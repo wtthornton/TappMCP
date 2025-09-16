@@ -12,21 +12,21 @@ export declare const FileResourceSchema: z.ZodObject<{
     permissions: z.ZodOptional<z.ZodString>;
     data: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    data?: string;
-    encoding?: string;
-    mode?: "write" | "read" | "append";
-    path?: string;
-    backup?: boolean;
-    createIfNotExists?: boolean;
-    permissions?: string;
+    encoding: string;
+    mode: "write" | "read" | "append";
+    path: string;
+    backup: boolean;
+    createIfNotExists: boolean;
+    data?: string | undefined;
+    permissions?: string | undefined;
 }, {
-    data?: string;
-    encoding?: string;
-    mode?: "write" | "read" | "append";
-    path?: string;
-    backup?: boolean;
-    createIfNotExists?: boolean;
-    permissions?: string;
+    path: string;
+    data?: string | undefined;
+    encoding?: string | undefined;
+    mode?: "write" | "read" | "append" | undefined;
+    backup?: boolean | undefined;
+    createIfNotExists?: boolean | undefined;
+    permissions?: string | undefined;
 }>;
 export type FileResourceConfig = z.infer<typeof FileResourceSchema>;
 /**
@@ -42,41 +42,41 @@ export declare const FileResourceResponseSchema: z.ZodObject<{
         hash: z.ZodString;
         permissions: z.ZodOptional<z.ZodString>;
     }, "strip", z.ZodTypeAny, {
-        path?: string;
-        size?: number;
-        hash?: string;
-        permissions?: string;
-        lastModified?: Date;
+        path: string;
+        size: number;
+        hash: string;
+        lastModified: Date;
+        permissions?: string | undefined;
     }, {
-        path?: string;
-        size?: number;
-        hash?: string;
-        permissions?: string;
-        lastModified?: Date;
+        path: string;
+        size: number;
+        hash: string;
+        lastModified: Date;
+        permissions?: string | undefined;
     }>>;
     error: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    error?: string;
-    success?: boolean;
-    data?: string;
+    success: boolean;
+    error?: string | undefined;
+    data?: string | undefined;
     metadata?: {
-        path?: string;
-        size?: number;
-        hash?: string;
-        permissions?: string;
-        lastModified?: Date;
-    };
+        path: string;
+        size: number;
+        hash: string;
+        lastModified: Date;
+        permissions?: string | undefined;
+    } | undefined;
 }, {
-    error?: string;
-    success?: boolean;
-    data?: string;
+    success: boolean;
+    error?: string | undefined;
+    data?: string | undefined;
     metadata?: {
-        path?: string;
-        size?: number;
-        hash?: string;
-        permissions?: string;
-        lastModified?: Date;
-    };
+        path: string;
+        size: number;
+        hash: string;
+        lastModified: Date;
+        permissions?: string | undefined;
+    } | undefined;
 }>;
 export type FileResourceResponse = z.infer<typeof FileResourceResponseSchema>;
 /**

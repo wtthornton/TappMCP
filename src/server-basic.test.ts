@@ -58,7 +58,7 @@ describe('MCP Protocol Simulation', () => {
 
     // 2. smart_plan
     const planResult = await handleSmartPlan({
-      projectId: projectId,
+      projectId,
       planType: 'development',
       scope: {
         techStack: ['TypeScript', 'Node.js'],
@@ -77,7 +77,7 @@ describe('MCP Protocol Simulation', () => {
 
     // 3. smart_write
     const writeResult = await handleSmartWrite({
-      projectId: projectId,
+      projectId,
       featureDescription: 'Create a TypeScript utility function',
       requirements: {
         language: 'TypeScript',
@@ -97,7 +97,7 @@ describe('MCP Protocol Simulation', () => {
 
     // 4. smart_finish
     const finishResult = await handleSmartFinish({
-      projectId: projectId,
+      projectId,
       codeIds: [codeId],
     });
     expect(finishResult.success).toBe(true);

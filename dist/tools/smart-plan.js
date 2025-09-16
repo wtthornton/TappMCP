@@ -865,7 +865,7 @@ function generateQualityGatesForRoadmap(phases, _role) {
 // Generate process compliance validation
 function generateProcessCompliance(role, processCompliance) {
     return {
-        roleValidation: !!role,
+        roleValidation: Boolean(role),
         qualityGates: true,
         documentation: true,
         testing: true,

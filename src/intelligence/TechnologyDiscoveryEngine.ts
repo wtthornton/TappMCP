@@ -116,7 +116,7 @@ export class TechnologyDiscoveryEngine {
    */
   private categorizeTechnology(tech: any, map: TechnologyMap): void {
     const name = this.extractTechnologyName(tech);
-    if (!name) return;
+    if (!name) {return;}
 
     const lowerName = name.toLowerCase();
     const description = this.extractDescription(tech).toLowerCase();
@@ -155,11 +155,11 @@ export class TechnologyDiscoveryEngine {
    * Extract technology name from various data structures
    */
   private extractTechnologyName(tech: any): string {
-    if (typeof tech === 'string') return tech;
-    if (tech.name) return tech.name;
-    if (tech.technology) return tech.technology;
-    if (tech.title) return tech.title;
-    if (tech.label) return tech.label;
+    if (typeof tech === 'string') {return tech;}
+    if (tech.name) {return tech.name;}
+    if (tech.technology) {return tech.technology;}
+    if (tech.title) {return tech.title;}
+    if (tech.label) {return tech.label;}
     return '';
   }
 
@@ -167,10 +167,10 @@ export class TechnologyDiscoveryEngine {
    * Extract description from technology data
    */
   private extractDescription(tech: any): string {
-    if (typeof tech === 'string') return tech;
-    if (tech.description) return tech.description;
-    if (tech.summary) return tech.summary;
-    if (tech.details) return tech.details;
+    if (typeof tech === 'string') {return tech;}
+    if (tech.description) {return tech.description;}
+    if (tech.summary) {return tech.summary;}
+    if (tech.details) {return tech.details;}
     return '';
   }
 
@@ -209,7 +209,7 @@ export class TechnologyDiscoveryEngine {
       'web components',
     ];
 
-    const combined = name + ' ' + description;
+    const combined = `${name } ${ description}`;
     return frontendKeywords.some(keyword => combined.includes(keyword));
   }
 
@@ -252,7 +252,7 @@ export class TechnologyDiscoveryEngine {
       'function',
     ];
 
-    const combined = name + ' ' + description;
+    const combined = `${name } ${ description}`;
     return backendKeywords.some(keyword => combined.includes(keyword));
   }
 
@@ -292,7 +292,7 @@ export class TechnologyDiscoveryEngine {
       'mongoose',
     ];
 
-    const combined = name + ' ' + description;
+    const combined = `${name } ${ description}`;
     return databaseKeywords.some(keyword => combined.includes(keyword));
   }
 
@@ -338,7 +338,7 @@ export class TechnologyDiscoveryEngine {
       'packer',
     ];
 
-    const combined = name + ' ' + description;
+    const combined = `${name } ${ description}`;
     return devopsKeywords.some(keyword => combined.includes(keyword));
   }
 
@@ -375,7 +375,7 @@ export class TechnologyDiscoveryEngine {
       'progressive web app',
     ];
 
-    const combined = name + ' ' + description;
+    const combined = `${name } ${ description}`;
     return mobileKeywords.some(keyword => combined.includes(keyword));
   }
 
@@ -420,7 +420,7 @@ export class TechnologyDiscoveryEngine {
       'dataset',
     ];
 
-    const combined = name + ' ' + description;
+    const combined = `${name } ${ description}`;
     return dataScienceKeywords.some(keyword => combined.includes(keyword));
   }
 

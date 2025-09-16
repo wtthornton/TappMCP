@@ -114,7 +114,7 @@ describe('SmartConverse Performance', () => {
     });
 
     it('should handle large message inputs efficiently', async () => {
-      const largeMessage = 'Create a project '.repeat(1000) + 'with React and TypeScript';
+      const largeMessage = `${'Create a project '.repeat(1000) }with React and TypeScript`;
 
       const start = performance.now();
 

@@ -196,7 +196,7 @@ export function mergeIconConfigs(base: IconConfig, override: Partial<IconConfig>
  * Gets CSS class name for icon animations
  */
 export function getAnimationClass(animated: boolean, animationType: string = 'pulse'): string {
-  if (!animated) return '';
+  if (!animated) {return '';}
 
   const animationClasses: Record<string, string> = {
     pulse: 'icon-pulse',

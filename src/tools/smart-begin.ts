@@ -373,11 +373,11 @@ async function scanExistingProject(
             const packageJson = JSON.parse(packageContent);
 
             if (packageJson.dependencies) {
-              if (packageJson.dependencies.typescript) detectedTechStack.push('typescript');
-              if (packageJson.dependencies.react) detectedTechStack.push('react');
-              if (packageJson.dependencies.express) detectedTechStack.push('express');
+              if (packageJson.dependencies.typescript) {detectedTechStack.push('typescript');}
+              if (packageJson.dependencies.react) {detectedTechStack.push('react');}
+              if (packageJson.dependencies.express) {detectedTechStack.push('express');}
               if (packageJson.dependencies['@modelcontextprotocol/sdk'])
-                detectedTechStack.push('mcp-server');
+                {detectedTechStack.push('mcp-server');}
             }
           } catch (error) {
             qualityIssues.push('Invalid package.json format');
@@ -752,7 +752,7 @@ function generateProcessCompliance(role?: string): {
   testing: boolean;
 } {
   return {
-    roleValidation: !!role,
+    roleValidation: Boolean(role),
     qualityGates: true,
     documentation: true,
     testing: true,

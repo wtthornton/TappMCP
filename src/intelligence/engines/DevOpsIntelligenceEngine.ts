@@ -1128,19 +1128,19 @@ jobs:
 
   private detectDevOpsCodeType(description: string): string {
     const lower = description.toLowerCase();
-    if (lower.includes('dockerfile') || lower.includes('docker')) return 'dockerfile';
-    if (lower.includes('kubernetes') || lower.includes('k8s')) return 'kubernetes';
-    if (lower.includes('terraform') || lower.includes('infrastructure')) return 'terraform';
-    if (lower.includes('pipeline') || lower.includes('ci/cd')) return 'cicd';
-    if (lower.includes('monitoring') || lower.includes('prometheus')) return 'monitoring';
+    if (lower.includes('dockerfile') || lower.includes('docker')) {return 'dockerfile';}
+    if (lower.includes('kubernetes') || lower.includes('k8s')) {return 'kubernetes';}
+    if (lower.includes('terraform') || lower.includes('infrastructure')) {return 'terraform';}
+    if (lower.includes('pipeline') || lower.includes('ci/cd')) {return 'cicd';}
+    if (lower.includes('monitoring') || lower.includes('prometheus')) {return 'monitoring';}
     return 'generic';
   }
 
   private selectOptimalBaseImage(request: CodeGenerationRequest): string {
     const tech = request.techStack?.[0]?.toLowerCase() || 'node';
-    if (tech.includes('node')) return 'node:18-alpine';
-    if (tech.includes('python')) return 'python:3.11-alpine';
-    if (tech.includes('java')) return 'openjdk:17-alpine';
+    if (tech.includes('node')) {return 'node:18-alpine';}
+    if (tech.includes('python')) {return 'python:3.11-alpine';}
+    if (tech.includes('java')) {return 'openjdk:17-alpine';}
     return 'alpine:latest';
   }
 

@@ -92,7 +92,7 @@ export class ToolAvailabilityChecker {
         execSync(tool.command, {
           stdio: 'pipe',
           timeout: 5000,
-          shell: shell,
+          shell,
         });
         results.push({ ...tool, available: true });
       } catch (error) {

@@ -9,9 +9,9 @@ import { Tool } from '@modelcontextprotocol/sdk/types.js';
 export declare const SmartConverseSchema: z.ZodObject<{
     userMessage: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    userMessage?: string;
+    userMessage: string;
 }, {
-    userMessage?: string;
+    userMessage: string;
 }>;
 export type SmartConverseInput = z.infer<typeof SmartConverseSchema>;
 export declare const smartConverseTool: Tool;

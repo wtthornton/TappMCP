@@ -338,7 +338,7 @@ export class Context7PerformanceOptimizer extends EventEmitter {
    * Process batch queue
    */
   private async processBatchQueue(): Promise<void> {
-    if (this.isProcessing || this.requestQueue.size === 0) return;
+    if (this.isProcessing || this.requestQueue.size === 0) {return;}
 
     this.isProcessing = true;
 
@@ -351,7 +351,7 @@ export class Context7PerformanceOptimizer extends EventEmitter {
         })
         .slice(0, this.config.batchSize);
 
-      if (requests.length === 0) return;
+      if (requests.length === 0) {return;}
 
       const batch: RequestBatch = {
         id: `batch-${Date.now()}`,
@@ -651,7 +651,7 @@ export class Context7PerformanceOptimizer extends EventEmitter {
    */
   resolveAlert(alertId: string): boolean {
     const alert = this.alerts.get(alertId);
-    if (!alert) return false;
+    if (!alert) {return false;}
 
     alert.resolved = true;
     this.alerts.set(alertId, alert);

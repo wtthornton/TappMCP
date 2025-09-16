@@ -771,7 +771,7 @@ export class Context7ProjectAnalyzer {
     _context7Data: any[]
   ): Promise<FrameworkPatterns | undefined> {
     const primaryTech = analysis.project.detectedTechStack[0];
-    if (!primaryTech) return undefined;
+    if (!primaryTech) {return undefined;}
 
     const frameworkPatterns = {
       react: {
@@ -792,7 +792,7 @@ export class Context7ProjectAnalyzer {
     };
 
     const patterns = frameworkPatterns[primaryTech.toLowerCase() as keyof typeof frameworkPatterns];
-    if (!patterns) return undefined;
+    if (!patterns) {return undefined;}
 
     return {
       framework: primaryTech,

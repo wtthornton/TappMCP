@@ -161,6 +161,9 @@ export class MCPCoordinator {
                     case 'memory':
                         isAvailable = await this.memory.checkAvailability();
                         break;
+                    default:
+                        isAvailable = false;
+                        break;
                 }
             }
             catch {

@@ -235,7 +235,7 @@ export class SmartWriteCore {
           i => i.severity === 'critical'
         ).length,
         recommendations: validatedCode.qualityValidation.recommendations.slice(0, 5),
-        hasQualityEnhancements: !!validatedCode.qualityEnhancements,
+        hasQualityEnhancements: Boolean(validatedCode.qualityEnhancements),
       },
 
       // Execution context

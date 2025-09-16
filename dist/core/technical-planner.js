@@ -200,10 +200,12 @@ export class TechnicalPlanner {
             endDate.setDate(endDate.getDate() + phaseDuration * 7); // Convert weeks to days
             const taskIds = phase.tasks.map(t => t.id);
             const milestones = [`Complete ${phase.name} phase`];
-            if (index === 0)
+            if (index === 0) {
                 milestones.unshift('Project kickoff');
-            if (index === phases.length - 1)
+            }
+            if (index === phases.length - 1) {
                 milestones.push('Project completion');
+            }
             timelinePhases.push({
                 id: `phase-${index + 1}`,
                 name: phase.name,

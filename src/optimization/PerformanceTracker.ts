@@ -87,7 +87,7 @@ export class PerformanceTracker {
     success: boolean
   ): void {
     const profile = this.performanceProfiles.get(toolName);
-    if (!profile) return;
+    if (!profile) {return;}
 
     const newSampleCount = profile.sampleCount + 1;
     const timeWeight = 1 / newSampleCount;
@@ -122,7 +122,7 @@ export class PerformanceTracker {
    * Learn from execution patterns and update profiles
    */
   async learnFromExecution(plan: ExecutionPlan, result: ExecutionResult): Promise<void> {
-    if (!this.learningEnabled) return;
+    if (!this.learningEnabled) {return;}
 
     // Update tool performance profiles based on actual execution
     for (const stepResult of result.stepResults) {
@@ -304,7 +304,7 @@ export class PerformanceTracker {
    * Calculate performance trend
    */
   private calculateTrend(older: Array<any>, recent: Array<any>, metric: string): number {
-    if (older.length === 0 || recent.length === 0) return 0;
+    if (older.length === 0 || recent.length === 0) {return 0;}
 
     const olderAvg = older.reduce((sum, exec) => sum + exec.result[metric], 0) / older.length;
     const recentAvg = recent.reduce((sum, exec) => sum + exec.result[metric], 0) / recent.length;
@@ -317,7 +317,7 @@ export class PerformanceTracker {
    * Calculate reliability trend
    */
   private calculateReliabilityTrend(older: Array<any>, recent: Array<any>): number {
-    if (older.length === 0 || recent.length === 0) return 0;
+    if (older.length === 0 || recent.length === 0) {return 0;}
 
     const olderSuccessRate = older.filter(exec => exec.result.success).length / older.length;
     const recentSuccessRate = recent.filter(exec => exec.result.success).length / recent.length;

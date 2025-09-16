@@ -77,10 +77,12 @@ export class ProjectScanner {
         const configFiles = [];
         const templates = [];
         const scanDirectory = async (dirPath, depth = 0) => {
-            if (analysisDepth === 'quick' && depth > 2)
+            if (analysisDepth === 'quick' && depth > 2) {
                 return;
-            if (analysisDepth === 'standard' && depth > 3)
+            }
+            if (analysisDepth === 'standard' && depth > 3) {
                 return;
+            }
             // deep analysis has no depth limit
             try {
                 const entries = await fs.readdir(dirPath, { withFileTypes: true });
@@ -157,18 +159,24 @@ export class ProjectScanner {
         }
         // Check for config files
         for (const configFile of projectStructure.configFiles) {
-            if (configFile.includes('tsconfig'))
+            if (configFile.includes('tsconfig')) {
                 detectedTech.push('typescript');
-            if (configFile.includes('vitest') || configFile.includes('jest'))
+            }
+            if (configFile.includes('vitest') || configFile.includes('jest')) {
                 detectedTech.push('testing');
-            if (configFile.includes('eslint'))
+            }
+            if (configFile.includes('eslint')) {
                 detectedTech.push('linting');
-            if (configFile.includes('prettier'))
+            }
+            if (configFile.includes('prettier')) {
                 detectedTech.push('formatting');
-            if (configFile.includes('webpack') || configFile.includes('vite'))
+            }
+            if (configFile.includes('webpack') || configFile.includes('vite')) {
                 detectedTech.push('bundling');
-            if (configFile.includes('docker'))
+            }
+            if (configFile.includes('docker')) {
                 detectedTech.push('containerization');
+            }
         }
         return [...new Set(detectedTech)]; // Remove duplicates
     }

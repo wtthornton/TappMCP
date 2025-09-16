@@ -111,7 +111,7 @@ export class SecurityScanner {
   private async runOSVScanner(): Promise<Vulnerability[]> {
     try {
       const osvOutput = await this.executeOSVScan();
-      if (!osvOutput) return [];
+      if (!osvOutput) {return [];}
 
       const osvData = JSON.parse(osvOutput);
       return this.parseOSVResults(osvData);
@@ -465,9 +465,9 @@ export class SecurityScanner {
    * Map OSV-Scanner severity score to our severity levels
    */
   private mapOSVSeverity(score: number): 'critical' | 'high' | 'moderate' | 'low' {
-    if (score >= 9.0) return 'critical';
-    if (score >= 7.0) return 'high';
-    if (score >= 4.0) return 'moderate';
+    if (score >= 9.0) {return 'critical';}
+    if (score >= 7.0) {return 'high';}
+    if (score >= 4.0) {return 'moderate';}
     return 'low';
   }
 
@@ -498,8 +498,8 @@ export class SecurityScanner {
       return 'fail';
     } else if (summary.moderate > 0 || summary.low > 0) {
       return 'warning';
-    } else {
-      return 'pass';
     }
+      return 'pass';
+
   }
 }

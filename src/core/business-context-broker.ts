@@ -176,10 +176,10 @@ export class BusinessContextBroker {
     return {
       costPrevention: Math.min(50000, 5000 + businessGoalCount * 2000 + roleTransitionCount * 1000),
       timesSaved: Math.min(20, 2 + businessGoalCount * 0.5 + roleTransitionCount * 0.3),
-      qualityImprovement: Math.min(100, 70 + businessGoalCount * 2 + roleTransitionCount * 1),
+      qualityImprovement: Math.min(100, 70 + businessGoalCount * 2 + Number(roleTransitionCount)),
       riskMitigation: Math.min(100, 60 + requirementCount * 3 + roleTransitionCount * 2),
       strategicAlignment: Math.min(100, 80 + businessGoalCount * 1.5),
-      userSatisfaction: Math.min(100, 85 + businessGoalCount * 1 + roleTransitionCount * 0.5),
+      userSatisfaction: Math.min(100, 85 + Number(businessGoalCount) + roleTransitionCount * 0.5),
     };
   }
 

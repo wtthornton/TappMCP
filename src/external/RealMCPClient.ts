@@ -132,7 +132,7 @@ export class RealMCPClient extends EventEmitter {
 
     try {
       const response = await this.sendMessage(serverName, initMessage, 5000);
-      return !!response && !response.error;
+      return Boolean(response) && !response?.error;
     } catch (error) {
       console.error(`❌ ${serverName} initialization failed:`, error);
       return false;
@@ -261,7 +261,7 @@ export class RealMCPClient extends EventEmitter {
       ['npx', '@modelcontextprotocol/server-filesystem@latest'],
       [process.cwd()]
     );
-    results['filesystem'] = fsConnected;
+    results.filesystem = fsConnected;
 
     if (fsConnected) {
       try {
@@ -282,7 +282,7 @@ export class RealMCPClient extends EventEmitter {
       'npx',
       '@modelcontextprotocol/server-github@latest',
     ]);
-    results['github'] = githubConnected;
+    results.github = githubConnected;
 
     if (githubConnected) {
       try {
@@ -299,7 +299,7 @@ export class RealMCPClient extends EventEmitter {
       'npx',
       '@testsprite/testsprite-mcp@latest',
     ]);
-    results['testsprite'] = testspriteConnected;
+    results.testsprite = testspriteConnected;
 
     console.log('\n📊 REAL CONNECTIVITY TEST RESULTS:');
     console.log('=====================================');
@@ -308,7 +308,7 @@ export class RealMCPClient extends EventEmitter {
       console.log(
         `${connected ? '✅' : '❌'} ${name}: ${connected ? 'REAL CONNECTION' : 'FAILED'}`
       );
-      if (connected) realConnections++;
+      if (connected) {realConnections++;}
     }
 
     const percentage = (realConnections / Object.keys(results).length) * 100;

@@ -289,7 +289,7 @@ describe('ErrorAnalysisPrompt', () => {
       };
 
       const prompt = new ErrorAnalysisPrompt();
-      const longErrorMessage = 'Error: ' + 'x'.repeat(1000);
+      const longErrorMessage = `Error: ${ 'x'.repeat(1000)}`;
 
       const input: ErrorAnalysisPromptInput = {
         errorMessage: longErrorMessage,

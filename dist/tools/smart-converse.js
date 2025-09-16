@@ -164,7 +164,7 @@ export function generateResponse(intent, orchestrateResult) {
         `4. Begin implementing core features`,
         `5. Configure testing and quality assurance`,
     ];
-    response += nextSteps.join('\n') + '\n\n';
+    response += `${nextSteps.join('\n')}\n\n`;
     // Workflow phases if available
     if (workflow && workflow.phases && workflow.phases.length > 0) {
         response += `**📊 Workflow Phases:**\n`;

@@ -78,17 +78,17 @@ export class StaticAnalyzer {
       // Only run external tools in non-test environments
       // Run ESLint for code quality and style issues (gracefully handle failures)
       const eslintResult = await this.runESLint();
-      if (eslintResult.length > 0) toolsConfigured = true;
+      if (eslintResult.length > 0) {toolsConfigured = true;}
       issues.push(...eslintResult);
 
       // Run Semgrep for security and OWASP best practices (gracefully handle failures)
       const semgrepResult = await this.runSemgrep();
-      if (semgrepResult.length > 0) toolsConfigured = true;
+      if (semgrepResult.length > 0) {toolsConfigured = true;}
       issues.push(...semgrepResult);
 
       // Run TypeScript compiler for type checking (gracefully handle failures)
       const tscResult = await this.runTypeScriptCheck();
-      if (tscResult.length > 0) toolsConfigured = true;
+      if (tscResult.length > 0) {toolsConfigured = true;}
       issues.push(...tscResult);
     }
 
@@ -138,12 +138,12 @@ export class StaticAnalyzer {
     score -= summary.info * 0.5;
 
     // Deduct points for complexity
-    if (metrics.complexity > 10) score -= 10;
-    if (metrics.complexity > 20) score -= 20;
+    if (metrics.complexity > 10) {score -= 10;}
+    if (metrics.complexity > 20) {score -= 20;}
 
     // Deduct points for low maintainability
-    if (metrics.maintainability < 50) score -= 15;
-    if (metrics.maintainability < 30) score -= 25;
+    if (metrics.maintainability < 50) {score -= 15;}
+    if (metrics.maintainability < 30) {score -= 25;}
 
     return Math.max(0, Math.min(100, score));
   }
@@ -385,22 +385,22 @@ export class StaticAnalyzer {
       }
 
       // Count control flow statements (more precise matching)
-      if (line.match(/\bif\s*\(/)) controlFlowCount++;
-      if (line.match(/\belse\b/)) controlFlowCount++;
-      if (line.match(/\bwhile\s*\(/)) controlFlowCount++;
-      if (line.match(/\bfor\s*\(/)) controlFlowCount++;
-      if (line.match(/\bswitch\s*\(/)) controlFlowCount++;
-      if (line.match(/\bcase\s+/)) controlFlowCount++;
-      if (line.match(/\bcatch\s*\(/)) controlFlowCount++;
+      if (line.match(/\bif\s*\(/)) {controlFlowCount++;}
+      if (line.match(/\belse\b/)) {controlFlowCount++;}
+      if (line.match(/\bwhile\s*\(/)) {controlFlowCount++;}
+      if (line.match(/\bfor\s*\(/)) {controlFlowCount++;}
+      if (line.match(/\bswitch\s*\(/)) {controlFlowCount++;}
+      if (line.match(/\bcase\s+/)) {controlFlowCount++;}
+      if (line.match(/\bcatch\s*\(/)) {controlFlowCount++;}
 
       // Count logical operators (excluding those in strings)
       const codeWithoutStrings = line
         .replace(/'[^']*'/g, '')
         .replace(/"[^"]*"/g, '')
         .replace(/`[^`]*`/g, '');
-      if (codeWithoutStrings.includes('&&')) logicalOperatorCount++;
-      if (codeWithoutStrings.includes('||')) logicalOperatorCount++;
-      if (codeWithoutStrings.match(/\?[^:]*:/)) logicalOperatorCount++; // ternary operator
+      if (codeWithoutStrings.includes('&&')) {logicalOperatorCount++;}
+      if (codeWithoutStrings.includes('||')) {logicalOperatorCount++;}
+      if (codeWithoutStrings.match(/\?[^:]*:/)) {logicalOperatorCount++;} // ternary operator
     }
 
     complexity += controlFlowCount + logicalOperatorCount;
@@ -593,15 +593,15 @@ export class StaticAnalyzer {
       count++; // Count as else only
     } else {
       // More precise pattern matching to avoid false positives
-      if (line.match(/\bif\s*\(/)) count++;
-      if (line.match(/\belse\b/)) count++;
+      if (line.match(/\bif\s*\(/)) {count++;}
+      if (line.match(/\belse\b/)) {count++;}
     }
 
-    if (line.match(/\bwhile\s*\(/)) count++;
-    if (line.match(/\bfor\s*\(/)) count++;
-    if (line.match(/\bswitch\s*\(/)) count++;
-    if (line.match(/\bcase\s+/)) count++;
-    if (line.match(/\bcatch\s*\(/)) count++;
+    if (line.match(/\bwhile\s*\(/)) {count++;}
+    if (line.match(/\bfor\s*\(/)) {count++;}
+    if (line.match(/\bswitch\s*\(/)) {count++;}
+    if (line.match(/\bcase\s+/)) {count++;}
+    if (line.match(/\bcatch\s*\(/)) {count++;}
 
     return count;
   }
@@ -683,8 +683,8 @@ export class StaticAnalyzer {
       return 'fail';
     } else if (summary.warning > 0) {
       return 'warning';
-    } else {
-      return 'pass';
     }
+      return 'pass';
+
   }
 }

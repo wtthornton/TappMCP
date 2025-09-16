@@ -32,8 +32,9 @@ export class PerformanceTracker {
      */
     updatePerformanceProfile(toolName, executionTime, cost, success) {
         const profile = this.performanceProfiles.get(toolName);
-        if (!profile)
+        if (!profile) {
             return;
+        }
         const newSampleCount = profile.sampleCount + 1;
         const timeWeight = 1 / newSampleCount;
         const costWeight = 1 / newSampleCount;
@@ -63,8 +64,9 @@ export class PerformanceTracker {
      * Learn from execution patterns and update profiles
      */
     async learnFromExecution(plan, result) {
-        if (!this.learningEnabled)
+        if (!this.learningEnabled) {
             return;
+        }
         // Update tool performance profiles based on actual execution
         for (const stepResult of result.stepResults) {
             if (stepResult.success) {
@@ -213,8 +215,9 @@ export class PerformanceTracker {
      * Calculate performance trend
      */
     calculateTrend(older, recent, metric) {
-        if (older.length === 0 || recent.length === 0)
+        if (older.length === 0 || recent.length === 0) {
             return 0;
+        }
         const olderAvg = older.reduce((sum, exec) => sum + exec.result[metric], 0) / older.length;
         const recentAvg = recent.reduce((sum, exec) => sum + exec.result[metric], 0) / recent.length;
         // Return percentage improvement (negative means worse performance)
@@ -224,8 +227,9 @@ export class PerformanceTracker {
      * Calculate reliability trend
      */
     calculateReliabilityTrend(older, recent) {
-        if (older.length === 0 || recent.length === 0)
+        if (older.length === 0 || recent.length === 0) {
             return 0;
+        }
         const olderSuccessRate = older.filter(exec => exec.result.success).length / older.length;
         const recentSuccessRate = recent.filter(exec => exec.result.success).length / recent.length;
         // Return percentage improvement in success rate

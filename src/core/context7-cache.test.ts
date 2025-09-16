@@ -191,17 +191,17 @@ describe('Context7Cache', () => {
   describe('Configuration', () => {
     it('should respect max cache size configuration', () => {
       const smallCache = new Context7Cache({ maxCacheSize: 2 });
-      expect(smallCache['cacheConfig'].maxCacheSize).toBe(2);
+      expect(smallCache.cacheConfig.maxCacheSize).toBe(2);
     });
 
     it('should respect expiry hours configuration', () => {
       const longCache = new Context7Cache({ defaultExpiryHours: 48 });
-      expect(longCache['cacheConfig'].defaultExpiryHours).toBe(48);
+      expect(longCache.cacheConfig.defaultExpiryHours).toBe(48);
     });
 
     it('should respect hit tracking configuration', () => {
       const noTrackingCache = new Context7Cache({ enableHitTracking: false });
-      expect(noTrackingCache['cacheConfig'].enableHitTracking).toBe(false);
+      expect(noTrackingCache.cacheConfig.enableHitTracking).toBe(false);
     });
   });
 });

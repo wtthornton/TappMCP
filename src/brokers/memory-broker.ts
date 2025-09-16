@@ -470,7 +470,7 @@ export class MemoryBroker {
   private determineTrend(
     dataPoints: Array<{ value: number }>
   ): 'increasing' | 'decreasing' | 'stable' | 'volatile' {
-    if (dataPoints.length < 2) return 'stable';
+    if (dataPoints.length < 2) {return 'stable';}
 
     const firstHalf = dataPoints.slice(0, Math.floor(dataPoints.length / 2));
     const secondHalf = dataPoints.slice(Math.floor(dataPoints.length / 2));
@@ -481,7 +481,7 @@ export class MemoryBroker {
     const difference = secondAvg - firstAvg;
     const threshold = firstAvg * 0.05; // 5% threshold
 
-    if (Math.abs(difference) < threshold) return 'stable';
+    if (Math.abs(difference) < threshold) {return 'stable';}
     return difference > 0 ? 'increasing' : 'decreasing';
   }
 

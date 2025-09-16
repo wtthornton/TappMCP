@@ -430,7 +430,7 @@ export class CodeValidator {
     const hasTests = generatedCode.files.some(
       f => f.path.includes('.test.') || f.path.includes('.spec.')
     );
-    if (!hasTests) score -= 20;
+    if (!hasTests) {score -= 20;}
 
     // Check for testable patterns
     const codeFiles = generatedCode.files.filter(
@@ -438,7 +438,7 @@ export class CodeValidator {
     );
     for (const file of codeFiles) {
       // Functions should be exported for testability
-      if (!file.content.includes('export')) score -= 15;
+      if (!file.content.includes('export')) {score -= 15;}
 
       // Pure functions are more testable
       if (file.content.includes('Date.now()') || file.content.includes('Math.random()')) {
@@ -474,6 +474,9 @@ export class CodeValidator {
         case 'low':
           score -= 3;
           break;
+        default:
+          score -= 1;
+          break;
       }
     }
 
@@ -497,6 +500,9 @@ export class CodeValidator {
         case 'info':
           score -= 3;
           break;
+        default:
+          score -= 1;
+          break;
       }
     }
 
@@ -517,8 +523,8 @@ export class CodeValidator {
     const hasCritical = issues.some(i => i.severity === 'critical');
     const hasHigh = issues.some(i => i.severity === 'high');
 
-    if (hasCritical) return 'fail';
-    if (hasHigh || issues.length > 5) return 'warning';
+    if (hasCritical) {return 'fail';}
+    if (hasHigh || issues.length > 5) {return 'warning';}
     return 'pass';
   }
 
@@ -532,8 +538,8 @@ export class CodeValidator {
     const hasErrors = issues.some(i => i.severity === 'error');
     const hasWarnings = issues.filter(i => i.severity === 'warning').length;
 
-    if (hasErrors || metrics.complexity > 20) return 'fail';
-    if (hasWarnings > 3 || metrics.complexity > 10) return 'warning';
+    if (hasErrors || metrics.complexity > 20) {return 'fail';}
+    if (hasWarnings > 3 || metrics.complexity > 10) {return 'warning';}
     return 'pass';
   }
 

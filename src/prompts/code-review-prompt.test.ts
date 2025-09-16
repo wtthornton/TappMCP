@@ -445,7 +445,7 @@ function validateEmail(email) {
       };
 
       const prompt = new CodeReviewPrompt();
-      const longCode = 'function longFunction() {\n' + '  console.log("line");\n'.repeat(50) + '}';
+      const longCode = `function longFunction() {\n${ '  console.log("line");\n'.repeat(50) }}`;
 
       const input: CodeReviewPromptInput = {
         code: longCode,

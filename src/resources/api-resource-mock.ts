@@ -324,7 +324,7 @@ export class ApiResource extends MCPResource {
       switch (config.auth.type) {
         case 'bearer':
           if (config.auth.token) {
-            headers['Authorization'] = `Bearer ${config.auth.token}`;
+            headers.Authorization = `Bearer ${config.auth.token}`;
           }
           break;
         case 'basic':
@@ -332,7 +332,7 @@ export class ApiResource extends MCPResource {
             const credentials = Buffer.from(
               `${config.auth.username}:${config.auth.password}`
             ).toString('base64');
-            headers['Authorization'] = `Basic ${credentials}`;
+            headers.Authorization = `Basic ${credentials}`;
           }
           break;
         case 'api-key':

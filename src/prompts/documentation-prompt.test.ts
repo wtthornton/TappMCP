@@ -419,7 +419,7 @@ function validateEmail(email) {
       };
 
       const prompt = new DocumentationPrompt();
-      const longCode = 'function longFunction() {\n' + '  // comment\n'.repeat(100) + '}';
+      const longCode = `function longFunction() {\n${ '  // comment\n'.repeat(100) }}`;
 
       const input: DocumentationPromptInput = {
         code: longCode,

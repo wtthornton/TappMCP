@@ -195,7 +195,7 @@ export function generateResponse(
     `5. Configure testing and quality assurance`,
   ];
 
-  response += nextSteps.join('\n') + '\n\n';
+  response += `${nextSteps.join('\n') }\n\n`;
 
   // Workflow phases if available
   if (workflow && workflow.phases && workflow.phases.length > 0) {

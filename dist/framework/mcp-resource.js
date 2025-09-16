@@ -54,8 +54,9 @@ export class MCPResource {
         // Try to get from pool first
         if (this.connectionPool.length > 0) {
             const connection = this.connectionPool.pop();
-            if (connection)
+            if (connection) {
                 return connection;
+            }
         }
         // Create new connection if pool is empty and under limit
         if (this.connections.size < (this.config.maxConnections ?? 10)) {
@@ -153,8 +154,9 @@ export class MCPResource {
                 if (this.connectionPool.length > 0) {
                     clearTimeout(timeout);
                     const connection = this.connectionPool.pop();
-                    if (connection)
+                    if (connection) {
                         resolve(connection);
+                    }
                 }
                 else {
                     setTimeout(checkConnection, 100);

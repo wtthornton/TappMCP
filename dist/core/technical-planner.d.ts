@@ -9,17 +9,17 @@ export declare const ArchitectureSchema: z.ZodObject<{
         dependencies: z.ZodArray<z.ZodString, "many">;
         complexity: z.ZodEnum<["low", "medium", "high"]>;
     }, "strip", z.ZodTypeAny, {
-        type?: "frontend" | "service" | "database" | "backend" | "external";
-        name?: string;
-        description?: string;
-        dependencies?: string[];
-        complexity?: "low" | "medium" | "high";
+        type: "external" | "frontend" | "service" | "database" | "backend";
+        name: string;
+        description: string;
+        dependencies: string[];
+        complexity: "low" | "medium" | "high";
     }, {
-        type?: "frontend" | "service" | "database" | "backend" | "external";
-        name?: string;
-        description?: string;
-        dependencies?: string[];
-        complexity?: "low" | "medium" | "high";
+        type: "external" | "frontend" | "service" | "database" | "backend";
+        name: string;
+        description: string;
+        dependencies: string[];
+        complexity: "low" | "medium" | "high";
     }>, "many">;
     patterns: z.ZodArray<z.ZodString, "many">;
     technologies: z.ZodArray<z.ZodObject<{
@@ -27,44 +27,44 @@ export declare const ArchitectureSchema: z.ZodObject<{
         category: z.ZodEnum<["language", "framework", "database", "tool", "service"]>;
         justification: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        name?: string;
-        category?: "service" | "database" | "language" | "framework" | "tool";
-        justification?: string;
+        name: string;
+        category: "service" | "database" | "language" | "framework" | "tool";
+        justification: string;
     }, {
-        name?: string;
-        category?: "service" | "database" | "language" | "framework" | "tool";
-        justification?: string;
+        name: string;
+        category: "service" | "database" | "language" | "framework" | "tool";
+        justification: string;
     }>, "many">;
     constraints: z.ZodArray<z.ZodString, "many">;
 }, "strip", z.ZodTypeAny, {
-    constraints?: string[];
-    patterns?: string[];
-    technologies?: {
-        name?: string;
-        category?: "service" | "database" | "language" | "framework" | "tool";
-        justification?: string;
+    constraints: string[];
+    patterns: string[];
+    technologies: {
+        name: string;
+        category: "service" | "database" | "language" | "framework" | "tool";
+        justification: string;
     }[];
-    components?: {
-        type?: "frontend" | "service" | "database" | "backend" | "external";
-        name?: string;
-        description?: string;
-        dependencies?: string[];
-        complexity?: "low" | "medium" | "high";
+    components: {
+        type: "external" | "frontend" | "service" | "database" | "backend";
+        name: string;
+        description: string;
+        dependencies: string[];
+        complexity: "low" | "medium" | "high";
     }[];
 }, {
-    constraints?: string[];
-    patterns?: string[];
-    technologies?: {
-        name?: string;
-        category?: "service" | "database" | "language" | "framework" | "tool";
-        justification?: string;
+    constraints: string[];
+    patterns: string[];
+    technologies: {
+        name: string;
+        category: "service" | "database" | "language" | "framework" | "tool";
+        justification: string;
     }[];
-    components?: {
-        type?: "frontend" | "service" | "database" | "backend" | "external";
-        name?: string;
-        description?: string;
-        dependencies?: string[];
-        complexity?: "low" | "medium" | "high";
+    components: {
+        type: "external" | "frontend" | "service" | "database" | "backend";
+        name: string;
+        description: string;
+        dependencies: string[];
+        complexity: "low" | "medium" | "high";
     }[];
 }>;
 export declare const TaskSchema: z.ZodObject<{
@@ -78,25 +78,25 @@ export declare const TaskSchema: z.ZodObject<{
     skills: z.ZodArray<z.ZodString, "many">;
     phase: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    phase?: string;
-    priority?: "low" | "medium" | "high" | "critical";
-    type?: "documentation" | "development" | "testing" | "deployment" | "research";
-    name?: string;
-    description?: string;
-    id?: string;
-    dependencies?: string[];
-    estimatedHours?: number;
-    skills?: string[];
+    phase: string;
+    priority: "low" | "medium" | "high" | "critical";
+    type: "documentation" | "development" | "testing" | "deployment" | "research";
+    name: string;
+    description: string;
+    id: string;
+    dependencies: string[];
+    estimatedHours: number;
+    skills: string[];
 }, {
-    phase?: string;
-    priority?: "low" | "medium" | "high" | "critical";
-    type?: "documentation" | "development" | "testing" | "deployment" | "research";
-    name?: string;
-    description?: string;
-    id?: string;
-    dependencies?: string[];
-    estimatedHours?: number;
-    skills?: string[];
+    phase: string;
+    priority: "low" | "medium" | "high" | "critical";
+    type: "documentation" | "development" | "testing" | "deployment" | "research";
+    name: string;
+    description: string;
+    id: string;
+    dependencies: string[];
+    estimatedHours: number;
+    skills: string[];
 }>;
 export declare const EffortEstimateSchema: z.ZodObject<{
     totalHours: z.ZodNumber;
@@ -107,42 +107,42 @@ export declare const EffortEstimateSchema: z.ZodObject<{
         documentation: z.ZodNumber;
         research: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
-        documentation?: number;
-        development?: number;
-        testing?: number;
-        deployment?: number;
-        research?: number;
+        documentation: number;
+        development: number;
+        testing: number;
+        deployment: number;
+        research: number;
     }, {
-        documentation?: number;
-        development?: number;
-        testing?: number;
-        deployment?: number;
-        research?: number;
+        documentation: number;
+        development: number;
+        testing: number;
+        deployment: number;
+        research: number;
     }>;
     confidence: z.ZodEnum<["low", "medium", "high"]>;
     assumptions: z.ZodArray<z.ZodString, "many">;
 }, "strip", z.ZodTypeAny, {
-    confidence?: "low" | "medium" | "high";
-    breakdown?: {
-        documentation?: number;
-        development?: number;
-        testing?: number;
-        deployment?: number;
-        research?: number;
+    confidence: "low" | "medium" | "high";
+    breakdown: {
+        documentation: number;
+        development: number;
+        testing: number;
+        deployment: number;
+        research: number;
     };
-    assumptions?: string[];
-    totalHours?: number;
+    assumptions: string[];
+    totalHours: number;
 }, {
-    confidence?: "low" | "medium" | "high";
-    breakdown?: {
-        documentation?: number;
-        development?: number;
-        testing?: number;
-        deployment?: number;
-        research?: number;
+    confidence: "low" | "medium" | "high";
+    breakdown: {
+        documentation: number;
+        development: number;
+        testing: number;
+        deployment: number;
+        research: number;
     };
-    assumptions?: string[];
-    totalHours?: number;
+    assumptions: string[];
+    totalHours: number;
 }>;
 export declare const DependencySchema: z.ZodObject<{
     id: z.ZodString;
@@ -151,17 +151,17 @@ export declare const DependencySchema: z.ZodObject<{
     type: z.ZodEnum<["blocks", "requires", "enables", "influences"]>;
     description: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    type?: "blocks" | "requires" | "enables" | "influences";
-    description?: string;
-    id?: string;
-    to?: string;
-    from?: string;
+    type: "blocks" | "requires" | "enables" | "influences";
+    description: string;
+    id: string;
+    to: string;
+    from: string;
 }, {
-    type?: "blocks" | "requires" | "enables" | "influences";
-    description?: string;
-    id?: string;
-    to?: string;
-    from?: string;
+    type: "blocks" | "requires" | "enables" | "influences";
+    description: string;
+    id: string;
+    to: string;
+    from: string;
 }>;
 export declare const TimelineSchema: z.ZodObject<{
     phases: z.ZodArray<z.ZodObject<{
@@ -173,51 +173,51 @@ export declare const TimelineSchema: z.ZodObject<{
         tasks: z.ZodArray<z.ZodString, "many">;
         milestones: z.ZodArray<z.ZodString, "many">;
     }, "strip", z.ZodTypeAny, {
-        name?: string;
-        id?: string;
-        duration?: number;
-        startDate?: string;
-        endDate?: string;
-        milestones?: string[];
-        tasks?: string[];
+        name: string;
+        id: string;
+        duration: number;
+        startDate: string;
+        endDate: string;
+        tasks: string[];
+        milestones: string[];
     }, {
-        name?: string;
-        id?: string;
-        duration?: number;
-        startDate?: string;
-        endDate?: string;
-        milestones?: string[];
-        tasks?: string[];
+        name: string;
+        id: string;
+        duration: number;
+        startDate: string;
+        endDate: string;
+        tasks: string[];
+        milestones: string[];
     }>, "many">;
     criticalPath: z.ZodArray<z.ZodString, "many">;
     totalDuration: z.ZodNumber;
     bufferTime: z.ZodNumber;
 }, "strip", z.ZodTypeAny, {
-    phases?: {
-        name?: string;
-        id?: string;
-        duration?: number;
-        startDate?: string;
-        endDate?: string;
-        milestones?: string[];
-        tasks?: string[];
+    phases: {
+        name: string;
+        id: string;
+        duration: number;
+        startDate: string;
+        endDate: string;
+        tasks: string[];
+        milestones: string[];
     }[];
-    criticalPath?: string[];
-    totalDuration?: number;
-    bufferTime?: number;
+    criticalPath: string[];
+    totalDuration: number;
+    bufferTime: number;
 }, {
-    phases?: {
-        name?: string;
-        id?: string;
-        duration?: number;
-        startDate?: string;
-        endDate?: string;
-        milestones?: string[];
-        tasks?: string[];
+    phases: {
+        name: string;
+        id: string;
+        duration: number;
+        startDate: string;
+        endDate: string;
+        tasks: string[];
+        milestones: string[];
     }[];
-    criticalPath?: string[];
-    totalDuration?: number;
-    bufferTime?: number;
+    criticalPath: string[];
+    totalDuration: number;
+    bufferTime: number;
 }>;
 export declare const OptimizedPlanSchema: z.ZodObject<{
     originalEffort: z.ZodNumber;
@@ -229,58 +229,58 @@ export declare const OptimizedPlanSchema: z.ZodObject<{
         impact: z.ZodString;
         savings: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
-        type?: "parallel" | "reuse" | "simplify" | "automate";
-        description?: string;
-        impact?: string;
-        savings?: number;
+        type: "parallel" | "reuse" | "simplify" | "automate";
+        description: string;
+        impact: string;
+        savings: number;
     }, {
-        type?: "parallel" | "reuse" | "simplify" | "automate";
-        description?: string;
-        impact?: string;
-        savings?: number;
+        type: "parallel" | "reuse" | "simplify" | "automate";
+        description: string;
+        impact: string;
+        savings: number;
     }>, "many">;
     riskAdjustments: z.ZodArray<z.ZodObject<{
         risk: z.ZodString;
         adjustment: z.ZodString;
         impact: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
-        risk?: string;
-        impact?: number;
-        adjustment?: string;
+        risk: string;
+        impact: number;
+        adjustment: string;
     }, {
-        risk?: string;
-        impact?: number;
-        adjustment?: string;
+        risk: string;
+        impact: number;
+        adjustment: string;
     }>, "many">;
 }, "strip", z.ZodTypeAny, {
-    optimizations?: {
-        type?: "parallel" | "reuse" | "simplify" | "automate";
-        description?: string;
-        impact?: string;
-        savings?: number;
+    optimizations: {
+        type: "parallel" | "reuse" | "simplify" | "automate";
+        description: string;
+        impact: string;
+        savings: number;
     }[];
-    originalEffort?: number;
-    optimizedEffort?: number;
-    savingsHours?: number;
-    riskAdjustments?: {
-        risk?: string;
-        impact?: number;
-        adjustment?: string;
+    originalEffort: number;
+    optimizedEffort: number;
+    savingsHours: number;
+    riskAdjustments: {
+        risk: string;
+        impact: number;
+        adjustment: string;
     }[];
 }, {
-    optimizations?: {
-        type?: "parallel" | "reuse" | "simplify" | "automate";
-        description?: string;
-        impact?: string;
-        savings?: number;
+    optimizations: {
+        type: "parallel" | "reuse" | "simplify" | "automate";
+        description: string;
+        impact: string;
+        savings: number;
     }[];
-    originalEffort?: number;
-    optimizedEffort?: number;
-    savingsHours?: number;
-    riskAdjustments?: {
-        risk?: string;
-        impact?: number;
-        adjustment?: string;
+    originalEffort: number;
+    optimizedEffort: number;
+    savingsHours: number;
+    riskAdjustments: {
+        risk: string;
+        impact: number;
+        adjustment: string;
     }[];
 }>;
 export type Architecture = z.infer<typeof ArchitectureSchema>;

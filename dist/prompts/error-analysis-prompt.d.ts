@@ -14,25 +14,25 @@ export declare const ErrorAnalysisPromptSchema: z.ZodObject<{
     recentChanges: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     severity: z.ZodOptional<z.ZodEnum<["low", "medium", "high", "critical"]>>;
 }, "strip", z.ZodTypeAny, {
-    severity?: "low" | "medium" | "high" | "critical";
-    language?: string;
-    framework?: string;
-    errorMessage?: string;
-    errorType?: string;
-    stackTrace?: string;
-    codeContext?: string;
-    environment?: string;
-    recentChanges?: string[];
+    errorMessage: string;
+    severity?: "low" | "medium" | "high" | "critical" | undefined;
+    language?: string | undefined;
+    framework?: string | undefined;
+    environment?: string | undefined;
+    errorType?: string | undefined;
+    stackTrace?: string | undefined;
+    codeContext?: string | undefined;
+    recentChanges?: string[] | undefined;
 }, {
-    severity?: "low" | "medium" | "high" | "critical";
-    language?: string;
-    framework?: string;
-    errorMessage?: string;
-    errorType?: string;
-    stackTrace?: string;
-    codeContext?: string;
-    environment?: string;
-    recentChanges?: string[];
+    errorMessage: string;
+    severity?: "low" | "medium" | "high" | "critical" | undefined;
+    language?: string | undefined;
+    framework?: string | undefined;
+    environment?: string | undefined;
+    errorType?: string | undefined;
+    stackTrace?: string | undefined;
+    codeContext?: string | undefined;
+    recentChanges?: string[] | undefined;
 }>;
 export type ErrorAnalysisPromptInput = z.infer<typeof ErrorAnalysisPromptSchema>;
 /**

@@ -357,10 +357,10 @@ export class GenericIntelligenceEngine extends BaseCategoryIntelligenceEngine {
       return this.generateHTMLCode(description, role);
     } else if (lowerTech.includes('css')) {
       return this.generateCSSCode(description, role);
-    } else {
+    }
       // Default to a generic function structure
       return this.generateGenericCode(description, role);
-    }
+
   }
 
   private generateJavaScriptCode(description: string, role?: string): string {
@@ -939,8 +939,8 @@ if __name__ == "__main__":
     const lines = code.split('\n');
     const avgLineLength = lines.reduce((sum, line) => sum + line.length, 0) / lines.length;
 
-    if (avgLineLength > 80) score -= 10;
-    if (avgLineLength > 120) score -= 10;
+    if (avgLineLength > 80) {score -= 10;}
+    if (avgLineLength > 120) {score -= 10;}
 
     // Check for comments
     const commentLines = lines.filter(
@@ -948,14 +948,14 @@ if __name__ == "__main__":
     ).length;
     const commentRatio = commentLines / lines.length;
 
-    if (commentRatio < 0.1) score -= 15;
+    if (commentRatio < 0.1) {score -= 15;}
 
     // Check for consistent indentation
     const indentationStyles = new Set(
       lines.filter(line => line.match(/^\s+/)).map(line => line.match(/^(\s+)/)?.[1]?.length || 0)
     );
 
-    if (indentationStyles.size > 3) score -= 10;
+    if (indentationStyles.size > 3) {score -= 10;}
 
     return Math.max(0, score);
   }
@@ -971,8 +971,8 @@ if __name__ == "__main__":
     const lines = code.split('\n').length;
     const avgLinesPerFunction = functionCount > 0 ? lines / functionCount : lines;
 
-    if (avgLinesPerFunction > 50) score -= 20;
-    if (avgLinesPerFunction > 100) score -= 20;
+    if (avgLinesPerFunction > 50) {score -= 20;}
+    if (avgLinesPerFunction > 100) {score -= 20;}
 
     // Check for global variables (reduce testability)
     if (code.includes('global ') || code.match(/var\s+\w+\s*=/)) {
@@ -992,7 +992,7 @@ if __name__ == "__main__":
     code = code.replace(/\/\/.*TODO:.*\n/g, '');
     code = code.replace(/\/\*[\s\S]*?\*\//g, match => {
       // Keep documentation comments
-      if (match.startsWith('/**')) return match;
+      if (match.startsWith('/**')) {return match;}
       return '';
     });
 
@@ -1027,7 +1027,7 @@ if __name__ == "__main__":
       .split(/\s+/)
       .filter(word => word.length > 2);
 
-    if (words.length === 0) return 'processData';
+    if (words.length === 0) {return 'processData';}
 
     // Convert to camelCase
     return (

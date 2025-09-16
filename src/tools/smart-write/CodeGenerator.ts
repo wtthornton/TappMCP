@@ -723,7 +723,7 @@ function optimizeUX(requirement: string): any {
       imports.push('// TypeScript interfaces and types');
     }
 
-    return imports.length > 0 ? imports.join('\n') + '\n\n' : '';
+    return imports.length > 0 ? `${imports.join('\n') }\n\n` : '';
   }
 
   private generateTypeDefinitions(input: EnhancedInput): string {
@@ -760,13 +760,13 @@ export default ${functionName};`;
   }
 
   private getFileExtension(techStack: string[]): string {
-    if (techStack.includes('TypeScript')) return 'ts';
-    if (techStack.includes('JavaScript')) return 'js';
-    if (techStack.includes('Python')) return 'py';
-    if (techStack.includes('Java')) return 'java';
-    if (techStack.includes('HTML') || techStack.includes('html')) return 'html';
-    if (techStack.includes('CSS') || techStack.includes('css')) return 'css';
-    if (techStack.includes('JavaScript') || techStack.includes('javascript')) return 'js';
+    if (techStack.includes('TypeScript')) {return 'ts';}
+    if (techStack.includes('JavaScript')) {return 'js';}
+    if (techStack.includes('Python')) {return 'py';}
+    if (techStack.includes('Java')) {return 'java';}
+    if (techStack.includes('HTML') || techStack.includes('html')) {return 'html';}
+    if (techStack.includes('CSS') || techStack.includes('css')) {return 'css';}
+    if (techStack.includes('JavaScript') || techStack.includes('javascript')) {return 'js';}
     return 'ts'; // Default to TypeScript
   }
 
@@ -814,7 +814,7 @@ export default ${functionName};`;
       designer: 'User experience, accessibility, and design systems',
     };
 
-    return focuses[role] || focuses['developer'];
+    return focuses[role] || focuses.developer;
   }
 
   private getRoleSpecificTests(functionName: string, role: string): string {

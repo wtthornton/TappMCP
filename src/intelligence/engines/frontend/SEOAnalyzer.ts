@@ -226,7 +226,7 @@ export class SEOAnalyzer {
     <meta property="twitter:description" content="Page description">
     <meta property="twitter:image" content="https://example.com/image.jpg">`;
 
-        optimizedCode = optimizedCode.replace(/<link rel="canonical".*>/, '$&' + ogTags);
+        optimizedCode = optimizedCode.replace(/<link rel="canonical".*>/, `$&${ ogTags}`);
       }
 
       // Add language if missing

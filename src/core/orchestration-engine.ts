@@ -14,6 +14,7 @@ import {
 } from './business-context-broker.js';
 import { Context7Broker } from '../brokers/context7-broker.js';
 import { LRUCache } from 'lru-cache';
+import { createInsightsCacheKey, createTopicsCacheKey } from '../utils/cache-utils.js';
 // Role orchestration removed - implementing real role-specific behavior
 import { handleError, getErrorMessage } from '../utils/errors.js';
 // Real project analysis integration
@@ -1800,11 +1801,11 @@ export class OrchestrationEngine extends EventEmitter {
   }> {
     const errors: string[] = [];
     let fallbackUsed = false;
-    let _cacheHit = false;
+    const _cacheHit = false;
 
     try {
       // Create cache key for this specific insight gathering
-      const cacheKey = `insights:${phase.name}:${role}:${context.projectId}`;
+      const cacheKey = createInsightsCacheKey(phase.name, role, context.projectId);
 
       // Check cache first
       const cachedInsights = this.getCachedInsights(cacheKey);
@@ -1933,9 +1934,9 @@ export class OrchestrationEngine extends EventEmitter {
       return 'advanced';
     } else if (complexityScore >= 4) {
       return 'intermediate';
-    } else {
-      return 'basic';
     }
+      return 'basic';
+
   }
 
   /**
@@ -1948,12 +1949,12 @@ export class OrchestrationEngine extends EventEmitter {
   ): any[] {
     if (result.status === 'fulfilled') {
       return result.value;
-    } else {
+    }
       const errorMessage = `Context7 ${type} gathering failed: ${result.reason}`;
       console.warn(errorMessage, result.reason);
       errors.push(errorMessage);
       return this.getFallbackByType(type);
-    }
+
   }
 
   /**
@@ -1979,7 +1980,7 @@ export class OrchestrationEngine extends EventEmitter {
    */
   private getCachedInsights(cacheKey: string): any | null {
     const cached = this.context7Cache.get(cacheKey);
-    if (!cached) return null;
+    if (!cached) {return null;}
 
     const now = Date.now();
     if (now > cached.expiry) {
@@ -2012,7 +2013,7 @@ export class OrchestrationEngine extends EventEmitter {
     role: string,
     context: BusinessContext
   ): Promise<string[]> {
-    const cacheKey = `topics:${phase.name}:${role}:${context.projectId}`;
+    const cacheKey = createTopicsCacheKey(phase.name, role);
 
     // Check topic cache first
     const cachedTopics = this.topicCache.get(cacheKey);
@@ -3308,7 +3309,7 @@ ${
 
     try {
       // Clear existing cache for this phase
-      const cacheKey = `insights:${phase.name}:${role}:${context.projectId}`;
+      const cacheKey = createInsightsCacheKey(phase.name, role, context.projectId);
       this.context7Cache.delete(cacheKey);
 
       // Clear topic cache
@@ -3595,7 +3596,7 @@ ${
 
     // Business goals complexity
     const businessGoalsCount = context.businessGoals?.length || 0;
-    score += Math.min(businessGoalsCount * 1, 5); // Max 5 points
+    score += Math.min(Number(businessGoalsCount), 5); // Max 5 points
 
     // Project type complexity
     const domainType = this.analyzeProjectType(context);
@@ -3631,9 +3632,9 @@ ${
       return 'advanced';
     } else if (score >= 8) {
       return 'intermediate';
-    } else {
-      return 'basic';
     }
+      return 'basic';
+
   }
 
   /**
@@ -3721,7 +3722,7 @@ ${
    */
   private isCircuitBreakerOpen(operationKey: string): boolean {
     const state = this.circuitBreakerState.get(operationKey);
-    if (!state) return false;
+    if (!state) {return false;}
 
     if (state.state === 'open') {
       // Check if timeout has passed to allow half-open state
@@ -3991,15 +3992,15 @@ ${
     const devDependencies = projectAnalysis.projectMetadata.devDependencies || {};
     const allDeps = { ...dependencies, ...devDependencies };
 
-    if (allDeps['react']) return 'react';
-    if (allDeps['vue']) return 'vue';
-    if (allDeps['@angular/core']) return 'angular';
-    if (allDeps['next']) return 'next';
-    if (allDeps['nuxt']) return 'nuxt';
-    if (allDeps['svelte']) return 'svelte';
-    if (allDeps['express']) return 'express';
-    if (allDeps['fastify']) return 'fastify';
-    if (allDeps['koa']) return 'koa';
+    if (allDeps.react) {return 'react';}
+    if (allDeps.vue) {return 'vue';}
+    if (allDeps['@angular/core']) {return 'angular';}
+    if (allDeps.next) {return 'next';}
+    if (allDeps.nuxt) {return 'nuxt';}
+    if (allDeps.svelte) {return 'svelte';}
+    if (allDeps.express) {return 'express';}
+    if (allDeps.fastify) {return 'fastify';}
+    if (allDeps.koa) {return 'koa';}
 
     return 'unknown';
   }
@@ -4015,10 +4016,10 @@ ${
     const hasApi =
       fileStructure.folders.includes('api') || fileStructure.folders.includes('src/api');
 
-    if (hasComponents && hasPages) return 'spa';
-    if (hasApi && hasSrc) return 'api';
-    if (hasComponents && hasApi) return 'fullstack';
-    if (fileStructure.folders.includes('microservices')) return 'microservices';
+    if (hasComponents && hasPages) {return 'spa';}
+    if (hasApi && hasSrc) {return 'api';}
+    if (hasComponents && hasApi) {return 'fullstack';}
+    if (fileStructure.folders.includes('microservices')) {return 'microservices';}
 
     return 'monolithic';
   }
@@ -4045,10 +4046,10 @@ ${
     const { critical, high, moderate, low } = securityScanResult.summary;
     const total = critical + high + moderate + low;
 
-    if (total === 0) return 100;
+    if (total === 0) {return 100;}
 
     // Weighted scoring: critical = -20, high = -10, moderate = -5, low = -1
-    const score = 100 - critical * 20 - high * 10 - moderate * 5 - low * 1;
+    const score = 100 - critical * 20 - high * 10 - moderate * 5 - Number(low);
     return Math.max(0, Math.min(100, score));
   }
 
@@ -4077,8 +4078,8 @@ ${
   private checkComplianceFromScan(securityScanResult: SecurityScanResult): string {
     const { critical, high } = securityScanResult.summary;
 
-    if (critical > 0) return 'non-compliant';
-    if (high > 0) return 'partially-compliant';
+    if (critical > 0) {return 'non-compliant';}
+    if (high > 0) {return 'partially-compliant';}
     return 'compliant';
   }
 
@@ -4465,20 +4466,20 @@ ${
   // Helper methods for project analysis
 
   private detectFramework(requirements: string): string {
-    if (requirements.includes('react')) return 'react';
-    if (requirements.includes('vue')) return 'vue';
-    if (requirements.includes('angular')) return 'angular';
-    if (requirements.includes('svelte')) return 'svelte';
-    if (requirements.includes('next')) return 'nextjs';
-    if (requirements.includes('nuxt')) return 'nuxtjs';
+    if (requirements.includes('react')) {return 'react';}
+    if (requirements.includes('vue')) {return 'vue';}
+    if (requirements.includes('angular')) {return 'angular';}
+    if (requirements.includes('svelte')) {return 'svelte';}
+    if (requirements.includes('next')) {return 'nextjs';}
+    if (requirements.includes('nuxt')) {return 'nuxtjs';}
     return 'vanilla';
   }
 
   private detectArchitecture(requirements: string): string {
-    if (requirements.includes('microservice')) return 'microservices';
-    if (requirements.includes('monolith')) return 'monolith';
-    if (requirements.includes('serverless')) return 'serverless';
-    if (requirements.includes('spa')) return 'spa';
+    if (requirements.includes('microservice')) {return 'microservices';}
+    if (requirements.includes('monolith')) {return 'monolith';}
+    if (requirements.includes('serverless')) {return 'serverless';}
+    if (requirements.includes('spa')) {return 'spa';}
     return 'traditional';
   }
 
@@ -4505,14 +4506,14 @@ ${
     const businessGoals = context.businessGoals || [];
 
     complexity += requirements.length * 2;
-    complexity += businessGoals.length * 1;
+    complexity += Number(businessGoals.length);
 
     const allText = [...requirements, ...businessGoals].join(' ').toLowerCase();
 
-    if (allText.includes('microservice')) complexity += 10;
-    if (allText.includes('real-time')) complexity += 5;
-    if (allText.includes('ai') || allText.includes('ml')) complexity += 8;
-    if (allText.includes('mobile')) complexity += 6;
+    if (allText.includes('microservice')) {complexity += 10;}
+    if (allText.includes('real-time')) {complexity += 5;}
+    if (allText.includes('ai') || allText.includes('ml')) {complexity += 8;}
+    if (allText.includes('mobile')) {complexity += 6;}
 
     return Math.min(complexity, 100);
   }
@@ -4574,9 +4575,9 @@ ${
     const vulnerabilities = this.detectVulnerabilities(requirements);
     score -= vulnerabilities.length * 15;
 
-    if (requirements.includes('https')) score += 10;
-    if (requirements.includes('jwt')) score += 5;
-    if (requirements.includes('oauth')) score += 5;
+    if (requirements.includes('https')) {score += 10;}
+    if (requirements.includes('jwt')) {score += 5;}
+    if (requirements.includes('oauth')) {score += 5;}
 
     return Math.max(score, 0);
   }
@@ -4616,10 +4617,10 @@ ${
   private calculateCodeComplexity(requirements: string): number {
     let complexity = 50; // Base complexity
 
-    if (requirements.includes('microservice')) complexity += 20;
-    if (requirements.includes('real-time')) complexity += 15;
-    if (requirements.includes('ai') || requirements.includes('ml')) complexity += 25;
-    if (requirements.includes('mobile')) complexity += 10;
+    if (requirements.includes('microservice')) {complexity += 20;}
+    if (requirements.includes('real-time')) {complexity += 15;}
+    if (requirements.includes('ai') || requirements.includes('ml')) {complexity += 25;}
+    if (requirements.includes('mobile')) {complexity += 10;}
 
     return Math.min(complexity, 100);
   }
@@ -4627,9 +4628,9 @@ ${
   private calculateMaintainability(requirements: string): number {
     let maintainability = 80; // Base maintainability
 
-    if (requirements.includes('typescript')) maintainability += 10;
-    if (requirements.includes('test')) maintainability += 10;
-    if (requirements.includes('documentation')) maintainability += 5;
+    if (requirements.includes('typescript')) {maintainability += 10;}
+    if (requirements.includes('test')) {maintainability += 10;}
+    if (requirements.includes('documentation')) {maintainability += 5;}
 
     return Math.min(maintainability, 100);
   }
@@ -4637,9 +4638,9 @@ ${
   private estimateTestCoverage(requirements: string): number {
     let coverage = 60; // Base coverage estimate
 
-    if (requirements.includes('test')) coverage += 20;
-    if (requirements.includes('tdd')) coverage += 15;
-    if (requirements.includes('bdd')) coverage += 10;
+    if (requirements.includes('test')) {coverage += 20;}
+    if (requirements.includes('tdd')) {coverage += 15;}
+    if (requirements.includes('bdd')) {coverage += 10;}
 
     return Math.min(coverage, 100);
   }
@@ -5438,7 +5439,7 @@ ${
    * Calculate overall quality score
    */
   private calculateQualityScore(checks: QualityCheck[]): number {
-    if (checks.length === 0) return 0;
+    if (checks.length === 0) {return 0;}
 
     const totalScore = checks.reduce((sum, check) => sum + check.score, 0);
     const averageScore = totalScore / checks.length;
@@ -5452,10 +5453,10 @@ ${
   private calculateQualityScoreFromRequirements(requirements: string): number {
     let score = 70; // Base quality score
 
-    if (requirements.includes('typescript')) score += 10;
-    if (requirements.includes('test')) score += 10;
-    if (requirements.includes('lint')) score += 5;
-    if (requirements.includes('documentation')) score += 5;
+    if (requirements.includes('typescript')) {score += 10;}
+    if (requirements.includes('test')) {score += 10;}
+    if (requirements.includes('lint')) {score += 5;}
+    if (requirements.includes('documentation')) {score += 5;}
 
     return Math.min(score, 100);
   }
@@ -5679,7 +5680,7 @@ ${
         message: `Intelligence level: ${intelligenceLevel} (expected: ${expectedLevel})`,
         details: {
           currentLevel: intelligenceLevel,
-          expectedLevel: expectedLevel,
+          expectedLevel,
           domainType: context7Insights.domainType,
         },
       });
@@ -5784,8 +5785,8 @@ ${
 
   private getExpectedIntelligenceLevel(_phase: WorkflowPhase, context: BusinessContext): string {
     const complexity = this.calculateProjectComplexityScore(context);
-    if (complexity >= 15) return 'advanced';
-    if (complexity >= 8) return 'intermediate';
+    if (complexity >= 15) {return 'advanced';}
+    if (complexity >= 8) {return 'intermediate';}
     return 'basic';
   }
 
@@ -5868,13 +5869,13 @@ ${
    */
   private async performQualityCheck(workflowId: string): Promise<void> {
     const state = this.qualityMonitoringState.get(workflowId);
-    if (!state || !state.isActive) return;
+    if (!state || !state.isActive) {return;}
 
     const currentTime = Date.now();
     const timeSinceLastCheck = currentTime - state.lastCheck;
 
     // Only check if enough time has passed
-    if (timeSinceLastCheck < this.qualityCheckInterval) return;
+    if (timeSinceLastCheck < this.qualityCheckInterval) {return;}
 
     try {
       // Perform quality assessment
@@ -5949,7 +5950,7 @@ ${
    */
   private checkQualityDegradation(workflowId: string, assessment: QualityAssessment): void {
     const state = this.qualityMonitoringState.get(workflowId);
-    if (!state || state.qualityHistory.length < 2) return;
+    if (!state || state.qualityHistory.length < 2) {return;}
 
     const currentScore = assessment.overallScore;
     const previousScore = state.qualityHistory[state.qualityHistory.length - 2].qualityScore;
@@ -6011,7 +6012,7 @@ ${
    */
   getQualityMonitoringStatus(workflowId: string): QualityMonitoringStatus | null {
     const state = this.qualityMonitoringState.get(workflowId);
-    if (!state) return null;
+    if (!state) {return null;}
 
     return {
       workflowId,
@@ -6035,7 +6036,7 @@ ${
    */
   getQualityTrends(workflowId: string, timeRange?: number): QualityTrend[] {
     const state = this.qualityMonitoringState.get(workflowId);
-    if (!state) return [];
+    if (!state) {return [];}
 
     let history = state.qualityHistory;
     if (timeRange) {
@@ -6074,10 +6075,10 @@ ${
 
     let score = 70; // Base score
 
-    if (allText.includes('performance')) score += 10;
-    if (allText.includes('optimization')) score += 10;
-    if (allText.includes('caching')) score += 5;
-    if (allText.includes('lazy')) score += 5;
+    if (allText.includes('performance')) {score += 10;}
+    if (allText.includes('optimization')) {score += 10;}
+    if (allText.includes('caching')) {score += 5;}
+    if (allText.includes('lazy')) {score += 5;}
 
     return Math.min(score, 100);
   }
@@ -6088,10 +6089,10 @@ ${
 
     let score = 60; // Base score
 
-    if (allText.includes('test')) score += 20;
-    if (allText.includes('coverage')) score += 10;
-    if (allText.includes('tdd')) score += 10;
-    if (allText.includes('bdd')) score += 5;
+    if (allText.includes('test')) {score += 20;}
+    if (allText.includes('coverage')) {score += 10;}
+    if (allText.includes('tdd')) {score += 10;}
+    if (allText.includes('bdd')) {score += 5;}
 
     return Math.min(score, 100);
   }
@@ -6102,10 +6103,10 @@ ${
 
     let score = 50; // Base score
 
-    if (allText.includes('documentation')) score += 20;
-    if (allText.includes('readme')) score += 10;
-    if (allText.includes('api docs')) score += 10;
-    if (allText.includes('comments')) score += 5;
+    if (allText.includes('documentation')) {score += 20;}
+    if (allText.includes('readme')) {score += 10;}
+    if (allText.includes('api docs')) {score += 10;}
+    if (allText.includes('comments')) {score += 5;}
 
     return Math.min(score, 100);
   }
@@ -6175,7 +6176,7 @@ ${
   }
 
   private calculateAverageQualityScore(history: QualityHistoryEntry[]): number {
-    if (history.length === 0) return 0;
+    if (history.length === 0) {return 0;}
 
     const totalScore = history.reduce((sum, entry) => sum + entry.qualityScore, 0);
     return Math.round(totalScore / history.length);
@@ -6261,10 +6262,10 @@ ${
 
     // Detect framework
     let framework = 'vanilla';
-    if (allText.includes('react')) framework = 'react';
-    else if (allText.includes('vue')) framework = 'vue';
-    else if (allText.includes('angular')) framework = 'angular';
-    else if (allText.includes('svelte')) framework = 'svelte';
+    if (allText.includes('react')) {framework = 'react';}
+    else if (allText.includes('vue')) {framework = 'vue';}
+    else if (allText.includes('angular')) {framework = 'angular';}
+    else if (allText.includes('svelte')) {framework = 'svelte';}
 
     // Generate framework-specific insights
     const libraries = this.getFrontendLibraries(framework, allText);
@@ -6299,11 +6300,11 @@ ${
 
     // Detect language
     let language = 'javascript';
-    if (allText.includes('python')) language = 'python';
-    else if (allText.includes('java')) language = 'java';
-    else if (allText.includes('c#')) language = 'c#';
-    else if (allText.includes('go')) language = 'go';
-    else if (allText.includes('rust')) language = 'rust';
+    if (allText.includes('python')) {language = 'python';}
+    else if (allText.includes('java')) {language = 'java';}
+    else if (allText.includes('c#')) {language = 'c#';}
+    else if (allText.includes('go')) {language = 'go';}
+    else if (allText.includes('rust')) {language = 'rust';}
 
     // Generate language-specific insights
     const frameworks = this.getBackendFrameworks(language, allText);
@@ -6338,12 +6339,12 @@ ${
 
     // Detect database type
     let databaseType = 'sql';
-    if (allText.includes('mongodb') || allText.includes('nosql')) databaseType = 'nosql';
+    if (allText.includes('mongodb') || allText.includes('nosql')) {databaseType = 'nosql';}
     else if (allText.includes('postgresql') || allText.includes('postgres'))
-      databaseType = 'postgresql';
-    else if (allText.includes('mysql')) databaseType = 'mysql';
-    else if (allText.includes('redis')) databaseType = 'redis';
-    else if (allText.includes('elasticsearch')) databaseType = 'elasticsearch';
+      {databaseType = 'postgresql';}
+    else if (allText.includes('mysql')) {databaseType = 'mysql';}
+    else if (allText.includes('redis')) {databaseType = 'redis';}
+    else if (allText.includes('elasticsearch')) {databaseType = 'elasticsearch';}
 
     // Generate database-specific insights
     const orm = this.getDatabaseORMs(databaseType, allText);
@@ -6378,10 +6379,10 @@ ${
 
     // Detect platform
     let platform = 'aws';
-    if (allText.includes('azure')) platform = 'azure';
-    else if (allText.includes('gcp') || allText.includes('google cloud')) platform = 'gcp';
-    else if (allText.includes('digital ocean')) platform = 'digital ocean';
-    else if (allText.includes('heroku')) platform = 'heroku';
+    if (allText.includes('azure')) {platform = 'azure';}
+    else if (allText.includes('gcp') || allText.includes('google cloud')) {platform = 'gcp';}
+    else if (allText.includes('digital ocean')) {platform = 'digital ocean';}
+    else if (allText.includes('heroku')) {platform = 'heroku';}
 
     // Generate platform-specific insights
     const tools = this.getDevOpsTools(platform, allText);
@@ -6408,19 +6409,19 @@ ${
     switch (framework) {
       case 'react':
         libraries.push('react', 'react-dom', 'react-router', 'redux', 'zustand');
-        if (requirements.includes('ui')) libraries.push('material-ui', 'antd', 'chakra-ui');
+        if (requirements.includes('ui')) {libraries.push('material-ui', 'antd', 'chakra-ui');}
         if (requirements.includes('chart'))
-          libraries.push('recharts', 'react-chartjs-2', 'victory');
+          {libraries.push('recharts', 'react-chartjs-2', 'victory');}
         break;
       case 'vue':
         libraries.push('vue', 'vue-router', 'vuex', 'pinia');
-        if (requirements.includes('ui')) libraries.push('vuetify', 'quasar', 'element-plus');
-        if (requirements.includes('chart')) libraries.push('vue-chartjs', 'vue-echarts');
+        if (requirements.includes('ui')) {libraries.push('vuetify', 'quasar', 'element-plus');}
+        if (requirements.includes('chart')) {libraries.push('vue-chartjs', 'vue-echarts');}
         break;
       case 'angular':
         libraries.push('@angular/core', '@angular/common', '@angular/router', 'rxjs');
-        if (requirements.includes('ui')) libraries.push('angular-material', 'ng-bootstrap');
-        if (requirements.includes('chart')) libraries.push('ng2-charts', 'ngx-charts');
+        if (requirements.includes('ui')) {libraries.push('angular-material', 'ng-bootstrap');}
+        if (requirements.includes('chart')) {libraries.push('ng2-charts', 'ngx-charts');}
         break;
       default:
         libraries.push('typescript', 'webpack', 'vite', 'eslint', 'prettier');
@@ -7023,11 +7024,11 @@ ${
     oldValue: any,
     newValue: any
   ): 'addition' | 'modification' | 'deletion' | 'replacement' {
-    if (oldValue === undefined || oldValue === null) return 'addition';
-    if (newValue === undefined || newValue === null) return 'deletion';
+    if (oldValue === undefined || oldValue === null) {return 'addition';}
+    if (newValue === undefined || newValue === null) {return 'deletion';}
     if (Array.isArray(oldValue) && Array.isArray(newValue)) {
-      if (newValue.length > oldValue.length) return 'addition';
-      if (newValue.length < oldValue.length) return 'deletion';
+      if (newValue.length > oldValue.length) {return 'addition';}
+      if (newValue.length < oldValue.length) {return 'deletion';}
       return 'modification';
     }
     return 'modification';
@@ -7281,7 +7282,7 @@ ${
    * Check artifact relevance
    */
   private checkArtifactRelevance(artifacts: ContextArtifact[], phase: string): number {
-    if (artifacts.length === 0) return 1.0;
+    if (artifacts.length === 0) {return 1.0;}
 
     const phaseArtifactTypes: Record<string, string[]> = {
       'Strategic Planning': ['document', 'diagram'],
@@ -7530,7 +7531,7 @@ ${
    * Calculate validation score
    */
   private calculateValidationScore(issues: ContextValidationIssue[]): number {
-    if (issues.length === 0) return 1.0;
+    if (issues.length === 0) {return 1.0;}
 
     let totalPenalty = 0;
     for (const issue of issues) {
@@ -7658,10 +7659,10 @@ ${
       }
 
       // Calculate field accuracy (simplified)
-      fieldAccuracy['businessRequirements'] = 0.9; // Placeholder
-      fieldAccuracy['technicalRequirements'] = 0.9; // Placeholder
-      fieldAccuracy['constraints'] = 0.8; // Placeholder
-      fieldAccuracy['assumptions'] = 0.8; // Placeholder
+      fieldAccuracy.businessRequirements = 0.9; // Placeholder
+      fieldAccuracy.technicalRequirements = 0.9; // Placeholder
+      fieldAccuracy.constraints = 0.8; // Placeholder
+      fieldAccuracy.assumptions = 0.8; // Placeholder
 
       // Calculate overall accuracy
       const allAccuracies = state.contextHistory.map(entry => entry.accuracy);
@@ -7683,8 +7684,8 @@ ${
           : 0;
 
       let trend: 'improving' | 'stable' | 'declining' = 'stable';
-      if (recentAvg > olderAvg + 0.05) trend = 'improving';
-      else if (recentAvg < olderAvg - 0.05) trend = 'declining';
+      if (recentAvg > olderAvg + 0.05) {trend = 'improving';}
+      else if (recentAvg < olderAvg - 0.05) {trend = 'declining';}
 
       return {
         overallAccuracy,
@@ -7749,7 +7750,7 @@ ${
     for (const state of this.contextPreservationState.values()) {
       totalHistoryEntries += state.contextHistory.length;
       totalAccuracy += state.contextAccuracy;
-      if (state.isHealthy) healthyWorkflows++;
+      if (state.isHealthy) {healthyWorkflows++;}
     }
 
     return {
@@ -7961,7 +7962,7 @@ ${
     let specificCount = 0;
     for (const indicator of specificIndicators) {
       const matches = response.match(indicator);
-      if (matches) specificCount += matches.length;
+      if (matches) {specificCount += matches.length;}
     }
 
     if (specificCount < 3) {
@@ -8077,7 +8078,7 @@ ${
     let technicalCount = 0;
     for (const indicator of technicalIndicators) {
       const matches = response.match(indicator);
-      if (matches) technicalCount += matches.length;
+      if (matches) {technicalCount += matches.length;}
     }
 
     score += Math.min(0.3, technicalCount * 0.05);
@@ -8165,7 +8166,7 @@ ${
     let insightCount = 0;
     for (const indicator of insightIndicators) {
       const matches = response.match(indicator);
-      if (matches) insightCount += matches.length;
+      if (matches) {insightCount += matches.length;}
     }
 
     score += Math.min(0.3, insightCount * 0.1);
@@ -8291,7 +8292,7 @@ ${
    * Calculate variance of scores
    */
   private calculateVariance(scores: number[]): number {
-    if (scores.length === 0) return 0;
+    if (scores.length === 0) {return 0;}
 
     const mean = scores.reduce((sum, score) => sum + score, 0) / scores.length;
     const variance =
@@ -9242,7 +9243,7 @@ ${
     patterns: CommonPattern[]
   ): number {
     const totalItems = knowledge.length + bestPractices.length + patterns.length;
-    if (totalItems === 0) return 0;
+    if (totalItems === 0) {return 0;}
 
     const avgConfidence =
       (knowledge.reduce((sum, k) => sum + k.confidence, 0) +
@@ -9622,7 +9623,7 @@ ${
   private calculateContextRelevanceForResponse(response: string, context: any): number {
     let score = 0.5; // Base score
 
-    if (!context) return score;
+    if (!context) {return score;}
 
     // Check for context-specific terms
     if (context.domain) {
@@ -9737,7 +9738,7 @@ ${
    * Calculate domain relevance
    */
   private calculateDomainRelevanceForRelevance(response: string, domain?: string): number {
-    if (!domain) return 0.5;
+    if (!domain) {return 0.5;}
 
     const domainTerms = this.getDomainTerms(domain);
     const responseLower = response.toLowerCase();
@@ -10312,7 +10313,7 @@ ${
     _feedback: ResponseQualityFeedback[],
     _metrics: ResponseEffectivenessMetrics[]
   ): 'improving' | 'stable' | 'declining' {
-    if (scores.length < 2) return 'stable';
+    if (scores.length < 2) {return 'stable';}
 
     // Analyze recent vs older scores
     const recentScores = scores.slice(-5);
@@ -10327,8 +10328,8 @@ ${
 
     const improvement = recentAvg - olderAvg;
 
-    if (improvement > 0.05) return 'improving';
-    if (improvement < -0.05) return 'declining';
+    if (improvement > 0.05) {return 'improving';}
+    if (improvement < -0.05) {return 'declining';}
     return 'stable';
   }
 

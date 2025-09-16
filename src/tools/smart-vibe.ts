@@ -27,6 +27,17 @@ export const SmartVibeSchema = z.object({
         .describe('Quality level: basic, standard, enterprise, production'),
       verbosity: z.string().optional().describe('Verbosity: minimal, standard, detailed'),
       mode: z.string().optional().describe('Mode: basic, advanced, power'),
+      // Tracing parameters
+      trace: z.boolean().optional().describe('Enable detailed call tree tracing'),
+      debug: z.boolean().optional().describe('Enable debug mode with full tracing'),
+      traceLevel: z
+        .enum(['basic', 'detailed', 'comprehensive'])
+        .optional()
+        .describe('Level of tracing detail: basic, detailed, comprehensive'),
+      outputFormat: z
+        .enum(['console', 'json', 'html'])
+        .optional()
+        .describe('Output format for trace data: console, json, html'),
     })
     .optional()
     .describe('Optional configuration options'),
@@ -78,6 +89,25 @@ export const smartVibeTool: Tool = {
             enum: ['basic', 'advanced', 'power'],
             description: 'Mode for command execution',
           },
+          // Tracing parameters
+          trace: {
+            type: 'boolean',
+            description: 'Enable detailed call tree tracing',
+          },
+          debug: {
+            type: 'boolean',
+            description: 'Enable debug mode with full tracing',
+          },
+          traceLevel: {
+            type: 'string',
+            enum: ['basic', 'detailed', 'comprehensive'],
+            description: 'Level of tracing detail: basic, detailed, comprehensive',
+          },
+          outputFormat: {
+            type: 'string',
+            enum: ['console', 'json', 'html'],
+            description: 'Output format for trace data: console, json, html',
+          },
         },
       },
     },
@@ -106,7 +136,7 @@ function formatVibeResponse(vibeResponse: any): string {
 
   // Main message
   if (vibeResponse.message) {
-    formatted += vibeResponse.message + '\n\n';
+    formatted += `${vibeResponse.message }\n\n`;
   }
 
   // Details section
@@ -115,32 +145,32 @@ function formatVibeResponse(vibeResponse: any): string {
 
     if (data.projectStructure) {
       formatted += '**📁 Project Structure:**\n';
-      formatted += '```json\n' + JSON.stringify(data.projectStructure, null, 2) + '\n```\n\n';
+      formatted += `\`\`\`json\n${ JSON.stringify(data.projectStructure, null, 2) }\n\`\`\`\n\n`;
     }
 
     if (data.qualityScorecard) {
       formatted += '**📊 Quality Scorecard:**\n';
-      formatted += '```json\n' + JSON.stringify(data.qualityScorecard, null, 2) + '\n```\n\n';
+      formatted += `\`\`\`json\n${ JSON.stringify(data.qualityScorecard, null, 2) }\n\`\`\`\n\n`;
     }
 
     if (data.generatedCode) {
       formatted += '**💻 Generated Code:**\n';
-      formatted += '```typescript\n' + data.generatedCode + '\n```\n\n';
+      formatted += `\`\`\`typescript\n${ data.generatedCode }\n\`\`\`\n\n`;
     }
 
     if (data.projectPlan) {
       formatted += '**📋 Project Plan:**\n';
-      formatted += '```json\n' + JSON.stringify(data.projectPlan, null, 2) + '\n```\n\n';
+      formatted += `\`\`\`json\n${ JSON.stringify(data.projectPlan, null, 2) }\n\`\`\`\n\n`;
     }
 
     if (data.techStack) {
       formatted += '**🛠️ Tech Stack:**\n';
-      formatted += data.techStack.join(', ') + '\n\n';
+      formatted += `${data.techStack.join(', ') }\n\n`;
     }
 
     if (data.targetRole) {
       formatted += '**👤 Target Role:**\n';
-      formatted += data.targetRole + '\n\n';
+      formatted += `${data.targetRole }\n\n`;
     }
   }
 
@@ -169,6 +199,17 @@ function formatVibeResponse(vibeResponse: any): string {
   // Metrics
   if (vibeResponse.metrics && vibeResponse.metrics.responseTime) {
     formatted += `**⏱️ Response Time:** ${vibeResponse.metrics.responseTime}ms\n\n`;
+  }
+
+  // Trace data
+  if ((vibeResponse as any).trace) {
+    formatted += '**🔍 Call Tree Trace:**\n';
+    formatted += `\`\`\`json\n${ JSON.stringify((vibeResponse as any).trace, null, 2) }\n\`\`\`\n\n`;
+  }
+
+  // Trace info
+  if ((vibeResponse as any).traceInfo) {
+    formatted += (vibeResponse as any).traceInfo;
   }
 
   return formatted.trim();
@@ -327,15 +368,15 @@ export async function handleSmartVibe(
 
       console.log('🎯 VibeTapp request:', JSON.stringify(vibeRequest, null, 2));
 
-      // Execute vibe request
+      // Execute vibe request - let VibeTapp handle verbosity detection automatically
       const vibeResponse = await vibeInstance.vibe(validatedInput.command, {
         role: (validatedInput.options?.role || 'developer') as any,
         quality: (validatedInput.options?.quality || 'standard') as any,
-        verbosity: (validatedInput.options?.verbosity || 'standard') as any,
+        verbosity: validatedInput.options?.verbosity as any, // Only use explicit verbosity, let VibeTapp detect otherwise
         mode: (validatedInput.options?.mode || 'basic') as any,
       });
 
-      console.log('🎯 VibeTapp response received:', !!vibeResponse);
+      console.log('🎯 VibeTapp response received:', Boolean(vibeResponse));
 
       // Format response for MCP
       const formattedResponse = formatVibeResponse(vibeResponse);

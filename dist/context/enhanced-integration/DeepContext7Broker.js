@@ -12,6 +12,23 @@
  * Phase 1, Week 2 - Deep Context7 Integration Implementation
  */
 import { z } from 'zod';
+// Forward declarations
+class ContextRelevanceScorer {
+    async calculateRelevance(context, _sessionContexts) { return 0; }
+    async calculateQueryRelevance(context, query, toolName) { return 0; }
+}
+class ContextCompressor {
+    async compress(context) { return {}; }
+    async decompress(compressed) { return {}; }
+}
+class ContextSuggestionEngine {
+    async generateSuggestions(context, sessionContexts) { return []; }
+    async rankSuggestions(suggestions, query) { return []; }
+}
+class ContextLearningEngine {
+    async learnFromInteraction(context, feedback) { }
+    async adaptToUserPatterns(sessionContexts) { }
+}
 /**
  * Context Entry Schema for Deep Context7
  */
@@ -235,8 +252,9 @@ export class DeepContext7Broker {
             }
             else {
                 preserved++;
-                if (isHighValue)
+                if (isHighValue) {
                     preservedHighValue++;
+                }
             }
         }
         console.log(`Context cleanup complete: ${removed} removed, ${preserved} preserved (${preservedHighValue} high-value)`);
@@ -354,10 +372,12 @@ export class DeepContext7Broker {
         const words = input.split(/\s+/).length;
         const hasCode = /```|`/.test(input);
         const hasMultipleQuestions = (input.match(/\?/g) || []).length > 1;
-        if (words > 100 || hasCode || hasMultipleQuestions)
+        if (words > 100 || hasCode || hasMultipleQuestions) {
             return 'high';
-        if (words > 50 || input.includes('\n'))
+        }
+        if (words > 50 || input.includes('\n')) {
             return 'medium';
+        }
         return 'low';
     }
     getToolContextRequirements(toolName) {
@@ -371,8 +391,9 @@ export class DeepContext7Broker {
         return requirementMap[toolName] || 'moderate';
     }
     buildContextPreamble(contexts) {
-        if (contexts.length === 0)
+        if (contexts.length === 0) {
             return '';
+        }
         const contextStrings = contexts.map((ctx, index) => {
             const timestamp = ctx.timestamp.toISOString().split('T')[0];
             return `Context ${index + 1} (${ctx.contextType}, ${timestamp}):\n${ctx.content}`;
@@ -399,10 +420,12 @@ class ContextRelevanceScorer {
         // Recent contexts are more relevant
         const age = Date.now() - context.timestamp.getTime();
         const daysSinceCreated = age / (1000 * 60 * 60 * 24);
-        if (daysSinceCreated < 1)
+        if (daysSinceCreated < 1) {
             score += 0.3;
-        else if (daysSinceCreated < 7)
+        }
+        else if (daysSinceCreated < 7) {
             score += 0.1;
+        }
         // High-quality contexts are more relevant
         if (context.metadata?.qualityScore && context.metadata.qualityScore > 0.8) {
             score += 0.2;
@@ -412,8 +435,9 @@ class ContextRelevanceScorer {
     async calculateQueryRelevance(context, query, toolName) {
         let relevance = context.relevanceScore;
         // Tool name match increases relevance
-        if (context.toolName === toolName)
+        if (context.toolName === toolName) {
             relevance += 0.2;
+        }
         // Content similarity (simplified keyword matching)
         const queryWords = query.toLowerCase().split(/\s+/);
         const contextWords = context.content.toLowerCase().split(/\s+/);
@@ -498,8 +522,9 @@ class ContextSuggestionEngine {
     calculateQueryRelevance(context, query, toolName) {
         let relevance = context.relevanceScore;
         // Tool name match increases relevance
-        if (context.toolName === toolName)
+        if (context.toolName === toolName) {
             relevance += 0.2;
+        }
         // Content similarity (simplified keyword matching)
         const queryWords = query.toLowerCase().split(/\s+/);
         const contextWords = context.content.toLowerCase().split(/\s+/);

@@ -82,10 +82,10 @@ export class AccessibilityAnalyzer {
     }
 
     // Bonus points for advanced accessibility features
-    if (code.includes('role=')) score += 3;
-    if (code.includes('aria-live')) score += 3;
-    if (code.includes('aria-expanded')) score += 2;
-    if (code.includes('aria-hidden')) score += 2;
+    if (code.includes('role=')) {score += 3;}
+    if (code.includes('aria-live')) {score += 3;}
+    if (code.includes('aria-expanded')) {score += 2;}
+    if (code.includes('aria-hidden')) {score += 2;}
 
     return {
       score: Math.max(0, Math.min(100, score)),

@@ -533,22 +533,22 @@ describe('End-to-End Code Generation Pipeline', () => {
 function getFileExtension(technology: string): string {
   const tech = technology.toLowerCase();
 
-  if (tech.includes('typescript') || tech.includes('react')) return 'tsx';
-  if (tech.includes('javascript')) return 'js';
-  if (tech.includes('python')) return 'py';
-  if (tech.includes('java') && !tech.includes('javascript')) return 'java';
-  if (tech.includes('csharp') || tech.includes('c#')) return 'cs';
-  if (tech.includes('sql') || tech.includes('postgresql') || tech.includes('mysql')) return 'sql';
-  if (tech.includes('docker')) return 'dockerfile';
-  if (tech.includes('kubernetes')) return 'yaml';
-  if (tech.includes('terraform')) return 'tf';
-  if (tech.includes('yaml') || tech.includes('yml')) return 'yml';
-  if (tech.includes('json')) return 'json';
-  if (tech.includes('html')) return 'html';
-  if (tech.includes('css')) return 'css';
-  if (tech.includes('dart') || tech.includes('flutter')) return 'dart';
-  if (tech.includes('swift')) return 'swift';
-  if (tech.includes('kotlin')) return 'kt';
+  if (tech.includes('typescript') || tech.includes('react')) {return 'tsx';}
+  if (tech.includes('javascript')) {return 'js';}
+  if (tech.includes('python')) {return 'py';}
+  if (tech.includes('java') && !tech.includes('javascript')) {return 'java';}
+  if (tech.includes('csharp') || tech.includes('c#')) {return 'cs';}
+  if (tech.includes('sql') || tech.includes('postgresql') || tech.includes('mysql')) {return 'sql';}
+  if (tech.includes('docker')) {return 'dockerfile';}
+  if (tech.includes('kubernetes')) {return 'yaml';}
+  if (tech.includes('terraform')) {return 'tf';}
+  if (tech.includes('yaml') || tech.includes('yml')) {return 'yml';}
+  if (tech.includes('json')) {return 'json';}
+  if (tech.includes('html')) {return 'html';}
+  if (tech.includes('css')) {return 'css';}
+  if (tech.includes('dart') || tech.includes('flutter')) {return 'dart';}
+  if (tech.includes('swift')) {return 'swift';}
+  if (tech.includes('kotlin')) {return 'kt';}
 
   return 'txt';
 }

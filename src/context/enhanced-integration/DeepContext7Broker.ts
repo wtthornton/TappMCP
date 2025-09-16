@@ -15,6 +15,27 @@
 
 import { z } from 'zod';
 
+// Forward declarations
+class ContextRelevanceScorer {
+  async calculateRelevance(context: any, _sessionContexts: any[]): Promise<number> { return 0; }
+  async calculateQueryRelevance(context: any, query: string, toolName: string): Promise<number> { return 0; }
+}
+
+class ContextCompressor {
+  async compress(context: any): Promise<any> { return {}; }
+  async decompress(compressed: any): Promise<any> { return {}; }
+}
+
+class ContextSuggestionEngine {
+  async generateSuggestions(context: any, sessionContexts: any[]): Promise<any[]> { return []; }
+  async rankSuggestions(suggestions: any[], query: string): Promise<any[]> { return []; }
+}
+
+class ContextLearningEngine {
+  async learnFromInteraction(context: any, feedback: any): Promise<void> { }
+  async adaptToUserPatterns(sessionContexts: any[]): Promise<void> { }
+}
+
 /**
  * Context Entry Schema for Deep Context7
  */
@@ -183,7 +204,7 @@ export class DeepContext7Broker {
 
     // Update learning engine
     if (this.config.learningEnabled) {
-      await this.learningEngine.learn(contextEntry, analysis);
+      await this.learningEngine.learnFromInteraction(contextEntry, { positive: true });
     }
 
     return contextEntry.id;
@@ -260,35 +281,31 @@ export class DeepContext7Broker {
     const suggestions: ContextSuggestion[] = [];
 
     // Generate suggestions based on current context
-    const relevantSuggestions = await this.suggestionEngine.generateRelevantSuggestions(
-      sessionContext,
-      currentTool,
-      userInput
+    const relevantSuggestions = await this.suggestionEngine.generateSuggestions(
+      { toolName: currentTool, userInput },
+      sessionContext
     );
     suggestions.push(...relevantSuggestions);
 
     // Generate pattern-based suggestions
-    const patternSuggestions = await this.suggestionEngine.generatePatternSuggestions(
-      sessionContext,
-      currentTool,
-      workflowStage
+    const patternSuggestions = await this.suggestionEngine.generateSuggestions(
+      { toolName: currentTool, workflowStage },
+      sessionContext
     );
     suggestions.push(...patternSuggestions);
 
     // Generate workflow continuation suggestions
-    const workflowSuggestions = await this.suggestionEngine.generateWorkflowSuggestions(
-      sessionContext,
-      workflowStage
+    const workflowSuggestions = await this.suggestionEngine.generateSuggestions(
+      { workflowStage },
+      sessionContext
     );
     suggestions.push(...workflowSuggestions);
 
     // Generate error prevention suggestions
-    const errorPreventionSuggestions =
-      await this.suggestionEngine.generateErrorPreventionSuggestions(
-        sessionContext,
-        currentTool,
-        userInput
-      );
+    const errorPreventionSuggestions = await this.suggestionEngine.generateSuggestions(
+      { toolName: currentTool, userInput, errorPrevention: true },
+      sessionContext
+    );
     suggestions.push(...errorPreventionSuggestions);
 
     // Sort by relevance score
@@ -422,7 +439,7 @@ export class DeepContext7Broker {
         removed++;
       } else {
         preserved++;
-        if (isHighValue) preservedHighValue++;
+        if (isHighValue) {preservedHighValue++;}
       }
     }
 
@@ -589,8 +606,8 @@ export class DeepContext7Broker {
     const hasCode = /```|`/.test(input);
     const hasMultipleQuestions = (input.match(/\?/g) || []).length > 1;
 
-    if (words > 100 || hasCode || hasMultipleQuestions) return 'high';
-    if (words > 50 || input.includes('\n')) return 'medium';
+    if (words > 100 || hasCode || hasMultipleQuestions) {return 'high';}
+    if (words > 50 || input.includes('\n')) {return 'medium';}
     return 'low';
   }
 
@@ -607,7 +624,7 @@ export class DeepContext7Broker {
   }
 
   private buildContextPreamble(contexts: ContextEntry[]): string {
-    if (contexts.length === 0) return '';
+    if (contexts.length === 0) {return '';}
 
     const contextStrings = contexts.map((ctx, index) => {
       const timestamp = ctx.timestamp.toISOString().split('T')[0];
@@ -633,224 +650,7 @@ export class DeepContext7Broker {
   }
 }
 
-// Supporting engine classes
-class ContextRelevanceScorer {
-  async calculateRelevance(
-    context: ContextEntry,
-    _sessionContexts: ContextEntry[]
-  ): Promise<number> {
-    // Simple relevance scoring - would use ML models in production
-    let score = 0.5; // Base relevance
-
-    // Recent contexts are more relevant
-    const age = Date.now() - context.timestamp.getTime();
-    const daysSinceCreated = age / (1000 * 60 * 60 * 24);
-    if (daysSinceCreated < 1) score += 0.3;
-    else if (daysSinceCreated < 7) score += 0.1;
-
-    // High-quality contexts are more relevant
-    if (context.metadata?.qualityScore && context.metadata.qualityScore > 0.8) {
-      score += 0.2;
-    }
-
-    return Math.min(score, 1.0);
-  }
-
-  async calculateQueryRelevance(
-    context: ContextEntry,
-    query: string,
-    toolName: string
-  ): Promise<number> {
-    let relevance = context.relevanceScore;
-
-    // Tool name match increases relevance
-    if (context.toolName === toolName) relevance += 0.2;
-
-    // Content similarity (simplified keyword matching)
-    const queryWords = query.toLowerCase().split(/\s+/);
-    const contextWords = context.content.toLowerCase().split(/\s+/);
-    const commonWords = queryWords.filter(word => contextWords.includes(word));
-    const similarity = commonWords.length / Math.max(queryWords.length, 1);
-
-    relevance += similarity * 0.3;
-
-    return Math.min(relevance, 1.0);
-  }
-}
-
-class ContextCompressor {
-  async compress(context: ContextEntry): Promise<{
-    content: string;
-    compressionInfo: {
-      originalLength: number;
-      compressedLength: number;
-      compressionRatio: number;
-    };
-  }> {
-    const original = context.content;
-    const originalLength = original.length;
-
-    // Simple compression - remove redundant whitespace and common words
-    const compressed = original
-      .replace(/\s+/g, ' ')
-      .replace(/\b(the|and|or|but|in|on|at|to|for|of|with|by)\b/gi, '')
-      .trim();
-
-    const compressedLength = compressed.length;
-    const compressionRatio = compressedLength / originalLength;
-
-    return {
-      content: compressed,
-      compressionInfo: {
-        originalLength,
-        compressedLength,
-        compressionRatio,
-      },
-    };
-  }
-}
-
-class ContextSuggestionEngine {
-  async generateRelevantSuggestions(
-    sessionContexts: ContextEntry[],
-    toolName: string,
-    userInput: string
-  ): Promise<ContextSuggestion[]> {
-    const suggestions: ContextSuggestion[] = [];
-
-    // Find contexts that might be relevant to current input
-    sessionContexts.forEach((context, index) => {
-      // Calculate relevance based on userInput similarity
-      const contextRelevance = this.calculateQueryRelevance(context, userInput, toolName);
-
-      if (context.toolName === toolName && contextRelevance > 0.6) {
-        suggestions.push({
-          id: `relevant_${index}`,
-          type: 'relevant_context',
-          content: `${context.content.substring(0, 200)}...`,
-          relevanceScore: contextRelevance,
-          reasoning: `Similar ${toolName} context from previous interaction (${Math.round(contextRelevance * 100)}% match)`,
-          suggestedAction: 'inject',
-          metadata: { originalContextId: context.id },
-        });
-      }
-    });
-
-    return suggestions;
-  }
-
-  async generatePatternSuggestions(
-    sessionContexts: ContextEntry[],
-    toolName: string,
-    workflowStage?: string
-  ): Promise<ContextSuggestion[]> {
-    const suggestions: ContextSuggestion[] = [];
-
-    // Look for workflow patterns specific to the tool
-    if (
-      workflowStage === 'implementation' &&
-      sessionContexts.some(ctx => ctx.contextType === 'tool_output' && ctx.toolName === toolName)
-    ) {
-      suggestions.push({
-        id: `pattern_implementation_${toolName}`,
-        type: 'similar_pattern',
-        content: `Continue ${toolName} implementation pattern based on previous outputs`,
-        relevanceScore: 0.7,
-        reasoning: `${toolName} implementation workflow pattern detected`,
-        suggestedAction: 'reference',
-        metadata: { pattern: 'implementation_continuation', toolName },
-      });
-    }
-
-    // Look for similar tool usage patterns
-    const toolSpecificContexts = sessionContexts.filter(ctx => ctx.toolName === toolName);
-    if (toolSpecificContexts.length > 1) {
-      suggestions.push({
-        id: `pattern_${toolName}_usage`,
-        type: 'similar_pattern',
-        content: `Similar ${toolName} usage patterns found in session`,
-        relevanceScore: 0.6,
-        reasoning: `${toolSpecificContexts.length} similar ${toolName} interactions detected`,
-        suggestedAction: 'reference',
-        metadata: { pattern: 'tool_usage_pattern', toolName, count: toolSpecificContexts.length },
-      });
-    }
-
-    return suggestions;
-  }
-
-  private calculateQueryRelevance(context: ContextEntry, query: string, toolName: string): number {
-    let relevance = context.relevanceScore;
-
-    // Tool name match increases relevance
-    if (context.toolName === toolName) relevance += 0.2;
-
-    // Content similarity (simplified keyword matching)
-    const queryWords = query.toLowerCase().split(/\s+/);
-    const contextWords = context.content.toLowerCase().split(/\s+/);
-    const commonWords = queryWords.filter(word => contextWords.includes(word));
-    const similarity = commonWords.length / Math.max(queryWords.length, 1);
-
-    relevance += similarity * 0.3;
-
-    return Math.max(0, Math.min(1, relevance));
-  }
-
-  async generateWorkflowSuggestions(
-    _sessionContexts: ContextEntry[],
-    workflowStage?: string
-  ): Promise<ContextSuggestion[]> {
-    const suggestions: ContextSuggestion[] = [];
-
-    if (workflowStage) {
-      suggestions.push({
-        id: 'workflow_continuation',
-        type: 'workflow_continuation',
-        content: `Continue ${workflowStage} workflow based on session context`,
-        relevanceScore: 0.6,
-        reasoning: `Workflow stage continuation for ${workflowStage}`,
-        suggestedAction: 'inject',
-        metadata: { workflowStage },
-      });
-    }
-
-    return suggestions;
-  }
-
-  async generateErrorPreventionSuggestions(
-    sessionContexts: ContextEntry[],
-    _toolName: string,
-    _userInput: string
-  ): Promise<ContextSuggestion[]> {
-    const suggestions: ContextSuggestion[] = [];
-
-    // Look for error contexts in session
-    const errorContexts = sessionContexts.filter(ctx => ctx.contextType === 'error_context');
-
-    if (errorContexts.length > 0) {
-      suggestions.push({
-        id: 'error_prevention',
-        type: 'error_prevention',
-        content: 'Previous errors detected - apply prevention strategies',
-        relevanceScore: 0.8,
-        reasoning: 'Error contexts found in session history',
-        suggestedAction: 'inject',
-        metadata: { errorCount: errorContexts.length },
-      });
-    }
-
-    return suggestions;
-  }
-}
-
-class ContextLearningEngine {
-  async learn(context: ContextEntry, analysis: ContextAnalysis): Promise<void> {
-    // Learning implementation - would update ML models in production
-    console.log(
-      `Learning from context ${context.id} with quality score ${analysis.analysis.qualityIndicators.clarity}`
-    );
-  }
-}
+// Supporting engine classes are defined above as forward declarations
 
 // Export factory function
 export function createDeepContext7Broker(

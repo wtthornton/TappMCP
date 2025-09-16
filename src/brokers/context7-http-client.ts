@@ -66,9 +66,9 @@ export class Context7HttpClient {
 
     // Add request interceptor for rate limiting
     this.client.interceptors.request.use(
-      async (config: any) => {
+      async (requestConfig: any) => {
         await this.handleRateLimit();
-        return config;
+        return requestConfig;
       },
       (error: any) => Promise.reject(error)
     );
@@ -145,7 +145,8 @@ export class Context7HttpClient {
       const waitTime = 60000 - timeSinceReset;
       console.log(`Rate limit exceeded. Waiting ${waitTime}ms before next request.`);
       await this.sleep(waitTime);
-      return this.handleRateLimit();
+      await this.handleRateLimit();
+      return;
     }
 
     // Check burst limit

@@ -480,7 +480,7 @@ export async function handleSmartOrchestrate(input) {
                 contextPreservationAccuracy: workflowResult.technicalMetrics.contextPreservationAccuracy,
                 businessAlignmentScore: contextInsights.businessAlignment,
                 orchestrationLevel: validatedInput.orchestrationLevel,
-                roleSpecificOrchestration: !!validatedInput.role,
+                roleSpecificOrchestration: Boolean(validatedInput.role),
             },
             nextSteps,
             externalIntegration: mcpStatus,
@@ -591,7 +591,7 @@ function generateOrchestrationValidation(workflowResult, orchestrationLevel, rol
     const archiveLessonsApplied = [
         {
             lesson: 'Always validate role compliance before claiming completion',
-            applied: !!role,
+            applied: Boolean(role),
             impact: role ? 'High - Prevents process violations' : 'Low - No role validation',
         },
         {
@@ -601,7 +601,7 @@ function generateOrchestrationValidation(workflowResult, orchestrationLevel, rol
         },
         {
             lesson: 'Follow role-specific prevention checklist',
-            applied: !!role,
+            applied: Boolean(role),
             impact: role ? 'High - Prevents role-specific issues' : 'Medium - General checklist only',
         },
         {
@@ -622,7 +622,7 @@ function generateOrchestrationValidation(workflowResult, orchestrationLevel, rol
     }
     return {
         orchestrationLevel,
-        roleSpecificOrchestration: !!role,
+        roleSpecificOrchestration: Boolean(role),
         workflowValidation,
         processComplianceChecks: processComplianceChecks.map(check => ({
             ...check,
@@ -634,10 +634,10 @@ function generateOrchestrationValidation(workflowResult, orchestrationLevel, rol
 }
 // Generate process compliance validation
 function generateProcessComplianceValidation(role, processCompliance, workflowResult) {
-    const roleValidation = !!role;
+    const roleValidation = Boolean(role);
     const workflowOrchestration = workflowResult?.success ?? false;
     const processComplianceStatus = processCompliance ?? true;
-    const businessContext = !!workflowResult?.businessContext;
+    const businessContext = Boolean(workflowResult?.businessContext);
     const overallCompliance = roleValidation && workflowOrchestration && processComplianceStatus && businessContext
         ? 'Fully Compliant'
         : 'Partially Compliant';

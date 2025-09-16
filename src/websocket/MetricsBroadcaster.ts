@@ -227,7 +227,7 @@ export class MetricsBroadcaster {
    */
   private broadcastWorkflowStatuses(): void {
     try {
-      if (this.workflowStatuses.size === 0) return;
+      if (this.workflowStatuses.size === 0) {return;}
 
       const statuses = Array.from(this.workflowStatuses.values());
 
@@ -335,10 +335,10 @@ export class MetricsBroadcaster {
 
     return {
       status: this.determineSystemStatus(),
-      uptime: uptime,
+      uptime,
       version: process.env.npm_package_version || '2.0.0',
       lastRestart: Date.now() - uptime * 1000,
-      activeConnections: activeConnections,
+      activeConnections,
       queueSize: this.getQueueSize(),
       alerts: this.getActiveAlerts(),
     };
@@ -438,8 +438,8 @@ export class MetricsBroadcaster {
     const memUsage = process.memoryUsage();
     const memoryPercentage = (memUsage.heapUsed / memUsage.heapTotal) * 100;
 
-    if (memoryPercentage > 90) return 'critical';
-    if (memoryPercentage > 75) return 'warning';
+    if (memoryPercentage > 90) {return 'critical';}
+    if (memoryPercentage > 75) {return 'warning';}
     return 'healthy';
   }
 
@@ -473,7 +473,7 @@ export class MetricsBroadcaster {
     data: any;
     timestamp: number;
   }): void {
-    if (!this.isRunning) return;
+    if (!this.isRunning) {return;}
 
     const message = {
       type: 'workflow-event',

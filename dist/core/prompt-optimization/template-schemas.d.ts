@@ -22,90 +22,90 @@ export declare const TemplateContextSchema: z.ZodObject<{
         domain: z.ZodOptional<z.ZodString>;
         complexity: z.ZodOptional<z.ZodEnum<["simple", "moderate", "complex"]>>;
     }, "strip", z.ZodTypeAny, {
-        projectId?: string;
-        complexity?: "moderate" | "complex" | "simple";
-        domain?: string;
+        projectId?: string | undefined;
+        complexity?: "moderate" | "complex" | "simple" | undefined;
+        domain?: string | undefined;
     }, {
-        projectId?: string;
-        complexity?: "moderate" | "complex" | "simple";
-        domain?: string;
+        projectId?: string | undefined;
+        complexity?: "moderate" | "complex" | "simple" | undefined;
+        domain?: string | undefined;
     }>>;
     userBehaviorProfile: z.ZodOptional<z.ZodObject<{
         preferredVerbosity: z.ZodOptional<z.ZodEnum<["concise", "moderate", "detailed"]>>;
         commonPatterns: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
         successfulTemplateIds: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     }, "strip", z.ZodTypeAny, {
-        preferredVerbosity?: "moderate" | "detailed" | "concise";
-        commonPatterns?: string[];
-        successfulTemplateIds?: string[];
+        preferredVerbosity?: "moderate" | "detailed" | "concise" | undefined;
+        commonPatterns?: string[] | undefined;
+        successfulTemplateIds?: string[] | undefined;
     }, {
-        preferredVerbosity?: "moderate" | "detailed" | "concise";
-        commonPatterns?: string[];
-        successfulTemplateIds?: string[];
+        preferredVerbosity?: "moderate" | "detailed" | "concise" | undefined;
+        commonPatterns?: string[] | undefined;
+        successfulTemplateIds?: string[] | undefined;
     }>>;
     contextualFactors: z.ZodOptional<z.ZodObject<{
         relatedTools: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
         workflowStage: z.ZodOptional<z.ZodEnum<["planning", "implementation", "testing", "deployment"]>>;
         urgencyLevel: z.ZodOptional<z.ZodNumber>;
     }, "strip", z.ZodTypeAny, {
-        workflowStage?: "planning" | "testing" | "deployment" | "implementation";
-        relatedTools?: string[];
-        urgencyLevel?: number;
+        relatedTools?: string[] | undefined;
+        workflowStage?: "implementation" | "planning" | "testing" | "deployment" | undefined;
+        urgencyLevel?: number | undefined;
     }, {
-        workflowStage?: "planning" | "testing" | "deployment" | "implementation";
-        relatedTools?: string[];
-        urgencyLevel?: number;
+        relatedTools?: string[] | undefined;
+        workflowStage?: "implementation" | "planning" | "testing" | "deployment" | undefined;
+        urgencyLevel?: number | undefined;
     }>>;
 }, "strip", z.ZodTypeAny, {
-    constraints?: string[];
-    preferences?: Record<string, any>;
-    toolName?: string;
-    sessionId?: string;
-    userLevel?: "beginner" | "intermediate" | "advanced";
-    taskType?: "analysis" | "generation" | "planning" | "transformation" | "debugging";
-    outputFormat?: "text" | "code" | "markdown" | "structured";
-    contextHistory?: string[];
-    timeConstraint?: "standard" | "immediate" | "thorough";
+    constraints: string[];
+    preferences: Record<string, any>;
+    toolName: string;
+    outputFormat: "text" | "code" | "markdown" | "structured";
+    taskType: "analysis" | "generation" | "planning" | "transformation" | "debugging";
+    userLevel: "beginner" | "intermediate" | "advanced";
+    contextHistory: string[];
+    timeConstraint: "standard" | "immediate" | "thorough";
+    sessionId?: string | undefined;
     projectContext?: {
-        projectId?: string;
-        complexity?: "moderate" | "complex" | "simple";
-        domain?: string;
-    };
+        projectId?: string | undefined;
+        complexity?: "moderate" | "complex" | "simple" | undefined;
+        domain?: string | undefined;
+    } | undefined;
     userBehaviorProfile?: {
-        preferredVerbosity?: "moderate" | "detailed" | "concise";
-        commonPatterns?: string[];
-        successfulTemplateIds?: string[];
-    };
+        preferredVerbosity?: "moderate" | "detailed" | "concise" | undefined;
+        commonPatterns?: string[] | undefined;
+        successfulTemplateIds?: string[] | undefined;
+    } | undefined;
     contextualFactors?: {
-        workflowStage?: "planning" | "testing" | "deployment" | "implementation";
-        relatedTools?: string[];
-        urgencyLevel?: number;
-    };
+        relatedTools?: string[] | undefined;
+        workflowStage?: "implementation" | "planning" | "testing" | "deployment" | undefined;
+        urgencyLevel?: number | undefined;
+    } | undefined;
 }, {
-    constraints?: string[];
-    preferences?: Record<string, any>;
-    toolName?: string;
-    sessionId?: string;
-    userLevel?: "beginner" | "intermediate" | "advanced";
-    taskType?: "analysis" | "generation" | "planning" | "transformation" | "debugging";
-    outputFormat?: "text" | "code" | "markdown" | "structured";
-    contextHistory?: string[];
-    timeConstraint?: "standard" | "immediate" | "thorough";
+    toolName: string;
+    taskType: "analysis" | "generation" | "planning" | "transformation" | "debugging";
+    constraints?: string[] | undefined;
+    preferences?: Record<string, any> | undefined;
+    outputFormat?: "text" | "code" | "markdown" | "structured" | undefined;
+    sessionId?: string | undefined;
+    userLevel?: "beginner" | "intermediate" | "advanced" | undefined;
+    contextHistory?: string[] | undefined;
+    timeConstraint?: "standard" | "immediate" | "thorough" | undefined;
     projectContext?: {
-        projectId?: string;
-        complexity?: "moderate" | "complex" | "simple";
-        domain?: string;
-    };
+        projectId?: string | undefined;
+        complexity?: "moderate" | "complex" | "simple" | undefined;
+        domain?: string | undefined;
+    } | undefined;
     userBehaviorProfile?: {
-        preferredVerbosity?: "moderate" | "detailed" | "concise";
-        commonPatterns?: string[];
-        successfulTemplateIds?: string[];
-    };
+        preferredVerbosity?: "moderate" | "detailed" | "concise" | undefined;
+        commonPatterns?: string[] | undefined;
+        successfulTemplateIds?: string[] | undefined;
+    } | undefined;
     contextualFactors?: {
-        workflowStage?: "planning" | "testing" | "deployment" | "implementation";
-        relatedTools?: string[];
-        urgencyLevel?: number;
-    };
+        relatedTools?: string[] | undefined;
+        workflowStage?: "implementation" | "planning" | "testing" | "deployment" | undefined;
+        urgencyLevel?: number | undefined;
+    } | undefined;
 }>;
 export type TemplateContext = z.infer<typeof TemplateContextSchema>;
 /**
@@ -119,19 +119,19 @@ export declare const UserProfileSchema: z.ZodObject<{
     successPatterns: z.ZodArray<z.ZodString, "many">;
     lastActive: z.ZodDate;
 }, "strip", z.ZodTypeAny, {
-    id?: string;
-    experienceLevel?: "beginner" | "intermediate" | "advanced";
-    preferredStyle?: "technical" | "business" | "detailed" | "concise";
-    commonTasks?: string[];
-    successPatterns?: string[];
-    lastActive?: Date;
+    id: string;
+    experienceLevel: "beginner" | "intermediate" | "advanced";
+    preferredStyle: "technical" | "business" | "detailed" | "concise";
+    commonTasks: string[];
+    successPatterns: string[];
+    lastActive: Date;
 }, {
-    id?: string;
-    experienceLevel?: "beginner" | "intermediate" | "advanced";
-    preferredStyle?: "technical" | "business" | "detailed" | "concise";
-    commonTasks?: string[];
-    successPatterns?: string[];
-    lastActive?: Date;
+    id: string;
+    experienceLevel: "beginner" | "intermediate" | "advanced";
+    preferredStyle: "technical" | "business" | "detailed" | "concise";
+    commonTasks: string[];
+    successPatterns: string[];
+    lastActive: Date;
 }>;
 export type UserProfile = z.infer<typeof UserProfileSchema>;
 /**
@@ -145,19 +145,19 @@ export declare const SessionContextSchema: z.ZodObject<{
     userSatisfaction: z.ZodOptional<z.ZodNumber>;
     contextPreservation: z.ZodDefault<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
-    userSatisfaction?: number;
-    successRate?: number;
-    sessionId?: string;
-    startTime?: Date;
-    templatesUsed?: string[];
-    contextPreservation?: boolean;
+    startTime: Date;
+    sessionId: string;
+    templatesUsed: string[];
+    successRate: number;
+    contextPreservation: boolean;
+    userSatisfaction?: number | undefined;
 }, {
-    userSatisfaction?: number;
-    successRate?: number;
-    sessionId?: string;
-    startTime?: Date;
-    templatesUsed?: string[];
-    contextPreservation?: boolean;
+    startTime: Date;
+    sessionId: string;
+    templatesUsed: string[];
+    successRate: number;
+    userSatisfaction?: number | undefined;
+    contextPreservation?: boolean | undefined;
 }>;
 export type SessionContext = z.infer<typeof SessionContextSchema>;
 /**
@@ -183,77 +183,77 @@ export declare const TemplateMetadataSchema: z.ZodObject<{
         successRate: z.ZodNumber;
         userSatisfaction: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
-        userSatisfaction?: number;
-        successRate?: number;
-        averageExecutionTime?: number;
+        userSatisfaction: number;
+        successRate: number;
+        averageExecutionTime: number;
     }, {
-        userSatisfaction?: number;
-        successRate?: number;
-        averageExecutionTime?: number;
+        userSatisfaction: number;
+        successRate: number;
+        averageExecutionTime: number;
     }>>;
     learningData: z.ZodOptional<z.ZodObject<{
         successfulOutcomes: z.ZodNumber;
         failedOutcomes: z.ZodNumber;
         adaptationTriggers: z.ZodArray<z.ZodString, "many">;
     }, "strip", z.ZodTypeAny, {
-        successfulOutcomes?: number;
-        failedOutcomes?: number;
-        adaptationTriggers?: string[];
+        successfulOutcomes: number;
+        failedOutcomes: number;
+        adaptationTriggers: string[];
     }, {
-        successfulOutcomes?: number;
-        failedOutcomes?: number;
-        adaptationTriggers?: string[];
+        successfulOutcomes: number;
+        failedOutcomes: number;
+        adaptationTriggers: string[];
     }>>;
 }, "strip", z.ZodTypeAny, {
-    name?: string;
-    description?: string;
-    id?: string;
-    qualityScore?: number;
-    lastUpdated?: Date;
-    usageCount?: number;
-    toolName?: string;
-    compressionRatio?: number;
-    taskType?: string;
-    baseTokens?: number;
-    variables?: string[];
-    adaptationLevel?: "static" | "adaptive" | "dynamic";
-    crossSessionCompatible?: boolean;
-    userSegments?: string[];
+    name: string;
+    description: string;
+    id: string;
+    qualityScore: number;
+    lastUpdated: Date;
+    usageCount: number;
+    toolName: string;
+    taskType: string;
+    baseTokens: number;
+    compressionRatio: number;
+    variables: string[];
+    adaptationLevel: "static" | "dynamic" | "adaptive";
+    crossSessionCompatible: boolean;
+    userSegments: string[];
     performanceMetrics?: {
-        userSatisfaction?: number;
-        successRate?: number;
-        averageExecutionTime?: number;
-    };
+        userSatisfaction: number;
+        successRate: number;
+        averageExecutionTime: number;
+    } | undefined;
     learningData?: {
-        successfulOutcomes?: number;
-        failedOutcomes?: number;
-        adaptationTriggers?: string[];
-    };
+        successfulOutcomes: number;
+        failedOutcomes: number;
+        adaptationTriggers: string[];
+    } | undefined;
 }, {
-    name?: string;
-    description?: string;
-    id?: string;
-    qualityScore?: number;
-    lastUpdated?: Date;
-    usageCount?: number;
-    toolName?: string;
-    compressionRatio?: number;
-    taskType?: string;
-    baseTokens?: number;
-    variables?: string[];
-    adaptationLevel?: "static" | "adaptive" | "dynamic";
-    crossSessionCompatible?: boolean;
-    userSegments?: string[];
+    name: string;
+    description: string;
+    id: string;
+    qualityScore: number;
+    lastUpdated: Date;
+    usageCount: number;
+    toolName: string;
+    taskType: string;
+    baseTokens: number;
+    compressionRatio: number;
+    variables: string[];
+    adaptationLevel?: "static" | "dynamic" | "adaptive" | undefined;
+    crossSessionCompatible?: boolean | undefined;
+    userSegments?: string[] | undefined;
     performanceMetrics?: {
-        userSatisfaction?: number;
-        successRate?: number;
-        averageExecutionTime?: number;
-    };
+        userSatisfaction: number;
+        successRate: number;
+        averageExecutionTime: number;
+    } | undefined;
     learningData?: {
-        successfulOutcomes?: number;
-        failedOutcomes?: number;
-        adaptationTriggers?: string[];
-    };
+        successfulOutcomes: number;
+        failedOutcomes: number;
+        adaptationTriggers: string[];
+    } | undefined;
 }>;
 export type TemplateMetadata = z.infer<typeof TemplateMetadataSchema>;
 /**
@@ -268,21 +268,21 @@ export declare const TemplateEngineMetricsSchema: z.ZodObject<{
     adaptationEnabled: z.ZodBoolean;
     performanceScore: z.ZodNumber;
 }, "strip", z.ZodTypeAny, {
-    performanceScore?: number;
-    totalTemplates?: number;
-    activeTemplates?: number;
-    averageQualityScore?: number;
-    totalUsage?: number;
-    crossSessionLearning?: boolean;
-    adaptationEnabled?: boolean;
+    performanceScore: number;
+    totalTemplates: number;
+    activeTemplates: number;
+    averageQualityScore: number;
+    totalUsage: number;
+    crossSessionLearning: boolean;
+    adaptationEnabled: boolean;
 }, {
-    performanceScore?: number;
-    totalTemplates?: number;
-    activeTemplates?: number;
-    averageQualityScore?: number;
-    totalUsage?: number;
-    crossSessionLearning?: boolean;
-    adaptationEnabled?: boolean;
+    performanceScore: number;
+    totalTemplates: number;
+    activeTemplates: number;
+    averageQualityScore: number;
+    totalUsage: number;
+    crossSessionLearning: boolean;
+    adaptationEnabled: boolean;
 }>;
 export type TemplateEngineMetrics = z.infer<typeof TemplateEngineMetricsSchema>;
 //# sourceMappingURL=template-schemas.d.ts.map

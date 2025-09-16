@@ -82,7 +82,7 @@ describe('Enhanced Smart Write Tool', () => {
           .split('-')
           .map(word => {
             // Handle special cases like "qa" -> "QA"
-            if (word.toLowerCase() === 'qa') return 'QA';
+            if (word.toLowerCase() === 'qa') {return 'QA';}
             return word.charAt(0).toUpperCase() + word.slice(1);
           })
           .join(' ');

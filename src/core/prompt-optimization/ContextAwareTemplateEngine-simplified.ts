@@ -210,7 +210,7 @@ export class ContextAwareTemplateEngine extends BaseTemplateEngine {
    */
   private calculatePerformanceScore(): number {
     const templates = this.getAllTemplates();
-    if (templates.length === 0) return 0;
+    if (templates.length === 0) {return 0;}
 
     const avgQuality = templates.reduce((sum, t) => sum + t.qualityScore, 0) / templates.length;
     const usageRate = templates.filter(t => t.usageCount > 0).length / templates.length;

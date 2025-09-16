@@ -19,13 +19,13 @@ export declare const ToolDefinitionSchema: z.ZodObject<{
         cpu: z.ZodDefault<z.ZodNumber>;
         tokens: z.ZodDefault<z.ZodNumber>;
     }, "strip", z.ZodTypeAny, {
-        memory?: number;
-        tokens?: number;
-        cpu?: number;
+        memory: number;
+        tokens: number;
+        cpu: number;
     }, {
-        memory?: number;
-        tokens?: number;
-        cpu?: number;
+        memory?: number | undefined;
+        tokens?: number | undefined;
+        cpu?: number | undefined;
     }>>;
     reliability: z.ZodDefault<z.ZodNumber>;
     costPerExecution: z.ZodDefault<z.ZodNumber>;
@@ -33,41 +33,41 @@ export declare const ToolDefinitionSchema: z.ZodObject<{
     cacheEnabled: z.ZodDefault<z.ZodBoolean>;
     version: z.ZodDefault<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    name?: string;
-    version?: string;
-    description?: string;
-    inputSchema?: Record<string, any>;
-    dependencies?: string[];
-    reliability?: number;
-    category?: "validation" | "analysis" | "generation" | "planning" | "orchestration" | "transformation";
-    outputSchema?: Record<string, any>;
-    estimatedExecutionTime?: number;
-    resourceRequirements?: {
-        memory?: number;
-        tokens?: number;
-        cpu?: number;
+    name: string;
+    version: string;
+    description: string;
+    inputSchema: Record<string, any>;
+    dependencies: string[];
+    reliability: number;
+    category: "validation" | "analysis" | "generation" | "planning" | "orchestration" | "transformation";
+    cacheEnabled: boolean;
+    outputSchema: Record<string, any>;
+    estimatedExecutionTime: number;
+    resourceRequirements: {
+        memory: number;
+        tokens: number;
+        cpu: number;
     };
-    costPerExecution?: number;
-    parallelizable?: boolean;
-    cacheEnabled?: boolean;
+    costPerExecution: number;
+    parallelizable: boolean;
 }, {
-    name?: string;
-    version?: string;
-    description?: string;
-    inputSchema?: Record<string, any>;
-    dependencies?: string[];
-    reliability?: number;
-    category?: "validation" | "analysis" | "generation" | "planning" | "orchestration" | "transformation";
-    outputSchema?: Record<string, any>;
-    estimatedExecutionTime?: number;
+    name: string;
+    description: string;
+    inputSchema: Record<string, any>;
+    category: "validation" | "analysis" | "generation" | "planning" | "orchestration" | "transformation";
+    outputSchema: Record<string, any>;
+    version?: string | undefined;
+    dependencies?: string[] | undefined;
+    reliability?: number | undefined;
+    cacheEnabled?: boolean | undefined;
+    estimatedExecutionTime?: number | undefined;
     resourceRequirements?: {
-        memory?: number;
-        tokens?: number;
-        cpu?: number;
-    };
-    costPerExecution?: number;
-    parallelizable?: boolean;
-    cacheEnabled?: boolean;
+        memory?: number | undefined;
+        tokens?: number | undefined;
+        cpu?: number | undefined;
+    } | undefined;
+    costPerExecution?: number | undefined;
+    parallelizable?: boolean | undefined;
 }>;
 export type ToolDefinition = z.infer<typeof ToolDefinitionSchema>;
 export declare const ExecutionPlanSchema: z.ZodObject<{
@@ -86,93 +86,93 @@ export declare const ExecutionPlanSchema: z.ZodObject<{
             maxRetries: z.ZodDefault<z.ZodNumber>;
             backoffMs: z.ZodDefault<z.ZodNumber>;
         }, "strip", z.ZodTypeAny, {
-            maxRetries?: number;
-            backoffMs?: number;
+            maxRetries: number;
+            backoffMs: number;
         }, {
-            maxRetries?: number;
-            backoffMs?: number;
+            maxRetries?: number | undefined;
+            backoffMs?: number | undefined;
         }>>;
     }, "strip", z.ZodTypeAny, {
-        enableParallel?: boolean;
-        enableCaching?: boolean;
-        enableParallelization?: boolean;
-        targetExecutionTime?: number;
-        maxConcurrentSteps?: number;
-        retryConfiguration?: {
-            maxRetries?: number;
-            backoffMs?: number;
+        enableParallel: boolean;
+        enableCaching: boolean;
+        enableParallelization: boolean;
+        targetExecutionTime: number;
+        maxConcurrentSteps: number;
+        retryConfiguration: {
+            maxRetries: number;
+            backoffMs: number;
         };
     }, {
-        enableParallel?: boolean;
-        enableCaching?: boolean;
-        enableParallelization?: boolean;
-        targetExecutionTime?: number;
-        maxConcurrentSteps?: number;
+        enableParallel?: boolean | undefined;
+        enableCaching?: boolean | undefined;
+        enableParallelization?: boolean | undefined;
+        targetExecutionTime?: number | undefined;
+        maxConcurrentSteps?: number | undefined;
         retryConfiguration?: {
-            maxRetries?: number;
-            backoffMs?: number;
-        };
+            maxRetries?: number | undefined;
+            backoffMs?: number | undefined;
+        } | undefined;
     }>>;
     constraints: z.ZodDefault<z.ZodObject<{
         maxExecutionTime: z.ZodOptional<z.ZodNumber>;
         maxCost: z.ZodOptional<z.ZodNumber>;
         requiredReliability: z.ZodOptional<z.ZodNumber>;
     }, "strip", z.ZodTypeAny, {
-        maxExecutionTime?: number;
-        maxCost?: number;
-        requiredReliability?: number;
+        maxExecutionTime?: number | undefined;
+        maxCost?: number | undefined;
+        requiredReliability?: number | undefined;
     }, {
-        maxExecutionTime?: number;
-        maxCost?: number;
-        requiredReliability?: number;
+        maxExecutionTime?: number | undefined;
+        maxCost?: number | undefined;
+        requiredReliability?: number | undefined;
     }>>;
     metadata: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodAny>>;
 }, "strip", z.ZodTypeAny, {
-    name?: string;
-    description?: string;
-    id?: string;
-    dependencies?: Record<string, string[]>;
-    constraints?: {
-        maxExecutionTime?: number;
-        maxCost?: number;
-        requiredReliability?: number;
+    name: string;
+    description: string;
+    id: string;
+    dependencies: Record<string, string[]>;
+    constraints: {
+        maxExecutionTime?: number | undefined;
+        maxCost?: number | undefined;
+        requiredReliability?: number | undefined;
     };
-    optimization?: {
-        enableParallel?: boolean;
-        enableCaching?: boolean;
-        enableParallelization?: boolean;
-        targetExecutionTime?: number;
-        maxConcurrentSteps?: number;
-        retryConfiguration?: {
-            maxRetries?: number;
-            backoffMs?: number;
+    optimization: {
+        enableParallel: boolean;
+        enableCaching: boolean;
+        enableParallelization: boolean;
+        targetExecutionTime: number;
+        maxConcurrentSteps: number;
+        retryConfiguration: {
+            maxRetries: number;
+            backoffMs: number;
         };
     };
-    metadata?: Record<string, any>;
-    steps?: any[];
+    metadata: Record<string, any>;
+    steps: any[];
 }, {
-    name?: string;
-    description?: string;
-    id?: string;
-    dependencies?: Record<string, string[]>;
+    name: string;
+    description: string;
+    id: string;
+    steps: any[];
+    dependencies?: Record<string, string[]> | undefined;
     constraints?: {
-        maxExecutionTime?: number;
-        maxCost?: number;
-        requiredReliability?: number;
-    };
+        maxExecutionTime?: number | undefined;
+        maxCost?: number | undefined;
+        requiredReliability?: number | undefined;
+    } | undefined;
     optimization?: {
-        enableParallel?: boolean;
-        enableCaching?: boolean;
-        enableParallelization?: boolean;
-        targetExecutionTime?: number;
-        maxConcurrentSteps?: number;
+        enableParallel?: boolean | undefined;
+        enableCaching?: boolean | undefined;
+        enableParallelization?: boolean | undefined;
+        targetExecutionTime?: number | undefined;
+        maxConcurrentSteps?: number | undefined;
         retryConfiguration?: {
-            maxRetries?: number;
-            backoffMs?: number;
-        };
-    };
-    metadata?: Record<string, any>;
-    steps?: any[];
+            maxRetries?: number | undefined;
+            backoffMs?: number | undefined;
+        } | undefined;
+    } | undefined;
+    metadata?: Record<string, any> | undefined;
 }>;
 export type ExecutionPlan = z.infer<typeof ExecutionPlanSchema>;
 export interface ExecutionResult {

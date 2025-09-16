@@ -74,8 +74,9 @@ export class SecurityScanner {
     async runOSVScanner() {
         try {
             const osvOutput = await this.executeOSVScan();
-            if (!osvOutput)
+            if (!osvOutput) {
                 return [];
+            }
             const osvData = JSON.parse(osvOutput);
             return this.parseOSVResults(osvData);
         }
@@ -384,12 +385,15 @@ export class SecurityScanner {
      * Map OSV-Scanner severity score to our severity levels
      */
     mapOSVSeverity(score) {
-        if (score >= 9.0)
+        if (score >= 9.0) {
             return 'critical';
-        if (score >= 7.0)
+        }
+        if (score >= 7.0) {
             return 'high';
-        if (score >= 4.0)
+        }
+        if (score >= 4.0) {
             return 'moderate';
+        }
         return 'low';
     }
     /**
@@ -412,9 +416,7 @@ export class SecurityScanner {
         else if (summary.moderate > 0 || summary.low > 0) {
             return 'warning';
         }
-        else {
-            return 'pass';
-        }
+        return 'pass';
     }
 }
 //# sourceMappingURL=security-scanner.js.map

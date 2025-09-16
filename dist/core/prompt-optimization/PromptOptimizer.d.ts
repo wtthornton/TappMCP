@@ -26,32 +26,32 @@ export declare const TokenBudgetSchema: z.ZodObject<{
         instructions: z.ZodDefault<z.ZodNumber>;
         examples: z.ZodDefault<z.ZodNumber>;
     }, "strip", z.ZodTypeAny, {
-        context?: number;
-        examples?: number;
-        instructions?: number;
+        examples: number;
+        context: number;
+        instructions: number;
     }, {
-        context?: number;
-        examples?: number;
-        instructions?: number;
+        examples?: number | undefined;
+        context?: number | undefined;
+        instructions?: number | undefined;
     }>>;
 }, "strip", z.ZodTypeAny, {
-    maxTokens?: number;
-    reserveTokens?: number;
-    compressionTarget?: number;
-    priorityAllocation?: {
-        context?: number;
-        examples?: number;
-        instructions?: number;
+    maxTokens: number;
+    reserveTokens: number;
+    compressionTarget: number;
+    priorityAllocation: {
+        examples: number;
+        context: number;
+        instructions: number;
     };
 }, {
-    maxTokens?: number;
-    reserveTokens?: number;
-    compressionTarget?: number;
+    maxTokens?: number | undefined;
+    reserveTokens?: number | undefined;
+    compressionTarget?: number | undefined;
     priorityAllocation?: {
-        context?: number;
-        examples?: number;
-        instructions?: number;
-    };
+        examples?: number | undefined;
+        context?: number | undefined;
+        instructions?: number | undefined;
+    } | undefined;
 }>;
 export type TokenBudget = z.infer<typeof TokenBudgetSchema>;
 /**
@@ -65,19 +65,19 @@ export declare const PromptContextSchema: z.ZodObject<{
     timeConstraints: z.ZodDefault<z.ZodEnum<["fast", "balanced", "thorough"]>>;
     qualityRequirements: z.ZodDefault<z.ZodEnum<["basic", "standard", "premium"]>>;
 }, "strip", z.ZodTypeAny, {
-    qualityRequirements?: "standard" | "basic" | "premium";
-    toolName?: string;
-    projectContext?: string;
-    taskComplexity?: "low" | "medium" | "high";
-    userHistory?: string[];
-    timeConstraints?: "thorough" | "fast" | "balanced";
+    qualityRequirements: "standard" | "basic" | "premium";
+    toolName: string;
+    taskComplexity: "low" | "medium" | "high";
+    userHistory: string[];
+    timeConstraints: "fast" | "thorough" | "balanced";
+    projectContext?: string | undefined;
 }, {
-    qualityRequirements?: "standard" | "basic" | "premium";
-    toolName?: string;
-    projectContext?: string;
-    taskComplexity?: "low" | "medium" | "high";
-    userHistory?: string[];
-    timeConstraints?: "thorough" | "fast" | "balanced";
+    toolName: string;
+    qualityRequirements?: "standard" | "basic" | "premium" | undefined;
+    projectContext?: string | undefined;
+    taskComplexity?: "low" | "medium" | "high" | undefined;
+    userHistory?: string[] | undefined;
+    timeConstraints?: "fast" | "thorough" | "balanced" | undefined;
 }>;
 export type PromptContext = z.infer<typeof PromptContextSchema>;
 /**

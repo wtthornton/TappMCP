@@ -307,14 +307,18 @@ async function scanExistingProject(projectPath, analysisDepth) {
                         const packageContent = await fs.readFile(path.join(projectPath, entry.name), 'utf-8');
                         const packageJson = JSON.parse(packageContent);
                         if (packageJson.dependencies) {
-                            if (packageJson.dependencies.typescript)
+                            if (packageJson.dependencies.typescript) {
                                 detectedTechStack.push('typescript');
-                            if (packageJson.dependencies.react)
+                            }
+                            if (packageJson.dependencies.react) {
                                 detectedTechStack.push('react');
-                            if (packageJson.dependencies.express)
+                            }
+                            if (packageJson.dependencies.express) {
                                 detectedTechStack.push('express');
-                            if (packageJson.dependencies['@modelcontextprotocol/sdk'])
+                            }
+                            if (packageJson.dependencies['@modelcontextprotocol/sdk']) {
                                 detectedTechStack.push('mcp-server');
+                            }
                         }
                     }
                     catch (error) {
@@ -624,7 +628,7 @@ describe('Quality Validation', () => {
 // Generate process compliance validation
 function generateProcessCompliance(role) {
     return {
-        roleValidation: !!role,
+        roleValidation: Boolean(role),
         qualityGates: true,
         documentation: true,
         testing: true,

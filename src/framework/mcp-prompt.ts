@@ -193,7 +193,7 @@ export abstract class MCPPrompt<TVariables = unknown, TOutput = unknown> {
     // Check cache first
     if (this.config.cacheConfig?.enabled && this.templateCache.has(templateKey)) {
       const cached = this.templateCache.get(templateKey);
-      if (cached) return cached;
+      if (cached) {return cached;}
     }
 
     try {
@@ -267,7 +267,7 @@ export abstract class MCPPrompt<TVariables = unknown, TOutput = unknown> {
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
       hash = (hash << 5) - hash + char;
-      hash = hash & hash; // Convert to 32-bit integer
+      hash &= hash; // Convert to 32-bit integer
     }
     return Math.abs(hash).toString(36);
   }

@@ -1100,20 +1100,20 @@ class _${widgetName}State extends State<${widgetName}>
 
     // Prioritize component/widget generation over navigation
     if (lower.includes('component') || lower.includes('screen') || lower.includes('app'))
-      return 'react-native-component';
-    if (lower.includes('widget') || lower.includes('flutter')) return 'flutter-widget';
-    if (lower.includes('navigation') || lower.includes('route')) return 'navigation';
+      {return 'react-native-component';}
+    if (lower.includes('widget') || lower.includes('flutter')) {return 'flutter-widget';}
+    if (lower.includes('navigation') || lower.includes('route')) {return 'navigation';}
     if (lower.includes('api') || lower.includes('fetch') || lower.includes('request'))
-      return 'api-integration';
+      {return 'api-integration';}
     if (lower.includes('state') || lower.includes('redux') || lower.includes('context'))
-      return 'state-management';
+      {return 'state-management';}
     return 'react-native-component'; // Default to component generation
   }
 
   private detectTargetPlatform(description: string): string {
     const lower = description.toLowerCase();
-    if (lower.includes('ios') || lower.includes('iphone') || lower.includes('ipad')) return 'ios';
-    if (lower.includes('android')) return 'android';
+    if (lower.includes('ios') || lower.includes('iphone') || lower.includes('ipad')) {return 'ios';}
+    if (lower.includes('android')) {return 'android';}
     return 'cross-platform';
   }
 
@@ -1130,49 +1130,49 @@ class _${widgetName}State extends State<${widgetName}>
   // Performance analysis helpers
   private estimateStartupTime(code: string): number {
     let time = 1000; // Base time
-    if (code.includes('import') && code.split('import').length > 10) time += 500;
-    if (code.includes('useEffect') && code.split('useEffect').length > 3) time += 300;
-    if (code.includes('AsyncStorage') || code.includes('SQLite')) time += 200;
+    if (code.includes('import') && code.split('import').length > 10) {time += 500;}
+    if (code.includes('useEffect') && code.split('useEffect').length > 3) {time += 300;}
+    if (code.includes('AsyncStorage') || code.includes('SQLite')) {time += 200;}
     return Math.min(time, 5000);
   }
 
   private estimateMemoryUsage(code: string): number {
     let memory = 50; // Base memory in MB
-    if (code.includes('Image') && code.split('Image').length > 5) memory += 30;
-    if (code.includes('FlatList') || code.includes('ListView')) memory += 20;
-    if (code.includes('map') && code.split('map').length > 3) memory += 15;
+    if (code.includes('Image') && code.split('Image').length > 5) {memory += 30;}
+    if (code.includes('FlatList') || code.includes('ListView')) {memory += 20;}
+    if (code.includes('map') && code.split('map').length > 3) {memory += 15;}
     return Math.min(memory, 300);
   }
 
   private analyzeBatteryEfficiency(code: string): number {
     let score = 90;
-    if (code.includes('setInterval') || code.includes('Timer')) score -= 20;
-    if (code.includes('location') && !code.includes('significant')) score -= 15;
-    if (code.includes('background') && code.includes('task')) score -= 10;
+    if (code.includes('setInterval') || code.includes('Timer')) {score -= 20;}
+    if (code.includes('location') && !code.includes('significant')) {score -= 15;}
+    if (code.includes('background') && code.includes('task')) {score -= 10;}
     return Math.max(score, 0);
   }
 
   private analyzeNetworkEfficiency(code: string): number {
     let score = 80;
-    if (code.includes('cache') || code.includes('AsyncStorage')) score += 10;
-    if (code.includes('retry') || code.includes('exponential')) score += 5;
-    if (code.includes('pagination') || code.includes('lazy')) score += 5;
+    if (code.includes('cache') || code.includes('AsyncStorage')) {score += 10;}
+    if (code.includes('retry') || code.includes('exponential')) {score += 5;}
+    if (code.includes('pagination') || code.includes('lazy')) {score += 5;}
     return Math.min(score, 100);
   }
 
   private estimateFrameRate(code: string): number {
     let fps = 60; // Target 60 FPS
-    if (code.includes('Image') && code.split('Image').length > 10) fps -= 5;
-    if (code.includes('ScrollView') && !code.includes('removeClippedSubviews')) fps -= 3;
-    if (code.includes('setTimeout') || code.includes('setInterval')) fps -= 5;
+    if (code.includes('Image') && code.split('Image').length > 10) {fps -= 5;}
+    if (code.includes('ScrollView') && !code.includes('removeClippedSubviews')) {fps -= 3;}
+    if (code.includes('setTimeout') || code.includes('setInterval')) {fps -= 5;}
     return Math.max(fps, 30);
   }
 
   private analyzeTouchResponsiveness(code: string): number {
     let score = 80;
-    if (code.includes('onPress') || code.includes('TouchableOpacity')) score += 10;
-    if (code.includes('delayPressIn') || code.includes('delayPressOut')) score += 5;
-    if (code.includes('Gesture') || code.includes('PanGestureHandler')) score += 5;
+    if (code.includes('onPress') || code.includes('TouchableOpacity')) {score += 10;}
+    if (code.includes('delayPressIn') || code.includes('delayPressOut')) {score += 5;}
+    if (code.includes('Gesture') || code.includes('PanGestureHandler')) {score += 5;}
     return Math.min(score, 100);
   }
 
@@ -1338,7 +1338,7 @@ class _${widgetName}State extends State<${widgetName}>
 
     // Add performance comments
     if (!optimized.includes('// Performance optimized')) {
-      optimized = '// Performance optimized for mobile\n' + optimized;
+      optimized = `// Performance optimized for mobile\n${ optimized}`;
     }
 
     return optimized;

@@ -95,7 +95,12 @@ export class PushChannel {
       console.error('📱 Failed to send push notification:', error);
 
       // If subscription is invalid, remove it
-      if (error && typeof error === 'object' && 'statusCode' in error && (error as any).statusCode === 410) {
+      if (
+        error &&
+        typeof error === 'object' &&
+        'statusCode' in error &&
+        (error as any).statusCode === 410
+      ) {
         this.config.subscriptions.delete(notification.userId);
         console.log('📱 Removed invalid subscription for user:', notification.userId);
       }

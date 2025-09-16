@@ -29,7 +29,7 @@ describe('PerformanceCache', () => {
       let callCount = 0;
       const generator = async () => {
         callCount++;
-        return 'Generated code ' + callCount;
+        return `Generated code ${ callCount}`;
       };
 
       // First call

@@ -531,7 +531,7 @@ async function resolve{{ERROR_TYPE}}Errors(): Promise<void> {
   }
 
   private createAbstractPattern(segments: Array<any>): string {
-    if (segments.length === 0) return '';
+    if (segments.length === 0) {return '';}
 
     const firstSegment = segments[0].code;
     let abstractPattern = firstSegment.join('\n');
@@ -557,7 +557,7 @@ async function resolve{{ERROR_TYPE}}Errors(): Promise<void> {
   }
 
   private calculatePatternConfidence(segments: Array<any>, _pattern: string): number {
-    if (segments.length < 2) return 0;
+    if (segments.length < 2) {return 0;}
 
     let totalSimilarity = 0;
     let comparisons = 0;
@@ -609,17 +609,17 @@ async function resolve{{ERROR_TYPE}}Errors(): Promise<void> {
       content.includes('require')
     ) {
       return 'module';
-    } else {
-      return 'utility';
     }
+      return 'utility';
+
   }
 
   private assessComplexity(pattern: string): CodePattern['complexity'] {
     const lines = pattern.split('\n').filter(line => line.trim().length > 0);
     const lineCount = lines.length;
 
-    if (lineCount <= 3) return 'low';
-    if (lineCount <= 10) return 'medium';
+    if (lineCount <= 3) {return 'low';}
+    if (lineCount <= 10) {return 'medium';}
     return 'high';
   }
 
@@ -671,7 +671,7 @@ async function resolve{{ERROR_TYPE}}Errors(): Promise<void> {
   }
 
   private calculateAverageComplexity(segments: Array<any>): number {
-    if (segments.length === 0) return 0;
+    if (segments.length === 0) {return 0;}
 
     let totalComplexity = 0;
     for (const segment of segments) {
@@ -702,9 +702,9 @@ async function resolve{{ERROR_TYPE}}Errors(): Promise<void> {
     } else if (firstLine.includes('class')) {
       const match = firstLine.match(/class\s+(\w+)/);
       return match ? match[1] : `${category}_pattern`;
-    } else {
-      return `${category}_pattern_${Date.now()}`;
     }
+      return `${category}_pattern_${Date.now()}`;
+
   }
 
   private generatePatternDescription(pattern: string, category: string): string {

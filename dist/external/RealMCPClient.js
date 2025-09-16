@@ -96,7 +96,7 @@ export class RealMCPClient extends EventEmitter {
         };
         try {
             const response = await this.sendMessage(serverName, initMessage, 5000);
-            return !!response && !response.error;
+            return Boolean(response) && !response?.error;
         }
         catch (error) {
             console.error(`❌ ${serverName} initialization failed:`, error);
@@ -208,7 +208,7 @@ export class RealMCPClient extends EventEmitter {
         // Test FileSystem MCP Server (we know this package exists)
         console.log('🔍 Testing FileSystem MCP Server...');
         const fsConnected = await this.connectToServer('filesystem', ['npx', '@modelcontextprotocol/server-filesystem@latest'], [process.cwd()]);
-        results['filesystem'] = fsConnected;
+        results.filesystem = fsConnected;
         if (fsConnected) {
             try {
                 const tools = await this.listTools('filesystem');
@@ -227,7 +227,7 @@ export class RealMCPClient extends EventEmitter {
             'npx',
             '@modelcontextprotocol/server-github@latest',
         ]);
-        results['github'] = githubConnected;
+        results.github = githubConnected;
         if (githubConnected) {
             try {
                 const tools = await this.listTools('github');
@@ -243,14 +243,15 @@ export class RealMCPClient extends EventEmitter {
             'npx',
             '@testsprite/testsprite-mcp@latest',
         ]);
-        results['testsprite'] = testspriteConnected;
+        results.testsprite = testspriteConnected;
         console.log('\n📊 REAL CONNECTIVITY TEST RESULTS:');
         console.log('=====================================');
         let realConnections = 0;
         for (const [name, connected] of Object.entries(results)) {
             console.log(`${connected ? '✅' : '❌'} ${name}: ${connected ? 'REAL CONNECTION' : 'FAILED'}`);
-            if (connected)
+            if (connected) {
                 realConnections++;
+            }
         }
         const percentage = (realConnections / Object.keys(results).length) * 100;
         console.log(`\n📈 Real Integration Achievement: ${realConnections}/${Object.keys(results).length} (${percentage.toFixed(1)}%)`);

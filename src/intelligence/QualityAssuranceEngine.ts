@@ -376,20 +376,20 @@ export class QualityAssuranceEngine {
     // Check for common syntax error patterns
     const openBraces = (code.match(/\{/g) || []).length;
     const closeBraces = (code.match(/\}/g) || []).length;
-    if (openBraces !== closeBraces) errorCount++;
+    if (openBraces !== closeBraces) {errorCount++;}
 
     const openParens = (code.match(/\(/g) || []).length;
     const closeParens = (code.match(/\)/g) || []).length;
-    if (openParens !== closeParens) errorCount++;
+    if (openParens !== closeParens) {errorCount++;}
 
     const openBrackets = (code.match(/\[/g) || []).length;
     const closeBrackets = (code.match(/\]/g) || []).length;
-    if (openBrackets !== closeBrackets) errorCount++;
+    if (openBrackets !== closeBrackets) {errorCount++;}
 
     // Check for incomplete statements
-    if (/=\s*;/g.test(code)) errorCount++; // Empty assignment
-    if (/\+\s*}/g.test(code)) errorCount++; // Incomplete expression
-    if (/function\s+\w*\s*\([^)]*\s*\{?\s*$/gm.test(code)) errorCount++; // Incomplete function
+    if (/[=]\s*;/g.test(code)) {errorCount++;} // Empty assignment
+    if (/\+\s*}/g.test(code)) {errorCount++;} // Incomplete expression
+    if (/function\s+\w*\s*\([^)]*\s*\{?\s*$/gm.test(code)) {errorCount++;} // Incomplete function
 
     return errorCount;
   }
@@ -404,22 +404,22 @@ export class QualityAssuranceEngine {
     }
 
     // Check code length
-    if (lines.length > 500) score -= 10;
-    if (lines.length > 1000) score -= 10;
+    if (lines.length > 500) {score -= 10;}
+    if (lines.length > 1000) {score -= 10;}
 
     // Check line length
     const longLines = lines.filter(line => line.length > 120).length;
-    if (longLines > lines.length * 0.1) score -= 10;
+    if (longLines > lines.length * 0.1) {score -= 10;}
 
     // Check nesting depth (more reasonable thresholds for modern code)
     const maxNesting = this.calculateMaxNesting(code);
-    if (maxNesting > 6) score -= 10; // More reasonable for React/JSX
-    if (maxNesting > 8) score -= 15;
+    if (maxNesting > 6) {score -= 10;} // More reasonable for React/JSX
+    if (maxNesting > 8) {score -= 15;}
 
     // Check function complexity (adjusted for modern patterns)
     const complexity = this.calculateComplexity(code);
-    if (complexity > 15) score -= 10; // More reasonable for React components
-    if (complexity > 25) score -= 20;
+    if (complexity > 15) {score -= 10;} // More reasonable for React components
+    if (complexity > 25) {score -= 20;}
 
     // Check for documentation and add bonuses for good practices
     const hasComments = code.includes('//') || code.includes('/*') || code.includes('#');
@@ -427,17 +427,17 @@ export class QualityAssuranceEngine {
     const hasTypeScript =
       code.includes(': ') || code.includes('interface ') || code.includes('type ');
 
-    if (!hasComments) score -= 10; // Reduced penalty
-    if (hasJSDocComments) score += 5; // Bonus for JSDoc
-    if (hasTypeScript) score += 10; // Bonus for TypeScript
+    if (!hasComments) {score -= 10;} // Reduced penalty
+    if (hasJSDocComments) {score += 5;} // Bonus for JSDoc
+    if (hasTypeScript) {score += 10;} // Bonus for TypeScript
 
     // Bonus for modern patterns
     const hasModernPatterns = /const|let|=>|async|await|\?\.|\?\?/g.test(code);
-    if (hasModernPatterns) score += 5;
+    if (hasModernPatterns) {score += 5;}
 
     // Bonus for React best practices
     const hasReactBestPractices = /useCallback|useMemo|React\.memo|forwardRef/g.test(code);
-    if (hasReactBestPractices) score += 5;
+    if (hasReactBestPractices) {score += 5;}
 
     // Penalties for bad maintainability patterns
     const hasVarUsage = /var\s+[a-zA-Z_$]/g.test(code);
@@ -445,13 +445,13 @@ export class QualityAssuranceEngine {
     const hasConsoleInLoop =
       /console\.log.*for\s*\(/s.test(code) || /for.*console\.log/s.test(code);
 
-    if (hasVarUsage) score -= 15; // var instead of let/const
-    if (hasEvalUsage) score -= 27; // eval usage affects maintainability
-    if (hasConsoleInLoop) score -= 22; // debugging code in loops
+    if (hasVarUsage) {score -= 15;} // var instead of let/const
+    if (hasEvalUsage) {score -= 27;} // eval usage affects maintainability
+    if (hasConsoleInLoop) {score -= 22;} // debugging code in loops
 
     // Check for consistent indentation (reduced penalty)
     const hasInconsistentIndentation = this.checkIndentationConsistency(lines);
-    if (hasInconsistentIndentation) score -= 5; // Reduced penalty
+    if (hasInconsistentIndentation) {score -= 5;} // Reduced penalty
 
     return Math.max(0, Math.min(100, score));
   }
@@ -633,27 +633,27 @@ export class QualityAssuranceEngine {
     const hasCatch = /catch\s*\(/.test(code);
     const hasErrorHandling = hasTryCatch && hasCatch;
 
-    if (!hasErrorHandling) score -= 20;
+    if (!hasErrorHandling) {score -= 20;}
 
     // Check for logging
     const hasLogging = /console\.(log|error|warn)|logger\.|log\./gi.test(code);
-    if (!hasLogging) score -= 10;
+    if (!hasLogging) {score -= 10;}
 
     // Check for validation
     const hasValidation = /validate|check|verify|assert/gi.test(code);
-    if (hasValidation) score += 5;
+    if (hasValidation) {score += 5;}
 
     // Check for null/undefined checks
     const hasNullChecks = /!==\s*(null|undefined)|!=\s*(null|undefined)|\?\?|\?\./.test(code);
-    if (hasNullChecks) score += 5;
+    if (hasNullChecks) {score += 5;}
 
     // Check for timeout handling
     const hasTimeout = /timeout|setTimeout|deadline/gi.test(code);
-    if (hasTimeout) score += 3;
+    if (hasTimeout) {score += 3;}
 
     // Check for retry logic
     const hasRetry = /retry|attempt|backoff/gi.test(code);
-    if (hasRetry) score += 5;
+    if (hasRetry) {score += 5;}
 
     return Math.max(0, Math.min(100, score));
   }
@@ -671,22 +671,22 @@ export class QualityAssuranceEngine {
 
     // Check for clear naming
     const hasDescriptiveNames = !/[a-z]\d{1}[^a-zA-Z]/g.test(code); // No single letter vars
-    if (hasDescriptiveNames) score += 5;
+    if (hasDescriptiveNames) {score += 5;}
 
     // Check for documentation
     const hasDocComments = /\/\*\*|"""|'''/g.test(code);
-    if (hasDocComments) score += 10;
+    if (hasDocComments) {score += 10;}
 
     // Check for consistent formatting
     const lines = code.split('\n');
     const hasConsistentIndentation = !this.checkIndentationConsistency(lines);
-    if (hasConsistentIndentation) score += 5;
+    if (hasConsistentIndentation) {score += 5;}
 
     // Check for modularity
     const functionCount = (code.match(/function|def|func|method/gi) || []).length;
     const classCount = (code.match(/class\s+\w+/gi) || []).length;
     const hasModularStructure = functionCount > 1 || classCount > 0;
-    if (hasModularStructure) score += 5;
+    if (hasModularStructure) {score += 5;}
 
     return Math.max(0, Math.min(100, score));
   }
@@ -999,9 +999,9 @@ export class QualityAssuranceEngine {
       return 'Acceptable code quality. Consider addressing the recommendations for improvement.';
     } else if (score >= QUALITY_THRESHOLDS.needsImprovement) {
       return 'Code quality needs improvement. Please review and address the recommendations.';
-    } else {
-      return 'Poor code quality. Significant improvements required to meet standards.';
     }
+      return 'Poor code quality. Significant improvements required to meet standards.';
+
   }
 
   /**
@@ -1065,7 +1065,7 @@ export class QualityAssuranceEngine {
 
     // Check if indentations follow a pattern (e.g., multiples of 2 or 4)
     const indentArray = Array.from(indentations).sort((a, b) => a - b);
-    if (indentArray.length <= 1) return false;
+    if (indentArray.length <= 1) {return false;}
 
     const baseIndent = indentArray[1] - indentArray[0];
     for (let i = 2; i < indentArray.length; i++) {
@@ -1100,9 +1100,9 @@ export class QualityAssuranceEngine {
       return { letter: 'C', description: 'Average Quality', color: '#FF8800' };
     } else if (score >= 60) {
       return { letter: 'D', description: 'Below Average Quality', color: '#FF4444' };
-    } else {
-      return { letter: 'F', description: 'Poor Quality', color: '#CC0000' };
     }
+      return { letter: 'F', description: 'Poor Quality', color: '#CC0000' };
+
   }
 
   /**
@@ -1180,11 +1180,11 @@ export class QualityAssuranceEngine {
     percentile = Math.max(0, Math.min(100, Math.round(percentile)));
 
     let ranking: 'excellent' | 'above-average' | 'average' | 'below-average' | 'poor';
-    if (percentile >= 90) ranking = 'excellent';
-    else if (percentile >= 70) ranking = 'above-average';
-    else if (percentile >= 40) ranking = 'average';
-    else if (percentile >= 20) ranking = 'below-average';
-    else ranking = 'poor';
+    if (percentile >= 90) {ranking = 'excellent';}
+    else if (percentile >= 70) {ranking = 'above-average';}
+    else if (percentile >= 40) {ranking = 'average';}
+    else if (percentile >= 20) {ranking = 'below-average';}
+    else {ranking = 'poor';}
 
     // Generate comparison text
     const comparisonText =
@@ -1617,7 +1617,7 @@ export class QualityAssuranceEngine {
     for (let i = 0; i < code.length; i++) {
       const char = code.charCodeAt(i);
       hash = (hash << 5) - hash + char;
-      hash = hash & hash; // Convert to 32-bit integer
+      hash &= hash; // Convert to 32-bit integer
     }
     return hash.toString(16);
   }
@@ -1641,16 +1641,16 @@ export class QualityAssuranceEngine {
   }
 
   private assessSecurityRisk(securityScore: number): 'low' | 'medium' | 'high' | 'critical' {
-    if (securityScore >= 90) return 'low';
-    if (securityScore >= 75) return 'medium';
-    if (securityScore >= 60) return 'high';
+    if (securityScore >= 90) {return 'low';}
+    if (securityScore >= 75) {return 'medium';}
+    if (securityScore >= 60) {return 'high';}
     return 'critical';
   }
 
   private assessPerformanceRisk(performanceScore: number): 'low' | 'medium' | 'high' | 'critical' {
-    if (performanceScore >= 85) return 'low';
-    if (performanceScore >= 70) return 'medium';
-    if (performanceScore >= 55) return 'high';
+    if (performanceScore >= 85) {return 'low';}
+    if (performanceScore >= 70) {return 'medium';}
+    if (performanceScore >= 55) {return 'high';}
     return 'critical';
   }
 

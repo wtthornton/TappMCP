@@ -112,7 +112,7 @@ describe('MCP HTML Generation Test (Fixed)', () => {
     expect(projectId).toBeDefined();
 
     const writeData = {
-      projectId: projectId,
+      projectId,
       featureDescription:
         "Create a complete HTML page with: 1) A <header> element containing a title, 2) A <main> or <body> section with the text 'I'm the best' prominently displayed, 3) A <footer> element at the bottom. Use semantic HTML5 elements and include basic CSS styling.",
       targetRole: 'developer',

@@ -250,8 +250,8 @@ export class FrontendAnalyzer extends BaseCategoryIntelligenceEngine {
     const codeLines = code.split('\n').filter(line => line.trim().length > 0).length;
 
     // Penalize very long files
-    if (codeLines > 500) score -= 20;
-    else if (codeLines > 200) score -= 10;
+    if (codeLines > 500) {score -= 20;}
+    else if (codeLines > 200) {score -= 10;}
 
     // Check for comments
     const commentLines = code

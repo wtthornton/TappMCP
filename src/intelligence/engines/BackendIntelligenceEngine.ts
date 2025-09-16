@@ -763,9 +763,9 @@ export class BackendIntelligenceEngine extends BaseCategoryIntelligenceEngine {
       return this.generateCSharpCode(description, role);
     } else if (lowerTech.includes('go')) {
       return this.generateGoCode(description, role);
-    } else {
-      return this.generateGenericBackendCode(description, role);
     }
+      return this.generateGenericBackendCode(description, role);
+
   }
 
   private generateNodeJSCode(description: string, role?: string): string {

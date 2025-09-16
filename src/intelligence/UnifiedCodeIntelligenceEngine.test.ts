@@ -120,7 +120,7 @@ vi.mock('./QualityAssuranceEngine.js', () => ({
 // Mock CodeOptimizationEngine
 vi.mock('./CodeOptimizationEngine.js', () => ({
   CodeOptimizationEngine: vi.fn().mockImplementation(() => ({
-    optimize: vi.fn().mockImplementation(code => Promise.resolve(code + '\n// Optimized')),
+    optimize: vi.fn().mockImplementation(code => Promise.resolve(`${code }\n// Optimized`)),
   })),
 }));
 
@@ -547,7 +547,7 @@ describe('UnifiedCodeIntelligenceEngine', () => {
 
   describe('Edge Cases and Boundary Conditions', () => {
     it('should handle very long feature descriptions', async () => {
-      const longDescription = 'Create a component that does '.repeat(100) + 'something amazing';
+      const longDescription = `${'Create a component that does '.repeat(100) }something amazing`;
 
       const request: CodeGenerationRequest = {
         featureDescription: longDescription,

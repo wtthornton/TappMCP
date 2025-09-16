@@ -167,14 +167,18 @@ export class QualityScorecardGenerator {
      * Calculate grade from score
      */
     calculateGrade(score) {
-        if (score >= 90)
+        if (score >= 90) {
             return 'A';
-        if (score >= 80)
+        }
+        if (score >= 80) {
             return 'B';
-        if (score >= 70)
+        }
+        if (score >= 70) {
             return 'C';
-        if (score >= 60)
+        }
+        if (score >= 60) {
             return 'D';
+        }
         return 'F';
     }
     /**

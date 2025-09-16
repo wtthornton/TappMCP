@@ -107,8 +107,8 @@ export class DashboardExporter {
       const clonedSvg = svgElement.cloneNode(true) as SVGSVGElement;
 
       // Set dimensions if specified
-      if (options.width) clonedSvg.setAttribute('width', options.width.toString());
-      if (options.height) clonedSvg.setAttribute('height', options.height.toString());
+      if (options.width) {clonedSvg.setAttribute('width', options.width.toString());}
+      if (options.height) {clonedSvg.setAttribute('height', options.height.toString());}
 
       // Add metadata if requested
       if (options.includeMetadata) {
@@ -370,9 +370,9 @@ export const exportUtils = {
    */
   formatFileSize(bytes: number): string {
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) {return '0 Bytes';}
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + ' ' + sizes[i];
+    return `${Math.round((bytes / Math.pow(1024, i)) * 100) / 100 } ${ sizes[i]}`;
   },
 
   /**

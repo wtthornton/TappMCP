@@ -93,7 +93,7 @@ export class EmailChannel {
 
   private getTemplate(type: string): string {
     return (
-      this.config.templates[type] || this.config.templates['default'] || this.getDefaultTemplate()
+      this.config.templates[type] || this.config.templates.default || this.getDefaultTemplate()
     );
   }
 

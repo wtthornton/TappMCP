@@ -202,7 +202,7 @@ class DeploymentSmokeTestClient {
         timeout,
       });
 
-      this.client.process!.stdin!.write(JSON.stringify(message) + '\n');
+      this.client.process!.stdin!.write(`${JSON.stringify(message) }\n`);
     });
   }
 
@@ -379,7 +379,7 @@ describe('🚀 TappMCP Deployment Smoke Test - E2E Verification', () => {
 
     it('should establish MCP protocol connection', async () => {
       expect(testClient).toBeDefined();
-      expect(testClient['client'].connected).toBe(true);
+      expect(testClient.client.connected).toBe(true);
       console.log('✅ MCP protocol connection established');
     });
   });

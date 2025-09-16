@@ -613,12 +613,12 @@ export class UnifiedCodeIntelligenceEngine {
       'numpy',
     ];
 
-    if (frontendTechs.includes(techLower)) return 'frontend';
-    if (backendTechs.includes(techLower)) return 'backend';
-    if (databaseTechs.includes(techLower)) return 'database';
-    if (devopsTechs.includes(techLower)) return 'devops';
-    if (mobileTechs.includes(techLower)) return 'mobile';
-    if (dataScienceTechs.includes(techLower)) return 'datascience';
+    if (frontendTechs.includes(techLower)) {return 'frontend';}
+    if (backendTechs.includes(techLower)) {return 'backend';}
+    if (databaseTechs.includes(techLower)) {return 'database';}
+    if (devopsTechs.includes(techLower)) {return 'devops';}
+    if (mobileTechs.includes(techLower)) {return 'mobile';}
+    if (dataScienceTechs.includes(techLower)) {return 'datascience';}
 
     // Default to generic for unknown technologies
     return 'generic';

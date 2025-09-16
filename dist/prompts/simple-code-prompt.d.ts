@@ -8,13 +8,13 @@ export declare const SimpleCodePromptSchema: z.ZodObject<{
     language: z.ZodString;
     includeTests: z.ZodOptional<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
-    task?: string;
-    language?: string;
-    includeTests?: boolean;
+    task: string;
+    language: string;
+    includeTests?: boolean | undefined;
 }, {
-    task?: string;
-    language?: string;
-    includeTests?: boolean;
+    task: string;
+    language: string;
+    includeTests?: boolean | undefined;
 }>;
 export type SimpleCodePromptInput = z.infer<typeof SimpleCodePromptSchema>;
 /**

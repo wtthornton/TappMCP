@@ -242,14 +242,17 @@ export class QualityMonitor extends EventEmitter {
     // Security score calculation
     if (securityScan) {
       const { critical, high, moderate, low } = securityScan.summary;
-      securityScore = Math.max(0, 100 - critical * 20 - high * 10 - moderate * 5 - low * 1);
+      securityScore = Math.max(0, 100 - critical * 20 - high * 10 - moderate * 5 - Number(low));
 
       // Add security issues
       securityScan.vulnerabilities.forEach(vuln => {
         issues.push({
           id: `security-${vuln.id}`,
           type: 'security',
-          severity: vuln.severity === 'moderate' ? 'medium' : vuln.severity as 'critical' | 'high' | 'medium' | 'low',
+          severity:
+            vuln.severity === 'moderate'
+              ? 'medium'
+              : (vuln.severity as 'critical' | 'high' | 'medium' | 'low'),
           title: vuln.description,
           description: `Vulnerability in ${vuln.package}@${vuln.version}`,
           fix: vuln.fix,
@@ -271,7 +274,13 @@ export class QualityMonitor extends EventEmitter {
           issues.push({
             id: `code-${issue.id || Date.now()}`,
             type: 'code-quality',
-            severity: (issue.severity === 'info' ? 'low' : issue.severity === 'warning' ? 'medium' : issue.severity === 'error' ? 'high' : 'medium') as 'critical' | 'high' | 'medium' | 'low',
+            severity: (issue.severity === 'info'
+              ? 'low'
+              : issue.severity === 'warning'
+                ? 'medium'
+                : issue.severity === 'error'
+                  ? 'high'
+                  : 'medium') as 'critical' | 'high' | 'medium' | 'low',
             title: issue.title || 'Code Quality Issue',
             description: issue.description || 'Code quality issue detected',
             file: issue.file,
@@ -328,7 +337,7 @@ export class QualityMonitor extends EventEmitter {
    */
   private async detectQualityDegradation(currentMetrics: QualityMetrics): Promise<void> {
     const previousMetrics = this.getPreviousMetrics();
-    if (!previousMetrics) return;
+    if (!previousMetrics) {return;}
 
     // Check for overall score degradation
     const scoreDiff = currentMetrics.overallScore - previousMetrics.overallScore;
@@ -340,7 +349,7 @@ export class QualityMonitor extends EventEmitter {
         details: {
           scoreDifference: scoreDiff,
           previousScore: previousMetrics.overallScore,
-          currentScore: currentMetrics.overallScore
+          currentScore: currentMetrics.overallScore,
         },
         title: 'Quality Score Degradation Detected',
         description: `Overall quality score decreased by ${Math.abs(scoreDiff)} points`,
@@ -361,7 +370,7 @@ export class QualityMonitor extends EventEmitter {
         details: {
           criticalIssuesCount: criticalIssues.length,
           threshold: this.alertThresholds.criticalIssues,
-          issues: criticalIssues.map(issue => ({ id: issue.id, description: issue.description }))
+          issues: criticalIssues.map(issue => ({ id: issue.id, description: issue.description })),
         },
         title: 'Critical Quality Issues Detected',
         description: `${criticalIssues.length} critical issues found`,
@@ -382,7 +391,7 @@ export class QualityMonitor extends EventEmitter {
         details: {
           highIssuesCount: highIssues.length,
           threshold: this.alertThresholds.highIssues,
-          issues: highIssues.map(issue => ({ id: issue.id, description: issue.description }))
+          issues: highIssues.map(issue => ({ id: issue.id, description: issue.description })),
         },
         title: 'High Priority Issues Threshold Exceeded',
         description: `${highIssues.length} high priority issues found`,
@@ -403,9 +412,9 @@ export class QualityMonitor extends EventEmitter {
           message: `${metric} Below Threshold`,
           details: {
             metricName: metric,
-            currentValue: currentValue,
-            threshold: threshold,
-            difference: threshold - currentValue
+            currentValue,
+            threshold,
+            difference: threshold - currentValue,
           },
           title: `${metric} Below Threshold`,
           description: `${metric} score (${currentValue}) is below threshold (${threshold})`,
@@ -552,11 +561,11 @@ export class QualityMonitor extends EventEmitter {
    */
   private calculateTrend(currentScore: number): 'improving' | 'stable' | 'degrading' {
     const previousMetrics = this.getPreviousMetrics();
-    if (!previousMetrics) return 'stable';
+    if (!previousMetrics) {return 'stable';}
 
     const diff = currentScore - previousMetrics.overallScore;
-    if (diff > 5) return 'improving';
-    if (diff < -5) return 'degrading';
+    if (diff > 5) {return 'improving';}
+    if (diff < -5) {return 'degrading';}
     return 'stable';
   }
 
@@ -565,7 +574,7 @@ export class QualityMonitor extends EventEmitter {
    */
   private getPreviousMetrics(): QualityMetrics | null {
     const keys = Array.from(this.qualityCache.keys()).sort();
-    if (keys.length < 2) return null;
+    if (keys.length < 2) {return null;}
 
     const previousKey = keys[keys.length - 2];
     return this.qualityCache.get(previousKey) || null;
@@ -576,7 +585,7 @@ export class QualityMonitor extends EventEmitter {
    */
   getCurrentMetrics(): QualityMetrics | null {
     const keys = Array.from(this.qualityCache.keys()).sort();
-    if (keys.length === 0) return null;
+    if (keys.length === 0) {return null;}
 
     const latestKey = keys[keys.length - 1];
     return this.qualityCache.get(latestKey) || null;
@@ -607,7 +616,7 @@ export class QualityMonitor extends EventEmitter {
    */
   acknowledgeAlert(alertId: string): boolean {
     const alert = this.alerts.get(alertId);
-    if (!alert) return false;
+    if (!alert) {return false;}
 
     alert.acknowledged = true;
     this.alerts.set(alertId, alert);
@@ -620,7 +629,7 @@ export class QualityMonitor extends EventEmitter {
    */
   resolveAlert(alertId: string): boolean {
     const alert = this.alerts.get(alertId);
-    if (!alert) return false;
+    if (!alert) {return false;}
 
     alert.resolved = true;
     alert.acknowledged = true;

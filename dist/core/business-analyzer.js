@@ -190,12 +190,15 @@ export class BusinessAnalyzer {
         [technicalPatterns, businessPatterns, integrationPatterns].forEach((patterns, index) => {
             patterns.forEach(({ pattern, score, factor }) => {
                 if (pattern.test(request)) {
-                    if (index === 0)
+                    if (index === 0) {
                         technicalScore += score;
-                    if (index === 1)
+                    }
+                    if (index === 1) {
                         businessScore += score;
-                    if (index === 2)
+                    }
+                    if (index === 2) {
                         integrationScore += score;
+                    }
                     factors.push(factor);
                 }
             });
@@ -767,12 +770,15 @@ export class BusinessAnalyzer {
     }
     scoreToComplexity(score) {
         // Balanced scoring - API + auth should = medium (4 points), very complex should be high/very-high
-        if (score >= 8)
+        if (score >= 8) {
             return 'very-high';
-        if (score >= 6)
+        }
+        if (score >= 6) {
             return 'high';
-        if (score >= 3)
+        }
+        if (score >= 3) {
             return 'medium';
+        }
         return 'low';
     }
     estimateStoryEffort(goal) {
@@ -817,9 +823,7 @@ export class BusinessAnalyzer {
         else if (goalLower.includes('profile')) {
             return 'I can manage my personal information and preferences';
         }
-        else {
-            return 'I can achieve my business objectives and workflow needs';
-        }
+        return 'I can achieve my business objectives and workflow needs';
     }
 }
 //# sourceMappingURL=business-analyzer.js.map

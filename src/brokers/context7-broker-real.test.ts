@@ -197,16 +197,16 @@ describe('Context7Broker - Legacy Tests (Mock Behavior)', () => {
 
   describe('Library ID Mapping', () => {
     it('should map common topics to library IDs', async () => {
-      const broker = new Context7Broker();
+      const testBroker = new Context7Broker();
 
       // Test that the mapping works for known topics
-      const reactDocs = await broker.getDocumentation('react');
+      const reactDocs = await testBroker.getDocumentation('react');
       expect(reactDocs).toBeDefined();
 
-      const typescriptDocs = await broker.getDocumentation('typescript');
+      const typescriptDocs = await testBroker.getDocumentation('typescript');
       expect(typescriptDocs).toBeDefined();
 
-      const nodejsDocs = await broker.getDocumentation('nodejs');
+      const nodejsDocs = await testBroker.getDocumentation('nodejs');
       expect(nodejsDocs).toBeDefined();
     });
   });

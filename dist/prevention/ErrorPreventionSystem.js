@@ -398,8 +398,9 @@ export class ErrorPreventionSystem {
      */
     findSimilarPastErrors(patternId) {
         const pattern = this.errorPatterns.get(patternId);
-        if (!pattern)
+        if (!pattern) {
             return [];
+        }
         return pattern.preventionStrategies.map(strategy => ({
             pattern: pattern.name,
             resolution: strategy.description,

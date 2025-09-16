@@ -15,27 +15,27 @@ export declare const CodeReviewPromptSchema: z.ZodObject<{
     includeExamples: z.ZodOptional<z.ZodBoolean>;
     severity: z.ZodOptional<z.ZodEnum<["low", "medium", "high"]>>;
 }, "strip", z.ZodTypeAny, {
-    severity?: "low" | "medium" | "high";
-    code?: string;
-    requirements?: string[];
-    context?: string;
-    language?: string;
-    standards?: string[];
-    focusAreas?: string[];
-    reviewType?: "maintainability" | "performance" | "security" | "readability" | "comprehensive";
-    includeSuggestions?: boolean;
-    includeExamples?: boolean;
+    code: string;
+    language: string;
+    reviewType: "maintainability" | "performance" | "security" | "readability" | "comprehensive";
+    severity?: "low" | "medium" | "high" | undefined;
+    requirements?: string[] | undefined;
+    context?: string | undefined;
+    standards?: string[] | undefined;
+    focusAreas?: string[] | undefined;
+    includeSuggestions?: boolean | undefined;
+    includeExamples?: boolean | undefined;
 }, {
-    severity?: "low" | "medium" | "high";
-    code?: string;
-    requirements?: string[];
-    context?: string;
-    language?: string;
-    standards?: string[];
-    focusAreas?: string[];
-    reviewType?: "maintainability" | "performance" | "security" | "readability" | "comprehensive";
-    includeSuggestions?: boolean;
-    includeExamples?: boolean;
+    code: string;
+    language: string;
+    reviewType: "maintainability" | "performance" | "security" | "readability" | "comprehensive";
+    severity?: "low" | "medium" | "high" | undefined;
+    requirements?: string[] | undefined;
+    context?: string | undefined;
+    standards?: string[] | undefined;
+    focusAreas?: string[] | undefined;
+    includeSuggestions?: boolean | undefined;
+    includeExamples?: boolean | undefined;
 }>;
 export type CodeReviewPromptInput = z.infer<typeof CodeReviewPromptSchema>;
 /**

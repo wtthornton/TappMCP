@@ -1040,7 +1040,7 @@ function generateProcessCompliance(
   roadmapValidation: boolean;
 } {
   return {
-    roleValidation: !!role,
+    roleValidation: Boolean(role),
     qualityGates: true,
     documentation: true,
     testing: true,

@@ -275,7 +275,7 @@ export class TemplateDetectionEngine {
    * Evaluate domain knowledge in response
    */
   private evaluateDomainKnowledge(response: AIResponse): number {
-    if (!response.domain) return 0.5;
+    if (!response.domain) {return 0.5;}
 
     const domainTerms = this.domainSpecificTerms.get(response.domain) || [];
     const content = response.content.toLowerCase();

@@ -100,7 +100,7 @@ export abstract class MCPResource<TConnection = unknown, TData = unknown> {
     // Try to get from pool first
     if (this.connectionPool.length > 0) {
       const connection = this.connectionPool.pop();
-      if (connection) return connection;
+      if (connection) {return connection;}
     }
 
     // Create new connection if pool is empty and under limit
@@ -220,7 +220,7 @@ export abstract class MCPResource<TConnection = unknown, TData = unknown> {
         if (this.connectionPool.length > 0) {
           clearTimeout(timeout);
           const connection = this.connectionPool.pop();
-          if (connection) resolve(connection);
+          if (connection) {resolve(connection);}
         } else {
           setTimeout(checkConnection, 100);
         }

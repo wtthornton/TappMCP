@@ -209,7 +209,7 @@ export class SimpleAnalyzer {
     // Deduct points based on issues
     score -= summary.error * 10;
     score -= summary.warning * 3;
-    score -= summary.info * 1;
+    score -= Number(summary.info);
 
     // Adjust based on metrics
     if (metrics.complexity > 10) {

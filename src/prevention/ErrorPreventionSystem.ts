@@ -577,7 +577,7 @@ export class ErrorPreventionSystem {
     effectiveness: number;
   }> {
     const pattern = this.errorPatterns.get(patternId);
-    if (!pattern) return [];
+    if (!pattern) {return [];}
 
     return pattern.preventionStrategies.map(strategy => ({
       pattern: pattern.name,

@@ -356,10 +356,10 @@ export class ContextPersistenceEngine {
     // Apply index filters
     const filters: Array<{ field: string; value: string }> = [];
 
-    if (query.sessionId) filters.push({ field: 'sessionId', value: query.sessionId });
-    if (query.toolName) filters.push({ field: 'toolName', value: query.toolName });
-    if (query.contextType) filters.push({ field: 'contextType', value: query.contextType });
-    if (query.priority) filters.push({ field: 'priority', value: query.priority });
+    if (query.sessionId) {filters.push({ field: 'sessionId', value: query.sessionId });}
+    if (query.toolName) {filters.push({ field: 'toolName', value: query.toolName });}
+    if (query.contextType) {filters.push({ field: 'contextType', value: query.contextType });}
+    if (query.priority) {filters.push({ field: 'priority', value: query.priority });}
 
     for (const filter of filters) {
       const fieldIndex = this.memoryIndex.get(filter.field);

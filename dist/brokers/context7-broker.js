@@ -15,6 +15,8 @@ import { writeFile, readFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import { createHash } from 'crypto';
 import { CircuitBreaker } from '../intelligence/ErrorHandling.js';
+import { createDocCacheKey, createExamplesCacheKey, createBestPracticesCacheKey, createTroubleshootingCacheKey } from '../utils/cache-utils.js';
+import { CacheHealthMonitor } from '../monitoring/cache-health-monitor.js';
 /**
  * Context7 Broker for external knowledge integration
  */
@@ -28,6 +30,19 @@ export class Context7Broker {
     circuitBreaker;
     pendingRequests = new Map();
     cacheFile = './cache/context7-cache.json';
+    healthMonitor;
+    // Simple cache metrics tracking
+    cacheMetrics = {
+        hits: 0,
+        misses: 0,
+        totalRequests: 0,
+        totalResponseTime: 0,
+        deduplicatedRequests: 0,
+        lastResetTime: Date.now()
+    };
+    // Health monitoring
+    healthCheckInterval = null;
+    healthCheckFrequency = 100; // Check every 100 requests
     constructor(config = {}) {
         // Public Context7 API credentials - not secret
         const DEFAULT_API_KEY = 'ctx7sk-45825e15-2f53-459e-8688-8c14b0604d02';
@@ -46,8 +61,9 @@ export class Context7Broker {
             maxRetries: config.maxRetries ?? 2,
             enableFallback: config.enableFallback ?? true,
             enableCache: config.enableCache ?? true,
-            cacheExpiryHours: config.cacheExpiryHours ?? 30 * 24, // 30 DAYS
-            useHttpOnly: useHttpOnly,
+            cacheExpiryHours: config.cacheExpiryHours ??
+                (process.env.CONTEXT7_CACHE_TTL_HOURS ? parseInt(process.env.CONTEXT7_CACHE_TTL_HOURS) : 24), // 24 HOURS (configurable via env)
+            useHttpOnly,
             rateLimit: config.rateLimit ?? {
                 requestsPerMinute: 60,
                 burstLimit: 10,
@@ -80,9 +96,11 @@ export class Context7Broker {
         };
         this.mcpClient = new Context7MCPClient(mcpConfig);
         // Initialize LRU cache (prevents memory leaks)
+        const cacheTTL = Math.max(1, Math.floor(this.config.cacheExpiryHours * 60 * 60 * 1000)); // TTL in milliseconds, minimum 1ms
+        console.log(`🔧 Cache TTL configured: ${this.config.cacheExpiryHours} hours (${cacheTTL}ms)`);
         this.cache = new LRUCache({
             max: 1000, // Max 1000 entries
-            ttl: Math.max(1, Math.floor(this.config.cacheExpiryHours * 60 * 60 * 1000)), // TTL in milliseconds, minimum 1ms
+            ttl: cacheTTL,
             updateAgeOnGet: true, // Update access time on get
             allowStale: false, // Don't return stale entries
         });
@@ -99,6 +117,8 @@ export class Context7Broker {
             recoveryTimeout: 30000, // 30 seconds recovery time
             monitoringPeriod: 10000, // 10 seconds monitoring
         });
+        // Initialize health monitor
+        this.healthMonitor = new CacheHealthMonitor();
         // Load cache on startup
         this.loadCache();
         // Check if Context7 is enabled
@@ -154,11 +174,13 @@ export class Context7Broker {
      * Get cached data if available and not expired
      */
     getCachedData(key) {
-        if (!this.config.enableCache)
+        if (!this.config.enableCache) {
             return null;
+        }
         const cached = this.cache.get(key);
-        if (!cached)
+        if (!cached) {
             return null;
+        }
         // LRU cache handles expiry automatically, but keep manual check for compatibility
         const now = Date.now();
         if (now > cached.expiry) {
@@ -168,11 +190,159 @@ export class Context7Broker {
         return cached.data;
     }
     /**
+     * Record cache hit
+     */
+    recordCacheHit(key, responseTime) {
+        this.cacheMetrics.hits++;
+        this.cacheMetrics.totalRequests++;
+        this.cacheMetrics.totalResponseTime += responseTime;
+        console.log(`✅ Cache HIT: ${key} (${responseTime}ms)`);
+        // Check health periodically
+        this.checkHealthPeriodically();
+    }
+    /**
+     * Record cache miss
+     */
+    recordCacheMiss(key, responseTime) {
+        this.cacheMetrics.misses++;
+        this.cacheMetrics.totalRequests++;
+        this.cacheMetrics.totalResponseTime += responseTime;
+        console.log(`❌ Cache MISS: ${key} (${responseTime}ms)`);
+        // Check health periodically
+        this.checkHealthPeriodically();
+    }
+    /**
+     * Get cache metrics
+     */
+    getCacheMetrics() {
+        const hitRate = this.cacheMetrics.totalRequests > 0
+            ? this.cacheMetrics.hits / this.cacheMetrics.totalRequests
+            : 0;
+        const averageResponseTime = this.cacheMetrics.totalRequests > 0
+            ? this.cacheMetrics.totalResponseTime / this.cacheMetrics.totalRequests
+            : 0;
+        return {
+            hits: this.cacheMetrics.hits,
+            misses: this.cacheMetrics.misses,
+            hitRate: Math.round(hitRate * 100) / 100,
+            averageResponseTime: Math.round(averageResponseTime),
+            totalRequests: this.cacheMetrics.totalRequests,
+            deduplicatedRequests: this.cacheMetrics.deduplicatedRequests,
+            cacheTTLHours: this.config.cacheExpiryHours,
+            cacheSize: this.cache.size
+        };
+    }
+    /**
+     * Reset cache metrics
+     */
+    resetCacheMetrics() {
+        this.cacheMetrics = {
+            hits: 0,
+            misses: 0,
+            totalRequests: 0,
+            totalResponseTime: 0,
+            deduplicatedRequests: 0,
+            lastResetTime: Date.now()
+        };
+        console.log('🔄 Cache metrics reset');
+    }
+    /**
+     * Get cache health status
+     */
+    getCacheHealth() {
+        const metrics = this.getCacheMetrics();
+        return this.healthMonitor.checkHealth(metrics);
+    }
+    /**
+     * Log cache health report
+     */
+    logCacheHealth() {
+        const health = this.getCacheHealth();
+        console.log(this.healthMonitor.formatHealthReport(health));
+    }
+    /**
+     * Check if cache health is good
+     */
+    isCacheHealthy() {
+        const health = this.getCacheHealth();
+        return health.status === 'excellent' || health.status === 'good';
+    }
+    /**
+     * Get health status with emoji
+     */
+    getHealthStatusEmoji() {
+        const health = this.getCacheHealth();
+        return this.healthMonitor.getHealthStatusEmoji(health);
+    }
+    /**
+     * Check health periodically based on request count
+     */
+    checkHealthPeriodically() {
+        if (this.cacheMetrics.totalRequests % this.healthCheckFrequency === 0) {
+            const health = this.getCacheHealth();
+            // Only log if there are issues or it's a milestone
+            if (health.status === 'poor' || health.status === 'critical' ||
+                this.cacheMetrics.totalRequests % (this.healthCheckFrequency * 5) === 0) {
+                console.log(`\n🏥 Cache Health Check (${this.cacheMetrics.totalRequests} requests):`);
+                console.log(this.healthMonitor.formatHealthReport(health));
+            }
+        }
+    }
+    /**
+     * Set health check frequency
+     */
+    setHealthCheckFrequency(frequency) {
+        this.healthCheckFrequency = frequency;
+        console.log(`🔧 Health check frequency set to every ${frequency} requests`);
+    }
+    /**
+     * Force health check
+     */
+    forceHealthCheck() {
+        console.log('\n🏥 Forced Cache Health Check:');
+        this.logCacheHealth();
+    }
+    /**
+     * Deduplicate requests to prevent parallel identical API calls
+     */
+    async deduplicateRequest(key, requestFn, timeout = 10000) {
+        // Check if request is already pending
+        if (this.pendingRequests.has(key)) {
+            this.cacheMetrics.deduplicatedRequests++;
+            console.log(`🔄 Request deduplication: ${key}`);
+            return this.pendingRequests.get(key);
+        }
+        // Create new request
+        const requestPromise = this.executeRequest(key, requestFn, timeout);
+        this.pendingRequests.set(key, requestPromise);
+        return requestPromise;
+    }
+    /**
+     * Execute request with timeout and cleanup
+     */
+    async executeRequest(key, requestFn, timeout) {
+        try {
+            const result = await Promise.race([
+                requestFn(),
+                new Promise((_, reject) => setTimeout(() => reject(new Error(`Request timeout after ${timeout}ms`)), timeout))
+            ]);
+            return result;
+        }
+        catch (error) {
+            throw error;
+        }
+        finally {
+            // Clean up pending request
+            this.pendingRequests.delete(key);
+        }
+    }
+    /**
      * Cache data with expiry
      */
     setCachedData(key, data) {
-        if (!this.config.enableCache)
+        if (!this.config.enableCache) {
             return;
+        }
         const now = Date.now();
         const expiry = now + this.config.cacheExpiryHours * 60 * 60 * 1000;
         // LRU cache handles size limits automatically
@@ -206,8 +376,9 @@ export class Context7Broker {
      */
     async loadCache() {
         try {
-            if (!existsSync(this.cacheFile))
+            if (!existsSync(this.cacheFile)) {
                 return;
+            }
             const data = await readFile(this.cacheFile, 'utf8');
             const cacheData = JSON.parse(data);
             for (const [key, value] of cacheData) {
@@ -223,13 +394,15 @@ export class Context7Broker {
      */
     async getDocumentation(topic, version) {
         const startTime = Date.now();
-        const cacheKey = `doc:${topic}:${version ?? 'latest'}`;
+        const cacheKey = createDocCacheKey(topic, version ?? 'latest');
         try {
             // Check cache first
             const cachedData = this.getCachedData(cacheKey);
             if (cachedData) {
                 // Using cached Context7 docs
-                this.recordMetrics('documentation', topic, true, Date.now() - startTime, 0, 0, 'cache');
+                const responseTime = Date.now() - startTime;
+                this.recordCacheHit(cacheKey, responseTime);
+                this.recordMetrics('documentation', topic, true, responseTime, 0, 0, 'cache');
                 return cachedData;
             }
             if (!this.isAvailable) {
@@ -238,16 +411,15 @@ export class Context7Broker {
                     this.recordMetrics('documentation', topic, true, Date.now() - startTime, 0, 0, 'fallback');
                     return fallbackDocs;
                 }
-                else {
-                    throw new Error('Context7 service unavailable and fallback disabled');
-                }
+                throw new Error('Context7 service unavailable and fallback disabled');
             }
-            // Make real Context7 MCP call
+            // Make real Context7 MCP call with deduplication
             // Fetching real Context7 docs
-            const docs = await this.fetchRealDocumentation(topic, version);
+            const docs = await this.deduplicateRequest(`api:documentation:${cacheKey}`, () => this.fetchRealDocumentation(topic, version));
             // Cache the results
             this.setCachedData(cacheKey, docs);
             const responseTime = Date.now() - startTime;
+            this.recordCacheMiss(cacheKey, responseTime);
             this.validateResponseTime(startTime, 'getDocumentation');
             // Record metrics for successful request
             this.recordMetrics('documentation', topic, true, responseTime, this.estimateTokenUsage(docs), this.estimateCost(docs), 'context7');
@@ -339,7 +511,7 @@ export class Context7Broker {
                 this.libraryIdCache.set(cacheKey, {
                     libraryId: fallbackId,
                     timestamp: Date.now(),
-                    expiry: Date.now() + (7 * 24 * 60 * 60 * 1000), // 7 days
+                    expiry: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
                 });
                 console.log(`Using fallback library ID for topic: ${topic} -> ${fallbackId}`);
                 return fallbackId;
@@ -365,7 +537,7 @@ export class Context7Broker {
                     this.libraryIdCache.set(cacheKey, {
                         libraryId,
                         timestamp: Date.now(),
-                        expiry: Date.now() + (7 * 24 * 60 * 60 * 1000), // 7 days
+                        expiry: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
                     });
                 }
                 return libraryId;
@@ -378,7 +550,7 @@ export class Context7Broker {
                     this.libraryIdCache.set(cacheKey, {
                         libraryId,
                         timestamp: Date.now(),
-                        expiry: Date.now() + (7 * 24 * 60 * 60 * 1000), // 7 days
+                        expiry: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
                     });
                     return libraryId;
                 }
@@ -403,7 +575,7 @@ export class Context7Broker {
                 this.libraryIdCache.set(cacheKey, {
                     libraryId,
                     timestamp: Date.now(),
-                    expiry: Date.now() + (7 * 24 * 60 * 60 * 1000), // 7 days
+                    expiry: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
                 });
             }
             return libraryId;
@@ -464,7 +636,7 @@ export class Context7Broker {
                 return this.circuitBreaker.execute(async () => {
                     return this.httpClient.get(`/${cleanLibraryId}`, {
                         type: 'json',
-                        topic: topic,
+                        topic,
                         tokens: 4000,
                     });
                 });
@@ -557,27 +729,29 @@ export class Context7Broker {
      */
     async getCodeExamples(technology, pattern) {
         const startTime = Date.now();
-        const cacheKey = `examples:${technology}:${pattern}`;
+        const cacheKey = createExamplesCacheKey(technology, pattern);
         try {
             // Check cache first
             const cachedData = this.getCachedData(cacheKey);
             if (cachedData) {
                 // Using cached Context7 examples
+                const responseTime = Date.now() - startTime;
+                this.recordCacheHit(cacheKey, responseTime);
                 return cachedData;
             }
             if (!this.isAvailable) {
                 if (this.config.enableFallback) {
                     return this.getFallbackCodeExamples(technology, pattern);
                 }
-                else {
-                    throw new Error('Context7 service unavailable and fallback disabled');
-                }
+                throw new Error('Context7 service unavailable and fallback disabled');
             }
-            // Make real Context7 MCP call
+            // Make real Context7 MCP call with deduplication
             // Fetching real Context7 examples
-            const examples = await this.fetchRealCodeExamples(technology, pattern);
+            const examples = await this.deduplicateRequest(`api:examples:${cacheKey}`, () => this.fetchRealCodeExamples(technology, pattern));
             // Cache the results
             this.setCachedData(cacheKey, examples);
+            const responseTime = Date.now() - startTime;
+            this.recordCacheMiss(cacheKey, responseTime);
             this.validateResponseTime(startTime, 'getCodeExamples');
             return examples;
         }
@@ -623,27 +797,29 @@ export class Context7Broker {
      */
     async getBestPractices(domain) {
         const startTime = Date.now();
-        const cacheKey = `best-practices:${domain}`;
+        const cacheKey = createBestPracticesCacheKey(domain);
         try {
             // Check cache first
             const cachedData = this.getCachedData(cacheKey);
             if (cachedData) {
                 // Using cached Context7 best practices
+                const responseTime = Date.now() - startTime;
+                this.recordCacheHit(cacheKey, responseTime);
                 return cachedData;
             }
             if (!this.isAvailable) {
                 if (this.config.enableFallback) {
                     return this.getFallbackBestPractices(domain);
                 }
-                else {
-                    throw new Error('Context7 service unavailable and fallback disabled');
-                }
+                throw new Error('Context7 service unavailable and fallback disabled');
             }
-            // Make real Context7 MCP call
+            // Make real Context7 MCP call with deduplication
             // Fetching real Context7 best practices
-            const practices = await this.fetchRealBestPractices(domain);
+            const practices = await this.deduplicateRequest(`api:best-practices:${cacheKey}`, () => this.fetchRealBestPractices(domain));
             // Cache the results
             this.setCachedData(cacheKey, practices);
+            const responseTime = Date.now() - startTime;
+            this.recordCacheMiss(cacheKey, responseTime);
             this.validateResponseTime(startTime, 'getBestPractices');
             return practices;
         }
@@ -689,27 +865,29 @@ export class Context7Broker {
      */
     async getTroubleshootingGuides(problem) {
         const startTime = Date.now();
-        const cacheKey = `troubleshooting:${problem}`;
+        const cacheKey = createTroubleshootingCacheKey(problem);
         try {
             // Check cache first
             const cachedData = this.getCachedData(cacheKey);
             if (cachedData) {
                 // Using cached Context7 troubleshooting
+                const responseTime = Date.now() - startTime;
+                this.recordCacheHit(cacheKey, responseTime);
                 return cachedData;
             }
             if (!this.isAvailable) {
                 if (this.config.enableFallback) {
                     return this.getFallbackTroubleshootingGuides(problem);
                 }
-                else {
-                    throw new Error('Context7 service unavailable and fallback disabled');
-                }
+                throw new Error('Context7 service unavailable and fallback disabled');
             }
-            // Make real Context7 MCP call
+            // Make real Context7 MCP call with deduplication
             // Fetching real Context7 troubleshooting
-            const guides = await this.fetchRealTroubleshootingGuides(problem);
+            const guides = await this.deduplicateRequest(`api:troubleshooting:${cacheKey}`, () => this.fetchRealTroubleshootingGuides(problem));
             // Cache the results
             this.setCachedData(cacheKey, guides);
+            const responseTime = Date.now() - startTime;
+            this.recordCacheMiss(cacheKey, responseTime);
             this.validateResponseTime(startTime, 'getTroubleshootingGuides');
             return guides;
         }
@@ -739,7 +917,7 @@ export class Context7Broker {
             // Transform documentation into troubleshooting guides
             return docs.map((doc, index) => ({
                 id: `guide-${problem.replace(/\s+/g, '-')}-${Date.now()}-${index}`,
-                problem: problem,
+                problem,
                 solutions: [
                     {
                         description: doc.title || `Solution for ${problem}`,
@@ -824,12 +1002,6 @@ export class Context7Broker {
             hitRate: 'N/A', // LRU doesn't track hits by default
             memoryUsage: 'N/A', // Would need custom tracking
         };
-    }
-    /**
-     * Check if cache is healthy
-     */
-    isCacheHealthy() {
-        return this.cache.size < this.cache.max * 0.9; // Healthy if under 90% capacity
     }
     /**
      * Clear cache

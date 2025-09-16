@@ -8,6 +8,7 @@
 import { BusinessContextBroker, } from './business-context-broker.js';
 import { Context7Broker } from '../brokers/context7-broker.js';
 import { LRUCache } from 'lru-cache';
+import { createInsightsCacheKey, createTopicsCacheKey } from '../utils/cache-utils.js';
 // Role orchestration removed - implementing real role-specific behavior
 import { handleError, getErrorMessage } from '../utils/errors.js';
 // Real project analysis integration
@@ -820,10 +821,10 @@ export class OrchestrationEngine extends EventEmitter {
     async gatherContext7Insights(phase, role, context) {
         const errors = [];
         let fallbackUsed = false;
-        let _cacheHit = false;
+        const _cacheHit = false;
         try {
             // Create cache key for this specific insight gathering
-            const cacheKey = `insights:${phase.name}:${role}:${context.projectId}`;
+            const cacheKey = createInsightsCacheKey(phase.name, role, context.projectId);
             // Check cache first
             const cachedInsights = this.getCachedInsights(cacheKey);
             if (cachedInsights) {
@@ -935,9 +936,7 @@ export class OrchestrationEngine extends EventEmitter {
         else if (complexityScore >= 4) {
             return 'intermediate';
         }
-        else {
-            return 'basic';
-        }
+        return 'basic';
     }
     /**
      * Process Context7 result and handle errors
@@ -946,12 +945,10 @@ export class OrchestrationEngine extends EventEmitter {
         if (result.status === 'fulfilled') {
             return result.value;
         }
-        else {
-            const errorMessage = `Context7 ${type} gathering failed: ${result.reason}`;
-            console.warn(errorMessage, result.reason);
-            errors.push(errorMessage);
-            return this.getFallbackByType(type);
-        }
+        const errorMessage = `Context7 ${type} gathering failed: ${result.reason}`;
+        console.warn(errorMessage, result.reason);
+        errors.push(errorMessage);
+        return this.getFallbackByType(type);
     }
     /**
      * Get fallback data by type
@@ -975,8 +972,9 @@ export class OrchestrationEngine extends EventEmitter {
      */
     getCachedInsights(cacheKey) {
         const cached = this.context7Cache.get(cacheKey);
-        if (!cached)
+        if (!cached) {
             return null;
+        }
         const now = Date.now();
         if (now > cached.expiry) {
             this.context7Cache.delete(cacheKey);
@@ -1000,7 +998,7 @@ export class OrchestrationEngine extends EventEmitter {
      * Get Context7 topics with caching
      */
     async getContext7TopicsCached(phase, role, context) {
-        const cacheKey = `topics:${phase.name}:${role}:${context.projectId}`;
+        const cacheKey = createTopicsCacheKey(phase.name, role);
         // Check topic cache first
         const cachedTopics = this.topicCache.get(cacheKey);
         if (cachedTopics) {
@@ -1933,7 +1931,7 @@ ${guide.solutions
         console.log(`Refreshing Context7 insights for ${phase.name} phase...`);
         try {
             // Clear existing cache for this phase
-            const cacheKey = `insights:${phase.name}:${role}:${context.projectId}`;
+            const cacheKey = createInsightsCacheKey(phase.name, role, context.projectId);
             this.context7Cache.delete(cacheKey);
             // Clear topic cache
             const topicCacheKey = `topics:${phase.name}:${role}:${context.projectId}`;
@@ -2162,7 +2160,7 @@ ${guide.solutions
         score += Math.min(requirementsCount * 2, 10); // Max 10 points
         // Business goals complexity
         const businessGoalsCount = context.businessGoals?.length || 0;
-        score += Math.min(businessGoalsCount * 1, 5); // Max 5 points
+        score += Math.min(Number(businessGoalsCount), 5); // Max 5 points
         // Project type complexity
         const domainType = this.analyzeProjectType(context);
         switch (domainType) {
@@ -2197,9 +2195,7 @@ ${guide.solutions
         else if (score >= 8) {
             return 'intermediate';
         }
-        else {
-            return 'basic';
-        }
+        return 'basic';
     }
     /**
      * Retry logic and circuit breaker methods
@@ -2262,8 +2258,9 @@ ${guide.solutions
      */
     isCircuitBreakerOpen(operationKey) {
         const state = this.circuitBreakerState.get(operationKey);
-        if (!state)
+        if (!state) {
             return false;
+        }
         if (state.state === 'open') {
             // Check if timeout has passed to allow half-open state
             const now = Date.now();
@@ -2487,24 +2484,33 @@ ${guide.solutions
         const dependencies = projectAnalysis.projectMetadata.dependencies || {};
         const devDependencies = projectAnalysis.projectMetadata.devDependencies || {};
         const allDeps = { ...dependencies, ...devDependencies };
-        if (allDeps['react'])
+        if (allDeps.react) {
             return 'react';
-        if (allDeps['vue'])
+        }
+        if (allDeps.vue) {
             return 'vue';
-        if (allDeps['@angular/core'])
+        }
+        if (allDeps['@angular/core']) {
             return 'angular';
-        if (allDeps['next'])
+        }
+        if (allDeps.next) {
             return 'next';
-        if (allDeps['nuxt'])
+        }
+        if (allDeps.nuxt) {
             return 'nuxt';
-        if (allDeps['svelte'])
+        }
+        if (allDeps.svelte) {
             return 'svelte';
-        if (allDeps['express'])
+        }
+        if (allDeps.express) {
             return 'express';
-        if (allDeps['fastify'])
+        }
+        if (allDeps.fastify) {
             return 'fastify';
-        if (allDeps['koa'])
+        }
+        if (allDeps.koa) {
             return 'koa';
+        }
         return 'unknown';
     }
     detectArchitectureFromAnalysis(projectAnalysis) {
@@ -2514,14 +2520,18 @@ ${guide.solutions
             fileStructure.folders.includes('src/components');
         const hasPages = fileStructure.folders.includes('pages') || fileStructure.folders.includes('src/pages');
         const hasApi = fileStructure.folders.includes('api') || fileStructure.folders.includes('src/api');
-        if (hasComponents && hasPages)
+        if (hasComponents && hasPages) {
             return 'spa';
-        if (hasApi && hasSrc)
+        }
+        if (hasApi && hasSrc) {
             return 'api';
-        if (hasComponents && hasApi)
+        }
+        if (hasComponents && hasApi) {
             return 'fullstack';
-        if (fileStructure.folders.includes('microservices'))
+        }
+        if (fileStructure.folders.includes('microservices')) {
             return 'microservices';
+        }
         return 'monolithic';
     }
     inferFileStructureFromAnalysis(projectAnalysis) {
@@ -2539,10 +2549,11 @@ ${guide.solutions
     calculateSecurityScoreFromScan(securityScanResult) {
         const { critical, high, moderate, low } = securityScanResult.summary;
         const total = critical + high + moderate + low;
-        if (total === 0)
+        if (total === 0) {
             return 100;
+        }
         // Weighted scoring: critical = -20, high = -10, moderate = -5, low = -1
-        const score = 100 - critical * 20 - high * 10 - moderate * 5 - low * 1;
+        const score = 100 - critical * 20 - high * 10 - moderate * 5 - Number(low);
         return Math.max(0, Math.min(100, score));
     }
     generateSecurityRecommendationsFromScan(securityScanResult) {
@@ -2564,10 +2575,12 @@ ${guide.solutions
     }
     checkComplianceFromScan(securityScanResult) {
         const { critical, high } = securityScanResult.summary;
-        if (critical > 0)
+        if (critical > 0) {
             return 'non-compliant';
-        if (high > 0)
+        }
+        if (high > 0) {
             return 'partially-compliant';
+        }
         return 'compliant';
     }
     /**
@@ -2862,29 +2875,39 @@ ${guide.solutions
     }
     // Helper methods for project analysis
     detectFramework(requirements) {
-        if (requirements.includes('react'))
+        if (requirements.includes('react')) {
             return 'react';
-        if (requirements.includes('vue'))
+        }
+        if (requirements.includes('vue')) {
             return 'vue';
-        if (requirements.includes('angular'))
+        }
+        if (requirements.includes('angular')) {
             return 'angular';
-        if (requirements.includes('svelte'))
+        }
+        if (requirements.includes('svelte')) {
             return 'svelte';
-        if (requirements.includes('next'))
+        }
+        if (requirements.includes('next')) {
             return 'nextjs';
-        if (requirements.includes('nuxt'))
+        }
+        if (requirements.includes('nuxt')) {
             return 'nuxtjs';
+        }
         return 'vanilla';
     }
     detectArchitecture(requirements) {
-        if (requirements.includes('microservice'))
+        if (requirements.includes('microservice')) {
             return 'microservices';
-        if (requirements.includes('monolith'))
+        }
+        if (requirements.includes('monolith')) {
             return 'monolith';
-        if (requirements.includes('serverless'))
+        }
+        if (requirements.includes('serverless')) {
             return 'serverless';
-        if (requirements.includes('spa'))
+        }
+        if (requirements.includes('spa')) {
             return 'spa';
+        }
         return 'traditional';
     }
     inferFileStructure(requirements) {
@@ -2905,16 +2928,20 @@ ${guide.solutions
         const requirements = context.requirements || [];
         const businessGoals = context.businessGoals || [];
         complexity += requirements.length * 2;
-        complexity += businessGoals.length * 1;
+        complexity += Number(businessGoals.length);
         const allText = [...requirements, ...businessGoals].join(' ').toLowerCase();
-        if (allText.includes('microservice'))
+        if (allText.includes('microservice')) {
             complexity += 10;
-        if (allText.includes('real-time'))
+        }
+        if (allText.includes('real-time')) {
             complexity += 5;
-        if (allText.includes('ai') || allText.includes('ml'))
+        }
+        if (allText.includes('ai') || allText.includes('ml')) {
             complexity += 8;
-        if (allText.includes('mobile'))
+        }
+        if (allText.includes('mobile')) {
             complexity += 6;
+        }
         return Math.min(complexity, 100);
     }
     detectTechnologies(requirements) {
@@ -2965,12 +2992,15 @@ ${guide.solutions
         let score = 100;
         const vulnerabilities = this.detectVulnerabilities(requirements);
         score -= vulnerabilities.length * 15;
-        if (requirements.includes('https'))
+        if (requirements.includes('https')) {
             score += 10;
-        if (requirements.includes('jwt'))
+        }
+        if (requirements.includes('jwt')) {
             score += 5;
-        if (requirements.includes('oauth'))
+        }
+        if (requirements.includes('oauth')) {
             score += 5;
+        }
         return Math.max(score, 0);
     }
     generateSecurityRecommendations(requirements) {
@@ -3001,34 +3031,44 @@ ${guide.solutions
     }
     calculateCodeComplexity(requirements) {
         let complexity = 50; // Base complexity
-        if (requirements.includes('microservice'))
+        if (requirements.includes('microservice')) {
             complexity += 20;
-        if (requirements.includes('real-time'))
+        }
+        if (requirements.includes('real-time')) {
             complexity += 15;
-        if (requirements.includes('ai') || requirements.includes('ml'))
+        }
+        if (requirements.includes('ai') || requirements.includes('ml')) {
             complexity += 25;
-        if (requirements.includes('mobile'))
+        }
+        if (requirements.includes('mobile')) {
             complexity += 10;
+        }
         return Math.min(complexity, 100);
     }
     calculateMaintainability(requirements) {
         let maintainability = 80; // Base maintainability
-        if (requirements.includes('typescript'))
+        if (requirements.includes('typescript')) {
             maintainability += 10;
-        if (requirements.includes('test'))
+        }
+        if (requirements.includes('test')) {
             maintainability += 10;
-        if (requirements.includes('documentation'))
+        }
+        if (requirements.includes('documentation')) {
             maintainability += 5;
+        }
         return Math.min(maintainability, 100);
     }
     estimateTestCoverage(requirements) {
         let coverage = 60; // Base coverage estimate
-        if (requirements.includes('test'))
+        if (requirements.includes('test')) {
             coverage += 20;
-        if (requirements.includes('tdd'))
+        }
+        if (requirements.includes('tdd')) {
             coverage += 15;
-        if (requirements.includes('bdd'))
+        }
+        if (requirements.includes('bdd')) {
             coverage += 10;
+        }
         return Math.min(coverage, 100);
     }
     detectCodeSmells(requirements) {
@@ -3679,8 +3719,9 @@ ${guide.solutions
      * Calculate overall quality score
      */
     calculateQualityScore(checks) {
-        if (checks.length === 0)
+        if (checks.length === 0) {
             return 0;
+        }
         const totalScore = checks.reduce((sum, check) => sum + check.score, 0);
         const averageScore = totalScore / checks.length;
         // Apply weights based on category importance
@@ -3689,14 +3730,18 @@ ${guide.solutions
     }
     calculateQualityScoreFromRequirements(requirements) {
         let score = 70; // Base quality score
-        if (requirements.includes('typescript'))
+        if (requirements.includes('typescript')) {
             score += 10;
-        if (requirements.includes('test'))
+        }
+        if (requirements.includes('test')) {
             score += 10;
-        if (requirements.includes('lint'))
+        }
+        if (requirements.includes('lint')) {
             score += 5;
-        if (requirements.includes('documentation'))
+        }
+        if (requirements.includes('documentation')) {
             score += 5;
+        }
         return Math.min(score, 100);
     }
     /**
@@ -3886,7 +3931,7 @@ ${guide.solutions
                 message: `Intelligence level: ${intelligenceLevel} (expected: ${expectedLevel})`,
                 details: {
                     currentLevel: intelligenceLevel,
-                    expectedLevel: expectedLevel,
+                    expectedLevel,
                     domainType: context7Insights.domainType,
                 },
             });
@@ -3974,10 +4019,12 @@ ${guide.solutions
     }
     getExpectedIntelligenceLevel(_phase, context) {
         const complexity = this.calculateProjectComplexityScore(context);
-        if (complexity >= 15)
+        if (complexity >= 15) {
             return 'advanced';
-        if (complexity >= 8)
+        }
+        if (complexity >= 8) {
             return 'intermediate';
+        }
         return 'basic';
     }
     getFallbackQualityGateResult(phase) {
@@ -4051,13 +4098,15 @@ ${guide.solutions
      */
     async performQualityCheck(workflowId) {
         const state = this.qualityMonitoringState.get(workflowId);
-        if (!state || !state.isActive)
+        if (!state || !state.isActive) {
             return;
+        }
         const currentTime = Date.now();
         const timeSinceLastCheck = currentTime - state.lastCheck;
         // Only check if enough time has passed
-        if (timeSinceLastCheck < this.qualityCheckInterval)
+        if (timeSinceLastCheck < this.qualityCheckInterval) {
             return;
+        }
         try {
             // Perform quality assessment
             const qualityAssessment = await this.assessCurrentQuality(state.context);
@@ -4118,8 +4167,9 @@ ${guide.solutions
      */
     checkQualityDegradation(workflowId, assessment) {
         const state = this.qualityMonitoringState.get(workflowId);
-        if (!state || state.qualityHistory.length < 2)
+        if (!state || state.qualityHistory.length < 2) {
             return;
+        }
         const currentScore = assessment.overallScore;
         const previousScore = state.qualityHistory[state.qualityHistory.length - 2].qualityScore;
         const degradation = previousScore - currentScore;
@@ -4170,8 +4220,9 @@ ${guide.solutions
      */
     getQualityMonitoringStatus(workflowId) {
         const state = this.qualityMonitoringState.get(workflowId);
-        if (!state)
+        if (!state) {
             return null;
+        }
         return {
             workflowId,
             isActive: state.isActive,
@@ -4192,8 +4243,9 @@ ${guide.solutions
      */
     getQualityTrends(workflowId, timeRange) {
         const state = this.qualityMonitoringState.get(workflowId);
-        if (!state)
+        if (!state) {
             return [];
+        }
         let history = state.qualityHistory;
         if (timeRange) {
             const cutoffTime = Date.now() - timeRange;
@@ -4222,42 +4274,54 @@ ${guide.solutions
         const requirements = context.requirements || [];
         const allText = requirements.join(' ').toLowerCase();
         let score = 70; // Base score
-        if (allText.includes('performance'))
+        if (allText.includes('performance')) {
             score += 10;
-        if (allText.includes('optimization'))
+        }
+        if (allText.includes('optimization')) {
             score += 10;
-        if (allText.includes('caching'))
+        }
+        if (allText.includes('caching')) {
             score += 5;
-        if (allText.includes('lazy'))
+        }
+        if (allText.includes('lazy')) {
             score += 5;
+        }
         return Math.min(score, 100);
     }
     calculateTestingScore(context) {
         const requirements = context.requirements || [];
         const allText = requirements.join(' ').toLowerCase();
         let score = 60; // Base score
-        if (allText.includes('test'))
+        if (allText.includes('test')) {
             score += 20;
-        if (allText.includes('coverage'))
+        }
+        if (allText.includes('coverage')) {
             score += 10;
-        if (allText.includes('tdd'))
+        }
+        if (allText.includes('tdd')) {
             score += 10;
-        if (allText.includes('bdd'))
+        }
+        if (allText.includes('bdd')) {
             score += 5;
+        }
         return Math.min(score, 100);
     }
     calculateDocumentationScore(context) {
         const requirements = context.requirements || [];
         const allText = requirements.join(' ').toLowerCase();
         let score = 50; // Base score
-        if (allText.includes('documentation'))
+        if (allText.includes('documentation')) {
             score += 20;
-        if (allText.includes('readme'))
+        }
+        if (allText.includes('readme')) {
             score += 10;
-        if (allText.includes('api docs'))
+        }
+        if (allText.includes('api docs')) {
             score += 10;
-        if (allText.includes('comments'))
+        }
+        if (allText.includes('comments')) {
             score += 5;
+        }
         return Math.min(score, 100);
     }
     calculateContext7Score(_context) {
@@ -4310,8 +4374,9 @@ ${guide.solutions
         return affected;
     }
     calculateAverageQualityScore(history) {
-        if (history.length === 0)
+        if (history.length === 0) {
             return 0;
+        }
         const totalScore = history.reduce((sum, entry) => sum + entry.qualityScore, 0);
         return Math.round(totalScore / history.length);
     }
@@ -4367,14 +4432,18 @@ ${guide.solutions
         const allText = requirements.join(' ').toLowerCase();
         // Detect framework
         let framework = 'vanilla';
-        if (allText.includes('react'))
+        if (allText.includes('react')) {
             framework = 'react';
-        else if (allText.includes('vue'))
+        }
+        else if (allText.includes('vue')) {
             framework = 'vue';
-        else if (allText.includes('angular'))
+        }
+        else if (allText.includes('angular')) {
             framework = 'angular';
-        else if (allText.includes('svelte'))
+        }
+        else if (allText.includes('svelte')) {
             framework = 'svelte';
+        }
         // Generate framework-specific insights
         const libraries = this.getFrontendLibraries(framework, allText);
         const patterns = this.getFrontendPatterns(framework, allText);
@@ -4398,16 +4467,21 @@ ${guide.solutions
         const allText = requirements.join(' ').toLowerCase();
         // Detect language
         let language = 'javascript';
-        if (allText.includes('python'))
+        if (allText.includes('python')) {
             language = 'python';
-        else if (allText.includes('java'))
+        }
+        else if (allText.includes('java')) {
             language = 'java';
-        else if (allText.includes('c#'))
+        }
+        else if (allText.includes('c#')) {
             language = 'c#';
-        else if (allText.includes('go'))
+        }
+        else if (allText.includes('go')) {
             language = 'go';
-        else if (allText.includes('rust'))
+        }
+        else if (allText.includes('rust')) {
             language = 'rust';
+        }
         // Generate language-specific insights
         const frameworks = this.getBackendFrameworks(language, allText);
         const patterns = this.getBackendPatterns(language, allText);
@@ -4431,16 +4505,21 @@ ${guide.solutions
         const allText = requirements.join(' ').toLowerCase();
         // Detect database type
         let databaseType = 'sql';
-        if (allText.includes('mongodb') || allText.includes('nosql'))
+        if (allText.includes('mongodb') || allText.includes('nosql')) {
             databaseType = 'nosql';
-        else if (allText.includes('postgresql') || allText.includes('postgres'))
+        }
+        else if (allText.includes('postgresql') || allText.includes('postgres')) {
             databaseType = 'postgresql';
-        else if (allText.includes('mysql'))
+        }
+        else if (allText.includes('mysql')) {
             databaseType = 'mysql';
-        else if (allText.includes('redis'))
+        }
+        else if (allText.includes('redis')) {
             databaseType = 'redis';
-        else if (allText.includes('elasticsearch'))
+        }
+        else if (allText.includes('elasticsearch')) {
             databaseType = 'elasticsearch';
+        }
         // Generate database-specific insights
         const orm = this.getDatabaseORMs(databaseType, allText);
         const patterns = this.getDatabasePatterns(databaseType, allText);
@@ -4464,14 +4543,18 @@ ${guide.solutions
         const allText = requirements.join(' ').toLowerCase();
         // Detect platform
         let platform = 'aws';
-        if (allText.includes('azure'))
+        if (allText.includes('azure')) {
             platform = 'azure';
-        else if (allText.includes('gcp') || allText.includes('google cloud'))
+        }
+        else if (allText.includes('gcp') || allText.includes('google cloud')) {
             platform = 'gcp';
-        else if (allText.includes('digital ocean'))
+        }
+        else if (allText.includes('digital ocean')) {
             platform = 'digital ocean';
-        else if (allText.includes('heroku'))
+        }
+        else if (allText.includes('heroku')) {
             platform = 'heroku';
+        }
         // Generate platform-specific insights
         const tools = this.getDevOpsTools(platform, allText);
         const patterns = this.getDevOpsPatterns(platform, allText);
@@ -4493,24 +4576,30 @@ ${guide.solutions
         switch (framework) {
             case 'react':
                 libraries.push('react', 'react-dom', 'react-router', 'redux', 'zustand');
-                if (requirements.includes('ui'))
+                if (requirements.includes('ui')) {
                     libraries.push('material-ui', 'antd', 'chakra-ui');
-                if (requirements.includes('chart'))
+                }
+                if (requirements.includes('chart')) {
                     libraries.push('recharts', 'react-chartjs-2', 'victory');
+                }
                 break;
             case 'vue':
                 libraries.push('vue', 'vue-router', 'vuex', 'pinia');
-                if (requirements.includes('ui'))
+                if (requirements.includes('ui')) {
                     libraries.push('vuetify', 'quasar', 'element-plus');
-                if (requirements.includes('chart'))
+                }
+                if (requirements.includes('chart')) {
                     libraries.push('vue-chartjs', 'vue-echarts');
+                }
                 break;
             case 'angular':
                 libraries.push('@angular/core', '@angular/common', '@angular/router', 'rxjs');
-                if (requirements.includes('ui'))
+                if (requirements.includes('ui')) {
                     libraries.push('angular-material', 'ng-bootstrap');
-                if (requirements.includes('chart'))
+                }
+                if (requirements.includes('chart')) {
                     libraries.push('ng2-charts', 'ngx-charts');
+                }
                 break;
             default:
                 libraries.push('typescript', 'webpack', 'vite', 'eslint', 'prettier');
@@ -4860,15 +4949,19 @@ ${guide.solutions
      * Determine the type of change
      */
     determineChangeType(oldValue, newValue) {
-        if (oldValue === undefined || oldValue === null)
+        if (oldValue === undefined || oldValue === null) {
             return 'addition';
-        if (newValue === undefined || newValue === null)
+        }
+        if (newValue === undefined || newValue === null) {
             return 'deletion';
+        }
         if (Array.isArray(oldValue) && Array.isArray(newValue)) {
-            if (newValue.length > oldValue.length)
+            if (newValue.length > oldValue.length) {
                 return 'addition';
-            if (newValue.length < oldValue.length)
+            }
+            if (newValue.length < oldValue.length) {
                 return 'deletion';
+            }
             return 'modification';
         }
         return 'modification';
@@ -5077,8 +5170,9 @@ ${guide.solutions
      * Check artifact relevance
      */
     checkArtifactRelevance(artifacts, phase) {
-        if (artifacts.length === 0)
+        if (artifacts.length === 0) {
             return 1.0;
+        }
         const phaseArtifactTypes = {
             'Strategic Planning': ['document', 'diagram'],
             Development: ['code', 'configuration'],
@@ -5282,8 +5376,9 @@ ${guide.solutions
      * Calculate validation score
      */
     calculateValidationScore(issues) {
-        if (issues.length === 0)
+        if (issues.length === 0) {
             return 1.0;
+        }
         let totalPenalty = 0;
         for (const issue of issues) {
             switch (issue.severity) {
@@ -5392,10 +5487,10 @@ ${guide.solutions
                 phaseAccuracy[phase] = avgAccuracy;
             }
             // Calculate field accuracy (simplified)
-            fieldAccuracy['businessRequirements'] = 0.9; // Placeholder
-            fieldAccuracy['technicalRequirements'] = 0.9; // Placeholder
-            fieldAccuracy['constraints'] = 0.8; // Placeholder
-            fieldAccuracy['assumptions'] = 0.8; // Placeholder
+            fieldAccuracy.businessRequirements = 0.9; // Placeholder
+            fieldAccuracy.technicalRequirements = 0.9; // Placeholder
+            fieldAccuracy.constraints = 0.8; // Placeholder
+            fieldAccuracy.assumptions = 0.8; // Placeholder
             // Calculate overall accuracy
             const allAccuracies = state.contextHistory.map(entry => entry.accuracy);
             const overallAccuracy = allAccuracies.length > 0
@@ -5411,10 +5506,12 @@ ${guide.solutions
                 ? olderAccuracies.reduce((sum, acc) => sum + acc, 0) / olderAccuracies.length
                 : 0;
             let trend = 'stable';
-            if (recentAvg > olderAvg + 0.05)
+            if (recentAvg > olderAvg + 0.05) {
                 trend = 'improving';
-            else if (recentAvg < olderAvg - 0.05)
+            }
+            else if (recentAvg < olderAvg - 0.05) {
                 trend = 'declining';
+            }
             return {
                 overallAccuracy,
                 phaseAccuracy,
@@ -5468,8 +5565,9 @@ ${guide.solutions
         for (const state of this.contextPreservationState.values()) {
             totalHistoryEntries += state.contextHistory.length;
             totalAccuracy += state.contextAccuracy;
-            if (state.isHealthy)
+            if (state.isHealthy) {
                 healthyWorkflows++;
+            }
         }
         return {
             activeWorkflows,
@@ -5661,8 +5759,9 @@ ${guide.solutions
         let specificCount = 0;
         for (const indicator of specificIndicators) {
             const matches = response.match(indicator);
-            if (matches)
+            if (matches) {
                 specificCount += matches.length;
+            }
         }
         if (specificCount < 3) {
             patterns.push('Lacks specific details');
@@ -5761,8 +5860,9 @@ ${guide.solutions
         let technicalCount = 0;
         for (const indicator of technicalIndicators) {
             const matches = response.match(indicator);
-            if (matches)
+            if (matches) {
                 technicalCount += matches.length;
+            }
         }
         score += Math.min(0.3, technicalCount * 0.05);
         return Math.min(1, Math.max(0, score));
@@ -5834,8 +5934,9 @@ ${guide.solutions
         let insightCount = 0;
         for (const indicator of insightIndicators) {
             const matches = response.match(indicator);
-            if (matches)
+            if (matches) {
                 insightCount += matches.length;
+            }
         }
         score += Math.min(0.3, insightCount * 0.1);
         return Math.min(1, Math.max(0, score));
@@ -5940,8 +6041,9 @@ ${guide.solutions
      * Calculate variance of scores
      */
     calculateVariance(scores) {
-        if (scores.length === 0)
+        if (scores.length === 0) {
             return 0;
+        }
         const mean = scores.reduce((sum, score) => sum + score, 0) / scores.length;
         const variance = scores.reduce((sum, score) => sum + Math.pow(score - mean, 2), 0) / scores.length;
         return variance;
@@ -6724,8 +6826,9 @@ ${guide.solutions
      */
     calculateExpertiseConfidence(knowledge, bestPractices, patterns) {
         const totalItems = knowledge.length + bestPractices.length + patterns.length;
-        if (totalItems === 0)
+        if (totalItems === 0) {
             return 0;
+        }
         const avgConfidence = (knowledge.reduce((sum, k) => sum + k.confidence, 0) +
             bestPractices.reduce((sum, _bp) => sum + 0.9, 0) + // Best practices have high confidence
             patterns.reduce((sum, _p) => sum + 0.8, 0)) / // Patterns have good confidence
@@ -7029,8 +7132,9 @@ ${guide.solutions
      */
     calculateContextRelevanceForResponse(response, context) {
         let score = 0.5; // Base score
-        if (!context)
+        if (!context) {
             return score;
+        }
         // Check for context-specific terms
         if (context.domain) {
             const domainTerms = this.getDomainTerms(context.domain);
@@ -7120,8 +7224,9 @@ ${guide.solutions
      * Calculate domain relevance
      */
     calculateDomainRelevanceForRelevance(response, domain) {
-        if (!domain)
+        if (!domain) {
             return 0.5;
+        }
         const domainTerms = this.getDomainTerms(domain);
         const responseLower = response.toLowerCase();
         let termCount = 0;
@@ -7585,8 +7690,9 @@ ${guide.solutions
      * Calculate performance trend
      */
     calculatePerformanceTrend(scores, _feedback, _metrics) {
-        if (scores.length < 2)
+        if (scores.length < 2) {
             return 'stable';
+        }
         // Analyze recent vs older scores
         const recentScores = scores.slice(-5);
         const olderScores = scores.slice(-10, -5);
@@ -7595,10 +7701,12 @@ ${guide.solutions
             ? olderScores.reduce((sum, s) => sum + s.overallScore, 0) / olderScores.length
             : recentAvg;
         const improvement = recentAvg - olderAvg;
-        if (improvement > 0.05)
+        if (improvement > 0.05) {
             return 'improving';
-        if (improvement < -0.05)
+        }
+        if (improvement < -0.05) {
             return 'declining';
+        }
         return 'stable';
     }
     /**

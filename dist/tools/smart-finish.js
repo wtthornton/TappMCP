@@ -205,8 +205,8 @@ export async function handleSmartFinish(input) {
                 const qualityData = {
                     validationLevel: validatedInput.validationLevel,
                     qualityGates: validatedInput.qualityGates,
-                    businessRequirements: businessRequirements,
-                    productionReadiness: productionReadiness,
+                    businessRequirements,
+                    productionReadiness,
                     role: validatedInput.role,
                 };
                 context7Enhancement = await enhanceWithContext7(qualityData, qualityTopic, {
@@ -324,7 +324,7 @@ export async function handleSmartFinish(input) {
                 businessRequirementsChecked: 3,
                 productionChecksPerformed: 4,
                 validationLevel: validatedInput.validationLevel,
-                roleSpecificValidation: !!validatedInput.role,
+                roleSpecificValidation: Boolean(validatedInput.role),
                 // Enhanced metrics from real project analysis
                 projectAnalysisScore: projectAnalysis.summary.overallScore,
                 securityScore: projectAnalysis.security.summary.total > 0
@@ -338,7 +338,7 @@ export async function handleSmartFinish(input) {
                 projectSize: projectAnalysis.project.projectStructure.files.length,
                 technologies: projectAnalysis.project.detectedTechStack,
                 testCoverage: coverageMetrics,
-                performanceMetrics: performanceMetrics,
+                performanceMetrics,
                 // Code validation metrics if available
                 ...(validationResult && {
                     codeValidationScore: validationResult.overallScore,
@@ -521,7 +521,7 @@ function generateComprehensiveValidation(qualityScorecard, validationLevel, role
     const archiveLessonsApplied = [
         {
             lesson: 'Always validate role compliance before claiming completion',
-            applied: !!role,
+            applied: Boolean(role),
             impact: role ? 'High - Prevents process violations' : 'Low - No role validation',
         },
         {
@@ -531,7 +531,7 @@ function generateComprehensiveValidation(qualityScorecard, validationLevel, role
         },
         {
             lesson: 'Follow role-specific prevention checklist',
-            applied: !!role,
+            applied: Boolean(role),
             impact: role ? 'High - Prevents role-specific issues' : 'Medium - General checklist only',
         },
         {
@@ -552,7 +552,7 @@ function generateComprehensiveValidation(qualityScorecard, validationLevel, role
     }
     return {
         validationLevel,
-        roleSpecificValidation: !!role,
+        roleSpecificValidation: Boolean(role),
         qualityGates: qualityGates.map(gate => ({
             ...gate,
             status: gate.status,
@@ -567,7 +567,7 @@ function generateComprehensiveValidation(qualityScorecard, validationLevel, role
 }
 // Generate process compliance validation
 function generateProcessComplianceValidation(role, processCompliance, qualityScorecard) {
-    const roleValidation = !!role;
+    const roleValidation = Boolean(role);
     const qualityGates = processCompliance ?? true;
     const documentation = true; // Always true for smart-finish
     const testing = qualityScorecard?.coverage.grade === 'A' || qualityScorecard?.coverage.grade === 'B';

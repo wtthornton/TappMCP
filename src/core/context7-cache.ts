@@ -171,7 +171,7 @@ export class Context7Cache extends MCPCoordinator {
    */
   private async getCachedData(key: string): Promise<ExternalKnowledge[] | null> {
     const cached = this.cache.get(key);
-    if (!cached) return null;
+    if (!cached) {return null;}
 
     // LRU cache handles expiry automatically, but we keep manual check for compatibility
     const now = Date.now();
@@ -462,7 +462,7 @@ export class Context7Cache extends MCPCoordinator {
   isHealthy(): boolean {
     const stats = this.getCacheStats();
     // For empty cache, consider it healthy
-    if (stats.totalEntries === 0) return true;
+    if (stats.totalEntries === 0) {return true;}
     return stats.hitRate >= 0.3 && stats.averageResponseTime < 3000; // 3 seconds for Context7
   }
 }
