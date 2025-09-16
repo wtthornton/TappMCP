@@ -162,6 +162,9 @@ export interface ProjectStructure {
   fileStructure: string[];
   complexity: number;
   technologies: string[];
+  improvementOpportunities?: string[];
+  analysisDepth?: string;
+  analysisTimestamp?: string;
 }
 
 export interface SecurityAnalysis {
@@ -169,6 +172,9 @@ export interface SecurityAnalysis {
   securityScore: number;
   recommendations: string[];
   compliance: string[];
+  scanTime?: number;
+  status?: string;
+  summary?: any;
 }
 
 export interface CodeQualityAnalysis {
@@ -177,6 +183,9 @@ export interface CodeQualityAnalysis {
   testCoverage: number;
   codeSmells: string[];
   qualityScore: number;
+  issues?: any[];
+  metrics?: any;
+  recommendations?: string[];
 }
 
 export interface DependencyAnalysis {
@@ -3924,7 +3933,6 @@ ${
         issues: staticAnalysisResult.issues,
         metrics: staticAnalysisResult.metrics,
         recommendations: staticAnalysisResult.recommendations,
-        analysisTimestamp: staticAnalysisResult.analysisTimestamp,
       };
     } catch (error) {
       console.warn('Static analysis failed, falling back to context-based analysis:', error);
@@ -5332,7 +5340,7 @@ ${
         threshold: this.getQualityThreshold(phase),
         checks: qualityChecks,
         recommendations: this.generateQualityRecommendations(qualityChecks, qualityScore),
-        timestamp: Date.now(),
+        timestamp: new Date().toISOString(),
       };
 
       if (!passed) {
@@ -5979,7 +5987,7 @@ ${
     if (criticalIssues.length > 0) {
       const alert: QualityAlert = {
         id: `critical-${Date.now()}`,
-        type: 'critical-issue',
+        type: 'critical',
         severity: 'critical',
         message: `${criticalIssues.length} critical quality issues detected`,
         details: {
@@ -7569,7 +7577,7 @@ ${
           missingElements: ['Context not found for one or both phases'],
           conflictingElements: [],
           recommendations: ['Ensure context is properly preserved between phases'],
-          timestamp: Date.now().toString(),
+          timestamp: Date.now(),
         };
       }
 

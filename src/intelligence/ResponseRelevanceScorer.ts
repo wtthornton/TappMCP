@@ -83,7 +83,7 @@ export class ResponseRelevanceScorer {
     const intentMatching = this.intentMatcher.matchIntent(response, userContext);
     const domainRelevance = this.domainAnalyzer.analyzeDomainRelevance(response);
     const temporalRelevance = this.calculateTemporalRelevance(response);
-    const userSatisfaction = this.getUserSatisfactionScore(response.responseId);
+    const userSatisfaction = this.getUserSatisfactionScore(response.timestamp.toString());
 
     // Calculate weighted overall relevance
     const overallRelevance = this.calculateOverallRelevance({

@@ -27,6 +27,8 @@
 
 ## Project Context
 - This is a TappMCP project with D3.js visualizations
+- PRODUCTION-ONLY MODE: Use Docker containers exclusively
+- Dashboard runs on port 8080 (production)
 - Focus on code quality, architecture, and best practices
 - Provide comprehensive analysis and recommendations
 - Include project structure insights

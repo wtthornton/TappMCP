@@ -398,14 +398,17 @@
 
         .tooltip {
             position: absolute;
-            padding: 10px;
-            background: var(--accent-bg);
+            padding: 12px;
+            background: var(--secondary-bg);
             border: 1px solid var(--accent-color);
-            border-radius: 6px;
+            border-radius: 8px;
             pointer-events: none;
             opacity: 0;
             transition: opacity 0.3s ease;
             z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+            max-width: 250px;
         }
 
         .tooltip.show {
@@ -781,6 +784,68 @@
         .performance-value.error {
             color: var(--error-color);
         }
+
+        /* Essential Chart Types Styles */
+        #chartTypeSelect {
+            background: var(--secondary-bg);
+            color: var(--primary-text);
+            border: 1px solid var(--accent-bg);
+            border-radius: 4px;
+            padding: 8px 12px;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+
+        #chartTypeSelect:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .gauge-chart {
+            text-align: center;
+        }
+
+        .gauge-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            fill: var(--accent-color);
+        }
+
+        .gauge-label {
+            font-size: 1.2rem;
+            fill: var(--secondary-text);
+        }
+
+        .line-chart .line {
+            fill: none;
+            stroke: var(--accent-color);
+            stroke-width: 3px;
+        }
+
+        .area-chart .area {
+            fill: url(#areaGradient);
+            opacity: 0.7;
+        }
+
+        .area-chart .line {
+            fill: none;
+            stroke: var(--accent-color);
+            stroke-width: 2px;
+        }
+
+        .chart-point {
+            fill: var(--accent-color);
+            stroke: var(--primary-bg);
+            stroke-width: 2px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .chart-point:hover {
+            fill: var(--info-color);
+            stroke-width: 3px;
+            r: 6;
+        }
     </style>
 </head>
 <body>
@@ -790,9 +855,7 @@
 
         <div class="nav-links">
             <a href="index.html" class="nav-link">📊 Main Dashboard</a>
-            <a href="d3-visualizations.html" class="nav-link">📈 D3.js Visualizations</a>
-            <a href="d3-enhanced-modular.html" class="nav-link active">🚀 Enhanced Modular</a>
-            <a href="test-dashboard-validation.html" class="nav-link">🧪 Validation Tests</a>
+            <a href="d3-enhanced-modular.html" class="nav-link active">🚀 Enhanced D3.js</a>
         </div>
 
         <div class="status-bar">
@@ -912,7 +975,8 @@
                 <option value="gauge">⏱️ Gauge Chart</option>
             </select>
             <button class="btn" onclick="updateChartData()">🔄 Update Data</button>
-            <button class="btn secondary" onclick="exportCurrentChart()">📤 Export</button>
+            <button class="btn secondary" onclick="exportCurrentChart()">📤 Export SVG</button>
+            <button class="btn secondary" onclick="exportChartAsCSV()">📊 Export CSV</button>
             <button class="btn secondary" onclick="toggleChartAnimation()">🎬 Toggle Animation</button>
         </div>
         <div class="chart-container" id="essential-charts"></div>
@@ -1017,7 +1081,7 @@
                 console.log('🔌 Connecting to WebSocket...');
 
                 try {
-                    this.ws = new WebSocket('ws://localhost:8080');
+                    this.ws = new WebSocket('ws://localhost:3000');
 
                     this.ws.onopen = () => {
                         console.log('✅ WebSocket connected!');
@@ -3051,6 +3115,453 @@
             }
         }
 
+        // Essential Chart Types Classes
+        class LineChart {
+            constructor(container, data, options = {}) {
+                this.container = d3.select(container);
+                this.data = data || this.generateSampleData();
+                this.options = {
+                    width: 800,
+                    height: 400,
+                    margin: { top: 20, right: 30, bottom: 40, left: 40 },
+                    ...options
+                };
+                this.init();
+            }
+
+            init() {
+                this.width = this.options.width - this.options.margin.left - this.options.margin.right;
+                this.height = this.options.height - this.options.margin.top - this.options.margin.bottom;
+
+                this.svg = this.container
+                    .append('svg')
+                    .attr('width', this.options.width)
+                    .attr('height', this.options.height);
+
+                this.g = this.svg
+                    .append('g')
+                    .attr('transform', `translate(${this.options.margin.left},${this.options.margin.top})`);
+
+                this.setupScales();
+                this.setupAxes();
+                this.render();
+            }
+
+            setupScales() {
+                this.xScale = d3.scaleLinear()
+                    .domain(d3.extent(this.data, d => d.x))
+                    .range([0, this.width]);
+
+                this.yScale = d3.scaleLinear()
+                    .domain(d3.extent(this.data, d => d.y))
+                    .range([this.height, 0]);
+            }
+
+            setupAxes() {
+                this.xAxis = d3.axisBottom(this.xScale);
+                this.yAxis = d3.axisLeft(this.yScale);
+
+                this.g.append('g')
+                    .attr('class', 'x-axis')
+                    .attr('transform', `translate(0,${this.height})`)
+                    .call(this.xAxis);
+
+                this.g.append('g')
+                    .attr('class', 'y-axis')
+                    .call(this.yAxis);
+            }
+
+            render() {
+                const line = d3.line()
+                    .x(d => this.xScale(d.x))
+                    .y(d => this.yScale(d.y))
+                    .curve(d3.curveCardinal);
+
+                this.g.selectAll('.line').remove();
+                this.g.append('path')
+                    .datum(this.data)
+                    .attr('class', 'line')
+                    .attr('d', line);
+
+                this.g.selectAll('.chart-point').remove();
+                this.g.selectAll('.chart-point')
+                    .data(this.data)
+                    .enter()
+                    .append('circle')
+                    .attr('class', 'chart-point')
+                    .attr('cx', d => this.xScale(d.x))
+                    .attr('cy', d => this.yScale(d.y))
+                    .attr('r', 4)
+                    .on('mouseover', (event, d) => this.showTooltip(event, d))
+                    .on('mouseout', () => this.hideTooltip());
+            }
+
+            generateSampleData() {
+                return d3.range(20).map(i => ({
+                    x: i,
+                    y: Math.sin(i * 0.5) * 50 + 100 + Math.random() * 20
+                }));
+            }
+
+            showTooltip(event, d) {
+                const tooltip = d3.select('#tooltip');
+                const timestamp = new Date().toLocaleTimeString();
+                const trend = this.calculateTrend(d);
+
+                tooltip.select('#tooltipContent').html(`
+                    <div style="border-bottom: 1px solid var(--accent-bg); margin-bottom: 8px; padding-bottom: 4px;">
+                        <strong>📊 Data Point Details</strong>
+                    </div>
+                    <div style="margin-bottom: 4px;">
+                        <strong>X Value:</strong> ${d.x.toFixed(2)}
+                    </div>
+                    <div style="margin-bottom: 4px;">
+                        <strong>Y Value:</strong> ${d.y.toFixed(2)}
+                    </div>
+                    <div style="margin-bottom: 4px;">
+                        <strong>Timestamp:</strong> ${timestamp}
+                    </div>
+                    <div style="margin-bottom: 4px;">
+                        <strong>Trend:</strong> ${trend}
+                    </div>
+                    <div style="font-size: 11px; color: var(--secondary-text); margin-top: 8px;">
+                        💡 Click to highlight • Hover to explore
+                    </div>
+                `);
+
+                // Smart positioning to avoid screen edges
+                const tooltipRect = tooltip.node().getBoundingClientRect();
+                let left = event.pageX + 10;
+                let top = event.pageY - 10;
+
+                if (left + tooltipRect.width > window.innerWidth) {
+                    left = event.pageX - tooltipRect.width - 10;
+                }
+                if (top < 0) {
+                    top = event.pageY + 10;
+                }
+
+                tooltip
+                    .style('left', left + 'px')
+                    .style('top', top + 'px')
+                    .classed('show', true);
+            }
+
+            calculateTrend(d) {
+                // Simple trend calculation based on surrounding points
+                const index = this.data.findIndex(point => point.x === d.x);
+                if (index > 0 && index < this.data.length - 1) {
+                    const prev = this.data[index - 1];
+                    const next = this.data[index + 1];
+                    const diff = next.y - prev.y;
+
+                    if (diff > 5) return '📈 Rising';
+                    if (diff < -5) return '📉 Falling';
+                    return '📊 Stable';
+                }
+                return '📊 Unknown';
+            }
+
+            hideTooltip() {
+                d3.select('#tooltip').classed('show', false);
+            }
+
+            updateData(newData) {
+                this.data = newData || this.generateSampleData();
+                this.setupScales();
+                this.setupAxes();
+                this.render();
+            }
+        }
+
+        class AreaChart {
+            constructor(container, data, options = {}) {
+                this.container = d3.select(container);
+                this.data = data || this.generateSampleData();
+                this.options = {
+                    width: 800,
+                    height: 400,
+                    margin: { top: 20, right: 30, bottom: 40, left: 40 },
+                    ...options
+                };
+                this.init();
+            }
+
+            init() {
+                this.width = this.options.width - this.options.margin.left - this.options.margin.right;
+                this.height = this.options.height - this.options.margin.top - this.options.margin.bottom;
+
+                this.svg = this.container
+                    .append('svg')
+                    .attr('width', this.options.width)
+                    .attr('height', this.options.height);
+
+                // Add gradient definition
+                const defs = this.svg.append('defs');
+                const gradient = defs.append('linearGradient')
+                    .attr('id', 'areaGradient')
+                    .attr('x1', '0%')
+                    .attr('y1', '0%')
+                    .attr('x2', '0%')
+                    .attr('y2', '100%');
+
+                gradient.append('stop')
+                    .attr('offset', '0%')
+                    .attr('stop-color', 'var(--accent-color)')
+                    .attr('stop-opacity', 0.8);
+
+                gradient.append('stop')
+                    .attr('offset', '100%')
+                    .attr('stop-color', 'var(--accent-color)')
+                    .attr('stop-opacity', 0.1);
+
+                this.g = this.svg
+                    .append('g')
+                    .attr('transform', `translate(${this.options.margin.left},${this.options.margin.top})`);
+
+                this.setupScales();
+                this.setupAxes();
+                this.render();
+            }
+
+            setupScales() {
+                this.xScale = d3.scaleLinear()
+                    .domain(d3.extent(this.data, d => d.x))
+                    .range([0, this.width]);
+
+                this.yScale = d3.scaleLinear()
+                    .domain([0, d3.max(this.data, d => d.y)])
+                    .range([this.height, 0]);
+            }
+
+            setupAxes() {
+                this.xAxis = d3.axisBottom(this.xScale);
+                this.yAxis = d3.axisLeft(this.yScale);
+
+                this.g.append('g')
+                    .attr('class', 'x-axis')
+                    .attr('transform', `translate(0,${this.height})`)
+                    .call(this.xAxis);
+
+                this.g.append('g')
+                    .attr('class', 'y-axis')
+                    .call(this.yAxis);
+            }
+
+            render() {
+                const area = d3.area()
+                    .x(d => this.xScale(d.x))
+                    .y0(this.height)
+                    .y1(d => this.yScale(d.y))
+                    .curve(d3.curveCardinal);
+
+                const line = d3.line()
+                    .x(d => this.xScale(d.x))
+                    .y(d => this.yScale(d.y))
+                    .curve(d3.curveCardinal);
+
+                this.g.selectAll('.area').remove();
+                this.g.append('path')
+                    .datum(this.data)
+                    .attr('class', 'area')
+                    .attr('d', area);
+
+                this.g.selectAll('.line').remove();
+                this.g.append('path')
+                    .datum(this.data)
+                    .attr('class', 'line')
+                    .attr('d', line);
+            }
+
+            generateSampleData() {
+                return d3.range(30).map(i => ({
+                    x: i,
+                    y: Math.abs(Math.sin(i * 0.3) * 100) + Math.random() * 30
+                }));
+            }
+
+            updateData(newData) {
+                this.data = newData || this.generateSampleData();
+                this.setupScales();
+                this.setupAxes();
+                this.render();
+            }
+        }
+
+        class GaugeChart {
+            constructor(container, value, options = {}) {
+                this.container = d3.select(container);
+                this.value = value || Math.random() * 100;
+                this.options = {
+                    width: 300,
+                    height: 300,
+                    min: 0,
+                    max: 100,
+                    ...options
+                };
+                this.init();
+            }
+
+            init() {
+                const radius = Math.min(this.options.width, this.options.height) / 2 - 10;
+                this.radius = radius;
+
+                this.svg = this.container
+                    .append('svg')
+                    .attr('width', this.options.width)
+                    .attr('height', this.options.height);
+
+                this.g = this.svg
+                    .append('g')
+                    .attr('transform', `translate(${this.options.width / 2},${this.options.height / 2})`);
+
+                this.render();
+            }
+
+            render() {
+                const arc = d3.arc()
+                    .innerRadius(this.radius * 0.6)
+                    .outerRadius(this.radius)
+                    .startAngle(0)
+                    .endAngle(Math.PI * 2);
+
+                const valueArc = d3.arc()
+                    .innerRadius(this.radius * 0.6)
+                    .outerRadius(this.radius)
+                    .startAngle(0)
+                    .endAngle((this.value / this.options.max) * Math.PI * 2);
+
+                // Background arc
+                this.g.selectAll('.background-arc').remove();
+                this.g.append('path')
+                    .attr('class', 'background-arc')
+                    .attr('d', arc)
+                    .attr('fill', 'var(--accent-bg)')
+                    .attr('stroke', 'var(--accent-color)')
+                    .attr('stroke-width', 2);
+
+                // Value arc
+                this.g.selectAll('.value-arc').remove();
+                this.g.append('path')
+                    .attr('class', 'value-arc')
+                    .attr('d', valueArc)
+                    .attr('fill', 'var(--accent-color)')
+                    .attr('opacity', 0.8);
+
+                // Value text
+                this.g.selectAll('.gauge-value').remove();
+                this.g.append('text')
+                    .attr('class', 'gauge-value')
+                    .attr('text-anchor', 'middle')
+                    .attr('dy', '0.35em')
+                    .text(`${this.value.toFixed(1)}%`);
+
+                // Label
+                this.g.selectAll('.gauge-label').remove();
+                this.g.append('text')
+                    .attr('class', 'gauge-label')
+                    .attr('text-anchor', 'middle')
+                    .attr('dy', '2em')
+                    .text(this.options.label || 'Value');
+            }
+
+            updateValue(newValue) {
+                this.value = newValue;
+                this.render();
+            }
+        }
+
+        // Global variables for essential charts
+        let currentChart = null;
+        let currentChartType = 'line';
+
+        // Global functions for essential charts
+        function switchChartType(type) {
+            currentChartType = type;
+            const container = d3.select('#essential-charts');
+            container.selectAll('*').remove();
+
+            const sampleData = generateSampleDataForType(type);
+
+            switch(type) {
+                case 'line':
+                    currentChart = new LineChart('#essential-charts', sampleData);
+                    break;
+                case 'area':
+                    currentChart = new AreaChart('#essential-charts', sampleData);
+                    break;
+                case 'gauge':
+                    currentChart = new GaugeChart('#essential-charts', Math.random() * 100, {
+                        label: 'CPU Usage'
+                    });
+                    break;
+            }
+        }
+
+        function generateSampleDataForType(type) {
+            if (type === 'gauge') return null;
+
+            return d3.range(20).map(i => ({
+                x: i,
+                y: Math.sin(i * 0.5) * 50 + 100 + Math.random() * 20
+            }));
+        }
+
+        function updateChartData() {
+            if (currentChart) {
+                if (currentChartType === 'gauge') {
+                    currentChart.updateValue(Math.random() * 100);
+                } else {
+                    const newData = generateSampleDataForType(currentChartType);
+                    currentChart.updateData(newData);
+                }
+            }
+        }
+
+        function exportCurrentChart() {
+            if (currentChart && currentChart.svg) {
+                const svgData = currentChart.svg.node().outerHTML;
+                const blob = new Blob([svgData], { type: 'image/svg+xml' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${currentChartType}-chart.svg`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        function exportChartAsCSV() {
+            if (currentChart && currentChart.data) {
+                let csvContent = '';
+
+                if (currentChartType === 'gauge') {
+                    // For gauge chart, export the value
+                    csvContent = 'Metric,Value\n';
+                    csvContent += `${currentChart.options.label || 'Value'},${currentChart.value.toFixed(2)}\n`;
+                } else {
+                    // For line and area charts, export the data points
+                    csvContent = 'X,Y\n';
+                    currentChart.data.forEach(point => {
+                        csvContent += `${point.x},${point.y.toFixed(2)}\n`;
+                    });
+                }
+
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${currentChartType}-chart-data.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        function toggleChartAnimation() {
+            // Simple animation toggle - could be expanded
+            console.log('Chart animation toggled');
+        }
+
         // Global streaming control functions
         function startRealTimeStreaming() {
             if (window.enhancedD3Dashboard && window.enhancedD3Dashboard.dataStream) {
@@ -3211,10 +3722,18 @@
             // Wait for D3.js to be ready
             if (window.d3Ready) {
                 window.enhancedD3Dashboard = new EnhancedD3Dashboard();
+                // Initialize essential charts
+                setTimeout(() => {
+                    switchChartType('line'); // Start with line chart
+                }, 1000);
             } else {
                 window.addEventListener('d3Ready', () => {
                     console.log('🎯 D3.js ready, initializing dashboard...');
                     window.enhancedD3Dashboard = new EnhancedD3Dashboard();
+                    // Initialize essential charts
+                    setTimeout(() => {
+                        switchChartType('line'); // Start with line chart
+                    }, 1000);
                 });
             }
         });

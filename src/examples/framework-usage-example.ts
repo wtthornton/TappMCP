@@ -347,7 +347,7 @@ class CustomCodeAnalysisTool extends MCPTool<
           productionDeps: Object.keys(pkg.dependencies || {}).length,
           devDeps: Object.keys(pkg.devDependencies || {}).length,
           issuesFound: issues.length,
-        },
+        } as Record<string, number>,
         score,
       };
     } catch (_error) {

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TappMCP Dashboard v2.0 - Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .test-card {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .status {
+            color: #00ff88;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🚀 TappMCP Dashboard v2.0 - Test Page</h1>
+
+        <div class="test-card">
+            <h2>System Status</h2>
+            <p class="status">✅ Dashboard v2.0 is running!</p>
+            <p>This is a test page to verify the dashboard is working correctly.</p>
+        </div>
+
+        <div class="test-card">
+            <h2>Features Implemented</h2>
+            <ul>
+                <li>✅ Modern HTML5 structure</li>
+                <li>✅ CSS Grid responsive layout</li>
+                <li>✅ Real-time data integration</li>
+                <li>✅ WebSocket connectivity</li>
+                <li>✅ Chart.js visualizations</li>
+                <li>✅ D3.js diagrams</li>
+                <li>✅ Mobile-responsive design</li>
+                <li>✅ PWA capabilities</li>
+                <li>✅ TypeScript support</li>
+                <li>✅ Vite build system</li>
+            </ul>
+        </div>
+
+        <div class="test-card">
+            <h2>API Endpoints</h2>
+            <p>Testing connection to TappMCP server...</p>
+            <div id="api-status">Loading...</div>
+        </div>
+
+        <div class="test-card">
+            <h2>Next Steps</h2>
+            <ol>
+                <li>Fix any build issues</li>
+                <li>Test real-time data integration</li>
+                <li>Verify all components work</li>
+                <li>Deploy to production</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // Test API connection
+        async function testAPI() {
+            try {
+                const response = await fetch('http://localhost:8080/health');
+                const data = await response.json();
+                document.getElementById('api-status').innerHTML = `
+                    <p class="status">✅ API Connected!</p>
+                    <p>Server: ${data.server}</p>
+                    <p>Version: ${data.version}</p>
+                    <p>Uptime: ${Math.floor(data.uptime)}s</p>
+                `;
+            } catch (error) {
+                document.getElementById('api-status').innerHTML = `
+                    <p style="color: #ff4444;">❌ API Connection Failed</p>
+                    <p>Error: ${error.message}</p>
+                `;
+            }
+        }
+
+        // Test on load
+        testAPI();
+    </script>
+</body>
+</html>

@@ -114,7 +114,7 @@ export class NotificationManager extends EventEmitter {
     }
 
     // Check priority level
-    const priorityLevels = { low: 1, medium: 2, high: 3, critical: 4 };
+    const priorityLevels = { info: 0, low: 1, medium: 2, high: 3, critical: 4 };
     const notificationPriority = priorityLevels[notification.priority] || 1;
     const minPriority = priorityLevels[channelPref.priority] || 1;
 

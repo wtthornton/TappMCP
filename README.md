@@ -2,22 +2,22 @@
 
 AI-powered MCP server designed to **enhance AI assistants** with real analysis capabilities, Context7 intelligence, comprehensive workflow orchestration, and **real-time monitoring dashboard**.
 
-## ✨ Context7 Intelligence for AI Assistants
+## ✨ VibeTapp Intelligence System
 
-TappMCP features **Context7 intelligence integration** designed to make AI assistants smarter:
-- ✅ **AI Assistant Enhancement** - Provides context and insights to improve AI assistant responses
-- ✅ **Real API calls** to Context7 for up-to-date documentation and best practices
-- ✅ **MCP client** with HTTP fallback for robust connectivity
-- ✅ **Live code examples** and domain expertise from Context7
-- ✅ **Intelligent fallback** when Context7 is unavailable
-- ✅ **30-day persistent cache** for 95% API cost reduction
-- ✅ **Smart caching** with automatic persistence across restarts
+TappMCP features **VibeTapp intelligence integration** designed to make AI assistants smarter:
+- ✅ **Natural Language Interface** - Enhanced smart_vibe tool with rich responses
+- ✅ **Context7 Intelligence Integration** - Real API calls for up-to-date documentation
+- ✅ **Visual Progress Indicators** - Rich formatting with progress bars and metrics
+- ✅ **Tool Chain Orchestration** - Intelligent coordination of multiple tools
+- ✅ **Quality Analysis** - Confidence scores and quality recommendations
+- ✅ **Intelligent Fallback** - Works with or without Context7 integration
+- ✅ **30-day Persistent Cache** - 95% API cost reduction with smart caching
 
-**Purpose**: The Context7 intelligence is designed to enhance AI assistants (like Claude, Cursor AI) to provide better code suggestions, not to generate code directly.
+**Purpose**: The VibeTapp system enhances AI assistants (like Claude, Cursor AI) to provide better code suggestions, workflow orchestration, and intelligent responses.
 
 ## 🚀 Quick Start
 
-### 🌐 Real-Time Dashboard
+### 🌐 Production Dashboard
 Access the live monitoring dashboard at: **http://localhost:8080**
 
 **Main Dashboard Features:**
@@ -26,9 +26,10 @@ Access the live monitoring dashboard at: **http://localhost:8080**
 - 🔔 **Notification Center** - Real-time alerts and system notifications
 - ⚡ **WebSocket Integration** - Live data updates without page refresh
 - 📱 **Responsive Design** - Works on desktop and mobile
+- 🔗 **Context7 Integration** - Real-time Context7 API metrics and monitoring
 
 **🎯 D3.js Visualizations Dashboard:**
-Access advanced visualizations at: **http://localhost:8080/d3-visualizations.html**
+Access advanced visualizations at: **http://localhost:8080/d3-enhanced-modular.html**
 
 - 🕸️ **Interactive Workflow Graph** - Force-directed graph with zoom, pan, drag-and-drop
 - 📈 **Performance Monitoring Charts** - Multi-metric CPU, memory, response time charts
@@ -49,28 +50,10 @@ npx --version
 # Fallback data provided when Context7 unavailable
 ```
 
-### Development
+### Production Deployment (Docker)
 ```bash
-# Install dependencies
-npm ci
-
-# Run quality checks (required before any work)
-npm run early-check
-
-# Run tests
-npm test
-
-# Start development
-npm run dev
-
-# Build for production
-npm run build && npm start
-```
-
-### Docker Production Deployment
-```bash
-# Deploy with real-time dashboard
-docker-compose -f docker-compose.core.yml up --build -d
+# Deploy with VibeTapp integration and real-time dashboard
+docker-compose up --build -d
 
 # Access dashboard
 open http://localhost:8080
@@ -81,37 +64,47 @@ curl http://localhost:8080/tools
 
 # Verify production deployment
 docker ps
-docker logs tappmcp-tappmcp-http-1
+docker logs tappmcp-smart-mcp-1
 ```
 
-**⚠️ Important Container Naming:**
-- **Docker Compose**: Creates container named `tappmcp-smart-mcp-1` (project prefix + service name)
-- **Manual Docker run**: Creates container named `smart-mcp-prod` (as specified with --name)
-- **Always check actual container name**: `docker ps` to see the real container name
+**✅ Current Configuration:**
+- **Container Name**: `tappmcp-smart-mcp-1`
+- **Server**: TypeScript compiled server (`dist/server.js`) with full VibeTapp integration
+- **Ports**: 8080 (HTTP), 8081 (Health)
+- **Features**: All 7 MCP tools with enhanced smart_vibe functionality
 
-## 🎯 Smart Vibe Visual System
+## 🎯 VibeTapp Intelligence System
 
-TappMCP features an enhanced visual indicator system to clearly show when smart_vibe is active vs regular assistance.
+TappMCP features the **VibeTapp intelligence system** that provides enhanced responses with visual indicators and rich formatting.
 
-### Smart Vibe Indicators
+### VibeTapp Response Format
 When smart_vibe is active, responses include:
 ```
-🎯 SMART_VIBE ACTIVE
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 Vibe Coder → TappMCP
+────────────────────────────────────────
+┌─────────────────────────────────────┐
+│ ✅ Perfect! I've created your solution. │
+└─────────────────────────────────────┘
 
-📊 Quality Scorecard: 95/100 ✅
-🛠️ Tech Stack: React 18, TypeScript, D3.js
-👤 Target Role: Senior Developer
-🚀 Next Steps: [Numbered list]
-💡 Tips: [Learning insights]
-⏱️ Response Time: 1,247ms
+🔧 Tool Chain:
+   ✍️
+   Tools used:
+    ✅ ✍️ smart_write (645ms)
+   Progress: [████████████████████] 100% (1/1)
+
+📊 Metrics:
+   ⚡ Processing time: 645ms
+   🎯 Confidence: 85%
+   ⭐ Quality score: 8/10
+   🔧 Tools used: smart_write
+
+✅ Status: Complete
 ```
 
-### Status Commands
-- `smart_vibe "status"` - Show full status dashboard in Cursor
-- `smart_vibe "your request"` - Use enhanced smart_vibe mode
-- `npm run status` - Show status in terminal
-- `npm run vibe-status` - Alternative status command
+### Smart Vibe Commands
+- `smart_vibe "status"` - Show full status dashboard
+- `smart_vibe "your request"` - Use enhanced VibeTapp mode
+- All MCP tools now include VibeTapp intelligence and visual indicators
 
 ### Visual Indicators
 - 🎯 **Smart Vibe** - Enhanced natural language interface with quality analysis

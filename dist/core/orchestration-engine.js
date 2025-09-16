@@ -2440,7 +2440,6 @@ ${guide.solutions
                 issues: staticAnalysisResult.issues,
                 metrics: staticAnalysisResult.metrics,
                 recommendations: staticAnalysisResult.recommendations,
-                analysisTimestamp: staticAnalysisResult.analysisTimestamp,
             };
         }
         catch (error) {
@@ -3603,7 +3602,7 @@ ${guide.solutions
                 threshold: this.getQualityThreshold(phase),
                 checks: qualityChecks,
                 recommendations: this.generateQualityRecommendations(qualityChecks, qualityScore),
-                timestamp: Date.now(),
+                timestamp: new Date().toISOString(),
             };
             if (!passed) {
                 console.warn(`Quality gates failed for ${phase.name} phase. Score: ${qualityScore}/${this.getQualityThreshold(phase)}`);
@@ -4150,7 +4149,7 @@ ${guide.solutions
         if (criticalIssues.length > 0) {
             const alert = {
                 id: `critical-${Date.now()}`,
-                type: 'critical-issue',
+                type: 'critical',
                 severity: 'critical',
                 message: `${criticalIssues.length} critical quality issues detected`,
                 details: {
@@ -5322,7 +5321,7 @@ ${guide.solutions
                     missingElements: ['Context not found for one or both phases'],
                     conflictingElements: [],
                     recommendations: ['Ensure context is properly preserved between phases'],
-                    timestamp: Date.now().toString(),
+                    timestamp: Date.now(),
                 };
             }
             const missingElements = [];

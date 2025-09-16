@@ -296,7 +296,15 @@ export class Context7Broker {
       if (!this.isAvailable) {
         if (this.config.enableFallback) {
           const fallbackDocs = this.getFallbackDocumentation(topic, version);
-          this.recordMetrics('documentation', topic, true, Date.now() - startTime, 0, 0, 'fallback');
+          this.recordMetrics(
+            'documentation',
+            topic,
+            true,
+            Date.now() - startTime,
+            0,
+            0,
+            'fallback'
+          );
           return fallbackDocs;
         } else {
           throw new Error('Context7 service unavailable and fallback disabled');
@@ -314,7 +322,15 @@ export class Context7Broker {
       this.validateResponseTime(startTime, 'getDocumentation');
 
       // Record metrics for successful request
-      this.recordMetrics('documentation', topic, true, responseTime, this.estimateTokenUsage(docs), this.estimateCost(docs), 'context7');
+      this.recordMetrics(
+        'documentation',
+        topic,
+        true,
+        responseTime,
+        this.estimateTokenUsage(docs),
+        this.estimateCost(docs),
+        'context7'
+      );
 
       return docs;
     } catch (error) {
@@ -939,7 +955,9 @@ export class Context7Broker {
   ): void {
     // This would integrate with VibeMetrics if available
     // For now, we'll log the metrics
-    console.log(`Context7 Metrics: ${endpoint} - ${topic} - ${success ? 'SUCCESS' : 'FAILED'} - ${responseTime}ms - ${tokenUsage} tokens - $${cost.toFixed(6)}`);
+    console.log(
+      `Context7 Metrics: ${endpoint} - ${topic} - ${success ? 'SUCCESS' : 'FAILED'} - ${responseTime}ms - ${tokenUsage} tokens - $${cost.toFixed(6)}`
+    );
   }
 
   /**

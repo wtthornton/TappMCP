@@ -1,0 +1,37 @@
+{
+  "name": "tappmcp-dashboard-v2",
+  "version": "2.0.0",
+  "description": "TappMCP Dashboard v2.0 - Modern real-time monitoring interface",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "lint": "eslint . --ext .js,.ts,.html",
+    "lint:fix": "eslint . --ext .js,.ts,.html --fix",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.0",
+    "d3": "^7.8.5",
+    "lit": "^3.1.0"
+  },
+  "devDependencies": {
+    "@types/d3": "^7.4.3",
+    "typescript": "^5.1.6",
+    "vite": "^4.5.14",
+    "vite-plugin-pwa": "^0.16.4"
+  },
+  "keywords": [
+    "dashboard",
+    "monitoring",
+    "real-time",
+    "web-components",
+    "typescript",
+    "vite"
+  ],
+  "author": "TappMCP Team",
+  "license": "MIT"
+}

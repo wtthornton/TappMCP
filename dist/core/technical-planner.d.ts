@@ -80,7 +80,7 @@ export declare const TaskSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     phase: string;
     priority: "low" | "medium" | "high" | "critical";
-    type: "development" | "testing" | "deployment" | "documentation" | "research";
+    type: "documentation" | "development" | "testing" | "deployment" | "research";
     name: string;
     description: string;
     id: string;
@@ -90,7 +90,7 @@ export declare const TaskSchema: z.ZodObject<{
 }, {
     phase: string;
     priority: "low" | "medium" | "high" | "critical";
-    type: "development" | "testing" | "deployment" | "documentation" | "research";
+    type: "documentation" | "development" | "testing" | "deployment" | "research";
     name: string;
     description: string;
     id: string;
@@ -107,16 +107,16 @@ export declare const EffortEstimateSchema: z.ZodObject<{
         documentation: z.ZodNumber;
         research: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
+        documentation: number;
         development: number;
         testing: number;
         deployment: number;
-        documentation: number;
         research: number;
     }, {
+        documentation: number;
         development: number;
         testing: number;
         deployment: number;
-        documentation: number;
         research: number;
     }>;
     confidence: z.ZodEnum<["low", "medium", "high"]>;
@@ -124,10 +124,10 @@ export declare const EffortEstimateSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     confidence: "low" | "medium" | "high";
     breakdown: {
+        documentation: number;
         development: number;
         testing: number;
         deployment: number;
-        documentation: number;
         research: number;
     };
     assumptions: string[];
@@ -135,10 +135,10 @@ export declare const EffortEstimateSchema: z.ZodObject<{
 }, {
     confidence: "low" | "medium" | "high";
     breakdown: {
+        documentation: number;
         development: number;
         testing: number;
         deployment: number;
-        documentation: number;
         research: number;
     };
     assumptions: string[];

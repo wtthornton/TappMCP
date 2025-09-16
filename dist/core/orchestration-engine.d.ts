@@ -131,12 +131,18 @@ export interface ProjectStructure {
     fileStructure: string[];
     complexity: number;
     technologies: string[];
+    improvementOpportunities?: string[];
+    analysisDepth?: string;
+    analysisTimestamp?: string;
 }
 export interface SecurityAnalysis {
     vulnerabilities: string[];
     securityScore: number;
     recommendations: string[];
     compliance: string[];
+    scanTime?: number;
+    status?: string;
+    summary?: any;
 }
 export interface CodeQualityAnalysis {
     complexity: number;
@@ -144,6 +150,9 @@ export interface CodeQualityAnalysis {
     testCoverage: number;
     codeSmells: string[];
     qualityScore: number;
+    issues?: any[];
+    metrics?: any;
+    recommendations?: string[];
 }
 export interface DependencyAnalysis {
     dependencies: string[];

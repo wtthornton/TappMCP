@@ -73,6 +73,13 @@ export interface QualityAlert {
   details: Record<string, any>;
   timestamp: number;
   resolved: boolean;
+  title?: string;
+  description?: string;
+  acknowledged?: boolean;
+  metric?: string;
+  currentValue?: number;
+  threshold?: number;
+  trend?: string;
 }
 
 export class QualityMonitor extends EventEmitter {
@@ -175,8 +182,8 @@ export class QualityMonitor extends EventEmitter {
       // Run all analysis tools in parallel
       const [projectAnalysis, securityScan, staticAnalysis] = await Promise.allSettled([
         this.projectScanner.scanProject(this.projectPath),
-        this.securityScanner.runSecurityScan(this.projectPath),
-        this.staticAnalyzer.analyzeCode(this.projectPath),
+        this.securityScanner.runSecurityScan(),
+        this.staticAnalyzer.analyzeCode(),
       ]);
 
       // Calculate quality scores
@@ -242,7 +249,7 @@ export class QualityMonitor extends EventEmitter {
         issues.push({
           id: `security-${vuln.id}`,
           type: 'security',
-          severity: vuln.severity,
+          severity: vuln.severity === 'moderate' ? 'medium' : vuln.severity as 'critical' | 'high' | 'medium' | 'low',
           title: vuln.description,
           description: `Vulnerability in ${vuln.package}@${vuln.version}`,
           fix: vuln.fix,
@@ -264,7 +271,7 @@ export class QualityMonitor extends EventEmitter {
           issues.push({
             id: `code-${issue.id || Date.now()}`,
             type: 'code-quality',
-            severity: issue.severity || 'medium',
+            severity: (issue.severity === 'info' ? 'low' : issue.severity === 'warning' ? 'medium' : issue.severity === 'error' ? 'high' : 'medium') as 'critical' | 'high' | 'medium' | 'low',
             title: issue.title || 'Code Quality Issue',
             description: issue.description || 'Code quality issue detected',
             file: issue.file,
@@ -329,6 +336,12 @@ export class QualityMonitor extends EventEmitter {
       await this.createAlert({
         type: 'degradation',
         severity: 'high',
+        message: 'Quality Score Degradation Detected',
+        details: {
+          scoreDifference: scoreDiff,
+          previousScore: previousMetrics.overallScore,
+          currentScore: currentMetrics.overallScore
+        },
         title: 'Quality Score Degradation Detected',
         description: `Overall quality score decreased by ${Math.abs(scoreDiff)} points`,
         metric: 'overallScore',
@@ -342,8 +355,14 @@ export class QualityMonitor extends EventEmitter {
     const criticalIssues = currentMetrics.issues.filter(issue => issue.severity === 'critical');
     if (criticalIssues.length >= this.alertThresholds.criticalIssues) {
       await this.createAlert({
-        type: 'critical-issue',
+        type: 'critical',
         severity: 'critical',
+        message: 'Critical Quality Issues Detected',
+        details: {
+          criticalIssuesCount: criticalIssues.length,
+          threshold: this.alertThresholds.criticalIssues,
+          issues: criticalIssues.map(issue => ({ id: issue.id, description: issue.description }))
+        },
         title: 'Critical Quality Issues Detected',
         description: `${criticalIssues.length} critical issues found`,
         metric: 'criticalIssues',
@@ -357,8 +376,14 @@ export class QualityMonitor extends EventEmitter {
     const highIssues = currentMetrics.issues.filter(issue => issue.severity === 'high');
     if (highIssues.length >= this.alertThresholds.highIssues) {
       await this.createAlert({
-        type: 'threshold-exceeded',
+        type: 'warning',
         severity: 'high',
+        message: 'High Priority Issues Threshold Exceeded',
+        details: {
+          highIssuesCount: highIssues.length,
+          threshold: this.alertThresholds.highIssues,
+          issues: highIssues.map(issue => ({ id: issue.id, description: issue.description }))
+        },
         title: 'High Priority Issues Threshold Exceeded',
         description: `${highIssues.length} high priority issues found`,
         metric: 'highIssues',
@@ -373,8 +398,15 @@ export class QualityMonitor extends EventEmitter {
       const currentValue = currentMetrics[metric as keyof QualityMetrics] as number;
       if (currentValue < threshold) {
         this.createAlert({
-          type: 'threshold-exceeded',
+          type: 'warning',
           severity: currentValue < threshold * 0.8 ? 'critical' : 'high',
+          message: `${metric} Below Threshold`,
+          details: {
+            metricName: metric,
+            currentValue: currentValue,
+            threshold: threshold,
+            difference: threshold - currentValue
+          },
           title: `${metric} Below Threshold`,
           description: `${metric} score (${currentValue}) is below threshold (${threshold})`,
           metric,
@@ -483,7 +515,7 @@ export class QualityMonitor extends EventEmitter {
   ): Promise<void> {
     const alert: QualityAlert = {
       id: `alert-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      timestamp: new Date().toISOString(),
+      timestamp: Date.now(),
       acknowledged: false,
       resolved: false,
       ...alertData,

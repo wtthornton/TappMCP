@@ -26,6 +26,7 @@ export interface StaticAnalysisResult {
   qualityScore: number;
   recommendations: string[];
   analysisTimestamp: number;
+  performance?: number;
 }
 
 export interface StaticIssue {
@@ -37,6 +38,8 @@ export interface StaticIssue {
   message: string;
   rule: string;
   fix: string;
+  title?: string;
+  description?: string;
 }
 
 export class StaticAnalyzer {

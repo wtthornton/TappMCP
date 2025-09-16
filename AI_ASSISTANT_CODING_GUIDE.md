@@ -17,6 +17,18 @@ This guide provides essential information for AI assistants working with the Tap
 4. **TDD Approach**: Write tests BEFORE implementing features
 5. **Quality Gates**: ≥85% test coverage, complexity ≤10
 
+## 🌐 Current Server Configuration
+
+**Active Setup (as of latest update):**
+- **Primary Server**: Direct Node.js on port 3000
+- **Dashboard URL**: http://localhost:3000
+- **Docker Container**: Stopped to avoid conflicts
+- **Context7 Integration**: Active with real-time metrics
+- **MCP Tools**: 7 tools enabled and working
+- **Performance Monitoring**: 200ms threshold (improved from 50ms)
+
+**Important**: Only use port 3000 for development. Port 8080 (Docker) is intentionally stopped.
+
 ## 🏗️ Project Architecture
 
 ### Core Structure
@@ -35,7 +47,9 @@ src/
 - **Context7Broker**: Real Context7 integration with 30-day cache
 - **Context7Cache**: Advanced caching with compression and analytics
 - **Unified Code Intelligence**: Multi-category intelligence engines
-- **Health Monitoring**: HTTP endpoints on port 3001
+- **Health Monitoring**: HTTP endpoints on port 3000
+- **Dashboard**: Real-time monitoring at http://localhost:3000
+- **Context7 Metrics**: Integrated monitoring and analytics
 
 ## 🔧 Essential Commands
 
@@ -47,8 +61,11 @@ npm ci
 # Run quality checks (MANDATORY before work)
 npm run early-check
 
-# Development server
-npm run dev
+# Development server (Direct Node.js - Recommended)
+node tappmcp-http-server.js
+
+# Docker development (Alternative)
+docker-compose up -d
 
 # Build project
 npm run build

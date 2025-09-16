@@ -198,11 +198,14 @@ export class Context7Broker {
             const cachedData = this.getCachedData(cacheKey);
             if (cachedData) {
                 // Using cached Context7 docs
+                this.recordMetrics('documentation', topic, true, Date.now() - startTime, 0, 0, 'cache');
                 return cachedData;
             }
             if (!this.isAvailable) {
                 if (this.config.enableFallback) {
-                    return this.getFallbackDocumentation(topic, version);
+                    const fallbackDocs = this.getFallbackDocumentation(topic, version);
+                    this.recordMetrics('documentation', topic, true, Date.now() - startTime, 0, 0, 'fallback');
+                    return fallbackDocs;
                 }
                 else {
                     throw new Error('Context7 service unavailable and fallback disabled');
@@ -213,13 +216,21 @@ export class Context7Broker {
             const docs = await this.fetchRealDocumentation(topic, version);
             // Cache the results
             this.setCachedData(cacheKey, docs);
+            const responseTime = Date.now() - startTime;
             this.validateResponseTime(startTime, 'getDocumentation');
+            // Record metrics for successful request
+            this.recordMetrics('documentation', topic, true, responseTime, this.estimateTokenUsage(docs), this.estimateCost(docs), 'context7');
             return docs;
         }
         catch (error) {
+            const responseTime = Date.now() - startTime;
             console.error(`Context7 documentation error for ${topic}:`, error);
+            // Record metrics for failed request
+            this.recordMetrics('documentation', topic, false, responseTime, 0, 0, 'error');
             if (this.config.enableFallback) {
-                return this.getFallbackDocumentation(topic, version);
+                const fallbackDocs = this.getFallbackDocumentation(topic, version);
+                this.recordMetrics('documentation', topic, true, responseTime, 0, 0, 'fallback');
+                return fallbackDocs;
             }
             throw new Error(`Context7 documentation retrieval failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
@@ -719,6 +730,31 @@ export class Context7Broker {
         if (duration > this.config.timeout) {
             console.warn(`Context7 ${operation} took ${duration}ms, exceeding ${this.config.timeout}ms limit`);
         }
+    }
+    /**
+     * Record metrics for Context7 requests
+     */
+    recordMetrics(endpoint, topic, success, responseTime, tokenUsage, cost, knowledgeSource) {
+        // This would integrate with VibeMetrics if available
+        // For now, we'll log the metrics
+        console.log(`Context7 Metrics: ${endpoint} - ${topic} - ${success ? 'SUCCESS' : 'FAILED'} - ${responseTime}ms - ${tokenUsage} tokens - $${cost.toFixed(6)}`);
+    }
+    /**
+     * Estimate token usage for documentation
+     */
+    estimateTokenUsage(docs) {
+        // Rough estimation: 1 token per 4 characters
+        const totalContent = docs.reduce((sum, doc) => sum + doc.content.length, 0);
+        return Math.ceil(totalContent / 4);
+    }
+    /**
+     * Estimate cost for documentation
+     */
+    estimateCost(docs) {
+        // Rough estimation based on Context7 pricing
+        const tokenUsage = this.estimateTokenUsage(docs);
+        const costPerToken = 0.0001; // Example pricing
+        return tokenUsage * costPerToken;
     }
     // Fallback methods for when Context7 is not available
     getFallbackDocumentation(topic, version) {

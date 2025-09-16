@@ -92,6 +92,13 @@ export class SimpleAnalyzer {
             maintainability: 80,
             duplication: 0,
           },
+          complexity: 0,
+          maintainability: 80,
+          testCoverage: 0,
+          codeSmells: 0,
+          qualityScore: 80,
+          recommendations: [],
+          analysisTimestamp: Date.now(),
         } as StaticAnalysisResult;
       }),
       this.projectScanner.scanProject(projectPath, analysisDepth).catch(err => {

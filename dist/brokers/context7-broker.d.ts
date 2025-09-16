@@ -188,6 +188,18 @@ export declare class Context7Broker {
      * Validate response time meets performance requirements
      */
     private validateResponseTime;
+    /**
+     * Record metrics for Context7 requests
+     */
+    private recordMetrics;
+    /**
+     * Estimate token usage for documentation
+     */
+    private estimateTokenUsage;
+    /**
+     * Estimate cost for documentation
+     */
+    private estimateCost;
     private getFallbackDocumentation;
     private getFallbackCodeExamples;
     private getFallbackBestPractices;

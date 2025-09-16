@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 TappMCP Dashboard v2.1 - Real Data</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-bg: #0a0a0a;
+            --secondary-bg: #1a1a1a;
+            --accent-bg: #2a2a2a;
+            --primary-text: #ffffff;
+            --secondary-text: #b0b0b0;
+            --muted-text: #666666;
+            --success-color: #00ff88;
+            --warning-color: #ffaa00;
+            --error-color: #ff4444;
+            --info-color: #4facfe;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--primary-bg);
+            color: var(--primary-text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: var(--secondary-bg);
+            border-bottom: 1px solid var(--accent-bg);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            background: linear-gradient(135deg, var(--success-color), var(--info-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: var(--secondary-text);
+            font-size: 1.1rem;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--accent-bg);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--success-color);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--secondary-bg);
+            border: 1px solid var(--accent-bg);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 255, 136, 0.15);
+            border-color: var(--success-color);
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+            color: var(--primary-text);
+            font-size: 1.25rem;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin: 8px 0;
+            background: var(--accent-bg);
+            border-radius: 8px;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .metric-label {
+            font-weight: 600;
+            color: var(--muted-text);
+        }
+
+        .metric-value {
+            font-weight: bold;
+            color: var(--primary-text);
+        }
+
+        .chart-container {
+            height: 200px;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--muted-text);
+        }
+
+        .error {
+            background: #ff444420;
+            color: #ff4444;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px solid #ff4444;
+        }
+
+        .success {
+            background: #00ff8820;
+            color: #00ff88;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px solid #00ff88;
+        }
+
+        .footer {
+            background: var(--secondary-bg);
+            border-top: 1px solid var(--accent-bg);
+            padding: 20px;
+            text-align: center;
+            color: var(--muted-text);
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+                padding: 10px;
+            }
+
+            .status-bar {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 TappMCP Dashboard v2.1</h1>
+        <p>Real-time System Monitoring & Analytics</p>
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot" id="connectionDot"></div>
+                <span id="connectionStatus">Connecting...</span>
+            </div>
+            <div class="status-item">
+                <span id="metricsCount">📊 0 metrics</span>
+            </div>
+            <div class="status-item">
+                <span style="color: #00ff88;">✅ Real Data</span>
+            </div>
+            <div class="status-item">
+                <span id="dataTimestamp" style="color: #4facfe;">Loading...</span>
+            </div>
+            <div class="status-item">
+                <span id="refreshStatus">🔄 Auto-refresh</span>
+            </div>
+            <div class="status-item">
+                <button onclick="window.dashboard.loadData()" style="background: #4facfe; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">🔄 Load Data</button>
+            </div>
+            <div class="status-item">
+                <span>📱 Mobile Ready</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard">
+        <!-- System Health Card -->
+        <div class="card">
+            <h2>🏥 System Health</h2>
+            <div id="healthStatus" class="loading">Loading health status...</div>
+        </div>
+
+        <!-- Performance Chart -->
+        <div class="card">
+            <h2>📈 Performance</h2>
+            <div class="chart-container">
+                <canvas id="performanceChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Memory Usage -->
+        <div class="card">
+            <h2>💾 Memory Usage</h2>
+            <div class="chart-container">
+                <canvas id="memoryChart"></canvas>
+            </div>
+        </div>
+
+        <!-- System Metrics -->
+        <div class="card">
+            <h2>📊 System Metrics</h2>
+            <div id="systemMetrics" class="loading">Loading system metrics...</div>
+        </div>
+
+        <!-- Token Usage -->
+        <div class="card">
+            <h2>🎯 Token Usage</h2>
+            <div class="chart-container">
+                <canvas id="tokenChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Context7 API -->
+        <div class="card">
+            <h2>🤖 Context7 API</h2>
+            <div id="context7Metrics" class="loading">Loading Context7 metrics...</div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Last updated: <span id="lastUpdated">Never</span> | Version 2.1.0 | Uptime: <span id="systemUptime">0s</span></p>
+    </div>
+
+    <script>
+        class TappMCPDashboard {
+            constructor() {
+                this.apiBase = 'http://localhost:8080';
+                this.isConnected = false;
+                this.charts = {};
+                this.refreshInterval = null;
+                this.dataHistory = {
+                    responseTime: [],
+                    requestsPerSecond: [],
+                    memoryUsage: [],
+                    tokenUsage: [],
+                    timestamps: []
+                };
+                this.maxHistoryPoints = 20;
+                this.init();
+            }
+
+            async init() {
+                console.log('🚀 Initializing TappMCP Dashboard v2.0...');
+                await this.testConnection();
+                await this.loadData();
+                this.startAutoRefresh();
+
+                // Ensure metrics count is initialized
+                const metricsCount = document.getElementById('metricsCount');
+                if (metricsCount && this.dataHistory.responseTime.length === 0) {
+                    metricsCount.textContent = '📊 Loading metrics...';
+                }
+
+                console.log('✅ Dashboard initialized successfully');
+            }
+
+            async testConnection() {
+                try {
+                    console.log('🔄 Testing connection to API...');
+                    const response = await fetch(`${this.apiBase}/health`);
+                    const data = await response.json();
+                    this.isConnected = true;
+                    this.updateConnectionStatus(true);
+                    console.log('✅ API connected:', data);
+                } catch (error) {
+                    console.error('❌ API connection failed:', error);
+                    this.isConnected = false;
+                    this.updateConnectionStatus(false);
+                }
+            }
+
+            updateConnectionStatus(connected) {
+                const dot = document.getElementById('connectionDot');
+                const status = document.getElementById('connectionStatus');
+
+                if (connected) {
+                    dot.style.background = '#00ff88';
+                    status.textContent = 'Online';
+                } else {
+                    dot.style.background = '#ff4444';
+                    status.textContent = 'Offline';
+                }
+            }
+
+            async loadData() {
+                if (!this.isConnected) {
+                    console.log('❌ Not connected, skipping data load');
+                    return;
+                }
+
+                try {
+                    console.log('🔄 Loading data from API...');
+                    const response = await fetch(`${this.apiBase}/metrics`);
+                    const data = await response.json();
+                    console.log('📊 API Response:', data);
+
+                    if (data.success && data.data) {
+                        console.log('✅ Data loaded successfully, updating dashboard');
+                        this.updateDashboard(data.data);
+                    } else {
+                        console.error('❌ Invalid data structure:', data);
+                    }
+                } catch (error) {
+                    console.error('❌ Failed to load data:', error);
+                    this.updateConnectionStatus(false);
+                }
+            }
+
+            updateDashboard(data) {
+                // Store real data in history
+                this.addToHistory(data);
+
+                this.updateHealthStatus(data);
+                this.updateSystemMetrics(data);
+                this.updateContext7Metrics(data);
+                this.updateCharts(data);
+                this.updateLastUpdated();
+            }
+
+            addToHistory(data) {
+                const now = new Date();
+                const timestamp = now.toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                // Add current data to history
+                this.dataHistory.responseTime.push(data.responseTime || 0);
+                this.dataHistory.requestsPerSecond.push(data.requestsPerSecond || 0);
+                this.dataHistory.memoryUsage.push(data.memoryUsage?.heapUsed || 0);
+                this.dataHistory.tokenUsage.push(data.totalTokensProcessed || 0);
+                this.dataHistory.timestamps.push(timestamp);
+
+                // Update metrics count with real data
+                const metricsCount = document.getElementById('metricsCount');
+                if (metricsCount) {
+                    metricsCount.textContent = `📊 ${this.dataHistory.responseTime.length} metrics`;
+                }
+
+                // Keep only the last maxHistoryPoints
+                if (this.dataHistory.responseTime.length > this.maxHistoryPoints) {
+                    this.dataHistory.responseTime.shift();
+                    this.dataHistory.requestsPerSecond.shift();
+                    this.dataHistory.memoryUsage.shift();
+                    this.dataHistory.tokenUsage.shift();
+                    this.dataHistory.timestamps.shift();
+                }
+
+                // Log real data for debugging
+                console.log('📊 Real Data Update:', {
+                    responseTime: data.responseTime,
+                    requestsPerSecond: data.requestsPerSecond,
+                    memoryUsed: data.memoryUsage?.heapUsed,
+                    tokens: data.totalTokensProcessed,
+                    timestamp: timestamp
+                });
+            }
+
+            updateHealthStatus(data) {
+                const container = document.getElementById('healthStatus');
+                const cpu = (data.cpuUsage * 100).toFixed(1);
+
+                // Calculate memory percentage from actual system memory (RSS)
+                // Docker container limit is 512MB, so use RSS as the actual memory usage
+                const rssMemory = data.memoryUsage?.rss || 0;
+                const containerLimit = 512 * 1024 * 1024; // 512MB in bytes
+                const memoryPercent = containerLimit > 0 ? ((rssMemory / containerLimit) * 100).toFixed(1) : '0.0';
+                const memory = `${memoryPercent}%`;
+
+                const responseTime = data.responseTime?.toFixed(0) || 'N/A';
+                const successRate = (data.successRate * 100).toFixed(1);
+
+                let status = 'healthy';
+                let statusColor = '#00ff88';
+                let statusText = 'All systems operating normally';
+
+                const memoryPercentValue = parseFloat(memoryPercent);
+
+                // Use more realistic thresholds for container memory
+                if (data.cpuUsage > 0.9 || memoryPercentValue > 80 || data.errorRate > 0.1) {
+                    status = 'critical';
+                    statusColor = '#ff4444';
+                    statusText = 'Critical issues detected';
+                } else if (data.cpuUsage > 0.75 || memoryPercentValue > 60 || data.errorRate > 0.05) {
+                    status = 'warning';
+                    statusColor = '#ffaa00';
+                    statusText = 'Performance degradation detected';
+                }
+
+                container.innerHTML = `
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <div style="width: 80px; height: 80px; border-radius: 50%; background: ${statusColor}; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white;">
+                            ${status === 'healthy' ? '✓' : status === 'warning' ? '⚠' : '⚠'}
+                        </div>
+                        <h3 style="color: ${statusColor}; margin-bottom: 10px;">${status.toUpperCase()}</h3>
+                        <p style="color: var(--secondary-text);">${statusText}</p>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">CPU Usage</span>
+                        <span class="metric-value">${cpu}%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Memory Usage</span>
+                        <span class="metric-value">${memory}</span>
+                    </div>
+                    <div class="metric" style="font-size: 0.8em; color: #666;">
+                        <span class="metric-label">RSS: ${(rssMemory / 1024 / 1024).toFixed(1)}MB</span>
+                        <span class="metric-value">Limit: 512MB</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Response Time</span>
+                        <span class="metric-value">${responseTime}ms</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Success Rate</span>
+                        <span class="metric-value">${successRate}%</span>
+                    </div>
+                `;
+            }
+
+            updateSystemMetrics(data) {
+                const container = document.getElementById('systemMetrics');
+                container.innerHTML = `
+                    <div class="metric">
+                        <span class="metric-label">Requests/sec</span>
+                        <span class="metric-value">${data.requestsPerSecond?.toFixed(2) || 'N/A'}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Error Rate</span>
+                        <span class="metric-value">${(data.errorRate * 100)?.toFixed(2) || '0.00'}%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Overall Cache Hit Rate</span>
+                        <span class="metric-value">${(data.cacheHitRate * 100)?.toFixed(1) || '0.0'}%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Context7 Cache</span>
+                        <span class="metric-value">${(data.context7CacheHitRate * 100)?.toFixed(1) || '0.0'}%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Workflow Cache</span>
+                        <span class="metric-value">${(data.workflowCacheHitRate * 100)?.toFixed(1) || '0.0'}%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">MCP Tools Cache</span>
+                        <span class="metric-value">${(data.mcpToolsCacheHitRate * 100)?.toFixed(1) || '0.0'}%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Total Requests</span>
+                        <span class="metric-value">${data.totalRequests || 0}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Total Errors</span>
+                        <span class="metric-value">${data.totalErrors || 0}</span>
+                    </div>
+                `;
+            }
+
+            updateContext7Metrics(data) {
+                const container = document.getElementById('context7Metrics');
+                const context7 = data.context7 || {};
+                const apiUsage = context7.apiUsage || {};
+                const cost = context7.cost || {};
+
+                container.innerHTML = `
+                    <div class="metric">
+                        <span class="metric-label">Total Requests</span>
+                        <span class="metric-value">${apiUsage.totalRequests || 0}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Requests/Hour</span>
+                        <span class="metric-value">${apiUsage.requestsPerHour || 0}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Cache Hit Rate</span>
+                        <span class="metric-value">${(data.context7CacheHitRate * 100)?.toFixed(1) || '0.0'}%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Total Cost</span>
+                        <span class="metric-value">$${cost.totalCost?.toFixed(2) || '0.00'}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Cost/Hour</span>
+                        <span class="metric-value">$${cost.costPerHour?.toFixed(4) || '0.0000'}</span>
+                    </div>
+                `;
+            }
+
+            updateCharts(data) {
+                this.createPerformanceChart(data);
+                this.createMemoryChart(data);
+                this.createTokenChart(data);
+            }
+
+            createPerformanceChart(data) {
+                const ctx = document.getElementById('performanceChart').getContext('2d');
+
+                if (this.charts.performance) {
+                    this.charts.performance.destroy();
+                }
+
+                // Use real historical data
+                const responseTimeData = this.dataHistory.responseTime.length > 0 ?
+                    this.dataHistory.responseTime : [data.responseTime || 0];
+                const requestsData = this.dataHistory.requestsPerSecond.length > 0 ?
+                    this.dataHistory.requestsPerSecond : [data.requestsPerSecond || 0];
+                const labels = this.dataHistory.timestamps.length > 0 ?
+                    this.dataHistory.timestamps : [new Date().toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    })];
+
+                this.charts.performance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Response Time (ms)',
+                                data: responseTimeData,
+                                borderColor: '#00ff88',
+                                backgroundColor: '#00ff8820',
+                                tension: 0.4,
+                                pointRadius: 3,
+                                pointHoverRadius: 5
+                            },
+                            {
+                                label: 'Requests/sec',
+                                data: requestsData,
+                                borderColor: '#4facfe',
+                                backgroundColor: '#4facfe20',
+                                tension: 0.4,
+                                yAxisID: 'y1',
+                                pointRadius: 3,
+                                pointHoverRadius: 5
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                title: {
+                                    display: true,
+                                    text: 'Response Time (ms)',
+                                    color: '#666666'
+                                },
+                                ticks: { color: '#666666' },
+                                grid: { color: 'rgba(42, 42, 42, 0.5)' }
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                title: {
+                                    display: true,
+                                    text: 'Requests/sec',
+                                    color: '#666666'
+                                },
+                                ticks: { color: '#666666' },
+                                grid: { drawOnChartArea: false }
+                            },
+                            x: {
+                                ticks: { color: '#666666' },
+                                grid: { color: 'rgba(42, 42, 42, 0.5)' }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                labels: { color: '#b0b0b0' }
+                            }
+                        }
+                    }
+                });
+            }
+
+            createMemoryChart(data) {
+                const ctx = document.getElementById('memoryChart').getContext('2d');
+
+                if (this.charts.memory) {
+                    this.charts.memory.destroy();
+                }
+
+                const memory = data.memoryUsage || {};
+                const heapUsed = memory.heapUsed || 0;
+                const heapTotal = memory.heapTotal || 0;
+                const rss = memory.rss || 0;
+                const external = memory.external || 0;
+
+                // Convert bytes to MB for better readability
+                const heapUsedMB = (heapUsed / 1024 / 1024).toFixed(1);
+                const heapTotalMB = (heapTotal / 1024 / 1024).toFixed(1);
+                const rssMB = (rss / 1024 / 1024).toFixed(1);
+                const externalMB = (external / 1024 / 1024).toFixed(1);
+
+                this.charts.memory = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [`Heap Used (${heapUsedMB}MB)`, `Heap Total (${heapTotalMB}MB)`, `RSS (${rssMB}MB)`, `External (${externalMB}MB)`],
+                        datasets: [{
+                            data: [heapUsed, heapTotal, rss, external],
+                            backgroundColor: ['#00ff88', '#4facfe', '#ff6b6b', '#ffaa00'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { color: '#b0b0b0' }
+                            }
+                        }
+                    }
+                });
+            }
+
+            createTokenChart(data) {
+                const ctx = document.getElementById('tokenChart').getContext('2d');
+
+                if (this.charts.token) {
+                    this.charts.token.destroy();
+                }
+
+                // Use real historical data
+                const tokenData = this.dataHistory.tokenUsage.length > 0 ?
+                    this.dataHistory.tokenUsage : [data.totalTokensProcessed || 0];
+                const labels = this.dataHistory.timestamps.length > 0 ?
+                    this.dataHistory.timestamps : [new Date().toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    })];
+
+                this.charts.token = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Total Tokens Processed',
+                                data: tokenData,
+                                borderColor: '#00ff88',
+                                backgroundColor: '#00ff8820',
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 3,
+                                pointHoverRadius: 5
+                            },
+                            {
+                                label: 'Current Total',
+                                data: Array(labels.length).fill(data.totalTokensProcessed || 0),
+                                borderColor: '#4facfe',
+                                backgroundColor: '#4facfe20',
+                                fill: false,
+                                tension: 0.4,
+                                borderDash: [5, 5],
+                                pointRadius: 0
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Tokens',
+                                    color: '#666666'
+                                },
+                                ticks: { color: '#666666' },
+                                grid: { color: 'rgba(42, 42, 42, 0.5)' }
+                            },
+                            x: {
+                                ticks: { color: '#666666' },
+                                grid: { color: 'rgba(42, 42, 42, 0.5)' }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                labels: { color: '#b0b0b0' }
+                            }
+                        }
+                    }
+                });
+            }
+
+            generateTimeLabels(count) {
+                const labels = [];
+                const now = new Date();
+                for (let i = count - 1; i >= 0; i--) {
+                    const time = new Date(now.getTime() - (i * 5 * 60 * 1000));
+                    labels.push(time.toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }));
+                }
+                return labels;
+            }
+
+            // Removed generateData function - now using real historical data
+
+            updateLastUpdated() {
+                const lastUpdated = document.getElementById('lastUpdated');
+                const dataTimestamp = document.getElementById('dataTimestamp');
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+
+                if (lastUpdated) {
+                    lastUpdated.textContent = now.toLocaleString();
+                }
+                if (dataTimestamp) {
+                    dataTimestamp.textContent = `🕐 ${timeString}`;
+                }
+            }
+
+            startAutoRefresh() {
+                this.refreshInterval = setInterval(() => {
+                    if (this.isConnected) {
+                        this.loadData();
+                    }
+                }, 5000);
+            }
+
+            stopAutoRefresh() {
+                if (this.refreshInterval) {
+                    clearInterval(this.refreshInterval);
+                    this.refreshInterval = null;
+                }
+            }
+        }
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.dashboard = new TappMCPDashboard();
+        });
+    </script>
+</body>
+</html>

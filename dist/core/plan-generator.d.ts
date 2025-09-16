@@ -18,7 +18,7 @@ export declare const PlanPhaseSchema: z.ZodObject<{
         status: z.ZodDefault<z.ZodEnum<["pending", "in_progress", "completed"]>>;
     }, "strip", z.ZodTypeAny, {
         priority: "low" | "medium" | "high" | "critical";
-        type: "development" | "testing" | "deployment" | "documentation" | "research";
+        type: "documentation" | "development" | "testing" | "deployment" | "research";
         status: "pending" | "completed" | "in_progress";
         name: string;
         description: string;
@@ -27,7 +27,7 @@ export declare const PlanPhaseSchema: z.ZodObject<{
         assignedTo?: string | undefined;
     }, {
         priority: "low" | "medium" | "high" | "critical";
-        type: "development" | "testing" | "deployment" | "documentation" | "research";
+        type: "documentation" | "development" | "testing" | "deployment" | "research";
         name: string;
         description: string;
         id: string;
@@ -49,7 +49,7 @@ export declare const PlanPhaseSchema: z.ZodObject<{
     milestones: string[];
     tasks: {
         priority: "low" | "medium" | "high" | "critical";
-        type: "development" | "testing" | "deployment" | "documentation" | "research";
+        type: "documentation" | "development" | "testing" | "deployment" | "research";
         status: "pending" | "completed" | "in_progress";
         name: string;
         description: string;
@@ -69,7 +69,7 @@ export declare const PlanPhaseSchema: z.ZodObject<{
     milestones: string[];
     tasks: {
         priority: "low" | "medium" | "high" | "critical";
-        type: "development" | "testing" | "deployment" | "documentation" | "research";
+        type: "documentation" | "development" | "testing" | "deployment" | "research";
         name: string;
         description: string;
         id: string;
@@ -205,7 +205,7 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
             status: z.ZodDefault<z.ZodEnum<["pending", "in_progress", "completed"]>>;
         }, "strip", z.ZodTypeAny, {
             priority: "low" | "medium" | "high" | "critical";
-            type: "development" | "testing" | "deployment" | "documentation" | "research";
+            type: "documentation" | "development" | "testing" | "deployment" | "research";
             status: "pending" | "completed" | "in_progress";
             name: string;
             description: string;
@@ -214,7 +214,7 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
             assignedTo?: string | undefined;
         }, {
             priority: "low" | "medium" | "high" | "critical";
-            type: "development" | "testing" | "deployment" | "documentation" | "research";
+            type: "documentation" | "development" | "testing" | "deployment" | "research";
             name: string;
             description: string;
             id: string;
@@ -236,7 +236,7 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         milestones: string[];
         tasks: {
             priority: "low" | "medium" | "high" | "critical";
-            type: "development" | "testing" | "deployment" | "documentation" | "research";
+            type: "documentation" | "development" | "testing" | "deployment" | "research";
             status: "pending" | "completed" | "in_progress";
             name: string;
             description: string;
@@ -256,7 +256,7 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         milestones: string[];
         tasks: {
             priority: "low" | "medium" | "high" | "critical";
-            type: "development" | "testing" | "deployment" | "documentation" | "research";
+            type: "documentation" | "development" | "testing" | "deployment" | "research";
             name: string;
             description: string;
             id: string;
@@ -390,16 +390,16 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
             documentation: z.ZodNumber;
             research: z.ZodNumber;
         }, "strip", z.ZodTypeAny, {
+            documentation: number;
             development: number;
             testing: number;
             deployment: number;
-            documentation: number;
             research: number;
         }, {
+            documentation: number;
             development: number;
             testing: number;
             deployment: number;
-            documentation: number;
             research: number;
         }>;
         confidence: z.ZodEnum<["low", "medium", "high"]>;
@@ -407,10 +407,10 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
     }, "strip", z.ZodTypeAny, {
         confidence: "low" | "medium" | "high";
         breakdown: {
+            documentation: number;
             development: number;
             testing: number;
             deployment: number;
-            documentation: number;
             research: number;
         };
         assumptions: string[];
@@ -418,10 +418,10 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
     }, {
         confidence: "low" | "medium" | "high";
         breakdown: {
+            documentation: number;
             development: number;
             testing: number;
             deployment: number;
-            documentation: number;
             research: number;
         };
         assumptions: string[];
@@ -600,7 +600,7 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         milestones: string[];
         tasks: {
             priority: "low" | "medium" | "high" | "critical";
-            type: "development" | "testing" | "deployment" | "documentation" | "research";
+            type: "documentation" | "development" | "testing" | "deployment" | "research";
             status: "pending" | "completed" | "in_progress";
             name: string;
             description: string;
@@ -648,10 +648,10 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
     effort: {
         confidence: "low" | "medium" | "high";
         breakdown: {
+            documentation: number;
             development: number;
             testing: number;
             deployment: number;
-            documentation: number;
             research: number;
         };
         assumptions: string[];
@@ -732,7 +732,7 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
         milestones: string[];
         tasks: {
             priority: "low" | "medium" | "high" | "critical";
-            type: "development" | "testing" | "deployment" | "documentation" | "research";
+            type: "documentation" | "development" | "testing" | "deployment" | "research";
             name: string;
             description: string;
             id: string;
@@ -780,10 +780,10 @@ export declare const ComprehensivePlanSchema: z.ZodObject<{
     effort: {
         confidence: "low" | "medium" | "high";
         breakdown: {
+            documentation: number;
             development: number;
             testing: number;
             deployment: number;
-            documentation: number;
             research: number;
         };
         assumptions: string[];

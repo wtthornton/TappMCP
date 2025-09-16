@@ -42,10 +42,10 @@ export interface IntelligenceSource {
 }
 
 export class TemplateDetectionEngine {
-  private templatePatterns: Map<string, RegExp>;
-  private boilerplatePhrases: string[];
-  private contextualKeywords: string[];
-  private domainSpecificTerms: Map<string, string[]>;
+  private templatePatterns: Map<string, RegExp> = new Map();
+  private boilerplatePhrases: string[] = [];
+  private contextualKeywords: string[] = [];
+  private domainSpecificTerms: Map<string, string[]> = new Map();
 
   constructor() {
     this.initializePatterns();

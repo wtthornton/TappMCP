@@ -394,7 +394,13 @@ export class ResponseQualityMetrics {
     return 'stable';
   }
 
-  private calculateScoreDistribution(metrics: QualityMetrics[]): { [key: string]: number } {
+  private calculateScoreDistribution(metrics: QualityMetrics[]): {
+    excellent: number;
+    good: number;
+    average: number;
+    poor: number;
+    very_poor: number;
+  } {
     const distribution = {
       excellent: 0,
       good: 0,

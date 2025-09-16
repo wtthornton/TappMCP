@@ -480,6 +480,6 @@ export class MetricsBroadcaster {
       timestamp: Date.now(),
     };
 
-    this.wsServer.broadcast('workflow:event', message);
+    this.wsServer.broadcast('workflow:status:update', message);
   }
 }
