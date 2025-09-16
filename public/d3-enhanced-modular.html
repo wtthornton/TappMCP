@@ -899,6 +899,25 @@
         <div class="chart-container" id="line-chart"></div>
     </div>
 
+    <!-- Essential Chart Types -->
+    <div class="visualization-section">
+        <h2 class="section-title">
+            📊 Essential Chart Types
+            <span class="loading-spinner" id="essentialChartsLoading" style="display: none;"></span>
+        </h2>
+        <div class="chart-controls">
+            <select id="chartTypeSelect" onchange="switchChartType(this.value)">
+                <option value="line">📈 Line Chart</option>
+                <option value="area">📊 Area Chart</option>
+                <option value="gauge">⏱️ Gauge Chart</option>
+            </select>
+            <button class="btn" onclick="updateChartData()">🔄 Update Data</button>
+            <button class="btn secondary" onclick="exportCurrentChart()">📤 Export</button>
+            <button class="btn secondary" onclick="toggleChartAnimation()">🎬 Toggle Animation</button>
+        </div>
+        <div class="chart-container" id="essential-charts"></div>
+    </div>
+
     <!-- Tooltip -->
     <div class="tooltip" id="tooltip">
         <div class="tooltip-content" id="tooltipContent"></div>
