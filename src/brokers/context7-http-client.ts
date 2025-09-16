@@ -128,7 +128,7 @@ export class Context7HttpClient {
   }
 
   /**
-   * Handle rate limiting
+   * Handle rate limiting with improved logic
    */
   private async handleRateLimit(): Promise<void> {
     const now = Date.now();
@@ -143,24 +143,29 @@ export class Context7HttpClient {
     // Check if we've exceeded the rate limit
     if (this.rateLimiter.currentRequests >= this.rateLimiter.requestsPerMinute) {
       const waitTime = 60000 - timeSinceReset;
-      console.log(`Rate limit exceeded. Waiting ${waitTime}ms before next request.`);
+      console.log(`🚨 Rate limit exceeded. Waiting ${waitTime}ms before next request.`);
       await this.sleep(waitTime);
       await this.handleRateLimit();
       return;
     }
 
-    // Check burst limit
+    // Check burst limit (more conservative)
     if (this.rateLimiter.currentRequests >= this.rateLimiter.burstLimit) {
-      const waitTime = 1000; // Wait 1 second for burst limit
-      console.log(`Burst limit exceeded. Waiting ${waitTime}ms before next request.`);
+      const waitTime = 2000; // Wait 2 seconds for burst limit
+      console.log(`⚠️ Burst limit exceeded. Waiting ${waitTime}ms before next request.`);
       await this.sleep(waitTime);
+    }
+
+    // Add small delay between requests to be more conservative
+    if (this.rateLimiter.currentRequests > 0) {
+      await this.sleep(100); // 100ms delay between requests
     }
 
     this.rateLimiter.currentRequests++;
   }
 
   /**
-   * Handle retry logic with exponential backoff
+   * Handle retry logic with exponential backoff and rate limit handling
    */
   private async handleRetry(error: AxiosError): Promise<any> {
     const config = error.config as any;
@@ -181,6 +186,16 @@ export class Context7HttpClient {
     // Only retry on specific error types
     if (!this.shouldRetry(error)) {
       return Promise.reject(error);
+    }
+
+    // Special handling for 429 rate limit errors
+    if (error.response?.status === 429) {
+      const retryAfter = error.response.headers['retry-after'];
+      const delay = retryAfter ? parseInt(retryAfter) * 1000 : 60000; // Default to 60 seconds
+      console.log(`🚨 Rate limit hit (429). Waiting ${delay}ms before retry.`);
+      await this.sleep(delay);
+      config.retryCount++;
+      return this.request(config);
     }
 
     config.retryCount++;

@@ -38,12 +38,12 @@ declare const CodePatternSchema: z.ZodObject<{
         type: z.ZodString;
         description: z.ZodOptional<z.ZodString>;
     }, "strip", z.ZodTypeAny, {
-        type: string;
         name: string;
+        type: string;
         description?: string | undefined;
     }, {
-        type: string;
         name: string;
+        type: string;
         description?: string | undefined;
     }>, "many">;
     dependencies: z.ZodArray<z.ZodString, "many">;
@@ -66,43 +66,43 @@ declare const CodePatternSchema: z.ZodObject<{
     }>;
 }, "strip", z.ZodTypeAny, {
     name: string;
-    description: string;
-    id: string;
-    examples: string[];
-    dependencies: string[];
-    pattern: string;
     metrics: {
         tokensPerUse: number;
         avgComplexity: number;
         reuseOpportunities: number;
         potentialSavings: number;
     };
+    description: string;
+    id: string;
+    examples: string[];
+    dependencies: string[];
+    pattern: string;
     complexity: "low" | "medium" | "high";
     category: "function" | "type" | "testing" | "async" | "class" | "module" | "error-handling" | "utility" | "control-flow";
     variables: {
-        type: string;
         name: string;
+        type: string;
         description?: string | undefined;
     }[];
     abstractPattern: string;
 }, {
     name: string;
-    description: string;
-    id: string;
-    examples: string[];
-    dependencies: string[];
-    pattern: string;
     metrics: {
         tokensPerUse: number;
         avgComplexity: number;
         reuseOpportunities: number;
         potentialSavings: number;
     };
+    description: string;
+    id: string;
+    examples: string[];
+    dependencies: string[];
+    pattern: string;
     complexity: "low" | "medium" | "high";
     category: "function" | "type" | "testing" | "async" | "class" | "module" | "error-handling" | "utility" | "control-flow";
     variables: {
-        type: string;
         name: string;
+        type: string;
         description?: string | undefined;
     }[];
     abstractPattern: string;

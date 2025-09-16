@@ -34,7 +34,6 @@ RUN npm ci --only=production && npm cache clean --force
 
 # Copy built application from builder stage
 COPY --from=builder --chown=smartmcp:nodejs /app/dist ./dist
-COPY --from=builder --chown=smartmcp:nodejs /app/dashboard-v2 ./dashboard-v2
 
 # Create data and logs directories with proper permissions
 RUN mkdir -p /app/data /app/logs && chown -R smartmcp:nodejs /app/data /app/logs

@@ -202,14 +202,23 @@ function formatVibeResponse(vibeResponse: any): string {
   }
 
   // Trace data
-  if ((vibeResponse as any).trace) {
+  console.log('🔍 FormatVibeResponse - Checking trace data:', !!vibeResponse.trace);
+  console.log('🔍 FormatVibeResponse - Checking traceInfo:', !!vibeResponse.traceInfo);
+
+  if (vibeResponse.trace) {
+    console.log('🔍 FormatVibeResponse - Adding trace data to response');
     formatted += '**🔍 Call Tree Trace:**\n';
-    formatted += `\`\`\`json\n${ JSON.stringify((vibeResponse as any).trace, null, 2) }\n\`\`\`\n\n`;
+    formatted += `\`\`\`json\n${JSON.stringify(vibeResponse.trace, null, 2)}\n\`\`\`\n\n`;
+  } else {
+    console.log('🔍 FormatVibeResponse - No trace data found');
   }
 
   // Trace info
-  if ((vibeResponse as any).traceInfo) {
-    formatted += (vibeResponse as any).traceInfo;
+  if (vibeResponse.traceInfo) {
+    console.log('🔍 FormatVibeResponse - Adding trace info to response');
+    formatted += vibeResponse.traceInfo;
+  } else {
+    console.log('🔍 FormatVibeResponse - No trace info found');
   }
 
   return formatted.trim();
@@ -380,6 +389,19 @@ export async function handleSmartVibe(
 
       // Format response for MCP
       const formattedResponse = formatVibeResponse(vibeResponse);
+
+      // Debug: Log trace data
+      console.log('🔍 Debug - VibeResponse trace data:', !!vibeResponse.trace);
+      console.log('🔍 Debug - VibeResponse traceInfo:', !!vibeResponse.traceInfo);
+      if (vibeResponse.trace) {
+        console.log('🔍 Debug - Trace data keys:', Object.keys(vibeResponse.trace));
+        console.log('🔍 Debug - Trace data sample:', JSON.stringify(vibeResponse.trace, null, 2).substring(0, 200) + '...');
+      }
+
+      // Debug: Log formatted response
+      console.log('🔍 Debug - Formatted response length:', formattedResponse.length);
+      console.log('🔍 Debug - Formatted response contains trace:', formattedResponse.includes('🔍 Call Tree Trace'));
+      console.log('🔍 Debug - Formatted response contains debug info:', formattedResponse.includes('🔍 Debug Information'));
 
       return {
         content: [

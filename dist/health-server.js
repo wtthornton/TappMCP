@@ -104,7 +104,7 @@ if (process.env.NODE_ENV !== 'test' &&
                 metricsBroadcaster.start(); // Start metrics broadcasting
             }
             // Set up performance metrics broadcasting
-            globalPerformanceMonitor.on('metric-recorded', metric => {
+            globalPerformanceMonitor.on('metric-recorded', (metric) => {
                 if (performanceEvents) {
                     performanceEvents.broadcastMetrics({
                         memoryUsage: {
@@ -121,7 +121,7 @@ if (process.env.NODE_ENV !== 'test' &&
                 }
             });
             // Set up performance alerts
-            globalPerformanceMonitor.on('alert-triggered', alert => {
+            globalPerformanceMonitor.on('alert-triggered', (alert) => {
                 if (performanceEvents) {
                     performanceEvents.broadcastPerformanceAlert(alert.metric, alert.severity, alert.message, {
                         responseTime: alert.threshold,

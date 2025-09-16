@@ -11,8 +11,9 @@
 import { Context7HttpClient } from './context7-http-client.js';
 import { Context7MCPClient } from './context7-mcp-client.js';
 import { LRUCache } from 'lru-cache';
-import { writeFile, readFile, mkdir } from 'fs/promises';
+import { mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
+import { createFileIOOptimizer } from '../core/file-io-optimizer.js';
 import { createHash } from 'crypto';
 import { CircuitBreaker } from '../intelligence/ErrorHandling.js';
 import { createDocCacheKey, createExamplesCacheKey, createBestPracticesCacheKey, createTroubleshootingCacheKey } from '../utils/cache-utils.js';
@@ -31,6 +32,7 @@ export class Context7Broker {
     pendingRequests = new Map();
     cacheFile = './cache/context7-cache.json';
     healthMonitor;
+    fileOptimizer;
     // Simple cache metrics tracking
     cacheMetrics = {
         hits: 0,
@@ -119,6 +121,11 @@ export class Context7Broker {
         });
         // Initialize health monitor
         this.healthMonitor = new CacheHealthMonitor();
+        // Initialize file I/O optimizer
+        this.fileOptimizer = createFileIOOptimizer({
+            maxCacheSize: 500,
+            ttl: 10 * 60 * 1000 // 10 minutes
+        });
         // Load cache on startup
         this.loadCache();
         // Check if Context7 is enabled
@@ -365,7 +372,7 @@ export class Context7Broker {
                 await mkdir('./cache', { recursive: true });
             }
             const cacheData = Array.from(this.cache.entries());
-            await writeFile(this.cacheFile, JSON.stringify(cacheData, null, 2));
+            await this.fileOptimizer.writeJSON(this.cacheFile, cacheData, true);
         }
         catch (error) {
             console.warn('Failed to save cache:', error);
@@ -379,8 +386,7 @@ export class Context7Broker {
             if (!existsSync(this.cacheFile)) {
                 return;
             }
-            const data = await readFile(this.cacheFile, 'utf8');
-            const cacheData = JSON.parse(data);
+            const cacheData = await this.fileOptimizer.readJSON(this.cacheFile);
             for (const [key, value] of cacheData) {
                 this.cache.set(key, value);
             }

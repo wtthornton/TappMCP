@@ -39,6 +39,8 @@ export interface CacheStats {
     averageProcessingTime: number;
     memoryUsage: number;
     topHitKeys: string[];
+    deduplicatedRequests: number;
+    deduplicationRate: number;
 }
 /**
  * Context7 Cache - Extends MCPCoordinator with smart caching
@@ -49,7 +51,7 @@ export declare class Context7Cache extends MCPCoordinator {
     private stats;
     constructor(cacheConfig?: Partial<Context7CacheConfig>);
     /**
-     * Get relevant Context7 data with smart caching
+     * Get relevant Context7 data with smart caching and deduplication
      */
     getRelevantData(input: {
         businessRequest: string;
@@ -71,7 +73,11 @@ export declare class Context7Cache extends MCPCoordinator {
      */
     private generateCacheKey;
     /**
-     * Fetch knowledge from Context7 broker
+     * Fetch knowledge from Context7 broker with deduplication
+     */
+    private fetchContext7KnowledgeWithDeduplication;
+    /**
+     * Fetch knowledge from Context7 broker (legacy method for compatibility)
      */
     private fetchContext7Knowledge;
     /**

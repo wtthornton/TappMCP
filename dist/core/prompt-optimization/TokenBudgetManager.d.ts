@@ -47,23 +47,23 @@ export declare const BudgetConfigSchema: z.ZodObject<{
         warning?: number | undefined;
     }>>;
 }, "strip", z.ZodTypeAny, {
-    dailyBudget: number;
-    monthlyBudget: number;
-    maxTokensPerRequest: number;
-    reservePercentage: number;
     alertThresholds: {
         critical: number;
         warning: number;
     };
+    dailyBudget: number;
+    monthlyBudget: number;
+    maxTokensPerRequest: number;
+    reservePercentage: number;
 }, {
-    dailyBudget?: number | undefined;
-    monthlyBudget?: number | undefined;
-    maxTokensPerRequest?: number | undefined;
-    reservePercentage?: number | undefined;
     alertThresholds?: {
         critical?: number | undefined;
         warning?: number | undefined;
     } | undefined;
+    dailyBudget?: number | undefined;
+    monthlyBudget?: number | undefined;
+    maxTokensPerRequest?: number | undefined;
+    reservePercentage?: number | undefined;
 }>;
 export type BudgetConfig = z.infer<typeof BudgetConfigSchema>;
 /**

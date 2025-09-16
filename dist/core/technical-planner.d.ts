@@ -9,14 +9,14 @@ export declare const ArchitectureSchema: z.ZodObject<{
         dependencies: z.ZodArray<z.ZodString, "many">;
         complexity: z.ZodEnum<["low", "medium", "high"]>;
     }, "strip", z.ZodTypeAny, {
-        type: "external" | "frontend" | "service" | "database" | "backend";
         name: string;
+        type: "external" | "frontend" | "service" | "database" | "backend";
         description: string;
         dependencies: string[];
         complexity: "low" | "medium" | "high";
     }, {
-        type: "external" | "frontend" | "service" | "database" | "backend";
         name: string;
+        type: "external" | "frontend" | "service" | "database" | "backend";
         description: string;
         dependencies: string[];
         complexity: "low" | "medium" | "high";
@@ -45,8 +45,8 @@ export declare const ArchitectureSchema: z.ZodObject<{
         justification: string;
     }[];
     components: {
-        type: "external" | "frontend" | "service" | "database" | "backend";
         name: string;
+        type: "external" | "frontend" | "service" | "database" | "backend";
         description: string;
         dependencies: string[];
         complexity: "low" | "medium" | "high";
@@ -60,8 +60,8 @@ export declare const ArchitectureSchema: z.ZodObject<{
         justification: string;
     }[];
     components: {
-        type: "external" | "frontend" | "service" | "database" | "backend";
         name: string;
+        type: "external" | "frontend" | "service" | "database" | "backend";
         description: string;
         dependencies: string[];
         complexity: "low" | "medium" | "high";
@@ -78,20 +78,20 @@ export declare const TaskSchema: z.ZodObject<{
     skills: z.ZodArray<z.ZodString, "many">;
     phase: z.ZodString;
 }, "strip", z.ZodTypeAny, {
+    name: string;
     phase: string;
     priority: "low" | "medium" | "high" | "critical";
     type: "documentation" | "development" | "testing" | "deployment" | "research";
-    name: string;
     description: string;
     id: string;
     dependencies: string[];
     estimatedHours: number;
     skills: string[];
 }, {
+    name: string;
     phase: string;
     priority: "low" | "medium" | "high" | "critical";
     type: "documentation" | "development" | "testing" | "deployment" | "research";
-    name: string;
     description: string;
     id: string;
     dependencies: string[];

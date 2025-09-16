@@ -56,6 +56,8 @@ export interface CacheStats {
   averageProcessingTime: number;
   memoryUsage: number;
   topHitKeys: string[];
+  deduplicatedRequests: number;
+  deduplicationRate: number;
 }
 
 /**
@@ -69,6 +71,8 @@ export class Context7Cache extends MCPCoordinator {
     misses: 0,
     totalRequests: 0,
     responseTimes: [] as number[],
+    deduplicatedRequests: 0,
+    pendingRequests: new Map<string, Promise<ExternalKnowledge[]>>(),
   };
 
   constructor(cacheConfig: Partial<Context7CacheConfig> = {}) {
@@ -109,7 +113,7 @@ export class Context7Cache extends MCPCoordinator {
   }
 
   /**
-   * Get relevant Context7 data with smart caching
+   * Get relevant Context7 data with smart caching and deduplication
    */
   async getRelevantData(input: {
     businessRequest: string;
@@ -129,22 +133,42 @@ export class Context7Cache extends MCPCoordinator {
       const cachedData = await this.getCachedData(cacheKey);
       if (cachedData) {
         this.recordHit(cacheKey);
+        console.log(`✅ Context7 cache HIT for: ${input.businessRequest.substring(0, 50)}...`);
         // Context7 cache hit
         return cachedData;
+      } else {
+        console.log(`❌ Context7 cache MISS for: ${input.businessRequest.substring(0, 50)}...`);
       }
 
-      // Cache miss - fetch from Context7
-      // Context7 cache miss, fetching data
-      const knowledge = await this.fetchContext7Knowledge(input);
+      // Check for pending identical requests (deduplication)
+      if (this.stats.pendingRequests.has(cacheKey)) {
+        this.stats.deduplicatedRequests++;
+        console.log(`🔄 Deduplicating request for: ${input.businessRequest}`);
+        return this.stats.pendingRequests.get(cacheKey)!;
+      }
 
-      // Cache the results
-      await this.setCachedData(cacheKey, knowledge);
+      // Cache miss - fetch from Context7 with deduplication
+      const fetchPromise = this.fetchContext7KnowledgeWithDeduplication(input, cacheKey);
+      this.stats.pendingRequests.set(cacheKey, fetchPromise);
 
-      // Record performance
-      const responseTime = Date.now() - startTime;
-      this.recordResponseTime(responseTime);
+      try {
+        const knowledge = await fetchPromise;
 
-      return knowledge;
+        // Cache the results
+        await this.setCachedData(cacheKey, knowledge);
+
+        // Record performance
+        const responseTime = Date.now() - startTime;
+        this.recordResponseTime(responseTime);
+
+        return knowledge;
+      } catch (error) {
+        // Re-throw error but still clean up pending request
+        throw error;
+      } finally {
+        // Clean up pending request
+        this.stats.pendingRequests.delete(cacheKey);
+      }
     } catch (error) {
       console.error(`Context7 cache error for ${input.businessRequest}:`, error);
       this.recordMiss();
@@ -246,7 +270,38 @@ export class Context7Cache extends MCPCoordinator {
   }
 
   /**
-   * Fetch knowledge from Context7 broker
+   * Fetch knowledge from Context7 broker with deduplication
+   */
+  private async fetchContext7KnowledgeWithDeduplication(
+    input: {
+      businessRequest: string;
+      projectId?: string;
+      domain?: string;
+      priority?: 'low' | 'medium' | 'high' | 'critical';
+      maxResults?: number;
+    },
+    cacheKey: string
+  ): Promise<ExternalKnowledge[]> {
+    console.log(`🌐 Context7 cache miss, fetching data for: ${input.businessRequest}`);
+
+    const knowledgeRequest: KnowledgeRequest = {
+      projectId: input.projectId || `cache_${Date.now()}`,
+      businessRequest: input.businessRequest,
+      domain: input.domain || 'general',
+      priority: input.priority || 'medium',
+      sources: {
+        useContext7: true,
+        useWebSearch: false,
+        useMemory: false,
+      },
+      maxResults: input.maxResults || 5,
+    };
+
+    return this.gatherKnowledge(knowledgeRequest);
+  }
+
+  /**
+   * Fetch knowledge from Context7 broker (legacy method for compatibility)
    */
   private async fetchContext7Knowledge(input: {
     businessRequest: string;
@@ -377,8 +432,8 @@ export class Context7Cache extends MCPCoordinator {
    */
   getCacheStats(): CacheStats {
     const hitRate = this.stats.totalRequests > 0 ? this.stats.hits / this.stats.totalRequests : 0;
-
     const missRate = 1 - hitRate;
+    const deduplicationRate = this.stats.totalRequests > 0 ? this.stats.deduplicatedRequests / this.stats.totalRequests : 0;
 
     const averageResponseTime =
       this.stats.responseTimes.length > 0
@@ -407,6 +462,8 @@ export class Context7Cache extends MCPCoordinator {
       averageProcessingTime: averageResponseTime, // Use same value for now
       memoryUsage,
       topHitKeys,
+      deduplicatedRequests: this.stats.deduplicatedRequests,
+      deduplicationRate,
     };
   }
 
@@ -445,7 +502,14 @@ export class Context7Cache extends MCPCoordinator {
    */
   clearCache(): void {
     this.cache.clear();
-    this.stats = { hits: 0, misses: 0, totalRequests: 0, responseTimes: [] };
+    this.stats = {
+      hits: 0,
+      misses: 0,
+      totalRequests: 0,
+      responseTimes: [],
+      deduplicatedRequests: 0,
+      pendingRequests: new Map<string, Promise<ExternalKnowledge[]>>()
+    };
     console.log('🧹 Context7 cache cleared');
   }
 

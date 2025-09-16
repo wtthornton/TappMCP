@@ -39,6 +39,8 @@ import { BasicAnalysis } from '../core/simple-analyzer.js';
 import { globalPerformanceCache, PerformanceCache } from './PerformanceCache.js';
 import { Context7Cache } from '../core/context7-cache.js';
 import { globalErrorHandler, ErrorHandler } from './ErrorHandling.js';
+import { RealMetricsCollector } from '../core/real-metrics-collector.js';
+import { UserPreferenceLearning } from '../core/user-preference-learning.js';
 
 // Input schema for code generation requests
 export const CodeGenerationRequestSchema = z.object({
@@ -98,6 +100,8 @@ export class UnifiedCodeIntelligenceEngine {
   private performanceCache: PerformanceCache;
   private context7Cache: Context7Cache;
   private errorHandler: ErrorHandler;
+  private realMetricsCollector: RealMetricsCollector;
+  private userLearning: UserPreferenceLearning;
 
   constructor() {
     // Initialize discovery and analysis engines
@@ -113,6 +117,8 @@ export class UnifiedCodeIntelligenceEngine {
       enableHitTracking: true,
     });
     this.errorHandler = globalErrorHandler;
+    this.realMetricsCollector = new RealMetricsCollector();
+    this.userLearning = new UserPreferenceLearning();
 
     // Initialize category engines
     this.categoryEngines = new Map<string, CategoryIntelligenceEngine>([
@@ -152,6 +158,58 @@ export class UnifiedCodeIntelligenceEngine {
    * @throws {Error} When code generation fails or validation errors occur
    * @since 2.0.0
    */
+
+  /**
+   * Learn from user interaction
+   */
+  async learnFromInteraction(
+    userId: string,
+    command: string,
+    response: string,
+    verbosity: string,
+    role: string,
+    quality: string,
+    satisfaction: number,
+    feedback?: string
+  ): Promise<void> {
+    try {
+      await this.userLearning.learnFromInteraction(
+        userId,
+        command,
+        response,
+        verbosity,
+        role,
+        quality,
+        satisfaction,
+        feedback
+      );
+    } catch (error) {
+      console.error('Error learning from interaction:', error);
+    }
+  }
+
+  /**
+   * Get recommended settings based on user history
+   */
+  async getRecommendedSettings(userId: string, command: string): Promise<{
+    verbosity: string;
+    role: string;
+    quality: string;
+    confidence: number;
+  }> {
+    try {
+      return await this.userLearning.getRecommendedSettings(userId, command);
+    } catch (error) {
+      console.error('Error getting recommended settings:', error);
+      return {
+        verbosity: 'standard',
+        role: 'developer',
+        quality: 'standard',
+        confidence: 0.1
+      };
+    }
+  }
+
   async generateCode(request: CodeGenerationRequest): Promise<CodeGenerationResult> {
     const startTime = Date.now();
 
@@ -329,35 +387,64 @@ export class UnifiedCodeIntelligenceEngine {
       const qualityScore = await this.errorHandler.executeAnalysisOperation(
         'quality-analysis',
         async () => {
-          const analysis = await this.qualityAssurance.analyze(optimizedCode, category);
-          return (
-            analysis || {
-              overall: 85,
-              message: 'Code quality analyzed successfully',
+          // Use real metrics collector instead of hardcoded values
+          const realMetrics = await this.realMetricsCollector.calculateRealQualityMetrics(
+            optimizedCode as string,
+            `generated-${category}-${Date.now()}.ts`
+          );
+
+          return {
+            overall: realMetrics.overall,
+            message: 'Code quality analyzed with real metrics',
+            breakdown: {
+              maintainability: realMetrics.maintainability,
+              performance: realMetrics.performance,
+              security: realMetrics.securityScore,
+              reliability: realMetrics.reliability,
+              usability: realMetrics.usability,
+            },
+            timestamp: realMetrics.timestamp,
+            source: realMetrics.source
+          };
+        },
+        // Fallback quality score - still use real metrics but with error handling
+        async () => {
+          try {
+            const realMetrics = await this.realMetricsCollector.calculateRealQualityMetrics(
+              optimizedCode as string,
+              `generated-${category}-${Date.now()}.ts`
+            );
+            return {
+              overall: realMetrics.overall,
+              message: 'Quality analysis using real metrics (fallback)',
               breakdown: {
-                maintainability: 85,
-                performance: 90,
-                security: 85,
-                reliability: 85,
-                usability: 85,
+                maintainability: realMetrics.maintainability,
+                performance: realMetrics.performance,
+                security: realMetrics.securityScore,
+                reliability: realMetrics.reliability,
+                usability: realMetrics.usability,
+              },
+              timestamp: realMetrics.timestamp,
+              source: realMetrics.source
+            };
+          } catch (error) {
+            // Only use hardcoded values as absolute last resort
+            console.warn('Real metrics calculation failed, using minimal fallback:', error);
+            return {
+              overall: 50, // Low score to indicate error state
+              message: 'Quality analysis failed - using minimal fallback',
+              breakdown: {
+                maintainability: 50,
+                performance: 50,
+                security: 50,
+                reliability: 50,
+                usability: 50,
               },
               timestamp: new Date().toISOString(),
-            }
-          );
-        },
-        // Fallback quality score
-        async () => ({
-          overall: context7QualityAnalysis.qualityScore || 75,
-          message: 'Quality analysis using fallback',
-          breakdown: {
-            maintainability: 75,
-            performance: 75,
-            security: 75,
-            reliability: 75,
-            usability: 75,
-          },
-          timestamp: new Date().toISOString(),
-        })
+              source: 'error_fallback'
+            };
+          }
+        }
       );
 
       const processingTime = Math.max(1, Date.now() - startTime); // Ensure at least 1ms

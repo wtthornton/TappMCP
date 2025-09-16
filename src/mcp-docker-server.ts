@@ -282,13 +282,30 @@ class MCPDockerServer {
       }
     });
 
-    // Serve dashboard files
-    this.httpApp.use('/dashboard', express.static('dashboard-v2'));
-    this.httpApp.use('/', express.static('dashboard-v2'));
+    // Serve static files from dist directory
+    this.httpApp.use(express.static('dist'));
 
     // Root route for dashboard
     this.httpApp.get('/', (req, res) => {
-      return res.sendFile('index.html', { root: 'dashboard-v2' });
+      return res.send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>TappMCP Dashboard</title>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+        </head>
+        <body>
+          <div id="root">
+            <h1>🚀 TappMCP Dashboard</h1>
+            <p>AI-Powered Development Assistant</p>
+            <p>Status: <span style="color: green;">✅ Running</span></p>
+            <p>Health: <a href="/health">Check Health</a></p>
+            <p>API: <a href="/api/status">API Status</a></p>
+          </div>
+        </body>
+        </html>
+      `);
     });
   }
 

@@ -15,6 +15,7 @@ import { Context7MCPClient, Context7MCPConfig } from './context7-mcp-client.js';
 import { LRUCache } from 'lru-cache';
 import { writeFile, readFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
+import { FileIOOptimizer, createFileIOOptimizer } from '../core/file-io-optimizer.js';
 import { createHash } from 'crypto';
 import { CircuitBreaker } from '../intelligence/ErrorHandling.js';
 import {
@@ -109,6 +110,7 @@ export class Context7Broker {
   private pendingRequests: Map<string, Promise<any>> = new Map();
   private cacheFile = './cache/context7-cache.json';
   private healthMonitor: CacheHealthMonitor;
+  private fileOptimizer: FileIOOptimizer;
 
   // Simple cache metrics tracking
   private cacheMetrics = {
@@ -213,6 +215,12 @@ export class Context7Broker {
 
     // Initialize health monitor
     this.healthMonitor = new CacheHealthMonitor();
+
+    // Initialize file I/O optimizer
+    this.fileOptimizer = createFileIOOptimizer({
+      maxCacheSize: 500,
+      ttl: 10 * 60 * 1000 // 10 minutes
+    });
 
     // Load cache on startup
     this.loadCache();
@@ -507,7 +515,7 @@ export class Context7Broker {
       }
 
       const cacheData = Array.from(this.cache.entries());
-      await writeFile(this.cacheFile, JSON.stringify(cacheData, null, 2));
+      await this.fileOptimizer.writeJSON(this.cacheFile, cacheData, true);
     } catch (error) {
       console.warn('Failed to save cache:', error);
     }
@@ -520,8 +528,7 @@ export class Context7Broker {
     try {
       if (!existsSync(this.cacheFile)) {return;}
 
-      const data = await readFile(this.cacheFile, 'utf8');
-      const cacheData = JSON.parse(data);
+      const cacheData = await this.fileOptimizer.readJSON(this.cacheFile);
 
       for (const [key, value] of cacheData) {
         this.cache.set(key, value);

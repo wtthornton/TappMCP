@@ -12,9 +12,9 @@ export declare const FileResourceSchema: z.ZodObject<{
     permissions: z.ZodOptional<z.ZodString>;
     data: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
+    path: string;
     encoding: string;
     mode: "write" | "read" | "append";
-    path: string;
     backup: boolean;
     createIfNotExists: boolean;
     data?: string | undefined;

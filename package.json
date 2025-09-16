@@ -7,7 +7,9 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
+    "start:enhanced": "node dist/mcp-enhanced-server.js",
     "dev": "ts-node src/server.ts",
+    "dev:enhanced": "ts-node src/mcp-enhanced-server.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",

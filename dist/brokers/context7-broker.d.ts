@@ -84,6 +84,7 @@ export declare class Context7Broker {
     private pendingRequests;
     private cacheFile;
     private healthMonitor;
+    private fileOptimizer;
     private cacheMetrics;
     private healthCheckInterval;
     private healthCheckFrequency;

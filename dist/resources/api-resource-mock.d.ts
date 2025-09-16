@@ -45,8 +45,8 @@ export declare const ApiResourceSchema: z.ZodObject<{
         apiKeyHeader?: string | undefined;
     }>>;
 }, "strip", z.ZodTypeAny, {
-    url: string;
     method: "GET" | "DELETE" | "POST" | "PUT" | "PATCH";
+    url: string;
     timeout: number;
     retries: number;
     retryDelay: number;
@@ -66,8 +66,8 @@ export declare const ApiResourceSchema: z.ZodObject<{
         requests: number;
     } | undefined;
 }, {
-    url: string;
     method: "GET" | "DELETE" | "POST" | "PUT" | "PATCH";
+    url: string;
     headers?: Record<string, string> | undefined;
     params?: Record<string, string> | undefined;
     timeout?: number | undefined;
@@ -115,10 +115,10 @@ export declare const ApiResourceResponseSchema: z.ZodObject<{
     }>>;
 }, "strip", z.ZodTypeAny, {
     success: boolean;
+    status?: number | undefined;
     error?: string | undefined;
     data?: any;
     headers?: Record<string, string> | undefined;
-    status?: number | undefined;
     executionTime?: number | undefined;
     statusText?: string | undefined;
     retryCount?: number | undefined;
@@ -129,10 +129,10 @@ export declare const ApiResourceResponseSchema: z.ZodObject<{
     } | undefined;
 }, {
     success: boolean;
+    status?: number | undefined;
     error?: string | undefined;
     data?: any;
     headers?: Record<string, string> | undefined;
-    status?: number | undefined;
     executionTime?: number | undefined;
     statusText?: string | undefined;
     retryCount?: number | undefined;

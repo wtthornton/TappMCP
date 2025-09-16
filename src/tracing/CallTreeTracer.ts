@@ -73,7 +73,15 @@ export class CallTreeTracer {
     this.enabled = false;
     this.currentNode = null;
 
-    return this.generateReport();
+    // Return enhanced trace data
+    const traceData = this.generateReport();
+    return {
+      ...traceData,
+      duration: this.rootNode.duration,
+      nodeCount: this.nodeCounter,
+      config: this.config,
+      summary: this.generateSummary()
+    };
   }
 
   /**
@@ -377,6 +385,55 @@ export class CallTreeTracer {
    */
   getConfig(): TraceConfig {
     return { ...this.config };
+  }
+
+  /**
+   * Generate trace summary
+   */
+  private generateSummary(): any {
+    if (!this.rootNode) return null;
+
+    const allNodes = this.getAllNodes();
+    const toolCounts = allNodes.reduce((counts: any, node: any) => {
+      counts[node.tool] = (counts[node.tool] || 0) + 1;
+      return counts;
+    }, {});
+
+    const phaseCounts = allNodes.reduce((counts: any, node: any) => {
+      counts[node.phase] = (counts[node.phase] || 0) + 1;
+      return counts;
+    }, {});
+
+    return {
+      totalNodes: this.nodeCounter,
+      duration: this.rootNode.duration,
+      toolUsage: toolCounts,
+      phaseDistribution: phaseCounts,
+      averageNodeDuration: (this.rootNode?.duration || 0) / Math.max(1, this.nodeCounter),
+      traceLevel: this.config.level,
+      outputFormat: this.config.outputFormat
+    };
+  }
+
+  /**
+   * Get all nodes in the trace
+   */
+  private getAllNodes(): any[] {
+    if (!this.rootNode) return [];
+    return this.getAllNodesRecursive(this.rootNode);
+  }
+
+  /**
+   * Recursive helper to get all nodes
+   */
+  private getAllNodesRecursive(node: any): any[] {
+    const nodes = [node];
+    if (node.children) {
+      for (const child of node.children) {
+        nodes.push(...this.getAllNodesRecursive(child));
+      }
+    }
+    return nodes;
   }
 
   /**

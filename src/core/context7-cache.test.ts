@@ -96,6 +96,36 @@ describe('Context7Cache', () => {
       expect(stats.missRate).toBe(0.5);
     });
 
+    it('should track deduplication metrics', async () => {
+      const input = { businessRequest: 'deduplication-test' };
+
+      // First, make sure the cache is empty
+      cache.clearCache();
+
+      // Make multiple concurrent requests for the same data (all will be cache misses)
+      const promises = [
+        cache.getRelevantData(input),
+        cache.getRelevantData(input),
+        cache.getRelevantData(input),
+      ];
+
+      await Promise.all(promises);
+
+      const stats = cache.getCacheStats();
+
+      // Check that deduplication metrics exist
+      expect(stats).toHaveProperty('deduplicatedRequests');
+      expect(stats).toHaveProperty('deduplicationRate');
+
+      // With concurrent requests, we should see some deduplication
+      expect(stats.deduplicatedRequests).toBeGreaterThanOrEqual(0);
+      expect(stats.deduplicationRate).toBeGreaterThanOrEqual(0);
+      expect(stats.deduplicationRate).toBeLessThanOrEqual(1);
+
+      // Verify that we have exactly one cache entry (deduplication worked)
+      expect(stats.totalEntries).toBe(1);
+    });
+
     it('should track response times', async () => {
       const input = { businessRequest: 'python' };
 

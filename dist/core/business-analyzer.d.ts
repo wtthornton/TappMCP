@@ -26,15 +26,15 @@ export declare const StakeholderSchema: z.ZodObject<{
     interest: z.ZodEnum<["high", "medium", "low"]>;
     requirements: z.ZodArray<z.ZodString, "many">;
 }, "strip", z.ZodTypeAny, {
+    name: string;
     role: string;
     requirements: string[];
-    name: string;
     influence: "low" | "medium" | "high";
     interest: "low" | "medium" | "high";
 }, {
+    name: string;
     role: string;
     requirements: string[];
-    name: string;
     influence: "low" | "medium" | "high";
     interest: "low" | "medium" | "high";
 }>;

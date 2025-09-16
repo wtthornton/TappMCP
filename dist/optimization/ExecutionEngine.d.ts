@@ -19,12 +19,12 @@ export declare const ToolDefinitionSchema: z.ZodObject<{
         cpu: z.ZodDefault<z.ZodNumber>;
         tokens: z.ZodDefault<z.ZodNumber>;
     }, "strip", z.ZodTypeAny, {
-        memory: number;
         tokens: number;
+        memory: number;
         cpu: number;
     }, {
-        memory?: number | undefined;
         tokens?: number | undefined;
+        memory?: number | undefined;
         cpu?: number | undefined;
     }>>;
     reliability: z.ZodDefault<z.ZodNumber>;
@@ -44,8 +44,8 @@ export declare const ToolDefinitionSchema: z.ZodObject<{
     outputSchema: Record<string, any>;
     estimatedExecutionTime: number;
     resourceRequirements: {
-        memory: number;
         tokens: number;
+        memory: number;
         cpu: number;
     };
     costPerExecution: number;
@@ -62,8 +62,8 @@ export declare const ToolDefinitionSchema: z.ZodObject<{
     cacheEnabled?: boolean | undefined;
     estimatedExecutionTime?: number | undefined;
     resourceRequirements?: {
-        memory?: number | undefined;
         tokens?: number | undefined;
+        memory?: number | undefined;
         cpu?: number | undefined;
     } | undefined;
     costPerExecution?: number | undefined;

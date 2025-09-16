@@ -120,7 +120,7 @@ if (
       }
 
       // Set up performance metrics broadcasting
-      globalPerformanceMonitor.on('metric-recorded', metric => {
+      globalPerformanceMonitor.on('metric-recorded', (metric: any) => {
         if (performanceEvents) {
           performanceEvents.broadcastMetrics({
             memoryUsage: {
@@ -138,7 +138,7 @@ if (
       });
 
       // Set up performance alerts
-      globalPerformanceMonitor.on('alert-triggered', alert => {
+      globalPerformanceMonitor.on('alert-triggered', (alert: any) => {
         if (performanceEvents) {
           performanceEvents.broadcastPerformanceAlert(alert.metric, alert.severity, alert.message, {
             responseTime: alert.threshold,
