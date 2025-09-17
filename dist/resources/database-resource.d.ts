@@ -34,8 +34,8 @@ export declare const DatabaseResourceSchema: z.ZodObject<{
     }>, "many">>;
 }, "strip", z.ZodTypeAny, {
     operation: "delete" | "update" | "query" | "transaction" | "insert";
-    orderDirection: "ASC" | "DESC";
     table: string;
+    orderDirection: "ASC" | "DESC";
     data?: Record<string, any> | undefined;
     query?: string | undefined;
     limit?: number | undefined;
@@ -47,8 +47,8 @@ export declare const DatabaseResourceSchema: z.ZodObject<{
         where?: Record<string, any> | undefined;
     }[] | undefined;
     offset?: number | undefined;
-    orderBy?: string | undefined;
     where?: Record<string, any> | undefined;
+    orderBy?: string | undefined;
 }, {
     operation: "delete" | "update" | "query" | "transaction" | "insert";
     table: string;
@@ -63,9 +63,9 @@ export declare const DatabaseResourceSchema: z.ZodObject<{
         where?: Record<string, any> | undefined;
     }[] | undefined;
     offset?: number | undefined;
+    where?: Record<string, any> | undefined;
     orderBy?: string | undefined;
     orderDirection?: "ASC" | "DESC" | undefined;
-    where?: Record<string, any> | undefined;
 }>;
 export type DatabaseResourceConfig = z.infer<typeof DatabaseResourceSchema>;
 /**

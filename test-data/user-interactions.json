@@ -1,0 +1,266 @@
+{
+  "test-user-2": [
+    {
+      "timestamp": "2025-09-17T00:20:33.839Z",
+      "command": "create a React component",
+      "response": "Here is a React component...",
+      "verbosity": "detailed",
+      "role": "developer",
+      "quality": "standard",
+      "satisfaction": 4
+    },
+    {
+      "timestamp": "2025-09-17T00:20:33.841Z",
+      "command": "create a Vue component",
+      "response": "Here is a Vue component...",
+      "verbosity": "minimal",
+      "role": "developer",
+      "quality": "enterprise",
+      "satisfaction": 5
+    },
+    {
+      "timestamp": "2025-09-17T00:22:20.546Z",
+      "command": "create a React component",
+      "response": "Here is a React component...",
+      "verbosity": "detailed",
+      "role": "developer",
+      "quality": "standard",
+      "satisfaction": 4
+    },
+    {
+      "timestamp": "2025-09-17T00:22:20.548Z",
+      "command": "create a Vue component",
+      "response": "Here is a Vue component...",
+      "verbosity": "minimal",
+      "role": "developer",
+      "quality": "enterprise",
+      "satisfaction": 5
+    }
+  ],
+  "test-user-3": [
+    {
+      "timestamp": "2025-09-17T00:20:33.961Z",
+      "command": "explain this code",
+      "response": "Detailed explanation...",
+      "verbosity": "detailed",
+      "role": "developer",
+      "quality": "standard",
+      "satisfaction": 5
+    },
+    {
+      "timestamp": "2025-09-17T00:20:33.963Z",
+      "command": "quick status check",
+      "response": "Brief status...",
+      "verbosity": "minimal",
+      "role": "developer",
+      "quality": "standard",
+      "satisfaction": 2
+    },
+    {
+      "timestamp": "2025-09-17T00:22:20.671Z",
+      "command": "explain this code",
+      "response": "Detailed explanation...",
+      "verbosity": "detailed",
+      "role": "developer",
+      "quality": "standard",
+      "satisfaction": 5
+    },
+    {
+      "timestamp": "2025-09-17T00:22:20.675Z",
+      "command": "quick status check",
+      "response": "Brief status...",
+      "verbosity": "minimal",
+      "role": "developer",
+      "quality": "standard",
+      "satisfaction": 2
+    }
+  ],
+  "test-user-4": [
+    {
+      "timestamp": "2025-09-17T00:20:34.192Z",
+      "command": "create a React component",
+      "response": "React component...",
+      "verbosity": "detailed",
+      "role": "developer",
+      "quality": "standard",
+      "satisfaction": 5
+    },
+    {
+      "timestamp": "2025-09-17T00:20:34.194Z",
+      "command": "create a React hook",
+      "response": "React hook...",
+      "verbosity": "detailed",
+      "role": "developer",
+      "quality": "standard",
+      "satisfaction": 4
+    },
+    {
+      "timestamp": "2025-09-17T00:22:20.900Z",
+      "command": "create a React component",
+      "response": "React component...",
+      "verbosity": "detailed",
+      "role": "developer",
+      "quality": "standard",
+      "satisfaction": 5
+    },
+    {
+      "timestamp": "2025-09-17T00:22:20.903Z",
+      "command": "create a React hook",
+      "response": "React hook...",
+      "verbosity": "detailed",
+      "role": "developer",
+      "quality": "standard",
+      "satisfaction": 4
+    }
+  ],
+  "test-user-5": [
+    {
+      "timestamp": "2025-09-17T00:20:34.301Z",
+      "command": "explain this code",
+      "response": "Explanation...",
+      "verbosity": "detailed",
+      "role": "developer",
+      "quality": "standard",
+      "satisfaction": 5
+    },
+    {
+      "timestamp": "2025-09-17T00:20:34.304Z",
+      "command": "quick status",
+      "response": "Status...",
+      "verbosity": "minimal",
+      "role": "operations-engineer",
+      "quality": "basic",
+      "satisfaction": 4
+    },
+    {
+      "timestamp": "2025-09-17T00:22:21.020Z",
+      "command": "explain this code",
+      "response": "Explanation...",
+      "verbosity": "detailed",
+      "role": "developer",
+      "quality": "standard",
+      "satisfaction": 5
+    },
+    {
+      "timestamp": "2025-09-17T00:22:21.022Z",
+      "command": "quick status",
+      "response": "Status...",
+      "verbosity": "minimal",
+      "role": "operations-engineer",
+      "quality": "basic",
+      "satisfaction": 4
+    }
+  ],
+  "test-user-6": [
+    {
+      "timestamp": "2025-09-17T00:20:34.417Z",
+      "command": "create a React component with TypeScript",
+      "response": "React TypeScript component...",
+      "verbosity": "standard",
+      "role": "developer",
+      "quality": "standard",
+      "satisfaction": 4
+    },
+    {
+      "timestamp": "2025-09-17T00:22:21.137Z",
+      "command": "create a React component with TypeScript",
+      "response": "React TypeScript component...",
+      "verbosity": "standard",
+      "role": "developer",
+      "quality": "standard",
+      "satisfaction": 4
+    }
+  ],
+  "test-user-7": [
+    {
+      "timestamp": "2025-09-17T00:20:34.534Z",
+      "command": "give me a brief overview",
+      "response": "Brief overview...",
+      "verbosity": "minimal",
+      "role": "developer",
+      "quality": "standard",
+      "satisfaction": 5
+    },
+    {
+      "timestamp": "2025-09-17T00:22:21.252Z",
+      "command": "give me a brief overview",
+      "response": "Brief overview...",
+      "verbosity": "minimal",
+      "role": "developer",
+      "quality": "standard",
+      "satisfaction": 5
+    }
+  ],
+  "test-user-8": [
+    {
+      "timestamp": "2025-09-17T00:20:34.646Z",
+      "command": "create something",
+      "response": "Created...",
+      "verbosity": "detailed",
+      "role": "developer",
+      "quality": "standard",
+      "satisfaction": 4
+    },
+    {
+      "timestamp": "2025-09-17T00:22:21.372Z",
+      "command": "create something",
+      "response": "Created...",
+      "verbosity": "detailed",
+      "role": "developer",
+      "quality": "standard",
+      "satisfaction": 4
+    }
+  ],
+  "test-user-9": [
+    {
+      "timestamp": "2025-09-17T00:20:34.869Z",
+      "command": "create a user authentication system",
+      "response": "Auth system...",
+      "verbosity": "detailed",
+      "role": "developer",
+      "quality": "standard",
+      "satisfaction": 5
+    },
+    {
+      "timestamp": "2025-09-17T00:22:21.602Z",
+      "command": "create a user authentication system",
+      "response": "Auth system...",
+      "verbosity": "detailed",
+      "role": "developer",
+      "quality": "standard",
+      "satisfaction": 5
+    }
+  ],
+  "test-user-10": [
+    {
+      "timestamp": "2025-09-17T00:20:34.984Z",
+      "command": "create a React component",
+      "response": "Component...",
+      "verbosity": "detailed",
+      "role": "developer",
+      "quality": "standard",
+      "satisfaction": 5
+    },
+    {
+      "timestamp": "2025-09-17T00:22:21.721Z",
+      "command": "create a React component",
+      "response": "Component...",
+      "verbosity": "detailed",
+      "role": "developer",
+      "quality": "standard",
+      "satisfaction": 5
+    }
+  ],
+  "test-user-1": [
+    {
+      "timestamp": "2025-09-17T00:22:20.418Z",
+      "command": "create a React component",
+      "response": "Here is a React component...",
+      "verbosity": "detailed",
+      "role": "developer",
+      "quality": "standard",
+      "satisfaction": 4,
+      "feedback": "Great response!"
+    }
+  ]
+}

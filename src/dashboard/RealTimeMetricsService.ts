@@ -125,18 +125,18 @@ export class RealTimeMetricsService extends EventEmitter {
       // Initialize file I/O optimizer
       this.fileIOOptimizer = new FileIOOptimizer({
         maxCacheSize: 1000,
-        ttl: 10 * 60 * 1000, // 10 minutes
-        enableCompression: true
+        ttl: 7 * 24 * 60 * 60 * 1000, // 1 week - data doesn't change much
+        enableCompression: false // Disabled for performance
         // enableDeduplication: true // Not available in current interface
       });
 
       // Initialize resource optimizer
       this.resourceOptimizer = new ResourceOptimizer({
-        enableCompression: true,
+        enableCompression: false, // Disabled for performance
         enableDeduplication: true,
         enableLazyLoading: true,
         maxMemoryUsage: 512 * 1024 * 1024, // 512MB
-        compressionThreshold: 1024, // 1KB
+        compressionThreshold: 0, // Disabled
         deduplicationThreshold: 512 // 512B
       });
 
@@ -146,7 +146,7 @@ export class RealTimeMetricsService extends EventEmitter {
         cleanupThreshold: 200 * 1024 * 1024, // 200MB
         ttl: 5 * 60 * 1000, // 5 minutes
         maxCacheSize: 1000,
-        enableCompression: true
+        enableCompression: false // Disabled for performance
       });
 
       // Initialize memory monitor

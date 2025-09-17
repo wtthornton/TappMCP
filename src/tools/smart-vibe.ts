@@ -9,6 +9,8 @@ import { z } from 'zod';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { VibeTapp } from '../vibe/core/VibeTapp.js';
 import { ToolAvailabilityChecker } from '../utils/tool-availability-checker.js';
+import fs from 'fs/promises';
+import path from 'path';
 
 // Input schema for smart_vibe tool
 export const SmartVibeSchema = z.object({
@@ -30,6 +32,7 @@ export const SmartVibeSchema = z.object({
       // Tracing parameters
       trace: z.boolean().optional().describe('Enable detailed call tree tracing'),
       debug: z.boolean().optional().describe('Enable debug mode with full tracing'),
+      debughtml: z.boolean().optional().describe('Generate HTML debug dashboard instead of console output'),
       traceLevel: z
         .enum(['basic', 'detailed', 'comprehensive'])
         .optional()
@@ -97,6 +100,10 @@ export const smartVibeTool: Tool = {
           debug: {
             type: 'boolean',
             description: 'Enable debug mode with full tracing',
+          },
+          debughtml: {
+            type: 'boolean',
+            description: 'Generate HTML debug dashboard instead of console output',
           },
           traceLevel: {
             type: 'string',
@@ -402,6 +409,126 @@ export async function handleSmartVibe(
       console.log('🔍 Debug - Formatted response length:', formattedResponse.length);
       console.log('🔍 Debug - Formatted response contains trace:', formattedResponse.includes('🔍 Call Tree Trace'));
       console.log('🔍 Debug - Formatted response contains debug info:', formattedResponse.includes('🔍 Debug Information'));
+
+      // Check if HTML debug dashboard is requested
+      if (validatedInput.options?.debughtml) {
+        console.log('🎯 Generating HTML debug dashboard...');
+
+        try {
+          // Import the HTML generator
+          const { DebugHTMLGenerator } = await import('../debug-dashboard/debug-html-generator.js');
+
+          // Create trace data from vibe response with real metrics
+          const timeline = vibeResponse.trace?.timeline || [];
+          const toolsUsed = [...new Set(timeline.map((node: any) => node.tool))];
+          const context7Calls = timeline.filter((node: any) => node.tool === 'context7').length;
+          const cacheHits = timeline.filter((node: any) => node.tool === 'cache' && node.parameters?.operation === 'hit').length;
+          const cacheMisses = timeline.filter((node: any) => node.tool === 'cache' && node.parameters?.operation === 'miss').length;
+          const errors = timeline.filter((node: any) => node.error).length;
+          const phases = [...new Set(timeline.map((node: any) => node.phase))];
+
+          const traceData = {
+            summary: {
+              totalDuration: vibeResponse.metrics?.responseTime || 0,
+              toolsUsed: toolsUsed.length > 0 ? toolsUsed : ['smart_vibe'],
+              context7Calls: context7Calls,
+              cacheHits: cacheHits,
+              cacheMisses: cacheMisses,
+              errors: errors,
+              phases: phases.length > 0 ? phases : ['planning', 'execution', 'formatting']
+            },
+            timeline: vibeResponse.trace?.timeline || [
+              {
+                id: 'smart_vibe_root',
+                tool: 'smart_vibe',
+                phase: 'execution',
+                startTime: Date.now() - (vibeResponse.metrics?.responseTime || 1000),
+                endTime: Date.now(),
+                duration: vibeResponse.metrics?.responseTime || 1000,
+                parameters: { command: validatedInput.command },
+                result: { success: true },
+                children: [],
+                dependencies: [],
+                level: 0
+              }
+            ],
+            context7Details: {
+              libraryResolutions: [],
+              apiCalls: [],
+              cacheOperations: []
+            },
+            toolExecution: [],
+            performance: {
+              bottlenecks: [],
+              recommendations: [],
+              optimizationOpportunities: []
+            }
+          };
+
+          // Generate HTML
+          const htmlGenerator = new DebugHTMLGenerator({
+            theme: 'light',
+            includeMetrics: true,
+            includeTimeline: true,
+            includeExport: true
+          });
+
+          const htmlContent = htmlGenerator.generateHTML(traceData as any);
+
+          // Generate unique filename with timestamp and command context
+          const timestamp = Date.now();
+          const commandHash = validatedInput.command
+            .replace(/[^a-zA-Z0-9\s]/g, '')
+            .replace(/\s+/g, '-')
+            .substring(0, 30)
+            .toLowerCase();
+          const filename = `debug-dashboard-${timestamp}-${commandHash}.html`;
+          const filepath = path.resolve(filename);
+
+          try {
+            // Save HTML file
+            await fs.writeFile(filepath, htmlContent);
+
+            // Get file stats for confirmation
+            const stats = await fs.stat(filepath);
+            const fileSizeKB = Math.round(stats.size / 1024 * 100) / 100;
+
+            return {
+              content: [
+                {
+                  type: 'text',
+                  text: `🎯 **HTML Debug Dashboard Generated & Saved**\n\n✅ Debug dashboard created and saved successfully!\n\n**File Details:**\n- **Filename:** \`${filename}\`\n- **Path:** \`${filepath}\`\n- **Size:** ${fileSizeKB} KB\n- **Lines:** ${htmlContent.split('\\n').length} lines\n\n**Features:**\n- Interactive call tree visualization\n- Performance metrics panel\n- Filtering and search capabilities\n- Dark/light theme toggle\n- Mobile responsive design\n\n**Next Steps:**\n1. Open \`${filename}\` in your browser\n2. Use interactive features for debugging\n3. Click on nodes to see detailed information\n\n**Timestamp:** ${new Date().toISOString()}`,
+                },
+              ],
+              isError: false,
+            };
+          } catch (fileError) {
+            console.error('🎯 HTML file save error:', fileError);
+
+            return {
+              content: [
+                {
+                  type: 'text',
+                  text: `🎯 **HTML Debug Dashboard Generated (File Save Failed)**\n\n✅ Debug dashboard created successfully!\n❌ **File Save Error:** ${fileError instanceof Error ? fileError.message : 'Unknown error'}\n\n**HTML Content (Preview):**\n\`\`\`html\n${htmlContent.substring(0, 500)}...\n\`\`\`\n\n**Fallback Instructions:**\n1. Copy the full HTML content above\n2. Save it manually as \`${filename}\`\n3. Open in browser to view dashboard\n\n**Timestamp:** ${new Date().toISOString()}`,
+                },
+              ],
+              isError: false,
+            };
+          }
+        } catch (htmlError) {
+          console.error('🎯 HTML generation error:', htmlError);
+
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `🎯 **HTML Debug Dashboard Error**\n\n❌ Failed to generate HTML dashboard\n\n**Error:** ${htmlError instanceof Error ? htmlError.message : 'Unknown error'}\n\n**Fallback:** Using standard debug output\n\n${formattedResponse}`,
+              },
+            ],
+            isError: false,
+          };
+        }
+      }
 
       return {
         content: [

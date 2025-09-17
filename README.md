@@ -1,6 +1,6 @@
 # TappMCP - AI-Powered Development Assistant
 
-**TappMCP** is an advanced AI-powered development assistant built on the Model Context Protocol (MCP) that provides intelligent code analysis, generation, and workflow orchestration through natural language commands.
+**TappMCP** is an advanced AI-powered development assistant built on the Model Context Protocol (MCP) that provides intelligent code analysis, generation, and workflow orchestration through natural language commands. Built with VibeTapp intelligence system and Context7 integration.
 
 ## 🎯 Core Features
 
@@ -88,8 +88,8 @@ npm start
 # Build and deploy with Docker
 docker-compose up --build -d
 
-# Access the dashboard
-open http://localhost:8080
+# Access the enhanced dashboard
+open http://localhost:3000/dashboard
 ```
 
 ## 🔧 Configuration
@@ -166,8 +166,9 @@ smart_vibe("quick check", { verbosity: "detailed" })  // Override to detailed
 
 The TappMCP dashboard provides real-time monitoring and control:
 
-- **Main Dashboard**: `http://localhost:8080`
-- **Health Check**: `http://localhost:8080/health`
+- **Enhanced Dashboard**: `http://localhost:3000/dashboard`
+- **Health Check**: `http://localhost:3000/health`
+- **Performance Metrics**: `http://localhost:3000/api/metrics`
 - **Context7 Toggle**: Available in the dashboard header
 - **Real-time Metrics**: Live system performance and usage statistics
 
@@ -185,7 +186,7 @@ The TappMCP dashboard provides real-time monitoring and control:
 
 ### **Via Dashboard**
 
-1. **Access Dashboard**: Navigate to `http://localhost:8080`
+1. **Access Dashboard**: Navigate to `http://localhost:3000/dashboard`
 2. **Toggle Context7**: Use the toggle switch in the header
 3. **Monitor Performance**: View real-time metrics and system health
 4. **Manage Tools**: Test API connections and view tool status
@@ -214,7 +215,7 @@ copy cursor-settings.json "%APPDATA%\Cursor\User\settings.json"
   "mcp.servers": {
     "tappmcp": {
       "command": "node",
-      "args": ["dist/mcp-docker-server.js", "--stdio"],
+      "args": ["dist/server.js"],
       "cwd": "C:\\cursor\\TappMCP",
       "env": {
         "NODE_ENV": "production",

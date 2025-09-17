@@ -20,6 +20,8 @@ Comprehensive API documentation for TappMCP - AI Assistant Enhancement Platform 
 http://localhost:3000
 ```
 
+**Note**: The enhanced server runs on port 3000 with dashboard at `/dashboard` and health check at `/health`.
+
 ### Health Check
 ```http
 GET /health

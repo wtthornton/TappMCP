@@ -48,5 +48,5 @@ EXPOSE 3000 3001
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD node -e "require('http').get('http://localhost:3001/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })" || exit 1
 
-# Start the application
-CMD ["node", "dist/server.js"]
+# Start the enhanced application with dashboard
+CMD ["node", "dist/mcp-enhanced-server.js"]

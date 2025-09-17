@@ -48,8 +48,8 @@ export declare const ApiResourceSchema: z.ZodObject<{
     method: "GET" | "DELETE" | "POST" | "PUT" | "PATCH";
     url: string;
     timeout: number;
-    retries: number;
     retryDelay: number;
+    retries: number;
     headers?: Record<string, string> | undefined;
     params?: Record<string, string> | undefined;
     auth?: {
@@ -84,8 +84,8 @@ export declare const ApiResourceSchema: z.ZodObject<{
         window: number;
         requests: number;
     } | undefined;
-    retries?: number | undefined;
     retryDelay?: number | undefined;
+    retries?: number | undefined;
 }>;
 export type ApiResourceConfig = z.infer<typeof ApiResourceSchema>;
 /**

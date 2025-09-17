@@ -12,8 +12,8 @@ import { OrchestrationEngine } from './core/orchestration-engine.js';
 // import { WorkflowAPIServer } from './workflow/WorkflowAPIServer.js';
 
 const PORT = process.env.HEALTH_PORT ?? 3001;
-const WS_PORT = process.env.WS_PORT ?? 3003;
-const API_PORT = process.env.API_PORT ?? 3003;
+const WS_PORT = process.env.WS_PORT ?? (process.env.NODE_ENV === 'test' ? 0 : 3003);
+const API_PORT = process.env.API_PORT ?? (process.env.NODE_ENV === 'test' ? 0 : 3003);
 
 // Health check server for Docker health checks
 const healthServer = createServer((req, res) => {

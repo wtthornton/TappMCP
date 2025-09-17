@@ -44,7 +44,7 @@ export class ResponseCacheLRU {
   constructor(config: Partial<CacheConfig> = {}) {
     this.config = {
       maxSize: config.maxSize ?? 1000,
-      ttl: config.ttl ?? 24 * 60 * 60 * 1000, // 24 hours default
+      ttl: config.ttl ?? 7 * 24 * 60 * 60 * 1000, // 1 week default - data doesn't change much
       updateAgeOnGet: config.updateAgeOnGet ?? true,
       allowStale: config.allowStale ?? false,
       ...config
@@ -285,7 +285,7 @@ export async function createResponseCacheLRU(config?: Partial<CacheConfig>): Pro
  */
 export const defaultCacheConfigLRU: CacheConfig = {
   maxSize: 1000,
-  ttl: 24 * 60 * 60 * 1000, // 24 hours
+  ttl: 7 * 24 * 60 * 60 * 1000, // 1 week - data doesn't change much
   updateAgeOnGet: true,
   allowStale: false
 };

@@ -26,5 +26,5 @@
     "types": ["node", "react", "react-dom"]
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "archived", "src/**/*.test.ts", "src/context/enhanced-integration/DeepContext7Broker.ts"]
+  "exclude": ["node_modules", "dist", "archived", "src/**/*.test.ts", "src/context/enhanced-integration/DeepContext7Broker.ts", "src/analytics/**/*", "src/dashboard/**/*"]
 }

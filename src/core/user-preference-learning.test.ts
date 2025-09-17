@@ -15,10 +15,17 @@ describe('UserPreferenceLearning', () => {
     learning = new UserPreferenceLearning(testDataDir);
   });
 
-  afterEach(() => {
-    // Clean up test data
-    if (fs.existsSync(testDataDir)) {
-      fs.rmSync(testDataDir, { recursive: true, force: true });
+  afterEach(async () => {
+    // Clean up test data with better error handling
+    try {
+      if (fs.existsSync(testDataDir)) {
+        // Wait a bit for any file handles to close
+        await new Promise(resolve => setTimeout(resolve, 100));
+        fs.rmSync(testDataDir, { recursive: true, force: true });
+      }
+    } catch (error) {
+      // Ignore cleanup errors to prevent test failures
+      console.warn('Cleanup warning:', error);
     }
   });
 

@@ -448,6 +448,27 @@ export class SQLiteDatabase {
   }
 
   /**
+   * Increment access count for an artifact
+   */
+  async incrementAccessCount(artifactId: string): Promise<void> {
+    if (!this.isConnected) {
+      throw new Error('Database not connected');
+    }
+
+    try {
+      this.db.prepare(`
+        UPDATE artifacts
+        SET access_count = access_count + 1,
+            last_accessed = CURRENT_TIMESTAMP
+        WHERE id = ?
+      `).run(artifactId);
+    } catch (error) {
+      console.error(`❌ Failed to increment access count for ${artifactId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
    * Health check
    */
   async healthCheck(): Promise<{ status: string; details: any }> {

@@ -41,7 +41,7 @@ export class FileIOOptimizer {
   } = {}) {
     this.fileCache = new LRUCache<string, FileCacheEntry>({
       max: config.maxCacheSize || 1000,
-      ttl: config.ttl || 5 * 60 * 1000, // 5 minutes
+      ttl: config.ttl || 7 * 24 * 60 * 60 * 1000, // 1 week - optimized for performance
       updateAgeOnGet: true,
       allowStale: false,
       dispose: (value, key) => {
@@ -326,6 +326,6 @@ export function createFileIOOptimizer(config?: {
  */
 export const defaultFileIOConfig = {
   maxCacheSize: 1000,
-  ttl: 5 * 60 * 1000, // 5 minutes
-  enableCompression: false
+  ttl: 7 * 24 * 60 * 60 * 1000, // 1 week - optimized for performance
+  enableCompression: false // Disabled for performance
 };

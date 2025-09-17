@@ -345,7 +345,7 @@ export function createLazyLoader(config?: Partial<LazyLoadConfig>): LazyLoader {
 export const defaultLazyLoadConfig: LazyLoadConfig = {
   maxMemoryUsage: 100, // 100MB
   cleanupThreshold: 80, // 80MB
-  ttl: 5 * 60 * 1000, // 5 minutes
+  ttl: 7 * 24 * 60 * 60 * 1000, // 1 week - optimized for performance
   maxCacheSize: 1000,
-  enableCompression: false
+  enableCompression: false // Disabled for performance
 };

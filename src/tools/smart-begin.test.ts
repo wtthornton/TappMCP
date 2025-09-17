@@ -56,7 +56,10 @@ describe('SmartBegin - REAL TESTS (Expose Template Theater)', () => {
       // "Smart" tool doesn't understand domain context - just template matching
       expect(ecommerceResult.data?.qualityGates).toEqual(healthcareResult.data?.qualityGates);
 
-      console.log('EXPOSED: E-commerce and Healthcare produce identical structures');
+      // Verify that domain context is ignored - same structure for different domains
+      expect(ecommerceResult.data?.projectStructure.folders).toEqual(
+        healthcareResult.data?.projectStructure.folders
+      );
     });
 
     it('should return HARDCODED business values regardless of actual project', async () => {
@@ -88,10 +91,6 @@ describe('SmartBegin - REAL TESTS (Expose Template Theater)', () => {
       // Both should return the SAME base value (10000)
       expect(smallResult.data?.businessValue.costPrevention).toBe(10000);
       expect(enterpriseResult.data?.businessValue.costPrevention).toBe(10000);
-
-      console.log(
-        `EXPOSED: $1K todo app and $10M banking system both claim $${smallResult.data?.businessValue.costPrevention} cost prevention`
-      );
     });
 
     it('should have HARDCODED tech stack bonuses, not intelligent analysis', async () => {
@@ -114,13 +113,10 @@ describe('SmartBegin - REAL TESTS (Expose Template Theater)', () => {
       const tsResult = (await handleSmartBegin(typescriptInput)) as SmartBeginResponse;
       const fullResult = (await handleSmartBegin(typescriptReactInput)) as SmartBeginResponse;
 
-      // EXPOSE THE TRUTH: Cost prevention is just adding fixed bonuses
+      // Verify cost calculation is simple addition of hardcoded bonuses
       expect(plainResult.data?.businessValue.costPrevention).toBe(10000); // Base
       expect(tsResult.data?.businessValue.costPrevention).toBe(15000); // Base + TS bonus (5000)
       expect(fullResult.data?.businessValue.costPrevention).toBe(18000); // Base + TS + React (5000 + 3000)
-
-      // No intelligence - just hardcoded if/then statements
-      console.log('EXPOSED: Cost calculation is simple addition of hardcoded bonuses');
     });
 
     it('should return STATIC security scores, not real security analysis', async () => {
@@ -141,17 +137,11 @@ describe('SmartBegin - REAL TESTS (Expose Template Theater)', () => {
       const insecureResult = (await handleSmartBegin(insecureInput)) as SmartBeginResponse;
       const secureResult = (await handleSmartBegin(secureInput)) as SmartBeginResponse;
 
-      // EXPOSE THE TRUTH: Security score is hardcoded to 95 regardless of requirements
+      // Verify security scores are hardcoded regardless of requirements
       expect(insecureResult.data?.technicalMetrics.securityScore).toBe(95);
       expect(secureResult.data?.technicalMetrics.securityScore).toBe(95);
-
-      // No actual security analysis - just static values
       expect(insecureResult.data?.technicalMetrics.complexityScore).toBe(85);
       expect(secureResult.data?.technicalMetrics.complexityScore).toBe(85);
-
-      console.log(
-        'EXPOSED: All projects get identical security scores (95) regardless of actual security needs'
-      );
     });
 
     it('should generate TEMPLATE-BASED next steps, not intelligent recommendations', async () => {
@@ -174,6 +164,11 @@ describe('SmartBegin - REAL TESTS (Expose Template Theater)', () => {
       const coderResult = (await handleSmartBegin(coderInput)) as SmartBeginResponse;
       const founderResult = (await handleSmartBegin(founderInput)) as SmartBeginResponse;
 
+      // Verify next steps are template-based with keyword matching
+      expect(strategyResult.data?.nextSteps.some((s: string) => s.includes('business value'))).toBe(true);
+      expect(coderResult.data?.nextSteps.some((s: string) => s.includes('development environment'))).toBe(true);
+      expect(founderResult.data?.nextSteps.some((s: string) => s.includes('business-focused documentation'))).toBe(true);
+
       // All should have same BASE steps (template)
       const baseSteps = [
         'Review generated project structure and configuration',
@@ -193,23 +188,6 @@ describe('SmartBegin - REAL TESTS (Expose Template Theater)', () => {
           founderResult.data?.nextSteps.some((s: string) => s.includes(step.split("'")[0]))
         ).toBe(true);
       });
-
-      // EXPOSE: Just adds specific templates based on user type keywords
-      expect(strategyResult.data?.nextSteps.some((s: string) => s.includes('business value'))).toBe(
-        true
-      );
-      expect(
-        coderResult.data?.nextSteps.some((s: string) => s.includes('development environment'))
-      ).toBe(true);
-      expect(
-        founderResult.data?.nextSteps.some((s: string) =>
-          s.includes('business-focused documentation')
-        )
-      ).toBe(true);
-
-      console.log(
-        'EXPOSED: Next steps are keyword matching + template insertion, not intelligent analysis'
-      );
     });
 
     it('should be DETERMINISTIC - same input produces identical output', async () => {
@@ -226,7 +204,7 @@ describe('SmartBegin - REAL TESTS (Expose Template Theater)', () => {
         results.push(result);
       }
 
-      // All results should be identical (except timestamps and project IDs)
+      // Verify deterministic behavior - same input produces identical output
       for (let i = 1; i < results.length; i++) {
         expect(results[i].data?.projectStructure).toEqual(results[0].data?.projectStructure);
         expect(results[i].data?.businessValue).toEqual(results[0].data?.businessValue);
@@ -238,10 +216,6 @@ describe('SmartBegin - REAL TESTS (Expose Template Theater)', () => {
           results[0].data?.technicalMetrics.complexityScore
         );
       }
-
-      console.log(
-        'EXPOSED: SmartBegin is deterministic template generator, not AI-powered analysis'
-      );
     });
 
     it('should ignore COMPLEX business context and return generic templates', async () => {
@@ -284,7 +258,9 @@ describe('SmartBegin - REAL TESTS (Expose Template Theater)', () => {
         simpleResult.data?.businessValue.costPrevention
       );
 
-      console.log('EXPOSED: $50M fintech with 10M users gets same template as simple blog');
+      // Verify complex business context is ignored - same template for different scales
+      expect(complexResult.data?.projectStructure.folders).toEqual(simpleResult.data?.projectStructure.folders);
+      expect(complexResult.data?.projectStructure.files).toEqual(simpleResult.data?.projectStructure.files);
     });
   });
 
@@ -303,15 +279,9 @@ describe('SmartBegin - REAL TESTS (Expose Template Theater)', () => {
 
       expect(result.success).toBe(true);
 
-      // Should complete within reasonable time with Context7 integration
+      // Verify fast completion time indicates template-based processing
       expect(duration).toBeLessThan(3000); // <3s for Context7 enhanced project initialization
-
-      // Response time in result should match actual duration
       expect(Math.abs(result.data?.technicalMetrics.responseTime! - duration)).toBeLessThan(100); // Account for Context7 timing
-
-      console.log(
-        `EXPOSED: "Smart" analysis completed in ${duration.toFixed(2)}ms - too fast for real intelligence`
-      );
     });
 
     it('should have consistent performance regardless of input complexity', async () => {
@@ -344,12 +314,10 @@ describe('SmartBegin - REAL TESTS (Expose Template Theater)', () => {
       const avgSimple = simpleTimes.reduce((sum, time) => sum + time, 0) / simpleTimes.length;
       const avgComplex = complexTimes.reduce((sum, time) => sum + time, 0) / complexTimes.length;
 
-      // Should have similar performance (Context7 integration affects both)
+      // Verify consistent performance regardless of complexity
       expect(Math.abs(avgSimple - avgComplex)).toBeLessThan(500); // Within 500ms for Context7 variance
-
-      console.log(
-        `EXPOSED: Simple (${avgSimple.toFixed(2)}ms) vs Complex (${avgComplex.toFixed(2)}ms) - no analysis complexity scaling`
-      );
+      expect(avgSimple).toBeGreaterThan(0);
+      expect(avgComplex).toBeGreaterThan(0);
     });
   });
 
@@ -562,13 +530,11 @@ describe('SmartBegin - REAL TESTS (Expose Template Theater)', () => {
       expect((result.data as any)?.processCompliance?.documentation).toBe(true); // always true
       expect((result.data as any)?.processCompliance?.testing).toBe(true); // always true
 
-      console.log('SmartBegin Summary:', {
-        isIntelligent: false,
-        isTemplateGenerator: true,
-        costPreventionClaim: result.data?.businessValue.costPrevention,
-        actualProcessingTime: result.data?.technicalMetrics.responseTime,
-        verdict: 'Sophisticated template system masquerading as AI analysis',
-      });
+      // Verify comprehensive project setup with template-based approach
+      expect(result.data?.projectStructure.folders.length).toBeGreaterThan(5);
+      expect(result.data?.projectStructure.files.length).toBeGreaterThan(5);
+      expect(result.data?.qualityGates.length).toBeGreaterThan(5);
+      expect(result.data?.nextSteps.length).toBeGreaterThan(5);
     });
   });
 });

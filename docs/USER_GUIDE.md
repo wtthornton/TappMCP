@@ -17,8 +17,8 @@ Complete user guide for TappMCP - AI Assistant Enhancement Platform with real-ti
 ## Getting Started
 
 ### Accessing TappMCP
-1. **Main Dashboard**: `http://localhost:3000`
-2. **D3.js Visualizations**: `http://localhost:3000/d3-visualizations.html`
+1. **Enhanced Dashboard**: `http://localhost:3000/dashboard`
+2. **Health Check**: `http://localhost:3000/health`
 3. **API Endpoints**: `http://localhost:3000/api/*`
 
 ### First Time Setup

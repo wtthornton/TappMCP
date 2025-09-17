@@ -124,7 +124,7 @@ export class Context7Broker {
         // Initialize file I/O optimizer
         this.fileOptimizer = createFileIOOptimizer({
             maxCacheSize: 500,
-            ttl: 10 * 60 * 1000 // 10 minutes
+            ttl: 7 * 24 * 60 * 60 * 1000 // 1 week - data doesn't change much
         });
         // Load cache on startup
         this.loadCache();

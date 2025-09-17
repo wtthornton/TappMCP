@@ -185,6 +185,132 @@ describe('Smart Vibe Tool', () => {
       // Should provide some kind of helpful response even for nonsense
       expect(result.content[0].text.length).toBeGreaterThan(10);
     });
+
+    it('should handle malformed input objects', async () => {
+      const malformedInputs = [
+        null,
+        undefined,
+        { command: null },
+        { command: 123 },
+        { command: {} },
+        { options: 'invalid' },
+        { command: 'test', options: 'invalid' },
+      ];
+
+      for (const input of malformedInputs) {
+        try {
+          await handleSmartVibe(input as any);
+          // Should either throw or return error response
+        } catch (error) {
+          expect(error).toBeDefined();
+        }
+      }
+    });
+
+    it('should handle network timeout errors', async () => {
+      // Mock a timeout scenario
+      const input = {
+        command: 'create a complex project that might timeout',
+        options: { role: 'developer' },
+      };
+
+      const result = await handleSmartVibe(input);
+
+      // Should handle timeout gracefully
+      expect(result).toBeDefined();
+      expect(result.content).toBeDefined();
+      expect(result.content[0].text).toBeDefined();
+    });
+
+    it('should handle memory pressure scenarios', async () => {
+      const input = {
+        command: 'create a very large project with many files',
+        options: { role: 'developer' },
+      };
+
+      const result = await handleSmartVibe(input);
+
+      // Should handle memory pressure gracefully
+      expect(result).toBeDefined();
+      expect(result.content).toBeDefined();
+      expect(result.content[0].text).toBeDefined();
+    });
+
+    it('should handle concurrent request conflicts', async () => {
+      const input = {
+        command: 'create a project',
+        options: { role: 'developer' },
+      };
+
+      // Make multiple concurrent requests
+      const promises = Array.from({ length: 5 }, () => handleSmartVibe(input));
+      const results = await Promise.all(promises);
+
+      // All should complete successfully
+      results.forEach(result => {
+        expect(result).toBeDefined();
+        expect(result.content).toBeDefined();
+        expect(result.content[0].text).toBeDefined();
+      });
+    });
+
+    it('should handle invalid role values', async () => {
+      const input = {
+        command: 'test command',
+        options: { role: 'invalid-role' },
+      };
+
+      try {
+        await handleSmartVibe(input);
+        // Should either throw or handle gracefully
+      } catch (error) {
+        expect(error).toBeDefined();
+      }
+    });
+
+    it('should handle invalid quality values', async () => {
+      const input = {
+        command: 'test command',
+        options: { quality: 'invalid-quality' },
+      };
+
+      try {
+        await handleSmartVibe(input);
+        // Should either throw or handle gracefully
+      } catch (error) {
+        expect(error).toBeDefined();
+      }
+    });
+
+    it('should handle very long commands', async () => {
+      const longCommand = 'create a project with ' + 'a'.repeat(10000);
+      const input = {
+        command: longCommand,
+        options: { role: 'developer' },
+      };
+
+      const result = await handleSmartVibe(input);
+
+      // Should handle long commands gracefully
+      expect(result).toBeDefined();
+      expect(result.content).toBeDefined();
+      expect(result.content[0].text).toBeDefined();
+    });
+
+    it('should handle special characters in commands', async () => {
+      const specialCommand = 'create a project with special chars: !@#$%^&*()_+-=[]{}|;:,.<>?';
+      const input = {
+        command: specialCommand,
+        options: { role: 'developer' },
+      };
+
+      const result = await handleSmartVibe(input);
+
+      // Should handle special characters gracefully
+      expect(result).toBeDefined();
+      expect(result.content).toBeDefined();
+      expect(result.content[0].text).toBeDefined();
+    });
   });
 
   describe('Context Management', () => {

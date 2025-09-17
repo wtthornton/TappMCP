@@ -2,7 +2,7 @@
   "mcp.servers": {
     "tappmcp-local": {
       "command": "node",
-        "args": ["dist/mcp-docker-server.js", "--stdio"],
+        "args": ["dist/server.js"],
       "cwd": "C:\\cursor\\TappMCP",
       "env": {
         "NODE_ENV": "production",

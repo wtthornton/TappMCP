@@ -16,5 +16,5 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": false
   },
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "src/**/*.test.ts"]
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "src/**/*.test.ts", "src/analytics/**/*", "src/dashboard/**/*"]
 }

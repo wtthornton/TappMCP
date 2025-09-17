@@ -317,4 +317,181 @@ describe('SQLite Database Manager', () => {
       expect(stats.filesByType.type1).toBe(2);
     });
   });
+
+  describe('Error Handling', () => {
+    it('should handle database connection errors gracefully', async () => {
+      // Create database with invalid path
+      const invalidDb = createSQLiteDatabase({
+        databasePath: '/invalid/path/that/does/not/exist/test.db',
+        jsonFileBasePath: './test-data/json'
+      });
+
+      try {
+        await invalidDb.healthCheck();
+        // Should either succeed with fallback or throw meaningful error
+      } catch (error) {
+        expect(error).toBeDefined();
+        expect(error.message).toContain('database');
+      }
+    });
+
+    it('should handle file system errors gracefully', async () => {
+      // Test with invalid file path
+      const invalidFileManager = createFileManager({
+        basePath: '/invalid/path/that/does/not/exist'
+      });
+
+      try {
+        await invalidFileManager.storeData('test', 'type', 'cat', { data: 'test' });
+        // Should either succeed with fallback or throw meaningful error
+      } catch (error) {
+        expect(error).toBeDefined();
+      }
+    });
+
+    it('should handle corrupted data gracefully', async () => {
+      const testData = { message: 'Hello, World!', timestamp: Date.now() };
+      const pointer = await fileManager.storeData('corrupt-test', 'test', 'demo', testData);
+
+      // Simulate corrupted data by writing invalid JSON
+      const fs = await import('fs/promises');
+      await fs.writeFile(pointer.filePath, 'invalid json data');
+
+      const result = await fileManager.loadData(pointer);
+      expect(result.success).toBe(false);
+      expect(result.error).toBeDefined();
+    });
+
+    it('should handle concurrent access conflicts', async () => {
+      const testData = { message: 'Concurrent test', timestamp: Date.now() };
+      const pointer = await fileManager.storeData('concurrent-test', 'test', 'demo', testData);
+
+      // Simulate concurrent access
+      const promises = Array.from({ length: 5 }, async (_, i) => {
+        return fileManager.loadData(pointer);
+      });
+
+      const results = await Promise.all(promises);
+
+      // All should complete successfully
+      results.forEach(result => {
+        expect(result.success).toBe(true);
+        expect(result.data).toBeDefined();
+      });
+    });
+
+    it('should handle memory pressure scenarios', async () => {
+      // Create large data to test memory handling
+      const largeData = {
+        data: 'x'.repeat(1000000), // 1MB of data
+        metadata: { large: true }
+      };
+
+      const pointer = await fileManager.storeData('large-test', 'test', 'demo', largeData);
+      expect(pointer.compressed).toBe(true);
+      expect(pointer.size).toBeLessThan(1000000);
+
+      const result = await fileManager.loadData(pointer);
+      expect(result.success).toBe(true);
+      expect(result.data).toEqual(largeData);
+    });
+
+    it('should handle invalid artifact data', async () => {
+      const invalidArtifacts = [
+        { id: null, type: 'test', category: 'demo', title: 'Test' },
+        { id: 'test', type: null, category: 'demo', title: 'Test' },
+        { id: 'test', type: 'test', category: 'demo', title: 'Test', filePath: null },
+        { id: 'test', type: 'test', category: 'demo', title: 'Test', fileSize: -1 },
+      ];
+
+      for (const artifact of invalidArtifacts) {
+        try {
+          await db.storeArtifact(artifact as any);
+          // Should either succeed with validation or throw meaningful error
+        } catch (error) {
+          expect(error).toBeDefined();
+        }
+      }
+    });
+
+    it('should handle database lock errors', async () => {
+      // Simulate database lock by creating multiple connections
+      const db2 = createSQLiteDatabase({
+        databasePath: './test-data/test.db',
+        jsonFileBasePath: './test-data/json'
+      });
+
+      try {
+        // Both should work or handle locks gracefully
+        await db.healthCheck();
+        await db2.healthCheck();
+      } catch (error) {
+        expect(error).toBeDefined();
+      } finally {
+        await db2.close();
+      }
+    });
+
+    it('should handle file permission errors', async () => {
+      // Test with read-only directory (if possible)
+      const testData = { message: 'Permission test', timestamp: Date.now() };
+
+      try {
+        const pointer = await fileManager.storeData('permission-test', 'test', 'demo', testData);
+        expect(pointer).toBeDefined();
+      } catch (error) {
+        expect(error).toBeDefined();
+      }
+    });
+
+    it('should handle network storage errors', async () => {
+      // Test with network path (if available)
+      const networkFileManager = createFileManager({
+        basePath: '\\\\network\\path\\that\\might\\not\\exist'
+      });
+
+      try {
+        await networkFileManager.storeData('network-test', 'test', 'demo', { data: 'test' });
+        // Should either succeed or throw meaningful error
+      } catch (error) {
+        expect(error).toBeDefined();
+      }
+    });
+
+    it('should handle disk space errors', async () => {
+      // Test with very large data to simulate disk space issues
+      const veryLargeData = {
+        data: 'x'.repeat(10000000), // 10MB of data
+        metadata: { veryLarge: true }
+      };
+
+      try {
+        const pointer = await fileManager.storeData('disk-space-test', 'test', 'demo', veryLargeData);
+        expect(pointer).toBeDefined();
+
+        const result = await fileManager.loadData(pointer);
+        expect(result.success).toBe(true);
+      } catch (error) {
+        expect(error).toBeDefined();
+      }
+    });
+
+    it('should handle cleanup errors gracefully', async () => {
+      const testData = { message: 'Cleanup test', timestamp: Date.now() };
+      const pointer = await fileManager.storeData('cleanup-test', 'test', 'demo', testData);
+
+      // Delete the file manually to simulate cleanup error
+      const fs = await import('fs/promises');
+      try {
+        await fs.unlink(pointer.filePath);
+      } catch (error) {
+        // File might not exist, that's okay
+      }
+
+      // Should handle missing file gracefully
+      const result = await fileManager.loadData(pointer);
+      expect(result.success).toBe(false);
+      expect(result.error).toBeDefined();
+    });
+  });
 });

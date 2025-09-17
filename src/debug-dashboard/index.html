@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TappMCP Debug Dashboard - Interactive debugging interface">
+    <title>TappMCP Debug Dashboard</title>
+
+    <!-- Critical CSS -->
+    <style>
+        :root {
+            --primary-color: #2196F3;
+            --success-color: #4CAF50;
+            --warning-color: #FF9800;
+            --error-color: #F44336;
+            --background-color: #FAFAFA;
+            --text-color: #333333;
+            --card-background: #FFFFFF;
+            --border-radius: 8px;
+            --box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .debug-dashboard {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--card-background);
+            padding: 1rem 2rem;
+            box-shadow: var(--box-shadow);
+            border-bottom: 1px solid #E0E0E0;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .main {
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .call-tree-container {
+            background: var(--card-background);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1.5rem;
+            overflow: hidden;
+        }
+
+        .metrics-panel {
+            background: var(--card-background);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1.5rem;
+            height: fit-content;
+        }
+
+        .footer {
+            background: var(--card-background);
+            padding: 1rem 2rem;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #E0E0E0;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            color: #666;
+        }
+
+        .error {
+            color: var(--error-color);
+            background: #FFEBEE;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--error-color);
+        }
+
+        @media (max-width: 768px) {
+            .main {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-dashboard">
+        <header class="header">
+            <h1>🎯 TappMCP Debug Dashboard</h1>
+        </header>
+
+        <main class="main">
+            <div class="call-tree-container">
+                <div id="call-tree-visualization">
+                    <div class="loading">Loading debug data...</div>
+                </div>
+            </div>
+
+            <div class="metrics-panel">
+                <h3>📊 Debug Metrics</h3>
+                <div id="metrics-content">
+                    <div class="loading">Loading metrics...</div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>TappMCP Debug Dashboard v1.0 | Generated at <span id="timestamp"></span></p>
+        </footer>
+    </div>
+
+    <!-- D3.js for visualizations -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <!-- Debug Dashboard Script -->
+    <script>
+        class DebugDashboard {
+            constructor(data) {
+                this.data = data;
+                this.init();
+            }
+
+            init() {
+                this.setTimestamp();
+                this.renderCallTree();
+                this.renderMetrics();
+            }
+
+            setTimestamp() {
+                document.getElementById('timestamp').textContent = new Date().toLocaleString();
+            }
+
+            renderCallTree() {
+                const container = document.getElementById('call-tree-visualization');
+
+                if (!this.data || !this.data.timeline) {
+                    container.innerHTML = '<div class="error">No debug data available</div>';
+                    return;
+                }
+
+                // Create SVG for call tree
+                const width = container.clientWidth;
+                const height = Math.max(400, this.data.timeline.length * 60);
+
+                const svg = d3.select(container)
+                    .html('')
+                    .append('svg')
+                    .attr('width', width)
+                    .attr('height', height);
+
+                // Render call tree nodes
+                this.renderCallTreeNodes(svg, this.data.timeline, width, height);
+            }
+
+            renderCallTreeNodes(svg, timeline, width, height) {
+                const nodeHeight = 50;
+                const nodeWidth = 200;
+                const padding = 20;
+
+                const nodes = svg.selectAll('.call-node')
+                    .data(timeline)
+                    .enter()
+                    .append('g')
+                    .attr('class', 'call-node')
+                    .attr('transform', (d, i) => `translate(${padding}, ${i * (nodeHeight + 10) + padding})`);
+
+                // Node rectangles
+                nodes.append('rect')
+                    .attr('width', nodeWidth)
+                    .attr('height', nodeHeight)
+                    .attr('rx', 4)
+                    .attr('fill', d => this.getNodeColor(d))
+                    .attr('stroke', '#ccc')
+                    .attr('stroke-width', 1);
+
+                // Node text
+                nodes.append('text')
+                    .attr('x', 10)
+                    .attr('y', 20)
+                    .attr('font-size', '12px')
+                    .attr('font-weight', 'bold')
+                    .text(d => d.tool);
+
+                nodes.append('text')
+                    .attr('x', 10)
+                    .attr('y', 35)
+                    .attr('font-size', '10px')
+                    .attr('fill', '#666')
+                    .text(d => `${d.phase} | ${d.duration || 0}ms`);
+
+                // Status indicator
+                nodes.append('text')
+                    .attr('x', nodeWidth - 20)
+                    .attr('y', 20)
+                    .attr('font-size', '16px')
+                    .text(d => d.error ? '❌' : '✅');
+            }
+
+            getNodeColor(node) {
+                if (node.error) return '#FFEBEE';
+                if (node.duration > 1000) return '#FFF3E0';
+                if (node.tool === 'context7') return '#E3F2FD';
+                if (node.tool === 'cache') return '#F3E5F5';
+                return '#E8F5E8';
+            }
+
+            renderMetrics() {
+                const container = document.getElementById('metrics-content');
+
+                if (!this.data || !this.data.summary) {
+                    container.innerHTML = '<div class="error">No metrics available</div>';
+                    return;
+                }
+
+                const summary = this.data.summary;
+                container.innerHTML = `
+                    <div style="margin-bottom: 1rem;">
+                        <strong>Total Duration:</strong> ${summary.totalDuration || 0}ms
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <strong>Tools Used:</strong> ${summary.toolsUsed?.length || 0}
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <strong>Context7 Calls:</strong> ${summary.context7Calls || 0}
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <strong>Cache Hits:</strong> ${summary.cacheHits || 0}
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <strong>Errors:</strong> ${summary.errors || 0}
+                    </div>
+                `;
+            }
+        }
+
+        // Initialize dashboard when data is available
+        window.initDebugDashboard = function(data) {
+            new DebugDashboard(data);
+        };
+
+        // If data is already available, initialize immediately
+        if (window.debugData) {
+            window.initDebugDashboard(window.debugData);
+        }
+    </script>
+</body>
+</html>
